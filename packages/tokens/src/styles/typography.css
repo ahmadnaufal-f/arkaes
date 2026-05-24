@@ -1,0 +1,104 @@
+/* Readability-first typography utilities */
+
+.ark-heading-display {
+  max-width: var(--ark-measure-xs);
+  font-family: var(--ark-font-display);
+  font-size: var(--ark-text-4xl);
+  line-height: var(--ark-leading-none);
+  letter-spacing: var(--ark-tracking-tight);
+  font-weight: var(--ark-weight-semibold);
+  color: var(--ark-color-text);
+  text-wrap: balance;
+}
+
+.ark-heading-section {
+  max-width: var(--ark-measure-sm);
+  font-family: var(--ark-font-display);
+  font-size: var(--ark-text-3xl);
+  line-height: var(--ark-leading-tight);
+  letter-spacing: var(--ark-tracking-tight);
+  font-weight: var(--ark-weight-semibold);
+  color: var(--ark-color-text);
+  text-wrap: balance;
+}
+
+.ark-heading-subsection {
+  max-width: var(--ark-measure-sm);
+  font-family: var(--ark-font-sans);
+  font-size: var(--ark-text-xl);
+  line-height: var(--ark-leading-snug);
+  letter-spacing: var(--ark-tracking-normal);
+  font-weight: var(--ark-weight-semibold);
+  color: var(--ark-color-text);
+  text-wrap: balance;
+}
+
+.ark-text-body {
+  max-width: var(--ark-measure-md);
+  font-size: var(--ark-text-md);
+  line-height: var(--ark-leading-normal);
+  color: var(--ark-color-text-soft);
+}
+
+.ark-text-lead {
+  max-width: var(--ark-measure-md);
+  font-size: var(--ark-text-lg);
+  line-height: var(--ark-leading-relaxed);
+  color: var(--ark-color-text-muted);
+}
+
+.ark-text-small {
+  font-size: var(--ark-text-sm);
+  line-height: var(--ark-leading-normal);
+}
+
+.ark-text-muted {
+  color: var(--ark-color-text-muted);
+}
+
+.ark-label {
+  font-size: var(--ark-text-xs);
+  line-height: var(--ark-leading-snug);
+  letter-spacing: var(--ark-tracking-label);
+  text-transform: uppercase;
+  font-weight: var(--ark-weight-bold);
+  color: var(--ark-color-text-muted);
+}
+
+.ark-readable {
+  max-width: var(--ark-measure-md);
+}
+
+.ark-readable > * + * {
+  margin-block-start: 1em;
+}
+
+.ark-readable p,
+.ark-readable li {
+  line-height: var(--ark-leading-normal);
+  color: var(--ark-color-text-soft);
+}
+
+.ark-readable h1,
+.ark-readable h2,
+.ark-readable h3 {
+  color: var(--ark-color-text);
+  text-wrap: balance;
+}
+
+.ark-readable h2 {
+  margin-block-start: 2em;
+}
+
+.ark-readable a {
+  color: var(--ark-color-accent-strong);
+  font-weight: var(--ark-weight-medium);
+}
+
+.ark-readable code {
+  border-radius: var(--ark-radius-xs);
+  background: var(--ark-color-surface-soft);
+  padding: 0.12em 0.35em;
+  font-family: var(--ark-font-mono);
+  font-size: 0.92em;
+}

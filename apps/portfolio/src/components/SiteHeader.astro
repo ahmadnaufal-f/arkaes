@@ -1,0 +1,22 @@
+---
+const navItems = [
+  { href: "/#case-studies", label: "Case Studies" },
+  { href: "/#expertise", label: "Expertise" },
+  { href: "/#about", label: "About" },
+  { href: "/projects", label: "Writing" },
+];
+---
+
+<header class="site-header">
+  <a class="nav-logo" href="/" aria-label="Arkaes home">ARK<span>&AElig;</span>S</a>
+  <nav class="nav-links" aria-label="Main navigation">
+    {
+      navItems.map((item) => (
+        <a href={item.href}>
+          {item.label}
+        </a>
+      ))
+    }
+  </nav>
+  <a href="/#contact" class="nav-cta">Let's Talk</a>
+</header>

@@ -1,0 +1,37 @@
+[data-theme="dark"] {
+  --ark-color-bg: #171411;
+  --ark-color-surface: #221e1a;
+  --ark-color-surface-soft: #2b2621;
+  --ark-color-text: #fff8f1;
+  --ark-color-text-soft: #eadfd6;
+  --ark-color-text-muted: #c9bbae;
+  --ark-color-text-subtle: #a99b8e;
+  --ark-color-border: color-mix(in srgb, #f7efe8, transparent 80%);
+  --ark-color-accent: #e0afa4;
+  --ark-color-accent-soft: color-mix(in srgb, #e0afa4, transparent 78%);
+  --ark-color-accent-strong: #ffd4cb;
+  --ark-color-secondary: #c4d0aa;
+  --ark-color-secondary-soft: color-mix(in srgb, #c4d0aa, transparent 80%);
+  --ark-color-focus: #dce8c5;
+  --ark-color-accent-contrast: var(--ark-color-neutral-900);
+  --ark-color-danger: #f0a29a;
+
+  color-scheme: dark;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --ark-duration-fast: 1ms;
+    --ark-duration-normal: 1ms;
+    --ark-duration-slow: 1ms;
+  }
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+}

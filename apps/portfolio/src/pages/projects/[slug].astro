@@ -1,0 +1,51 @@
+---
+import { projects } from "../../data/projects";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+export function getStaticPaths() {
+  return projects.map((project) => ({
+    params: { slug: project.slug },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+const categoryLabel =
+  project.category === "professional-work" ? "Professional Work" : "Side Project";
+---
+
+<BaseLayout title={`${project.title} | Arkaes`} description={project.summary}>
+  <article class="page-section narrow project-detail">
+    <ark-badge>{categoryLabel}</ark-badge>
+    <h1>{project.title}</h1>
+    <p class="lead">{project.summary}</p>
+
+    <dl class="project-meta">
+      <div>
+        <dt>Role</dt>
+        <dd>{project.role}</dd>
+      </div>
+      <div>
+        <dt>Main signal</dt>
+        <dd>{project.impact}</dd>
+      </div>
+      <div>
+        <dt>Stack</dt>
+        <dd>{project.stack.join(", ")}</dd>
+      </div>
+    </dl>
+
+    <section>
+      <h2>Case study direction</h2>
+      <p>
+        This page is intentionally a placeholder for the first writing pass. Keep the final story
+        specific, credible, and careful with confidential implementation details.
+      </p>
+    </section>
+  </article>
+
+  <script>
+    import "@arkaes/ui";
+  </script>
+</BaseLayout>
+

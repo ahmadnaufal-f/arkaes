@@ -1,0 +1,173 @@
+:root {
+  /* Brand primitives */
+  --ark-color-blush-50: #fff8f6;
+  --ark-color-blush-100: #f7e8e3;
+  --ark-color-blush-200: #e9c8be;
+  --ark-color-blush-300: #d7a79b;
+  --ark-color-blush-400: #bd8276;
+  --ark-color-blush-500: #9d6359;
+  --ark-color-blush-600: #784a43;
+
+  --ark-color-sage-50: #f7f8f3;
+  --ark-color-sage-100: #e8eadf;
+  --ark-color-sage-200: #cdd3bc;
+  --ark-color-sage-300: #aeb997;
+  --ark-color-sage-400: #8e9d75;
+  --ark-color-sage-500: #6f7f58;
+  --ark-color-sage-600: #566244;
+
+  --ark-color-neutral-0: #ffffff;
+  --ark-color-neutral-50: #faf9f7;
+  --ark-color-neutral-100: #f1eee9;
+  --ark-color-neutral-200: #ddd7cf;
+  --ark-color-neutral-300: #c3b9ad;
+  --ark-color-neutral-400: #9d9185;
+  --ark-color-neutral-500: #76695f;
+  --ark-color-neutral-600: #5e554d;
+  --ark-color-neutral-700: #463f39;
+  --ark-color-neutral-800: #302b27;
+  --ark-color-neutral-900: #17130f;
+
+  /* Semantic colors: improved contrast */
+  --ark-color-bg: #fbf8f3;
+  --ark-color-surface: var(--ark-color-neutral-0);
+  --ark-color-surface-soft: #f6f0ea;
+  --ark-color-text: #17130f;
+  --ark-color-text-soft: #332b25;
+  --ark-color-text-muted: #5f534a;
+  --ark-color-text-subtle: #76695f;
+  --ark-color-border: color-mix(in srgb, #463f39, transparent 78%);
+  --ark-color-accent: #8f554d;
+  --ark-color-accent-soft: #f2ddd7;
+  --ark-color-accent-strong: #653a35;
+  --ark-color-secondary: #5f6f48;
+  --ark-color-secondary-soft: #e2e7d6;
+  --ark-color-focus: #4f6540;
+
+  /* Typography: readability first */
+  --ark-font-sans: Inter, "Atkinson Hyperlegible", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --ark-font-display: "Fraunces", "Cormorant Garamond", Georgia, serif;
+  --ark-font-serif: Georgia, "Times New Roman", serif;
+  --ark-font-mono: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+
+  --ark-text-xs: 0.75rem;
+  --ark-text-sm: 0.875rem;
+  --ark-text-md: 1rem;
+  --ark-text-lg: 1.125rem;
+  --ark-text-xl: 1.25rem;
+  --ark-text-2xl: clamp(1.5rem, 1.5vw + 1rem, 2rem);
+  --ark-text-3xl: clamp(2rem, 2.8vw + 1rem, 3.25rem);
+  --ark-text-4xl: clamp(2.75rem, 5.5vw + 1rem, 5.5rem);
+
+  --ark-leading-none: 1;
+  --ark-leading-tight: 1.08;
+  --ark-leading-snug: 1.22;
+  --ark-leading-normal: 1.62;
+  --ark-leading-relaxed: 1.75;
+
+  --ark-tracking-tight: 0;
+  --ark-tracking-normal: 0;
+  --ark-tracking-wide: 0.015em;
+  --ark-tracking-label: 0.06em;
+
+  --ark-weight-regular: 400;
+  --ark-weight-medium: 500;
+  --ark-weight-semibold: 600;
+  --ark-weight-bold: 700;
+
+  /* Reading measure */
+  --ark-measure-xs: 42ch;
+  --ark-measure-sm: 56ch;
+  --ark-measure-md: 68ch;
+  --ark-measure-lg: 78ch;
+
+  /* Spacing */
+  --ark-space-0: 0;
+  --ark-space-1: 0.25rem;
+  --ark-space-2: 0.5rem;
+  --ark-space-3: 0.75rem;
+  --ark-space-4: 1rem;
+  --ark-space-5: 1.25rem;
+  --ark-space-6: 1.5rem;
+  --ark-space-8: 2rem;
+  --ark-space-10: 2.5rem;
+  --ark-space-12: 3rem;
+  --ark-space-16: 4rem;
+  --ark-space-20: 5rem;
+  --ark-space-24: 6rem;
+
+  --ark-radius-xs: 0.375rem;
+  --ark-radius-sm: 0.5rem;
+  --ark-radius-md: 0.875rem;
+  --ark-radius-lg: 1.25rem;
+  --ark-radius-xl: 1.75rem;
+  --ark-radius-2xl: 2.25rem;
+  --ark-radius-full: 999px;
+
+  --ark-shadow-sm: 0 1px 2px color-mix(in srgb, var(--ark-color-neutral-900), transparent 92%);
+  --ark-shadow-md: 0 10px 30px color-mix(in srgb, var(--ark-color-neutral-900), transparent 90%);
+  --ark-shadow-lg: 0 24px 70px color-mix(in srgb, var(--ark-color-neutral-900), transparent 88%);
+
+  --ark-duration-fast: 120ms;
+  --ark-duration-normal: 220ms;
+  --ark-duration-slow: 420ms;
+  --ark-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ark-ease-emphasized: cubic-bezier(0.2, 0, 0, 1.2);
+
+  --ark-container-sm: 48rem;
+  --ark-container-md: 64rem;
+  --ark-container-lg: 76rem;
+  --ark-container-padding: clamp(1rem, 4vw, 2rem);
+
+  /* Legacy aliases for the existing portfolio and UI components. */
+  --ark-color-warm-white: var(--ark-color-neutral-50);
+  --ark-color-parchment: var(--ark-color-neutral-100);
+  --ark-color-parchment-deep: var(--ark-color-neutral-200);
+  --ark-color-ink: var(--ark-color-neutral-900);
+  --ark-color-ink-muted: var(--ark-color-text-muted);
+  --ark-color-ink-ghost: var(--ark-color-text-subtle);
+  --ark-color-blush: var(--ark-color-blush-300);
+  --ark-color-blush-light: var(--ark-color-blush-200);
+  --ark-color-blush-deep: var(--ark-color-accent-strong);
+  --ark-color-blush-tint: var(--ark-color-accent-soft);
+  --ark-color-sage: var(--ark-color-secondary);
+  --ark-color-sage-light: var(--ark-color-sage-300);
+  --ark-color-sage-tint: var(--ark-color-secondary-soft);
+
+  --ark-color-background: var(--ark-color-bg);
+  --ark-color-surface-muted: var(--ark-color-surface-soft);
+  --ark-color-text-ghost: var(--ark-color-text-subtle);
+  --ark-color-border-strong: color-mix(in srgb, var(--ark-color-accent), transparent 54%);
+  --ark-color-accent-contrast: var(--ark-color-neutral-0);
+  --ark-color-counterpoint: var(--ark-color-secondary);
+  --ark-color-counterpoint-soft: var(--ark-color-secondary-soft);
+  --ark-color-success: var(--ark-color-secondary);
+  --ark-color-danger: #9f3f38;
+
+  --ark-font-size-xs: var(--ark-text-xs);
+  --ark-font-size-sm: var(--ark-text-sm);
+  --ark-font-size-md: var(--ark-text-md);
+  --ark-font-size-lg: var(--ark-text-lg);
+  --ark-font-size-xl: var(--ark-text-xl);
+  --ark-font-size-2xl: var(--ark-text-2xl);
+  --ark-font-size-3xl: var(--ark-text-3xl);
+  --ark-font-size-4xl: var(--ark-text-4xl);
+  --ark-font-size-5xl: var(--ark-text-4xl);
+
+  --ark-line-height-tight: var(--ark-leading-tight);
+  --ark-line-height-normal: var(--ark-leading-normal);
+  --ark-line-height-relaxed: var(--ark-leading-relaxed);
+  --ark-line-height-loose: var(--ark-leading-relaxed);
+
+  --ark-font-weight-light: 300;
+  --ark-font-weight-regular: var(--ark-weight-regular);
+  --ark-font-weight-medium: var(--ark-weight-medium);
+  --ark-font-weight-semibold: var(--ark-weight-semibold);
+  --ark-font-weight-bold: var(--ark-weight-bold);
+
+  --ark-letter-spacing-tight: var(--ark-tracking-normal);
+  --ark-letter-spacing-mono: var(--ark-tracking-label);
+  --ark-letter-spacing-wide: var(--ark-tracking-label);
+
+  --ark-ease-out: var(--ark-ease-standard);
+}

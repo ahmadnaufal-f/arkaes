@@ -1,0 +1,80 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: light;
+  font-family: var(--ark-font-sans);
+  background: var(--ark-color-bg);
+  color: var(--ark-color-text);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, color-mix(in srgb, var(--ark-color-accent-soft), transparent 25%), transparent 34rem),
+    var(--ark-color-bg);
+  color: var(--ark-color-text);
+  font-size: var(--ark-text-md);
+  line-height: var(--ark-leading-normal);
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+figure,
+blockquote,
+dl,
+dd {
+  margin-block: 0;
+}
+
+p {
+  max-width: var(--ark-measure-md);
+}
+
+img,
+picture,
+svg,
+video,
+canvas {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+a {
+  color: var(--ark-color-accent-strong);
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.18em;
+}
+
+strong {
+  color: var(--ark-color-text);
+  font-weight: var(--ark-weight-semibold);
+}
+
+::selection {
+  background: var(--ark-color-accent-soft);
+  color: var(--ark-color-text);
+}
+
+:focus-visible {
+  outline: 3px solid var(--ark-color-focus);
+  outline-offset: 4px;
+}

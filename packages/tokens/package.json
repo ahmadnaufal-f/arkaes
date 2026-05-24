@@ -1,0 +1,33 @@
+{
+  "name": "@arkaes/tokens",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Readability-first design tokens for the Arkaes portfolio and UI system.",
+  "type": "module",
+  "sideEffects": [
+    "src/**/*.css"
+  ],
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./css": "./src/styles/index.css",
+    "./tokens.css": "./src/styles/tokens.css",
+    "./theme.css": "./src/styles/theme.css",
+    "./reset.css": "./src/styles/reset.css",
+    "./typography.css": "./src/styles/typography.css",
+    "./styles/tokens.css": "./src/styles/tokens.css",
+    "./styles/theme.css": "./src/styles/theme.css",
+    "./styles/reset.css": "./src/styles/reset.css",
+    "./styles/typography.css": "./src/styles/typography.css"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "check": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src --max-warnings=0"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  }
+}
