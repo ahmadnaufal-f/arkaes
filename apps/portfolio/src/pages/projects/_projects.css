@@ -1,0 +1,117 @@
+.page-section {
+  margin-inline: auto;
+  max-width: 1120px;
+  padding: 160px 0 120px;
+  width: min(calc(100% - (var(--site-content-gutter) * 2)), 1120px);
+}
+
+.page-section.narrow {
+  max-width: 860px;
+}
+
+.page-section h1 {
+  font-size: 4rem;
+  letter-spacing: 0;
+  line-height: 1;
+  margin-block: 24px;
+}
+
+.lead {
+  color: var(--ark-color-text-muted);
+  font-size: var(--ark-font-size-xl);
+  line-height: var(--ark-line-height-relaxed);
+  max-width: 680px;
+}
+
+.project-grid {
+  display: grid;
+  gap: var(--ark-space-4);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+}
+
+.project-grid .project-card {
+  border: 1px solid var(--ark-color-border);
+  display: block;
+  min-height: 100%;
+  padding: var(--ark-space-5);
+}
+
+.project-card:focus-visible {
+  outline: 2px solid var(--ark-color-focus);
+  outline-offset: 4px;
+}
+
+.project-grid .project-card span {
+  color: var(--ark-color-accent-strong);
+  font-family: var(--ark-font-mono);
+  font-size: var(--ark-font-size-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.project-grid .project-card h3 {
+  font-size: var(--ark-font-size-xl);
+  margin-block: var(--ark-space-3);
+}
+
+.project-grid .project-card p,
+.project-detail section p {
+  color: var(--ark-color-text-muted);
+  line-height: var(--ark-line-height-relaxed);
+}
+
+.project-listing {
+  display: grid;
+  gap: var(--ark-space-8);
+}
+
+.project-listing h2 {
+  margin-bottom: var(--ark-space-4);
+}
+
+.project-detail {
+  display: grid;
+  gap: var(--ark-space-6);
+}
+
+.project-detail h1 {
+  margin-block: 0;
+}
+
+.project-detail h2 {
+  font-size: var(--ark-font-size-2xl);
+  margin-bottom: var(--ark-space-3);
+}
+
+.project-meta {
+  border-block: 1px solid var(--ark-color-border);
+  display: grid;
+  gap: var(--ark-space-4);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+  padding-block: var(--ark-space-5);
+}
+
+.project-meta dt {
+  color: var(--ark-color-text-ghost);
+  font-family: var(--ark-font-mono);
+  font-size: var(--ark-font-size-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.project-meta dd {
+  margin-top: var(--ark-space-2);
+}
+
+@media (max-width: 900px) {
+  .page-section {
+    padding: 140px 24px 86px;
+    width: auto;
+  }
+}
+
+@media (max-width: 520px) {
+  .page-section h1 {
+    font-size: 3rem;
+  }
+}

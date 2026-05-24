@@ -1,6 +1,7 @@
 ---
 import { projects } from "../../data/projects";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import "./_projects.css";
 
 export function getStaticPaths() {
   return projects.map((project) => ({
@@ -48,4 +49,3 @@ const categoryLabel =
     import "@arkaes/ui";
   </script>
 </BaseLayout>
-

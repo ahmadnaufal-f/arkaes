@@ -1,0 +1,37 @@
+.page-section {
+  margin-inline: auto;
+  max-width: 1120px;
+  padding: 160px 0 120px;
+  width: min(calc(100% - (var(--site-content-gutter) * 2)), 1120px);
+}
+
+.page-section.narrow {
+  max-width: 860px;
+}
+
+.page-section h1 {
+  font-size: 4rem;
+  letter-spacing: 0;
+  line-height: 1;
+  margin-block: 24px;
+}
+
+.lead {
+  color: var(--ark-color-text-muted);
+  font-size: var(--ark-font-size-xl);
+  line-height: var(--ark-line-height-relaxed);
+  max-width: 680px;
+}
+
+@media (max-width: 900px) {
+  .page-section {
+    padding: 140px 24px 86px;
+    width: auto;
+  }
+}
+
+@media (max-width: 520px) {
+  .page-section h1 {
+    font-size: 3rem;
+  }
+}
