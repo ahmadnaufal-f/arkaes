@@ -11,7 +11,7 @@
   color: rgba(250, 247, 245, 0.3);
   font-family: var(--ark-font-display);
   font-size: 0.95rem;
-  font-weight: var(--ark-font-weight-light);
+  font-weight: var(--ark-weight-thin);
   letter-spacing: 0.1em;
 }
 

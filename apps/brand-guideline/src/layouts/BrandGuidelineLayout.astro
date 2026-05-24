@@ -1,7 +1,5 @@
 ---
-import SiteFooter from "../components/SiteFooter.astro";
-import SiteHeader from "../components/SiteHeader.astro";
-import "../styles/global.css";
+import "../styles/brand-guideline.css";
 
 interface Props {
   description?: string;
@@ -9,8 +7,8 @@ interface Props {
 }
 
 const {
-  description = "A performance-first portfolio powered by Astro and a small Lit-based design system.",
-  title = "Arkaes Portfolio",
+  description = "Arkaes brand identity guidelines for color, typography, logo usage, voice, digital touchpoints, and brand integrity.",
+  title = "Arkaes Brand Guidelines",
 } = Astro.props;
 ---
 
@@ -29,10 +27,6 @@ const {
     <title>{title}</title>
   </head>
   <body>
-    <SiteHeader />
-    <main>
-      <slot />
-    </main>
-    <SiteFooter />
+    <slot />
   </body>
 </html>

@@ -70,6 +70,7 @@
   --ark-tracking-wide: 0.015em;
   --ark-tracking-label: 0.06em;
 
+  --ark-weight-thin: 300;
   --ark-weight-regular: 400;
   --ark-weight-medium: 500;
   --ark-weight-semibold: 600;
@@ -119,6 +120,14 @@
   --ark-container-lg: 76rem;
   --ark-container-padding: clamp(1rem, 4vw, 2rem);
 
+  /* Shared site layout */
+  --site-content-max-width: 80rem;
+  --site-content-gutter: clamp(24px, 5vw, 60px);
+  --site-content-padding: max(
+    var(--site-content-gutter),
+    calc((100vw - var(--site-content-max-width)) / 2)
+  );
+
   /* Legacy aliases for the existing portfolio and UI components. */
   --ark-color-warm-white: var(--ark-color-neutral-50);
   --ark-color-parchment: var(--ark-color-neutral-100);
@@ -159,7 +168,7 @@
   --ark-line-height-relaxed: var(--ark-leading-relaxed);
   --ark-line-height-loose: var(--ark-leading-relaxed);
 
-  --ark-font-weight-light: 300;
+  --ark-font-weight-light: var(--ark-weight-thin);
   --ark-font-weight-regular: var(--ark-weight-regular);
   --ark-font-weight-medium: var(--ark-weight-medium);
   --ark-font-weight-semibold: var(--ark-weight-semibold);

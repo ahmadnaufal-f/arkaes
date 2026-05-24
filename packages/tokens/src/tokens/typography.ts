@@ -29,6 +29,7 @@ export const typography = {
     lg: "78ch",
   },
   weight: {
+    thin: 300,
     regular: 400,
     medium: 500,
     semibold: 600,

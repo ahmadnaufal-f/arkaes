@@ -80,7 +80,7 @@ body.hovering .cursor-ring {
   column-gap: 60px;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  min-height: 100vh;
+  min-height: max(100vh, 960px);
   overflow: hidden;
   padding-inline: var(--site-content-padding);
   padding-top: 100px;
@@ -101,7 +101,7 @@ body.hovering .cursor-ring {
   color: var(--ark-color-text);
   font-family: var(--ark-font-display);
   font-size: 4rem;
-  font-weight: 200;
+  font-weight: var(--ark-weight-thin);
   letter-spacing: 0;
   line-height: var(--ark-line-height-tight);
   margin-top: 36px;
@@ -111,7 +111,7 @@ body.hovering .cursor-ring {
 .hero-title em {
   color: var(--ark-color-accent-strong);
   font-style: italic;
-  font-weight: var(--ark-font-weight-light);
+  font-weight: var(--ark-weight-thin);
 }
 
 .hero-title .title-line2 {
@@ -292,7 +292,7 @@ body.hovering .cursor-ring {
   font-family: var(--ark-font-display);
   font-size: 0.82rem;
   font-style: italic;
-  font-weight: var(--ark-font-weight-light);
+  font-weight: var(--ark-weight-thin);
   gap: 36px;
   padding-inline: 36px;
 }
@@ -333,7 +333,7 @@ body.hovering .cursor-ring {
   color: var(--ark-color-text);
   font-family: var(--ark-font-display);
   font-size: 3rem;
-  font-weight: 200;
+  font-weight: var(--ark-weight-thin);
   letter-spacing: 0;
   line-height: 1.1;
 }
@@ -418,7 +418,7 @@ body.hovering .cursor-ring {
   font-family: var(--ark-font-display);
   font-size: 2.6rem;
   font-style: italic;
-  font-weight: 200;
+  font-weight: var(--ark-weight-thin);
   opacity: 0.55;
 }
 
@@ -502,7 +502,7 @@ body.hovering .cursor-ring {
   color: var(--ark-color-text);
   font-family: var(--ark-font-display);
   font-size: 1.25rem;
-  font-weight: var(--ark-font-weight-light);
+  font-weight: var(--ark-weight-thin);
   margin-bottom: 8px;
 }
 
@@ -543,7 +543,7 @@ body.hovering .cursor-ring {
   content: "ARKAES";
   font-family: var(--ark-font-display);
   font-size: 17vw;
-  font-weight: var(--ark-font-weight-light);
+  font-weight: var(--ark-weight-thin);
   letter-spacing: 0;
   line-height: 1;
   pointer-events: none;
@@ -574,7 +574,7 @@ body.hovering .cursor-ring {
   font-family: var(--ark-font-display);
   font-size: 6rem;
   font-style: italic;
-  font-weight: 200;
+  font-weight: var(--ark-weight-thin);
   opacity: 0.15;
 }
 
@@ -592,7 +592,7 @@ body.hovering .cursor-ring {
   color: var(--ark-color-text);
   font-family: var(--ark-font-display);
   font-size: 2.65rem;
-  font-weight: 200;
+  font-weight: var(--ark-weight-thin);
   line-height: 1.2;
   margin-bottom: 28px;
 }
@@ -620,7 +620,7 @@ body.hovering .cursor-ring {
   color: var(--ark-color-text);
   font-family: var(--ark-font-display);
   font-size: 2.8rem;
-  font-weight: 200;
+  font-weight: var(--ark-weight-thin);
   line-height: 1;
   margin-bottom: 6px;
 }
@@ -701,7 +701,7 @@ body.hovering .cursor-ring {
   color: var(--ark-color-text);
   font-family: var(--ark-font-display);
   font-size: 2rem;
-  font-weight: var(--ark-font-weight-light);
+  font-weight: var(--ark-weight-thin);
   transition: color var(--ark-duration-normal);
 }
 
@@ -738,7 +738,7 @@ body.hovering .cursor-ring {
   color: rgba(250, 247, 245, 0.9);
   font-family: var(--ark-font-display);
   font-size: 4rem;
-  font-weight: 200;
+  font-weight: var(--ark-weight-thin);
   line-height: 1.05;
   margin-block: 32px 40px;
 }

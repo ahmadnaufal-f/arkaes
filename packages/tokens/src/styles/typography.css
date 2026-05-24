@@ -6,7 +6,7 @@
   font-size: var(--ark-text-4xl);
   line-height: var(--ark-leading-none);
   letter-spacing: var(--ark-tracking-tight);
-  font-weight: var(--ark-weight-semibold);
+  font-weight: var(--ark-weight-thin);
   color: var(--ark-color-text);
   text-wrap: balance;
 }
@@ -17,7 +17,7 @@
   font-size: var(--ark-text-3xl);
   line-height: var(--ark-leading-tight);
   letter-spacing: var(--ark-tracking-tight);
-  font-weight: var(--ark-weight-semibold);
+  font-weight: var(--ark-weight-thin);
   color: var(--ark-color-text);
   text-wrap: balance;
 }
@@ -83,6 +83,7 @@
 .ark-readable h2,
 .ark-readable h3 {
   color: var(--ark-color-text);
+  font-weight: var(--ark-weight-thin);
   text-wrap: balance;
 }
 

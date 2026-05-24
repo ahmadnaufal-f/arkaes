@@ -1,0 +1,560 @@
+---
+import BrandGuidelineLayout from "../layouts/BrandGuidelineLayout.astro";
+---
+
+<BrandGuidelineLayout
+  title="Arkaes Brand Guidelines"
+  description="Arkaes brand identity guidelines for color, typography, logo usage, voice, digital touchpoints, and brand integrity."
+>
+<!-- Cursor -->
+<div id="cur"></div>
+<div id="curR"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">ARK<span>&AElig;</span>S</div>
+  <ul class="nav-links">
+    <li><a href="#foundation">Foundation</a></li>
+    <li><a href="#color">Color</a></li>
+    <li><a href="#typography">Typography</a></li>
+    <li><a href="#logo">Logo</a></li>
+    <li><a href="#voice">Voice</a></li>
+    <li><a href="#touchpoints">Touchpoints</a></li>
+    <li><a href="#rules">Rules</a></li>
+  </ul>
+  <div class="nav-version">v1.1 - 2026</div>
+</nav>
+
+<main>
+
+<!-- ══ COVER ══════════════════════════════════════════════════════════════ -->
+<section id="cover">
+  <div class="cover-left">
+    <div class="cover-tag">Personal Brand Guidelines</div>
+    <h1 class="cover-logo">ARK<span>&AElig;</span>S</h1>
+    <p class="cover-subtitle">
+      A living reference document defining the visual language, tone, and usage rules of the Arkaes personal brand for use across arkaes.dev and all creative touchpoints.
+    </p>
+    <div class="cover-actions">
+      <a class="cover-button cover-button--primary" href="#foundation">View Guidelines</a>
+      <a class="cover-button cover-button--ghost" href="#color">Explore visual system</a>
+    </div>
+  </div>
+  <div class="cover-right">
+    <div class="cover-composition">
+      <div class="comp">
+        <div class="c-block-lg"></div>
+        <div class="c-block-md"></div>
+        <div class="c-block-sage"></div>
+        <div class="c-circle"></div>
+        <div class="c-dot"></div>
+        <div class="c-label">arkaes.dev - mmxxvi</div>
+      </div>
+    </div>
+  </div>
+  <div class="cover-scroll">
+    <div class="cover-scroll-line"></div>
+    Explore the system
+  </div>
+</section>
+
+<!-- ══ 01 BRAND FOUNDATION ════════════════════════════════════════════════ -->
+<section id="foundation">
+  <div class="eyebrow reveal">01 · Brand Foundation</div>
+  <h2 class="section-title reveal d1">Who is <em>Arkaes?</em></h2>
+  <p class="section-lead reveal d2">A frontend engineer with a deep respect for systems and an obsession with the visual. Every interface decision is deliberate — beauty and function are never separate concerns.</p>
+
+  <div class="pillars reveal d3">
+    <div class="pillar">
+      <div class="pillar-num">01</div>
+      <div class="pillar-name">Craft</div>
+      <div class="pillar-rule"></div>
+      <p class="pillar-body">Every interface decision is deliberate. Beauty and function are never separate concerns. The work is finished when nothing can be removed.</p>
+    </div>
+    <div class="pillar">
+      <div class="pillar-num">02</div>
+      <div class="pillar-name">Structure</div>
+      <div class="pillar-rule"></div>
+      <p class="pillar-body">Systems thinking underpins every project — scalable, maintainable, and architecturally sound from the first component to the final deployment.</p>
+    </div>
+    <div class="pillar">
+      <div class="pillar-num">03</div>
+      <div class="pillar-name">Restraint</div>
+      <div class="pillar-rule"></div>
+      <p class="pillar-body">Less, but better. Negative space, typographic discipline, and color used with intention. Secondary color appears only when it clarifies hierarchy.</p>
+    </div>
+  </div>
+
+  <div class="positioning-grid reveal d4">
+    <div class="pos-item">
+      <div class="pos-label">Archetype</div>
+      <p class="pos-value">The Refined Practitioner — authoritative craft, expressed with warmth.</p>
+    </div>
+    <div class="pos-item">
+      <div class="pos-label">Audience</div>
+      <p class="pos-value">Product teams, design-led companies, and brands who value quality over quantity.</p>
+    </div>
+    <div class="pos-item">
+      <div class="pos-label">Promise</div>
+      <p class="pos-value">Interfaces that are as well-considered as they are beautiful to use.</p>
+    </div>
+    <div class="pos-item">
+      <div class="pos-label">Personality</div>
+      <p class="pos-value">Calm. Precise. Quietly confident. Never loud, never generic.</p>
+    </div>
+  </div>
+
+  <div class="tagline-block reveal d5">
+    <div class="tagline-label">Primary Tagline</div>
+    <div class="tagline-text">"Architecture meets aesthetics."</div>
+  </div>
+</section>
+
+<!-- ══ 02 COLOR SYSTEM ════════════════════════════════════════════════════ -->
+<section id="color">
+  <div class="eyebrow reveal">02 · Color System</div>
+  <h2 class="section-title reveal d1">The <em>Palette</em></h2>
+  <p class="section-lead reveal d2">The system uses semantic color tokens first. Accent carries brand emphasis; secondary is a restrained counterpoint for structure, confirmation, and contrast.</p>
+
+  <div class="swatches-group reveal d3">
+    <div class="swatches-row">
+      <div class="swatch swatch--border" style="background:#fbf8f3">
+        <div class="swatch-name">Background</div>
+        <div class="swatch-meta"><div class="swatch-hex">#fbf8f3</div><div class="swatch-role">--ark-color-bg</div></div>
+      </div>
+      <div class="swatch swatch--border" style="background:#ffffff">
+        <div class="swatch-name">Surface</div>
+        <div class="swatch-meta"><div class="swatch-hex">#ffffff</div><div class="swatch-role">--ark-color-surface</div></div>
+      </div>
+      <div class="swatch swatch--border" style="background:#f6f0ea">
+        <div class="swatch-name">Surface Soft</div>
+        <div class="swatch-meta"><div class="swatch-hex">#f6f0ea</div><div class="swatch-role">--ark-color-surface-soft</div></div>
+      </div>
+      <div class="swatch" style="background:#17130f" data-dark>
+        <div class="swatch-name">Text</div>
+        <div class="swatch-meta"><div class="swatch-hex">#17130f</div><div class="swatch-role">--ark-color-text</div></div>
+      </div>
+      <div class="swatch" style="background:#5f534a" data-dark>
+        <div class="swatch-name">Text Muted</div>
+        <div class="swatch-meta"><div class="swatch-hex">#5f534a</div><div class="swatch-role">--ark-color-text-muted</div></div>
+      </div>
+    </div>
+    <div class="swatches-row sage-group" style="grid-template-columns:repeat(3,1fr) repeat(2,1fr)">
+      <div class="swatch" style="background:#8f554d" data-dark>
+        <div class="swatch-name">Accent</div>
+        <div class="swatch-meta"><div class="swatch-hex">#8f554d</div><div class="swatch-role">--ark-color-accent</div></div>
+      </div>
+      <div class="swatch swatch--border" style="background:#f2ddd7">
+        <div class="swatch-name">Accent Soft</div>
+        <div class="swatch-meta"><div class="swatch-hex">#f2ddd7</div><div class="swatch-role">--ark-color-accent-soft</div></div>
+      </div>
+      <div class="swatch" style="background:#653a35" data-dark>
+        <div class="swatch-name">Accent Strong</div>
+        <div class="swatch-meta"><div class="swatch-hex">#653a35</div><div class="swatch-role">--ark-color-accent-strong</div></div>
+      </div>
+      <div class="swatch" style="background:#5f6f48" data-dark>
+        <div class="swatch-name">Secondary</div>
+        <div class="swatch-meta"><div class="swatch-hex">#5f6f48</div><div class="swatch-role">--ark-color-secondary</div></div>
+      </div>
+      <div class="swatch swatch--border" style="background:#e2e7d6">
+        <div class="swatch-name">Secondary Soft</div>
+        <div class="swatch-meta"><div class="swatch-hex">#e2e7d6</div><div class="swatch-role">--ark-color-secondary-soft</div></div>
+      </div>
+    </div>
+    <div class="sage-note">↑ Accent and secondary tokens — prefer semantic names in new implementation</div>
+  </div>
+
+  <div class="color-rules reveal d4">
+    <div class="color-rule">
+      <div class="cr-label"><div class="cr-dot" style="background:var(--ark-color-accent-strong)"></div>Accent</div>
+      <p class="cr-body">Use <code>--ark-color-accent</code> and <code>--ark-color-accent-strong</code> for emphasis, active states, highlighted display text, and brand-defining details.</p>
+    </div>
+    <div class="color-rule">
+      <div class="cr-label"><div class="cr-dot" style="background:var(--ark-color-secondary)"></div>Secondary</div>
+      <p class="cr-body">Use <code>--ark-color-secondary</code> sparingly as a counterpoint for structure, success states, rules, and moments that need contrast from the accent family.</p>
+    </div>
+    <div class="color-rule">
+      <div class="cr-label"><div class="cr-dot" style="background:var(--ark-color-text)"></div>Text</div>
+      <p class="cr-body">Primary copy uses <code>--ark-color-text</code>. Supporting copy uses <code>--ark-color-text-muted</code> or <code>--ark-color-text-subtle</code> only when contrast remains readable.</p>
+    </div>
+    <div class="color-rule">
+      <div class="cr-label"><div class="cr-dot" style="background:var(--ark-color-bg);outline:1px solid var(--ark-color-border)"></div>Surfaces</div>
+      <p class="cr-body">Use <code>--ark-color-bg</code> for page backgrounds, <code>--ark-color-surface</code> for raised surfaces, and <code>--ark-color-surface-soft</code> for quiet section contrast.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 03 TYPOGRAPHY ══════════════════════════════════════════════════════ -->
+<section id="typography">
+  <div class="eyebrow reveal">03 · Typography</div>
+  <h2 class="section-title reveal d1">The <em>Type System</em></h2>
+  <p class="section-lead reveal d2">Three type roles. No more. Display type carries the brand expression, sans-serif body text carries clarity, and mono labels provide structure. Decorative serif is reserved for large headings only.</p>
+
+  <div class="reveal d3">
+    <div class="type-block">
+      <div class="type-role">Display / Headlines</div>
+      <div class="type-name">Fraunces <span>Display stack · thin / 300</span></div>
+      <div class="type-sample-display">Craft meets <em>architecture.</em></div>
+      <div class="type-usage">Hero titles · Section headers · Project names · Logotype · Pull quotes<br>Use <code>--ark-font-display</code> with <code>--ark-weight-thin</code>. Italic is reserved for concise emphasis and the Æ.</div>
+    </div>
+
+    <div class="type-block">
+      <div class="type-role">Body / Reading</div>
+      <div class="type-name">Inter / Atkinson Hyperlegible <span>Body stack · regular / medium</span></div>
+      <div class="type-sample-body">Building interfaces where structural clarity and aesthetic sensibility converge into something readable, deliberate, and easy to use.</div>
+      <div class="type-usage">Body copy · Case studies · Project descriptions · UI descriptions<br>Use <code>--ark-text-md</code> through <code>--ark-text-lg</code>, <code>--ark-leading-normal</code> through <code>--ark-leading-relaxed</code>, and <code>--ark-measure-md</code>.</div>
+    </div>
+
+    <div class="type-block">
+      <div class="type-role">Labels / UI / Metadata</div>
+      <div class="type-name">JetBrains Mono stack <span>Bold uppercase labels</span></div>
+      <div class="type-sample-mono">Frontend Engineer · arkaes.dev · 2026 · v1.0</div>
+      <div class="type-usage">Eyebrows · Nav links · Tags · Dates · Metadata · Code snippets<br>Use <code>--ark-font-mono</code>, <code>--ark-weight-bold</code>, uppercase text, and token letter-spacing.</div>
+    </div>
+  </div>
+
+  <div class="type-scale reveal d4">
+    <div class="scale-label">Type Scale</div>
+    <div class="scale-items">
+      <div class="scale-item">
+        <div class="scale-sz">4xl</div>
+        <div class="scale-preview" style="font-size:var(--ark-text-4xl)">Architecture</div>
+        <div class="scale-role">Hero Display</div>
+      </div>
+      <div class="scale-item">
+        <div class="scale-sz">3xl</div>
+        <div class="scale-preview" style="font-size:var(--ark-text-3xl)">Craft meets aesthetics</div>
+        <div class="scale-role">H1 / Section Hero</div>
+      </div>
+      <div class="scale-item">
+        <div class="scale-sz">2xl</div>
+        <div class="scale-preview" style="font-size:var(--ark-text-2xl)">Selected Work</div>
+        <div class="scale-role">H2 / Section Title</div>
+      </div>
+      <div class="scale-item">
+        <div class="scale-sz">xl</div>
+        <div class="scale-preview" style="font-size:var(--ark-text-xl)">Design System Overhaul</div>
+        <div class="scale-role">H3 / Project Name</div>
+      </div>
+      <div class="scale-item">
+        <div class="scale-sz">lg</div>
+        <div class="scale-preview" style="font-size:var(--ark-text-lg);font-family:var(--ark-font-sans);font-weight: var(--ark-weight-regular)">Building interfaces where clarity converges with aesthetics.</div>
+        <div class="scale-role">Body Large</div>
+      </div>
+      <div class="scale-item">
+        <div class="scale-sz">xs</div>
+        <div class="scale-preview" style="font-size:var(--ark-text-xs);font-family:var(--ark-font-mono);letter-spacing:var(--ark-tracking-label);font-weight:var(--ark-weight-bold)">FRONTEND ENGINEER · 2026</div>
+        <div class="scale-role">Label / Mono</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="type-scale reveal d5">
+    <div class="scale-label">Readability Tokens</div>
+    <div class="color-rules">
+      <div class="color-rule">
+        <div class="cr-label"><div class="cr-dot" style="background:var(--ark-color-text)"></div>Contrast</div>
+        <p class="cr-body">Primary text uses <code>--ark-color-text</code>. Supporting text uses <code>--ark-color-text-muted</code>, which must remain readable on both light and dark surfaces.</p>
+      </div>
+      <div class="color-rule">
+        <div class="cr-label"><div class="cr-dot" style="background:var(--ark-color-accent)"></div>Body Type</div>
+        <p class="cr-body">Body text uses <code>--ark-font-sans</code>. Decorative serif/display type is reserved for large headings, wordmark moments, and short pull quotes only.</p>
+      </div>
+      <div class="color-rule">
+        <div class="cr-label"><div class="cr-dot" style="background:var(--ark-color-secondary)"></div>Measure</div>
+        <p class="cr-body">Long-form content should use <code>--ark-measure-md</code> or the <code>.ark-readable</code> utility to keep case studies comfortable to read.</p>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ══ 04 LOGO & WORDMARK ═════════════════════════════════════════════════ -->
+<section id="logo">
+  <div class="eyebrow reveal">04 · Logo & Wordmark</div>
+  <h2 class="section-title reveal d1">The <em>Wordmark</em></h2>
+  <p class="section-lead reveal d2">The Æ ligature is the defining mark of the brand. It is the junction of ARK and ES — the visual shorthand for "architecture meets aesthetics."</p>
+
+  <div class="wordmark-demos reveal d3">
+    <div class="wm-panel wm-panel--light">
+      <div class="wm-logo">ARK<span class="ae">Æ</span>S</div>
+      <div class="wm-panel-label">Primary · Light Background</div>
+    </div>
+    <div class="wm-panel wm-panel--dark">
+      <div class="wm-logo">ARK<span class="ae">Æ</span>S</div>
+      <div class="wm-panel-label">Reversed · Dark Background</div>
+    </div>
+    <div class="wm-panel wm-panel--mono" style="grid-column:1/-1">
+      <div class="wm-logo-mono">ARK<span class="ae">Æ</span>S</div>
+      <div style="margin-top:12px;font-family:var(--ark-font-mono);font-size:.58rem;letter-spacing:var(--ark-tracking-label);color:var(--ink-ghost);text-transform:uppercase">Mono / Text-only variant — for environments that don't support Fraunces</div>
+    </div>
+  </div>
+
+  <div class="construction-list reveal d4">
+    <div class="cn-item"><div class="cn-label">Typeface</div><p class="cn-value">Fraunces through <code>--ark-font-display</code>. Use <code>--ark-weight-thin</code> for the wordmark and display headings. Never condense or stretch.</p></div>
+    <div class="cn-item"><div class="cn-label">The Æ</div><p class="cn-value">The ae ligature is the defining mark. Use <code>--ark-color-accent-strong</code> on light surfaces and the active dark-theme accent token on dark surfaces. Always italic. Never replaced with "AE".</p></div>
+    <div class="cn-item"><div class="cn-label">Letter-spacing</div><p class="cn-value">Use token tracking for labels and restrained custom tracking for the wordmark only. Avoid negative letter-spacing.</p></div>
+    <div class="cn-item"><div class="cn-label">Minimum size</div><p class="cn-value">Keep the Æ legible at the rendered size. In tight contexts, use the mono variant instead of shrinking the display wordmark past readability.</p></div>
+    <div class="cn-item"><div class="cn-label">Clear space</div><p class="cn-value">Minimum clear space = cap height of the A on all four sides. Never crowd the wordmark.</p></div>
+  </div>
+
+  <div class="dnd-grid reveal d5">
+    <div class="dnd-col dnd-col--do">
+      <div class="dnd-heading">Do</div>
+      <ul class="dnd-list">
+        <li>Use the Æ ligature — never "AE" or "Ae"</li>
+        <li>Use <code>--ark-font-display</code> and <code>--ark-weight-thin</code></li>
+        <li>Use semantic accent tokens for the Æ</li>
+        <li>Respect minimum clear space on all sides</li>
+        <li>Use the mono variant when Fraunces is unavailable</li>
+      </ul>
+    </div>
+    <div class="dnd-col dnd-col--dont">
+      <div class="dnd-heading">Don't</div>
+      <ul class="dnd-list">
+        <li>Never stretch or condense the wordmark</li>
+        <li>Never apply the full wordmark in a single brand color</li>
+        <li>Never add drop shadows, gradients, or glow effects</li>
+        <li>Never recreate in a different typeface</li>
+        <li>Never place on a busy background without sufficient contrast</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 05 VOICE & TONE ════════════════════════════════════════════════════ -->
+<section id="voice">
+  <div class="eyebrow reveal">05 · Voice & Tone</div>
+  <h2 class="section-title reveal d1">How Arkaes <em>Speaks</em></h2>
+  <p class="section-lead reveal d2">Calm authority. Never loud. Never generic. Confident without being boastful. The work leads — the words follow.</p>
+
+  <div class="tone-attrs reveal d3">
+    <div class="tone-attr">
+      <div class="tone-num">01</div>
+      <div class="tone-name">Precise</div>
+      <p class="tone-desc">Exact language. No filler phrases. Every word earns its place. If it can be removed without loss, remove it.</p>
+    </div>
+    <div class="tone-attr">
+      <div class="tone-num">02</div>
+      <div class="tone-name">Warm</div>
+      <p class="tone-desc">Approachable craft — not cold expertise. The work invites, not intimidates. People should want to work with Arkaes.</p>
+    </div>
+    <div class="tone-attr">
+      <div class="tone-num">03</div>
+      <div class="tone-name">Considered</div>
+      <p class="tone-desc">Thoughtful explanations of why, not just what. Process is visible. Decisions are explained, not just displayed.</p>
+    </div>
+    <div class="tone-attr">
+      <div class="tone-num">04</div>
+      <div class="tone-name">Understated</div>
+      <p class="tone-desc">The work speaks first. Self-description is minimal and factual. No superlatives, no passion-for-excellence clichés.</p>
+    </div>
+    <div class="tone-attr">
+      <div class="tone-num">05</div>
+      <div class="tone-name">Curious</div>
+      <p class="tone-desc">Genuine interest in problems. Questions are as valued as answers. Arkaes is always learning — and makes that visible.</p>
+    </div>
+  </div>
+
+  <div class="writing-examples reveal d4">
+    <div class="example-card example-card--do">
+      <div class="example-label">Project description · Do</div>
+      <p class="example-text">"A design system built for a multinational engineering team — 40+ components, zero visual inconsistencies, shipped in 6 weeks."</p>
+    </div>
+    <div class="example-card example-card--dont">
+      <div class="example-label">Project description · Don't</div>
+      <p class="example-text">"I am a passionate and driven developer with a love for creating amazing user experiences that delight users and stakeholders."</p>
+    </div>
+    <div class="example-card example-card--do">
+      <div class="example-label">About copy · Do</div>
+      <p class="example-text">"Frontend engineer. Obsessed with the intersection of systems and craft."</p>
+    </div>
+    <div class="example-card example-card--dont">
+      <div class="example-label">About copy · Don't</div>
+      <p class="example-text">"I'm a creative individual who loves bringing ideas to life through the power of technology and innovative design thinking!"</p>
+    </div>
+    <div class="example-card example-card--do">
+      <div class="example-label">Call to action · Do</div>
+      <p class="example-text">"Let's build something remarkable." — Never "Let's connect!" or "Hire me!"</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 06 DIGITAL TOUCHPOINTS ═════════════════════════════════════════════ -->
+<section id="touchpoints">
+  <div class="eyebrow reveal">06 · Digital Touchpoints</div>
+  <h2 class="section-title reveal d1">Brand Across <em>Platforms</em></h2>
+  <p class="section-lead reveal d2">Every touchpoint should feel like it belongs to the same quiet, considered creative — regardless of the platform's own visual conventions.</p>
+
+  <div class="platforms-grid reveal d3">
+    <div class="platform-card">
+      <div class="platform-name">arkaes.dev</div>
+      <div class="platform-role">Primary Portfolio</div>
+      <ul class="platform-rules">
+        <li>Semantic token system throughout: accent for emphasis, secondary for restrained counterpoint.</li>
+        <li>Fraunces display, Inter/Atkinson Hyperlegible body, JetBrains Mono token labels.</li>
+        <li>Motion: staggered reveals and subtle hero parallax only when it improves orientation.</li>
+        <li>Light and dark modes are supported. Both must preserve strong text contrast and readable long-form copy.</li>
+        <li>Pointer feedback should be subtle and must preserve the default cursor on touch-first experiences.</li>
+      </ul>
+    </div>
+    <div class="platform-card">
+      <div class="platform-name">GitHub</div>
+      <div class="platform-role">Code & Open Source</div>
+      <ul class="platform-rules">
+        <li>Profile README uses the Arkaes wordmark (text-based, mono variant).</li>
+        <li>Bio: "Frontend Engineer. Craft meets architecture. arkaes.dev"</li>
+        <li>Pinned repos: design system, AI-powered projects, portfolio source.</li>
+        <li>Commit voice: precise, lowercase, imperative mood. No emojis.</li>
+      </ul>
+    </div>
+    <div class="platform-card">
+      <div class="platform-name">LinkedIn</div>
+      <div class="platform-role">Professional Network</div>
+      <ul class="platform-rules">
+        <li>Headline: "Frontend Engineer — UI Architecture, Motion Design & AI Integration"</li>
+        <li>Banner: token background with Arkaes wordmark and semantic accent rule.</li>
+        <li>About section uses the Arkaes voice — precise, warm, understated.</li>
+        <li>Featured section: link to arkaes.dev as primary CTA.</li>
+      </ul>
+    </div>
+    <div class="platform-card">
+      <div class="platform-name">Dribbble</div>
+      <div class="platform-role">Design Showcase</div>
+      <ul class="platform-rules">
+        <li>Only post work reflecting the Arkaes aesthetic — no generic shots.</li>
+        <li>Use token background, surface-soft, or accent-soft backgrounds on mockups consistently.</li>
+        <li>Caption voice matches the brand: factual, no exclamation marks.</li>
+        <li>Shots should feel like excerpts from a unified body of work.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="consistency-note reveal d4">
+    <div class="cn-sage-rule"></div>
+    <p class="cn-text"><strong>Consistency principle:</strong> Every touchpoint should feel like it belongs to the same quiet, considered creative. Platform-native conventions are respected, but the Arkaes voice, tone, and visual restraint remain non-negotiable regardless of where the brand appears.</p>
+  </div>
+</section>
+
+<!-- ══ 07 USAGE RULES ═════════════════════════════════════════════════════ -->
+<section id="rules">
+  <div class="eyebrow reveal">07 · Usage Rules</div>
+  <h2 class="section-title reveal d1">Brand <em>Integrity</em></h2>
+  <p class="section-lead reveal d2">What protects the brand — and what breaks it. These rules exist because the brand's refinement is fragile. One wrong choice dilutes years of consistency.</p>
+
+  <div class="rules-grid reveal d3">
+    <div class="rules-col rules-col--do">
+      <div class="rules-heading">Do</div>
+      <ul class="rules-list">
+        <li>Use exact token values — no approximations or eyeballed matches.</li>
+        <li>Use Fraunces for large display moments only; use readable sans-serif for body copy.</li>
+        <li>Apply grain texture subtly, matching the current implementation opacity.</li>
+        <li>Use secondary color as a restrained counterpoint, not as a second dominant accent.</li>
+        <li>Use semantic surface tokens instead of hard-coded background hex values.</li>
+        <li>Ensure every project shown reflects the Arkaes aesthetic.</li>
+        <li>Use <code>.ark-readable</code> for case studies and long-form project pages.</li>
+        <li>Use the Æ ligature in the wordmark — always.</li>
+        <li>Keep the Æ legible; use the mono wordmark in tight spaces.</li>
+      </ul>
+    </div>
+    <div class="rules-col rules-col--dont">
+      <div class="rules-heading">Don't</div>
+      <ul class="rules-list">
+        <li>Never use low-contrast muted text in dark mode. Dark mode is allowed only when text contrast remains strong.</li>
+        <li>Never use decorative serif for body paragraphs, small cards, labels, or long-form reading.</li>
+        <li>Never use accent and secondary colors at equal visual weight on the same page.</li>
+        <li>Never apply drop shadows, gradients, or glow effects on type.</li>
+        <li>Never show work that contradicts the refined aesthetic.</li>
+        <li>Never stack decorative motion that distracts from content.</li>
+        <li>Never use exclamation marks in brand copy.</li>
+        <li>Never modify the Æ color outside the brand specification.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="closing-statement reveal d4">
+    <div class="closing-quote">"Architecture meets aesthetics."</div>
+    <div class="closing-meta">
+      <div class="closing-sage-rule"></div>
+      ARKAES · ARKAES.DEV · 2026
+      <div class="closing-sage-rule"></div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="footer-logo">ARKAES</div>
+  <div class="footer-copy">Brand Guidelines v1.1 · © 2026 · All rights reserved</div>
+</footer>
+
+  <script is:inline>
+    // Decorative cursor nodes are present for legacy parity, but CSS keeps the native cursor active.
+    const cur = document.getElementById('cur');
+    const curR = document.getElementById('curR');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      cur.style.left = mx + 'px';
+      cur.style.top  = my + 'px';
+    });
+    
+    (function animR() {
+      rx += (mx - rx) * 0.12;
+      ry += (my - ry) * 0.12;
+      curR.style.left = rx + 'px';
+      curR.style.top  = ry + 'px';
+      requestAnimationFrame(animR);
+    })();
+    
+    document.querySelectorAll('a, button, .swatch, .pillar, .pos-item, .platform-card, .tone-attr, .toc-item').forEach(el => {
+      el.addEventListener('mouseenter', () => document.body.classList.add('hov'));
+      el.addEventListener('mouseleave', () => document.body.classList.remove('hov'));
+    });
+    
+    // Scroll reveal
+    const revealEls = document.querySelectorAll('.reveal');
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('vis'); });
+    }, { threshold: 0.08 });
+    revealEls.forEach(el => obs.observe(el));
+    
+    // Active nav link
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-links a');
+    const navObs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          navLinks.forEach(a => a.classList.remove('active'));
+          const link = document.querySelector(`.nav-links a[href="#${e.target.id}"]`);
+          if (link) link.classList.add('active');
+        }
+      });
+    }, { threshold: 0.35 });
+    sections.forEach(s => navObs.observe(s));
+    
+    // Mouse parallax on cover composition
+    document.addEventListener('mousemove', e => {
+      const comp = document.querySelector('.comp');
+      if (!comp) return;
+      const x = (e.clientX / window.innerWidth  - 0.5) * 16;
+      const y = (e.clientY / window.innerHeight - 0.5) * 10;
+      comp.style.transform = `translate(${x}px, ${y}px)`;
+    });
+    
+    // Hex copy on swatch click
+    document.querySelectorAll('.swatch').forEach(sw => {
+      sw.addEventListener('click', () => {
+        const hex = sw.querySelector('.swatch-hex')?.textContent;
+        if (!hex) return;
+        navigator.clipboard?.writeText(hex).then(() => {
+          const orig = sw.querySelector('.swatch-name').textContent;
+          sw.querySelector('.swatch-name').textContent = 'Copied!';
+          setTimeout(() => { sw.querySelector('.swatch-name').textContent = orig; }, 1200);
+        });
+      });
+    });
+  </script>
+</BrandGuidelineLayout>

@@ -1,14 +1,5 @@
 @import "@arkaes/tokens/css";
 
-:root {
-  --site-content-max-width: 80rem;
-  --site-content-gutter: clamp(24px, 5vw, 60px);
-  --site-content-padding: max(
-    var(--site-content-gutter),
-    calc((100vw - var(--site-content-max-width)) / 2)
-  );
-}
-
 html {
   background: var(--ark-color-background);
   color: var(--ark-color-text);

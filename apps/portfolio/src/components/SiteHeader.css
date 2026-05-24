@@ -15,7 +15,7 @@
   color: var(--ark-color-text);
   font-family: var(--ark-font-display);
   font-size: 1.15rem;
-  font-weight: var(--ark-font-weight-light);
+  font-weight: var(--ark-weight-thin);
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
