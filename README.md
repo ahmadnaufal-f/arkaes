@@ -1,13 +1,19 @@
-# Arkaes Portfolio
+# Arkaes
 
-Arkaes Portfolio is a performance-first personal portfolio built with Astro and a small Lit-based design system.
+Arkaes is a performance-first personal portfolio workspace built with Astro, shared design
+tokens, and a small Lit-based custom element library.
 
-The project uses Astro for static content delivery, routing, SEO, and page structure, while Lit powers reusable framework-agnostic UI components. The goal is to demonstrate frontend engineering beyond framework familiarity: design tokens, component architecture, performance awareness, accessibility, and polished visual execution.
+The project uses Astro for static content delivery, routing, SEO, and page structure. Lit powers
+reusable framework-agnostic UI components, while Storybook documents those components outside of
+the application shell. The goal is to demonstrate frontend engineering beyond framework
+familiarity: design tokens, component architecture, performance awareness, accessibility, and
+polished visual execution.
 
 ## Stack
 
-- Astro for the portfolio website
-- Lit for framework-agnostic UI components
+- Astro for the portfolio and brand guideline sites
+- Lit for framework-agnostic custom elements
+- Storybook with the Web Components Vite renderer for component previews
 - TypeScript across the workspace
 - CSS custom properties for shared design tokens
 - Turborepo and pnpm workspaces for the monorepo
@@ -16,10 +22,13 @@ The project uses Astro for static content delivery, routing, SEO, and page struc
 
 ```txt
 apps/
+  brand-guideline/  Astro site for the visual language and brand rules
   portfolio/
+  storybook/        Storybook app for @arkaes/ui custom components
 packages/
-  ui/
-docs/
+  tokens/           Shared CSS custom properties, theme, reset, and typography utilities
+  ui/               Lit custom elements built on top of @arkaes/tokens
+docs/               Planning notes and exported guideline documents
 ```
 
 ## Getting Started
@@ -37,10 +46,18 @@ Install dependencies:
 pnpm install
 ```
 
-Run the portfolio:
+Run all development tasks through Turborepo:
 
 ```sh
 pnpm dev
+```
+
+Run a specific app:
+
+```sh
+pnpm --filter @arkaes/portfolio dev
+pnpm --filter @arkaes/brand-guideline dev
+pnpm --filter @arkaes/storybook dev
 ```
 
 Build everything:
@@ -55,7 +72,39 @@ Check TypeScript and Astro:
 pnpm check
 ```
 
+Lint the workspace:
+
+```sh
+pnpm lint
+```
+
+Format with ESLint autofix:
+
+```sh
+pnpm format
+```
+
+## Packages
+
+`@arkaes/tokens` exports the shared token source and CSS entrypoints, including:
+
+- `@arkaes/tokens/css`
+- `@arkaes/tokens/tokens.css`
+- `@arkaes/tokens/theme.css`
+- `@arkaes/tokens/reset.css`
+- `@arkaes/tokens/typography.css`
+
+`@arkaes/ui` exports Lit custom elements and registers the current component set:
+
+- `ark-badge`
+- `ark-button`
+- `ark-card`
+
+Storybook imports both `@arkaes/tokens/css` and `@arkaes/ui` in its preview config so the
+components render with the same theme variables used by the apps.
+
 ## Project Direction
 
-The portfolio separates professional work from side projects while using the homepage to feature the strongest stories. The initial focus is a small, useful design system that grows only as the portfolio needs it.
-
+The portfolio separates professional work from side projects while using the homepage to feature the
+strongest stories. The design system is intentionally small and grows only as the portfolio and
+brand surfaces need it.
