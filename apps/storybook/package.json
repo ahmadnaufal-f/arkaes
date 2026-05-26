@@ -1,0 +1,23 @@
+{
+  "name": "@arkaes/storybook",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "storybook build",
+    "check": "tsc -p tsconfig.json --noEmit",
+    "dev": "storybook dev -p 6006",
+    "lint": "eslint . --max-warnings=0",
+    "storybook": "storybook dev -p 6006"
+  },
+  "dependencies": {
+    "@arkaes/tokens": "workspace:*",
+    "@arkaes/ui": "workspace:*",
+    "lit": "^3.3.0"
+  },
+  "devDependencies": {
+    "@storybook/addon-docs": "^10.4.1",
+    "@storybook/web-components-vite": "^10.4.1",
+    "storybook": "^10.4.1"
+  }
+}
