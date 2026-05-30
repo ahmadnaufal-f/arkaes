@@ -1,6 +1,6 @@
 export const typography = {
   fontFamily: {
-    sans: 'Inter, "Atkinson Hyperlegible", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+    sans: '"Plus Jakarta Sans", "Atkinson Hyperlegible", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
     display: '"Fraunces", "Cormorant Garamond", Georgia, serif',
     serif: 'Georgia, "Times New Roman", serif',
     mono: '"JetBrains Mono", "SFMono-Regular", Consolas, monospace',

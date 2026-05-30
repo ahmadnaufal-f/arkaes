@@ -65,7 +65,7 @@ const meta = {
       </section>
     </main>
   `,
-  title: "Components/Overview",
+  title: "Overview",
 } satisfies Meta;
 
 export default meta;

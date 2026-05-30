@@ -1,5 +1,11 @@
 import { css, html, LitElement } from "lit";
 
+export enum ButtonVariant {
+  Primary = "primary",
+  Secondary = "secondary",
+  Ghost = "ghost",
+}
+
 export class ArkButton extends LitElement {
   static override properties = {
     href: { type: String },
@@ -16,13 +22,14 @@ export class ArkButton extends LitElement {
     button {
       align-items: center;
       border: 0;
-      cursor: none;
+      cursor: pointer;
       display: inline-flex;
       font-family: var(--ark-font-mono);
       justify-content: center;
       min-height: 3rem;
       position: relative;
       text-decoration: none;
+      border-radius: var(--ark-radius-xs);
       transition:
         background var(--ark-duration-normal) var(--ark-ease-out),
         border-color var(--ark-duration-normal) var(--ark-ease-out),
@@ -117,7 +124,7 @@ export class ArkButton extends LitElement {
 
   href = "";
   size = "md";
-  variant = "primary";
+  variant: ButtonVariant | string = ButtonVariant.Primary;
 
   override render() {
     const className = this.variant;

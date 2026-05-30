@@ -1,11 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
+import { ButtonVariant } from "@arkaes/ui";
 
 type ButtonArgs = {
   href: string;
   label: string;
   size: "sm" | "md" | "lg";
-  variant: "primary" | "secondary" | "ghost";
+  variant: ButtonVariant;
 };
 
 const renderButton = ({ href, label, size, variant }: ButtonArgs) => {
@@ -26,18 +27,18 @@ const meta = {
     },
     variant: {
       control: "select",
-      options: ["primary", "secondary", "ghost"],
+      options: Object.values(ButtonVariant),
     },
   },
   args: {
     href: "",
     label: "View Project",
     size: "md",
-    variant: "primary",
+    variant: ButtonVariant.Primary,
   },
   component: "ark-button",
   render: renderButton,
-  title: "Components/Ark Button",
+  title: "Primitives/Ark Button",
 } satisfies Meta<ButtonArgs>;
 
 export default meta;
@@ -48,14 +49,14 @@ export const Primary = {} satisfies Story;
 export const Secondary = {
   args: {
     label: "Read Notes",
-    variant: "secondary",
+    variant: ButtonVariant.Secondary,
   },
 } satisfies Story;
 
 export const Ghost = {
   args: {
-    label: "About the studio",
-    variant: "ghost",
+    label: "View case study",
+    variant: ButtonVariant.Ghost,
   },
 } satisfies Story;
 

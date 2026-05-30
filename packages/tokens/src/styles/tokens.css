@@ -16,7 +16,7 @@
   --ark-color-sage-500: #6f7f58;
   --ark-color-sage-600: #566244;
 
-  --ark-color-neutral-0: #ffffff;
+  --ark-color-neutral-0: #fafaf9;
   --ark-color-neutral-50: #faf9f7;
   --ark-color-neutral-100: #f1eee9;
   --ark-color-neutral-200: #ddd7cf;
@@ -45,7 +45,7 @@
   --ark-color-focus: #4f6540;
 
   /* Typography: readability first */
-  --ark-font-sans: Inter, "Atkinson Hyperlegible", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --ark-font-sans: "Plus Jakarta Sans", "Atkinson Hyperlegible", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --ark-font-display: "Fraunces", "Cormorant Garamond", Georgia, serif;
   --ark-font-serif: Georgia, "Times New Roman", serif;
   --ark-font-mono: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;

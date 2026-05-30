@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@arkaes/tokens": "workspace:*",
+    "@arkaes/ui": "workspace:*",
     "astro": "^6.3.7"
   },
   "devDependencies": {

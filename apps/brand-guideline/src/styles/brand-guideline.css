@@ -107,6 +107,12 @@ section:nth-child(even) { background: var(--parchment); }
   width: 24px; height: 1px; background: var(--blush); flex-shrink: 0;
 }
 
+ark-badge {
+  display: flex;
+  margin-bottom: 24px;
+}
+
+
 .section-title {
   font-family: var(--ark-font-display);
   font-size: clamp(2.4rem, 4vw, 3.6rem);
@@ -234,6 +240,15 @@ section:nth-child(even) { background: var(--parchment); }
 .cover-button--primary:hover {
   background: var(--ark-color-accent-strong);
 }
+
+ark-button {
+  transition: transform var(--ark-duration-normal);
+}
+
+ark-button:hover {
+  transform: translateY(-2px);
+}
+
 
 /* Cover right visual */
 .cover-right {
@@ -845,6 +860,9 @@ section:nth-child(even) { background: var(--parchment); }
 
 #rules .eyebrow { color: var(--blush); }
 #rules .eyebrow::before { background: var(--blush); }
+#rules ark-badge {
+  --ark-color-accent-strong: var(--blush);
+}
 #rules .section-title { color: var(--warm-white); }
 #rules .section-title em { color: var(--blush-light); }
 #rules .section-lead { color: rgba(250,247,245,.55); }

@@ -7,3 +7,5 @@ dist/
 coverage/
 *.local
 .tmp
+storybook-static
+.vscode/

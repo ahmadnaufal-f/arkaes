@@ -36,8 +36,8 @@ import BrandGuidelineLayout from "../layouts/BrandGuidelineLayout.astro";
       A living reference document defining the visual language, tone, and usage rules of the Arkaes personal brand for use across arkaes.dev and all creative touchpoints.
     </p>
     <div class="cover-actions">
-      <a class="cover-button cover-button--primary" href="#foundation">View Guidelines</a>
-      <a class="cover-button cover-button--ghost" href="#color">Explore visual system</a>
+      <ark-button href="#foundation" variant="primary">View Guidelines</ark-button>
+      <ark-button href="#color" variant="ghost">Explore visual system</ark-button>
     </div>
   </div>
   <div class="cover-right">
@@ -60,7 +60,7 @@ import BrandGuidelineLayout from "../layouts/BrandGuidelineLayout.astro";
 
 <!-- ══ 01 BRAND FOUNDATION ════════════════════════════════════════════════ -->
 <section id="foundation">
-  <div class="eyebrow reveal">01 · Brand Foundation</div>
+  <ark-badge class="reveal" variant="eyebrow" size="lg">01 · Brand Foundation</ark-badge>
   <h2 class="section-title reveal d1">Who is <em>Arkaes?</em></h2>
   <p class="section-lead reveal d2">A frontend engineer with a deep respect for systems and an obsession with the visual. Every interface decision is deliberate — beauty and function are never separate concerns.</p>
 
@@ -112,7 +112,7 @@ import BrandGuidelineLayout from "../layouts/BrandGuidelineLayout.astro";
 
 <!-- ══ 02 COLOR SYSTEM ════════════════════════════════════════════════════ -->
 <section id="color">
-  <div class="eyebrow reveal">02 · Color System</div>
+  <ark-badge class="reveal" variant="eyebrow" size="lg">02 · Color System</ark-badge>
   <h2 class="section-title reveal d1">The <em>Palette</em></h2>
   <p class="section-lead reveal d2">The system uses semantic color tokens first. Accent carries brand emphasis; secondary is a restrained counterpoint for structure, confirmation, and contrast.</p>
 
@@ -122,9 +122,9 @@ import BrandGuidelineLayout from "../layouts/BrandGuidelineLayout.astro";
         <div class="swatch-name">Background</div>
         <div class="swatch-meta"><div class="swatch-hex">#fbf8f3</div><div class="swatch-role">--ark-color-bg</div></div>
       </div>
-      <div class="swatch swatch--border" style="background:#ffffff">
+      <div class="swatch swatch--border" style="background:#fafaf9">
         <div class="swatch-name">Surface</div>
-        <div class="swatch-meta"><div class="swatch-hex">#ffffff</div><div class="swatch-role">--ark-color-surface</div></div>
+        <div class="swatch-meta"><div class="swatch-hex">#fafaf9</div><div class="swatch-role">--ark-color-surface</div></div>
       </div>
       <div class="swatch swatch--border" style="background:#f6f0ea">
         <div class="swatch-name">Surface Soft</div>
@@ -186,7 +186,7 @@ import BrandGuidelineLayout from "../layouts/BrandGuidelineLayout.astro";
 
 <!-- ══ 03 TYPOGRAPHY ══════════════════════════════════════════════════════ -->
 <section id="typography">
-  <div class="eyebrow reveal">03 · Typography</div>
+  <ark-badge class="reveal" variant="eyebrow" size="lg">03 · Typography</ark-badge>
   <h2 class="section-title reveal d1">The <em>Type System</em></h2>
   <p class="section-lead reveal d2">Three type roles. No more. Display type carries the brand expression, sans-serif body text carries clarity, and mono labels provide structure. Decorative serif is reserved for large headings only.</p>
 
@@ -200,7 +200,7 @@ import BrandGuidelineLayout from "../layouts/BrandGuidelineLayout.astro";
 
     <div class="type-block">
       <div class="type-role">Body / Reading</div>
-      <div class="type-name">Inter / Atkinson Hyperlegible <span>Body stack · regular / medium</span></div>
+      <div class="type-name">Plus Jakarta Sans <span>Body stack · regular / medium</span></div>
       <div class="type-sample-body">Building interfaces where structural clarity and aesthetic sensibility converge into something readable, deliberate, and easy to use.</div>
       <div class="type-usage">Body copy · Case studies · Project descriptions · UI descriptions<br>Use <code>--ark-text-md</code> through <code>--ark-text-lg</code>, <code>--ark-leading-normal</code> through <code>--ark-leading-relaxed</code>, and <code>--ark-measure-md</code>.</div>
     </div>
@@ -271,7 +271,7 @@ import BrandGuidelineLayout from "../layouts/BrandGuidelineLayout.astro";
 
 <!-- ══ 04 LOGO & WORDMARK ═════════════════════════════════════════════════ -->
 <section id="logo">
-  <div class="eyebrow reveal">04 · Logo & Wordmark</div>
+  <ark-badge class="reveal" variant="eyebrow" size="lg">04 · Logo & Wordmark</ark-badge>
   <h2 class="section-title reveal d1">The <em>Wordmark</em></h2>
   <p class="section-lead reveal d2">The Æ ligature is the defining mark of the brand. It is the junction of ARK and ES — the visual shorthand for "architecture meets aesthetics."</p>
 
@@ -324,7 +324,7 @@ import BrandGuidelineLayout from "../layouts/BrandGuidelineLayout.astro";
 
 <!-- ══ 05 VOICE & TONE ════════════════════════════════════════════════════ -->
 <section id="voice">
-  <div class="eyebrow reveal">05 · Voice & Tone</div>
+  <ark-badge class="reveal" variant="eyebrow" size="lg">05 · Voice & Tone</ark-badge>
   <h2 class="section-title reveal d1">How Arkaes <em>Speaks</em></h2>
   <p class="section-lead reveal d2">Calm authority. Never loud. Never generic. Confident without being boastful. The work leads — the words follow.</p>
 
@@ -382,7 +382,7 @@ import BrandGuidelineLayout from "../layouts/BrandGuidelineLayout.astro";
 
 <!-- ══ 06 DIGITAL TOUCHPOINTS ═════════════════════════════════════════════ -->
 <section id="touchpoints">
-  <div class="eyebrow reveal">06 · Digital Touchpoints</div>
+  <ark-badge class="reveal" variant="eyebrow" size="lg">06 · Digital Touchpoints</ark-badge>
   <h2 class="section-title reveal d1">Brand Across <em>Platforms</em></h2>
   <p class="section-lead reveal d2">Every touchpoint should feel like it belongs to the same quiet, considered creative — regardless of the platform's own visual conventions.</p>
 
@@ -392,7 +392,7 @@ import BrandGuidelineLayout from "../layouts/BrandGuidelineLayout.astro";
       <div class="platform-role">Primary Portfolio</div>
       <ul class="platform-rules">
         <li>Semantic token system throughout: accent for emphasis, secondary for restrained counterpoint.</li>
-        <li>Fraunces display, Inter/Atkinson Hyperlegible body, JetBrains Mono token labels.</li>
+        <li>Fraunces display, Plus Jakarta Sans body, JetBrains Mono token labels.</li>
         <li>Motion: staggered reveals and subtle hero parallax only when it improves orientation.</li>
         <li>Light and dark modes are supported. Both must preserve strong text contrast and readable long-form copy.</li>
         <li>Pointer feedback should be subtle and must preserve the default cursor on touch-first experiences.</li>
@@ -438,7 +438,7 @@ import BrandGuidelineLayout from "../layouts/BrandGuidelineLayout.astro";
 
 <!-- ══ 07 USAGE RULES ═════════════════════════════════════════════════════ -->
 <section id="rules">
-  <div class="eyebrow reveal">07 · Usage Rules</div>
+  <ark-badge class="reveal" variant="eyebrow" size="lg">07 · Usage Rules</ark-badge>
   <h2 class="section-title reveal d1">Brand <em>Integrity</em></h2>
   <p class="section-lead reveal d2">What protects the brand — and what breaks it. These rules exist because the brand's refinement is fragile. One wrong choice dilutes years of consistency.</p>
 
@@ -509,7 +509,7 @@ import BrandGuidelineLayout from "../layouts/BrandGuidelineLayout.astro";
       requestAnimationFrame(animR);
     })();
     
-    document.querySelectorAll('a, button, .swatch, .pillar, .pos-item, .platform-card, .tone-attr, .toc-item').forEach(el => {
+    document.querySelectorAll('a, button, ark-button, .swatch, .pillar, .pos-item, .platform-card, .tone-attr, .toc-item').forEach(el => {
       el.addEventListener('mouseenter', () => document.body.classList.add('hov'));
       el.addEventListener('mouseleave', () => document.body.classList.remove('hov'));
     });
