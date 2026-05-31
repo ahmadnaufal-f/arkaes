@@ -1,29 +1,77 @@
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
-import { html } from "lit";
+import { html, nothing } from "lit";
 import { ButtonVariant } from "@arkaes/ui";
 
 type ButtonArgs = {
+  disabled: boolean;
+  fullWidth: boolean;
   href: string;
   label: string;
+  rel: string;
   size: "sm" | "md" | "lg";
+  target: "" | "_blank" | "_self" | "_parent" | "_top";
+  type: "button" | "submit" | "reset";
   variant: ButtonVariant;
 };
 
-const renderButton = ({ href, label, size, variant }: ButtonArgs) => {
+const renderButton = ({
+  disabled,
+  fullWidth,
+  href,
+  label,
+  rel,
+  size,
+  target,
+  type,
+  variant,
+}: ButtonArgs) => {
   if (href) {
-    return html`<ark-button href=${href} size=${size} variant=${variant}>${label}</ark-button>`;
+    return html`
+      <ark-button
+        href=${href}
+        size=${size}
+        variant=${variant}
+        target=${target || nothing}
+        rel=${rel || nothing}
+        ?disabled=${disabled}
+        ?full-width=${fullWidth}
+      >
+        ${label}
+      </ark-button>
+    `;
   }
 
-  return html`<ark-button size=${size} variant=${variant}>${label}</ark-button>`;
+  return html`
+    <ark-button
+      size=${size}
+      type=${type}
+      variant=${variant}
+      ?disabled=${disabled}
+      ?full-width=${fullWidth}
+    >
+      ${label}
+    </ark-button>
+  `;
 };
 
 const meta = {
   argTypes: {
+    disabled: { control: "boolean" },
+    fullWidth: { control: "boolean", name: "full-width" },
     href: { control: "text" },
     label: { control: "text" },
+    rel: { control: "text" },
     size: {
       control: "inline-radio",
       options: ["sm", "md", "lg"],
+    },
+    target: {
+      control: "select",
+      options: ["", "_blank", "_self", "_parent", "_top"],
+    },
+    type: {
+      control: "inline-radio",
+      options: ["button", "submit", "reset"],
     },
     variant: {
       control: "select",
@@ -31,9 +79,14 @@ const meta = {
     },
   },
   args: {
+    disabled: false,
+    fullWidth: false,
     href: "",
     label: "View Project",
+    rel: "",
     size: "md",
+    target: "",
+    type: "button",
     variant: ButtonVariant.Primary,
   },
   component: "ark-button",
@@ -64,5 +117,13 @@ export const Link = {
   args: {
     href: "https://example.com",
     label: "Open Link",
+    target: "_blank",
+  },
+} satisfies Story;
+
+export const Disabled = {
+  args: {
+    disabled: true,
+    label: "Unavailable",
   },
 } satisfies Story;

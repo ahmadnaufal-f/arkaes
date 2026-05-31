@@ -1,4 +1,4 @@
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 
 export enum ButtonVariant {
   Primary = "primary",
@@ -8,14 +8,23 @@ export enum ButtonVariant {
 
 export class ArkButton extends LitElement {
   static override properties = {
+    disabled: { reflect: true, type: Boolean },
+    fullWidth: { attribute: "full-width", reflect: true, type: Boolean },
     href: { type: String },
+    rel: { type: String },
     size: { reflect: true, type: String },
+    target: { type: String },
+    type: { type: String },
     variant: { reflect: true, type: String },
   };
 
   static override styles = css`
     :host {
       display: inline-flex;
+    }
+
+    :host([full-width]) {
+      width: 100%;
     }
 
     a,
@@ -65,11 +74,16 @@ export class ArkButton extends LitElement {
       width: 100%;
     }
 
-    .primary:hover {
+    :host([full-width]) a,
+    :host([full-width]) button {
+      width: 100%;
+    }
+
+    .primary:not(:disabled):not([aria-disabled="true"]):hover {
       background: #2d2724;
     }
 
-    .primary:hover::after {
+    .primary:not(:disabled):not([aria-disabled="true"]):hover::after {
       transform: scaleX(1);
     }
 
@@ -83,7 +97,7 @@ export class ArkButton extends LitElement {
       text-transform: uppercase;
     }
 
-    .secondary:hover {
+    .secondary:not(:disabled):not([aria-disabled="true"]):hover {
       border-color: var(--ark-color-accent);
     }
 
@@ -98,9 +112,15 @@ export class ArkButton extends LitElement {
       padding: 0 0 0.2rem;
     }
 
-    .ghost:hover {
+    .ghost:not(:disabled):not([aria-disabled="true"]):hover {
       border-color: var(--ark-color-accent);
       color: var(--ark-color-accent-strong);
+    }
+
+    a[aria-disabled="true"],
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
     }
 
     :host([size="sm"]) a,
@@ -123,16 +143,58 @@ export class ArkButton extends LitElement {
   `;
 
   href = "";
+  disabled = false;
+  fullWidth = false;
+  rel = "";
   size = "md";
+  target = "";
+  type: "button" | "submit" | "reset" = "button";
   variant: ButtonVariant | string = ButtonVariant.Primary;
 
+  private get _buttonType() {
+    return this.type === "submit" || this.type === "reset" ? this.type : "button";
+  }
+
+  private get _linkRel() {
+    if (this.rel) return this.rel;
+    return this.target === "_blank" ? "noopener noreferrer" : nothing;
+  }
+
+  private get _variantClass() {
+    return Object.values(ButtonVariant).includes(this.variant as ButtonVariant)
+      ? this.variant
+      : ButtonVariant.Primary;
+  }
+
+  private _handleDisabledClick(event: Event) {
+    if (!this.disabled) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+  }
+
   override render() {
-    const className = this.variant;
+    const className = this._variantClass;
 
     if (this.href) {
-      return html`<a class=${className} href=${this.href}><slot></slot></a>`;
+      return html`
+        <a
+          class=${className}
+          href=${this.disabled ? nothing : this.href}
+          target=${this.target || nothing}
+          rel=${this._linkRel}
+          aria-disabled=${this.disabled ? "true" : nothing}
+          tabindex=${this.disabled ? "-1" : nothing}
+          @click=${this._handleDisabledClick}
+        >
+          <slot></slot>
+        </a>
+      `;
     }
 
-    return html`<button class=${className} type="button"><slot></slot></button>`;
+    return html`
+      <button class=${className} type=${this._buttonType} ?disabled=${this.disabled}>
+        <slot></slot>
+      </button>
+    `;
   }
 }
