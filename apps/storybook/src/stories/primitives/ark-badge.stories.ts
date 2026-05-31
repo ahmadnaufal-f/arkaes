@@ -53,13 +53,6 @@ export const Pill = {
   },
 } satisfies Story;
 
-export const Contact = {
-  args: {
-    label: "Contact",
-    variant: BadgeVariant.Contact,
-  },
-} satisfies Story;
-
 export const Sizes = {
   render: () => html`
     <div style="display: flex; gap: 1rem; align-items: center;">
