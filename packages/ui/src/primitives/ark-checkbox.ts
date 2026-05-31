@@ -1,5 +1,6 @@
-import { css, html, LitElement, nothing, svg } from "lit";
+import { css, html, LitElement, svg } from "lit";
 import type { PropertyValues } from "lit";
+import { ifDefined } from "lit/directives/if-defined.js";
 import { when } from "lit/directives/when.js";
 
 export class ArkCheckbox extends LitElement {
@@ -289,8 +290,8 @@ export class ArkCheckbox extends LitElement {
 
   override render() {
     const ariaChecked = this.indeterminate ? "mixed" : String(this.checked);
-    const labelledBy = this.label ? this._labelId : nothing;
-    const describedBy = this.label && this.hint ? this._hintId : nothing;
+    const labelledBy = this.label ? this._labelId : undefined;
+    const describedBy = this.label && this.hint ? this._hintId : undefined;
 
     return html`
       <div
@@ -298,8 +299,8 @@ export class ArkCheckbox extends LitElement {
         role="checkbox"
         aria-checked=${ariaChecked}
         aria-disabled=${this.disabled}
-        aria-labelledby=${labelledBy}
-        aria-describedby=${describedBy}
+        aria-labelledby=${ifDefined(labelledBy)}
+        aria-describedby=${ifDefined(describedBy)}
         tabindex=${when(this.disabled, () => "-1", () => "0")}
         @click=${this._toggle}
         @keydown=${this._handleKeyDown}
