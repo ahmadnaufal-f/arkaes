@@ -1,7 +1,10 @@
-import { css, html, LitElement, svg } from "lit";
+import { css, html, LitElement, nothing, svg } from "lit";
+import type { PropertyValues } from "lit";
 import { when } from "lit/directives/when.js";
 
 export class ArkCheckbox extends LitElement {
+  static formAssociated = true;
+
   static override properties = {
     name: { type: String, reflect: true },
     value: { type: String, reflect: true },
@@ -181,6 +184,62 @@ export class ArkCheckbox extends LitElement {
   hint = "";
   size = "md";
 
+  private readonly _internals = this.attachInternals();
+  private readonly _labelId = `ark-checkbox-label-${Math.random().toString(36).substring(2, 9)}`;
+  private readonly _hintId = `ark-checkbox-hint-${Math.random().toString(36).substring(2, 9)}`;
+  private _defaultChecked = false;
+  private _defaultIndeterminate = false;
+  private _hasCapturedDefaults = false;
+
+  override connectedCallback() {
+    super.connectedCallback();
+
+    if (!this._hasCapturedDefaults) {
+      this._defaultChecked = this.checked;
+      this._defaultIndeterminate = this.indeterminate;
+      this._hasCapturedDefaults = true;
+    }
+
+    this._syncFormValue();
+  }
+
+  protected override updated(changedProperties: PropertyValues<this>) {
+    if (
+      changedProperties.has("checked")
+      || changedProperties.has("disabled")
+      || changedProperties.has("indeterminate")
+      || changedProperties.has("value")
+    ) {
+      this._syncFormValue();
+    }
+  }
+
+  formDisabledCallback(disabled: boolean) {
+    this.disabled = disabled;
+    this._syncFormValue();
+  }
+
+  formResetCallback() {
+    this.checked = this._defaultChecked;
+    this.indeterminate = this._defaultIndeterminate;
+    this._syncFormValue();
+  }
+
+  formStateRestoreCallback(state: string | File | FormData | null) {
+    const restoredState = String(state);
+    this.checked = restoredState === "checked";
+    this.indeterminate = restoredState === "indeterminate";
+    this._syncFormValue();
+  }
+
+  private _syncFormValue() {
+    const submittedValue = this.value || "on";
+    const formValue = this.checked && !this.disabled ? submittedValue : null;
+    const state = this.indeterminate ? "indeterminate" : this.checked ? "checked" : "unchecked";
+
+    this._internals.setFormValue(formValue, state);
+  }
+
   private _toggle() {
     if (this.disabled) return;
     if (this.indeterminate) {
@@ -189,6 +248,14 @@ export class ArkCheckbox extends LitElement {
     } else {
       this.checked = !this.checked;
     }
+    this._syncFormValue();
+    this.dispatchEvent(
+      new CustomEvent("input", {
+        bubbles: true,
+        composed: true,
+        detail: { checked: this.checked, value: this.value },
+      }),
+    );
     this.dispatchEvent(
       new CustomEvent("change", {
         bubbles: true,
@@ -222,13 +289,17 @@ export class ArkCheckbox extends LitElement {
 
   override render() {
     const ariaChecked = this.indeterminate ? "mixed" : String(this.checked);
+    const labelledBy = this.label ? this._labelId : nothing;
+    const describedBy = this.label && this.hint ? this._hintId : nothing;
+
     return html`
       <div
         class="root"
         role="checkbox"
         aria-checked=${ariaChecked}
         aria-disabled=${this.disabled}
-        aria-label=${this.label}
+        aria-labelledby=${labelledBy}
+        aria-describedby=${describedBy}
         tabindex=${when(this.disabled, () => "-1", () => "0")}
         @click=${this._toggle}
         @keydown=${this._handleKeyDown}
@@ -241,10 +312,10 @@ export class ArkCheckbox extends LitElement {
           this.label,
           () => html`
               <div class="text">
-                <span class="label">${this.label}</span>
+                <span class="label" id=${this._labelId}>${this.label}</span>
                 ${when(
                   this.hint,
-                  () => html`<span class="hint">${this.hint}</span>`,
+                  () => html`<span class="hint" id=${this._hintId}>${this.hint}</span>`,
                 )}
               </div>
             `,
