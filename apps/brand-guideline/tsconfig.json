@@ -2,7 +2,10 @@
   "extends": "astro/tsconfigs/strict",
   "compilerOptions": {
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@arkaes/ui": ["../../packages/ui/src/index.ts"],
+      "@arkaes/ui/register": ["../../packages/ui/src/register.ts"],
+      "@arkaes/ui/register/*": ["../../packages/ui/src/register/*.ts"]
     }
   },
   "include": [".astro/types.d.ts", "**/*"],

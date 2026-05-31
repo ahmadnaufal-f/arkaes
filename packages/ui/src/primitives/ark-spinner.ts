@@ -1,5 +1,6 @@
 import { css, html, LitElement, svg } from "lit";
 import { choose } from "lit/directives/choose.js";
+import { defineElement } from "../define-element";
 
 export enum SpinnerVariant {
   Arc = "arc",
@@ -313,5 +314,15 @@ export class ArkSpinner extends LitElement {
       ],
       () => this._renderArc(),
     );
+  }
+}
+
+export const defineArkSpinner = () => {
+  defineElement("ark-spinner", ArkSpinner);
+};
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ark-spinner": ArkSpinner;
   }
 }

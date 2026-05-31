@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
-import "@arkaes/ui";
+import "@arkaes/ui/register/ark-checkbox";
 
 type CheckboxArgs = {
   name: string;

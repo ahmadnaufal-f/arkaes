@@ -1,4 +1,5 @@
 import { css, html, LitElement } from "lit";
+import { defineElement } from "../define-element";
 
 export enum BadgeVariant {
   Eyebrow = "eyebrow",
@@ -122,5 +123,15 @@ export class ArkBadge extends LitElement {
 
   override render() {
     return html`<span class="badge"><slot></slot></span>`;
+  }
+}
+
+export const defineArkBadge = () => {
+  defineElement("ark-badge", ArkBadge);
+};
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ark-badge": ArkBadge;
   }
 }

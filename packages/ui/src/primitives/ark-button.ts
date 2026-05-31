@@ -1,5 +1,6 @@
 import { css, html, LitElement } from "lit";
 import { ifDefined } from "lit/directives/if-defined.js";
+import { defineElement } from "../define-element";
 
 export enum ButtonVariant {
   Primary = "primary",
@@ -197,5 +198,15 @@ export class ArkButton extends LitElement {
         <slot></slot>
       </button>
     `;
+  }
+}
+
+export const defineArkButton = () => {
+  defineElement("ark-button", ArkButton);
+};
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ark-button": ArkButton;
   }
 }

@@ -1,4 +1,5 @@
 import { css, html, LitElement } from "lit";
+import { defineElement } from "../define-element";
 
 /**
  * ArkCard is the root card container.
@@ -217,3 +218,53 @@ export const Card = {
   Content: ArkCardContent,
   Footer: ArkCardFooter,
 };
+
+export const defineArkCardRoot = () => {
+  defineElement("ark-card", ArkCard);
+};
+
+export const defineArkCardHeader = () => {
+  defineElement("ark-card-header", ArkCardHeader);
+};
+
+export const defineArkCardTitle = () => {
+  defineElement("ark-card-title", ArkCardTitle);
+};
+
+export const defineArkCardDescription = () => {
+  defineElement("ark-card-description", ArkCardDescription);
+};
+
+export const defineArkCardAction = () => {
+  defineElement("ark-card-action", ArkCardAction);
+};
+
+export const defineArkCardContent = () => {
+  defineElement("ark-card-content", ArkCardContent);
+};
+
+export const defineArkCardFooter = () => {
+  defineElement("ark-card-footer", ArkCardFooter);
+};
+
+export const defineArkCard = () => {
+  defineArkCardRoot();
+  defineArkCardHeader();
+  defineArkCardTitle();
+  defineArkCardDescription();
+  defineArkCardAction();
+  defineArkCardContent();
+  defineArkCardFooter();
+};
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ark-card": ArkCard;
+    "ark-card-header": ArkCardHeader;
+    "ark-card-title": ArkCardTitle;
+    "ark-card-description": ArkCardDescription;
+    "ark-card-action": ArkCardAction;
+    "ark-card-content": ArkCardContent;
+    "ark-card-footer": ArkCardFooter;
+  }
+}

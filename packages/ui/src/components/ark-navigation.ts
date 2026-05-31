@@ -1,5 +1,7 @@
 import { css, html, LitElement, nothing } from "lit";
 import { when } from "lit/directives/when.js";
+import { defineElement } from "../define-element";
+import { defineArkBrandLogo } from "../primitives/ark-brand-logo";
 
 /**
  * ArkNavigationRoot manages the scroll and mobile menu state.
@@ -539,3 +541,54 @@ export const Navigation = {
   MobileToggle: ArkNavigationMobileToggle,
   MobileMenu: ArkNavigationMobileMenu,
 };
+
+export const defineArkNavigationRoot = () => {
+  defineElement("ark-navigation-root", ArkNavigationRoot);
+};
+
+export const defineArkNavigationBrand = () => {
+  defineArkBrandLogo();
+  defineElement("ark-navigation-brand", ArkNavigationBrand);
+};
+
+export const defineArkNavigationLinks = () => {
+  defineElement("ark-navigation-links", ArkNavigationLinks);
+};
+
+export const defineArkNavLink = () => {
+  defineElement("ark-nav-link", ArkNavLink);
+};
+
+export const defineArkNavigationCta = () => {
+  defineElement("ark-navigation-cta", ArkNavigationCta);
+};
+
+export const defineArkNavigationMobileToggle = () => {
+  defineElement("ark-navigation-mobile-toggle", ArkNavigationMobileToggle);
+};
+
+export const defineArkNavigationMobileMenu = () => {
+  defineElement("ark-navigation-mobile-menu", ArkNavigationMobileMenu);
+};
+
+export const defineArkNavigation = () => {
+  defineArkNavigationRoot();
+  defineArkNavigationBrand();
+  defineArkNavigationLinks();
+  defineArkNavLink();
+  defineArkNavigationCta();
+  defineArkNavigationMobileToggle();
+  defineArkNavigationMobileMenu();
+};
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ark-navigation-root": ArkNavigationRoot;
+    "ark-navigation-brand": ArkNavigationBrand;
+    "ark-navigation-links": ArkNavigationLinks;
+    "ark-nav-link": ArkNavLink;
+    "ark-navigation-cta": ArkNavigationCta;
+    "ark-navigation-mobile-toggle": ArkNavigationMobileToggle;
+    "ark-navigation-mobile-menu": ArkNavigationMobileMenu;
+  }
+}
