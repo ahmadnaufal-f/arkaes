@@ -117,6 +117,7 @@ export class ArkNavigationRoot extends LitElement {
 
 /**
  * ArkNavigationBrand is the logo/brand wordmark component.
+ * Delegates wordmark rendering to the <ark-brand-logo> primitive.
  */
 export class ArkNavigationBrand extends LitElement {
   static override properties = {
@@ -131,30 +132,22 @@ export class ArkNavigationBrand extends LitElement {
     }
 
     .brand {
-      color: var(--ark-color-text);
-      font-family: var(--ark-font-display);
-      font-size: 1.15rem;
-      font-weight: var(--ark-weight-thin);
-      letter-spacing: 0.14em;
+      display: inline-flex;
+      align-items: center;
       text-decoration: none;
-      text-transform: uppercase;
-      transition: color var(--ark-duration-fast) var(--ark-ease-standard);
     }
 
-    .brand:hover {
-      color: var(--ark-color-accent-strong);
-    }
-
-    .ae {
-      color: var(--ark-color-accent-strong);
-      font-style: italic;
+    .brand:focus-visible {
+      border-radius: var(--ark-radius-xs);
+      outline: 2px solid var(--ark-color-focus);
+      outline-offset: 4px;
     }
   `;
 
   override render() {
     return html`
       <a class="brand" href=${this.href} aria-label="Arkaes home">
-        ARK<em class="ae">Æ</em>S
+        <ark-brand-logo></ark-brand-logo>
       </a>
     `;
   }
@@ -318,27 +311,50 @@ export class ArkNavigationCta extends LitElement {
       border: 1px solid var(--ark-color-border);
       border-radius: var(--ark-radius-xs);
       color: var(--ark-color-text);
+      cursor: none;
       font-family: var(--ark-font-mono);
       font-size: var(--ark-font-size-sm);
       letter-spacing: var(--ark-letter-spacing-mono);
+      overflow: hidden;
       padding: 10px 22px;
+      position: relative;
       text-decoration: none;
       text-transform: uppercase;
       transition:
         background var(--ark-duration-normal) var(--ark-ease-standard),
         border-color var(--ark-duration-normal) var(--ark-ease-standard),
-        color var(--ark-duration-normal) var(--ark-ease-standard);
+        color var(--ark-duration-normal) var(--ark-ease-standard),
+        transform var(--ark-duration-normal) var(--ark-ease-standard);
+    }
+
+    /* Blush underline — scaleX from left on hover (primary button pattern §6) */
+    .cta::after {
+      background: var(--ark-color-accent);
+      bottom: 0;
+      content: '';
+      height: 2px;
+      left: 0;
+      position: absolute;
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform var(--ark-duration-normal) var(--ark-ease-standard);
+      width: 100%;
     }
 
     .cta:hover {
       background: var(--ark-color-accent-soft);
       border-color: var(--ark-color-accent);
       color: var(--ark-color-accent-strong);
+      transform: translateY(-1px);
+    }
+
+    .cta:hover::after {
+      transform: scaleX(1);
     }
 
     .cta:focus-visible {
-      outline: 2px solid var(--ark-color-focus);
-      outline-offset: 4px;
+      box-shadow: var(--ark-shadow-focus);
+      outline: none;
     }
 
     @media (max-width: 520px) {

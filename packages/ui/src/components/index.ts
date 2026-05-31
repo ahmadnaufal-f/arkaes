@@ -19,6 +19,7 @@ import {
   ArkDialogClose,
   Dialog,
 } from "./ark-dialog";
+import { ArkHero, Hero, HeroTitleVariant } from "./ark-hero";
 import {
   ArkNavigationRoot,
   ArkNavigationBrand,
@@ -53,6 +54,8 @@ defineElement("ark-dialog-title", ArkDialogTitle);
 defineElement("ark-dialog-description", ArkDialogDescription);
 defineElement("ark-dialog-close", ArkDialogClose);
 
+defineElement("ark-hero", ArkHero);
+
 defineElement("ark-navigation-root", ArkNavigationRoot);
 defineElement("ark-navigation-brand", ArkNavigationBrand);
 defineElement("ark-navigation-links", ArkNavigationLinks);
@@ -79,6 +82,9 @@ export {
   ArkDialogDescription,
   ArkDialogClose,
   Dialog,
+  ArkHero,
+  Hero,
+  HeroTitleVariant,
   ArkNavigationRoot,
   ArkNavigationBrand,
   ArkNavigationLinks,
@@ -106,6 +112,7 @@ declare global {
     "ark-dialog-title": ArkDialogTitle;
     "ark-dialog-description": ArkDialogDescription;
     "ark-dialog-close": ArkDialogClose;
+    "ark-hero": ArkHero;
     "ark-navigation-root": ArkNavigationRoot;
     "ark-navigation-brand": ArkNavigationBrand;
     "ark-navigation-links": ArkNavigationLinks;

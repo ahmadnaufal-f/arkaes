@@ -38,34 +38,19 @@ import BrandGuidelineLayout from "../layouts/BrandGuidelineLayout.astro";
 <main>
 
 <!-- ══ COVER ══════════════════════════════════════════════════════════════ -->
-<section id="cover">
-  <div class="cover-left">
-    <div class="cover-tag">Personal Brand Guidelines</div>
-    <h1 class="cover-logo">ARK<span>&AElig;</span>S</h1>
-    <p class="cover-subtitle">
-      A living reference document defining the visual language, tone, and usage rules of the Arkaes personal brand for use across arkaes.dev and all creative touchpoints.
-    </p>
-    <div class="cover-actions">
-      <ark-button href="#foundation" variant="primary">View Guidelines</ark-button>
-      <ark-button href="#color" variant="ghost">Explore visual system</ark-button>
-    </div>
-  </div>
-  <div class="cover-right">
-    <div class="cover-composition">
-      <div class="comp">
-        <div class="c-block-lg"></div>
-        <div class="c-block-md"></div>
-        <div class="c-block-sage"></div>
-        <div class="c-circle"></div>
-        <div class="c-dot"></div>
-        <div class="c-label">arkaes.dev - mmxxvi</div>
-      </div>
-    </div>
-  </div>
-  <div class="cover-scroll">
-    <div class="cover-scroll-line"></div>
-    Explore the system
-  </div>
+<section id="cover" class="cover-section">
+  <ark-hero
+    eyebrow="Personal Brand Guidelines"
+    title-variant="brand"
+    title-emphasis="Brand Guidelines."
+    subtitle="A living reference document defining the visual language, tone, and usage rules of the Arkaes personal brand for use across arkaes.dev and all creative touchpoints."
+    primary-href="#foundation"
+    primary-label="View Guidelines"
+    ghost-href="#color"
+    ghost-label="Explore visual system"
+    comp-label="arkaes.dev - mmxxvi"
+    scroll-label="Explore the system"
+  ></ark-hero>
 </section>
 
 <!-- ══ 01 BRAND FOUNDATION ════════════════════════════════════════════════ -->
@@ -545,14 +530,7 @@ import BrandGuidelineLayout from "../layouts/BrandGuidelineLayout.astro";
     }, { threshold: 0.35 });
     sections.forEach(s => navObs.observe(s));
     
-    // Mouse parallax on cover composition
-    document.addEventListener('mousemove', e => {
-      const comp = document.querySelector('.comp');
-      if (!comp) return;
-      const x = (e.clientX / window.innerWidth  - 0.5) * 16;
-      const y = (e.clientY / window.innerHeight - 0.5) * 10;
-      comp.style.transform = `translate(${x}px, ${y}px)`;
-    });
+    // Note: cover composition mouse parallax is handled internally by <ark-hero>.
     
     // Hex copy on swatch click
     document.querySelectorAll('.swatch').forEach(sw => {

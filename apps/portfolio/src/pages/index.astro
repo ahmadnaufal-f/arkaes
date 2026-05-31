@@ -11,41 +11,18 @@ import "./_index.css";
   <div class="cursor" id="cursor" aria-hidden="true"></div>
   <div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
 
-  <section class="hero">
-    <div class="hero-left">
-      <ark-badge variant="eyebrow">Frontend Engineer &amp; UI Systems Architect</ark-badge>
-      <h1 class="hero-title">
-        Frontend engineering
-        <em><span class="title-line2">with clarity.</span></em>
-      </h1>
-      <p class="hero-subtitle">
-        Building scalable interfaces, design systems, and cross-platform products where technical
-        structure and visual refinement work as one.
-      </p>
-      <div class="hero-actions">
-        <ark-button href="#case-studies">View Case Studies</ark-button>
-        <ark-button href="#expertise" variant="ghost">Explore engineering approach</ark-button>
-      </div>
-    </div>
-
-    <div class="hero-right">
-      <div class="hero-image-panel">
-        <div class="composition" id="composition">
-          <div class="comp-block-large"></div>
-          <div class="comp-block-accent"></div>
-          <div class="comp-block-sage"></div>
-          <div class="comp-circle"></div>
-          <div class="comp-sage-dot"></div>
-          <div class="comp-label">arkaes.dev - mmxxvi</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="hero-scroll">
-      <div class="scroll-line"></div>
-      Explore the work
-    </div>
-  </section>
+  <ark-hero
+    eyebrow="Frontend Engineer &amp; UI Systems Architect"
+    title="Frontend engineering"
+    title-emphasis="with clarity."
+    subtitle="Building scalable interfaces, design systems, and cross-platform products where technical structure and visual refinement work as one."
+    primary-href="#case-studies"
+    primary-label="View Case Studies"
+    ghost-href="#expertise"
+    ghost-label="Explore engineering approach"
+    comp-label="arkaes.dev - mmxxvi"
+    scroll-label="Explore the work"
+  ></ark-hero>
 
   <div class="marquee-section" aria-hidden="true">
     <div class="marquee-track">
@@ -240,11 +217,9 @@ import "./_index.css";
 
     const cursor = document.getElementById("cursor");
     const ring = document.getElementById("cursorRing");
-    const composition = document.getElementById("composition");
     const canUseCursor = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    if (cursor && ring && canUseCursor && !reduceMotion) {
+    if (cursor && ring && canUseCursor) {
       let mouseX = 0;
       let mouseY = 0;
       let ringX = 0;
@@ -289,12 +264,6 @@ import "./_index.css";
 
     reveals.forEach((element) => observer.observe(element));
 
-    if (composition && !reduceMotion) {
-      document.addEventListener("mousemove", (event) => {
-        const x = (event.clientX / window.innerWidth - 0.5) * 14;
-        const y = (event.clientY / window.innerHeight - 0.5) * 9;
-        composition.style.transform = `translate(${x}px, ${y}px)`;
-      });
-    }
+
   </script>
 </BaseLayout>

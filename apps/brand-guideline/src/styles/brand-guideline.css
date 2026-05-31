@@ -114,205 +114,18 @@ ark-badge {
 .d5 { transition-delay: .58s; }
 
 /* ══════════════════════════════════════════════════════════════════════════
-   HERO / COVER
+   HERO / COVER — now rendered by <ark-hero> component
 ══════════════════════════════════════════════════════════════════════════ */
-#cover {
-  column-gap: 60px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  min-height: max(100vh, 960px);
-  overflow: hidden;
-  padding-bottom: 0;
-  padding-inline: var(--site-content-padding);
-  padding-top: 100px;
-  position: relative;
+
+/* Remove section padding so the hero fills edge-to-edge, matching the
+   original #cover layout (which had its own padding-top:100px). */
+.cover-section {
   border-bottom: none;
-  background: var(--warm-white);
-}
-
-.cover-left {
-  display: flex; flex-direction: column; justify-content: center;
-  padding: 80px 0;
-  position: relative;
-  z-index: 2;
-}
-
-.cover-tag {
-  font-family: var(--ark-font-mono);
-  font-size: .62rem; letter-spacing: var(--ark-letter-spacing-wide); text-transform: uppercase;
-  color: var(--blush-deep);
-  display: flex; align-items: center; gap: 16px;
-  opacity: 0; animation: slideUp .9s ease forwards .2s;
-}
-.cover-tag::before { content:''; width:28px; height:1px; background:var(--blush); }
-
-.cover-logo {
-  font-family: var(--ark-font-display);
-  font-size: 4rem;
-  font-weight: var(--ark-weight-thin); line-height: var(--ark-line-height-tight); letter-spacing: 0;
-  color: var(--ink); margin: 36px 0 0;
-  opacity: 0; animation: slideUp 1s ease forwards .4s;
-}
-.cover-logo span { color: var(--blush-deep); font-style: italic; }
-
-.cover-subtitle {
-  font-family: var(--ark-font-sans);
-  font-size: var(--ark-font-size-xl); font-weight: var(--ark-font-weight-light); font-style: normal;
-  color: var(--ink-muted); line-height: var(--ark-line-height-relaxed); max-width: 380px;
-  margin-block: 40px 56px;
-  opacity: 0; animation: slideUp .9s ease forwards .65s;
-}
-
-.cover-actions {
-  align-items: center;
-  display: flex;
-  gap: 40px;
-  opacity: 0; animation: slideUp .9s ease forwards .85s;
-}
-
-.cover-button {
-  align-items: center;
-  display: inline-flex;
-  font-family: var(--ark-font-mono);
-  font-size: var(--ark-font-size-sm);
-  justify-content: center;
-  letter-spacing: var(--ark-letter-spacing-mono);
-  line-height: 1;
-  min-height: 64px;
-  text-transform: uppercase;
-  transition:
-    background var(--ark-duration-normal),
-    color var(--ark-duration-normal),
-    transform var(--ark-duration-normal);
-}
-
-.cover-button--primary {
-  background: var(--ark-color-text);
-  color: var(--ark-color-background);
-  padding: 0 36px;
-}
-
-.cover-button--ghost {
-  border-bottom: 1px solid var(--ark-color-border);
-  color: var(--ark-color-text-muted);
-  font-family: var(--ark-font-display);
-  font-size: 1rem;
-  font-style: italic;
-  letter-spacing: 0;
-  min-height: 0;
-  padding-bottom: 4px;
-  text-transform: none;
-}
-
-.cover-button:hover {
-  transform: translateY(-2px);
-}
-
-.cover-button--primary:hover {
-  background: var(--ark-color-accent-strong);
+  padding: 0;
 }
 
 ark-button {
   transition: transform var(--ark-duration-normal);
-}
-
-ark-button:hover {
-  transform: translateY(-2px);
-}
-
-
-/* Cover right visual */
-.cover-right {
-  background: var(--blush-tint);
-  position: relative; overflow: hidden;
-  opacity: 0; animation: fadeIn 1.2s ease forwards .3s;
-}
-
-.cover-right::before {
-  content: none;
-}
-.cover-right::after {
-  content: none;
-}
-
-.cover-composition {
-  position: absolute; inset: 0;
-  display: flex; align-items: center; justify-content: center;
-}
-
-.comp { position: relative; width: 340px; height: 440px; transition: transform 600ms var(--ark-ease-out); }
-
-.c-block-lg {
-  position: absolute; top: 0; left: 20px;
-  width: 260px; height: 300px;
-  background: var(--blush-light); border-radius: var(--ark-radius-md);
-  opacity: 0; animation: compIn .9s ease forwards .55s;
-}
-.c-block-md {
-  position: absolute; top: 50px; right: 0;
-  width: 110px; height: 160px;
-  background: var(--blush-deep); border-radius: var(--ark-radius-md);
-  opacity: 0; animation: compIn .9s ease forwards .75s;
-  mix-blend-mode: multiply;
-}
-.c-block-sage {
-  position: absolute; bottom: 70px; left: 0;
-  width: 140px; height: 100px;
-  background: var(--sage); border-radius: var(--ark-radius-md);
-  opacity: 0; animation: compIn .9s ease forwards .95s;
-}
-.c-circle {
-  position: absolute; bottom: 30px; right: 30px;
-  width: 90px; height: 90px; border-radius: 50%;
-  border: 1.5px solid var(--blush-deep);
-  opacity: 0; animation: compIn 1s ease forwards 1.1s;
-}
-.c-dot {
-  position: absolute; bottom: 68px; right: 68px;
-  width: 14px; height: 14px; border-radius: 50%;
-  background: var(--sage-light);
-  opacity: 0; animation: compIn 1s ease forwards 1.28s;
-}
-.c-label {
-  position: absolute; top: 318px; left: 24px;
-  font-family: var(--ark-font-mono);
-  font-size: var(--ark-font-size-xs); letter-spacing: .22em; text-transform: uppercase;
-  color: var(--ink-ghost);
-}
-
-.cover-scroll {
-  align-items: center;
-  animation: fadeIn 1s ease forwards 1.3s;
-  bottom: 40px;
-  color: var(--ink-ghost);
-  display: flex;
-  font-family: var(--ark-font-mono);
-  font-size: var(--ark-font-size-xs);
-  gap: 14px;
-  left: var(--site-content-padding);
-  letter-spacing: .22em;
-  opacity: 0;
-  position: absolute;
-  text-transform: uppercase;
-}
-
-.cover-scroll-line {
-  background: var(--ark-color-border);
-  height: 1px;
-  overflow: hidden;
-  position: relative;
-  width: 48px;
-}
-
-.cover-scroll-line::after {
-  animation: scrollLine 2200ms ease-in-out infinite;
-  background: var(--ark-color-accent);
-  content: "";
-  height: 100%;
-  left: -100%;
-  position: absolute;
-  top: 0;
-  width: 100%;
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -916,23 +729,8 @@ footer {
 }
 
 /* ── KEYFRAMES ───────────────────────────────────────────────────────────── */
-@keyframes slideUp {
-  from { opacity:0; transform:translateY(36px); }
-  to   { opacity:1; transform:translateY(0); }
-}
-@keyframes fadeIn {
-  from { opacity:0; }
-  to   { opacity:1; }
-}
-@keyframes compIn {
-  from { opacity:0; transform:scale(.9) translateY(16px); }
-  to   { opacity:1; transform:scale(1) translateY(0); }
-}
-@keyframes scrollLine {
-  0% { left: -100%; }
-  50% { left: 0; }
-  100% { left: 100%; }
-}
+/* Note: cover animation keyframes (slideUp, compIn, fadeIn, scrollLine) are
+   now encapsulated inside the <ark-hero> shadow DOM styles. */
 
 /* ── SCROLLBAR ───────────────────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; }

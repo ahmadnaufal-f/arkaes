@@ -1,4 +1,5 @@
 import { ArkBadge, BadgeVariant } from "./ark-badge";
+import { ArkBrandLogo } from "./ark-brand-logo";
 import { ArkButton, ButtonVariant } from "./ark-button";
 import { ArkCheckbox } from "./ark-checkbox";
 import { ArkInput, InputType } from "./ark-input";
@@ -13,6 +14,7 @@ const defineElement = (tagName: string, element: CustomElementConstructor) => {
 };
 
 defineElement("ark-badge", ArkBadge);
+defineElement("ark-brand-logo", ArkBrandLogo);
 defineElement("ark-button", ArkButton);
 defineElement("ark-checkbox", ArkCheckbox);
 defineElement("ark-input", ArkInput);
@@ -23,6 +25,7 @@ defineElement("ark-toggle", ArkToggle);
 export {
   ArkBadge,
   BadgeVariant,
+  ArkBrandLogo,
   ArkButton,
   ButtonVariant,
   ArkCheckbox,
@@ -37,6 +40,7 @@ export {
 declare global {
   interface HTMLElementTagNameMap {
     "ark-badge": ArkBadge;
+    "ark-brand-logo": ArkBrandLogo;
     "ark-button": ArkButton;
     "ark-checkbox": ArkCheckbox;
     "ark-input": ArkInput;
