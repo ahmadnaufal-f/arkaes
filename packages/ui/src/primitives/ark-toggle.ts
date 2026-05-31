@@ -1,5 +1,6 @@
 import { css, html, LitElement } from "lit";
 import { when } from "lit/directives/when.js";
+import { defineElement } from "../define-element";
 
 export class ArkToggle extends LitElement {
   static override properties = {
@@ -228,5 +229,15 @@ export class ArkToggle extends LitElement {
         )}
       </div>
     `;
+  }
+}
+
+export const defineArkToggle = () => {
+  defineElement("ark-toggle", ArkToggle);
+};
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ark-toggle": ArkToggle;
   }
 }

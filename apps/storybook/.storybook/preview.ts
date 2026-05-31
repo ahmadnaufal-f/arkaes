@@ -1,5 +1,5 @@
 import "@arkaes/tokens/css";
-import "@arkaes/ui";
+import "@arkaes/ui/register";
 
 import type { Preview } from "@storybook/web-components-vite";
 

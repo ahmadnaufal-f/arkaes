@@ -1,5 +1,6 @@
 import { css, html, LitElement } from "lit";
 import { when } from "lit/directives/when.js";
+import { defineElement } from "../define-element";
 
 export class ArkRadio extends LitElement {
   static override properties = {
@@ -205,5 +206,15 @@ export class ArkRadio extends LitElement {
         )}
       </div>
     `;
+  }
+}
+
+export const defineArkRadio = () => {
+  defineElement("ark-radio", ArkRadio);
+};
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ark-radio": ArkRadio;
   }
 }

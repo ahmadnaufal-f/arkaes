@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
 import { ifDefined } from "lit/directives/if-defined.js";
 import { SpinnerVariant } from "@arkaes/ui";
-import "@arkaes/ui";
+import "@arkaes/ui/register/ark-spinner";
 
 type SpinnerArgs = {
   variant: SpinnerVariant;

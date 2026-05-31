@@ -1,4 +1,5 @@
 import { css, html, LitElement } from "lit";
+import { defineElement } from "../define-element";
 
 /**
  * ArkBrandLogo renders the Arkaes wordmark: ARK + Æ (italic, blush-deep) + S.
@@ -104,5 +105,15 @@ export class ArkBrandLogo extends LitElement {
         ARK<em class="ae">Æ</em>S
       </span>
     `;
+  }
+}
+
+export const defineArkBrandLogo = () => {
+  defineElement("ark-brand-logo", ArkBrandLogo);
+};
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ark-brand-logo": ArkBrandLogo;
   }
 }

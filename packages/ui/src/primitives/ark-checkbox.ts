@@ -2,6 +2,7 @@ import { css, html, LitElement, svg } from "lit";
 import type { PropertyValues } from "lit";
 import { ifDefined } from "lit/directives/if-defined.js";
 import { when } from "lit/directives/when.js";
+import { defineElement } from "../define-element";
 
 export class ArkCheckbox extends LitElement {
   static formAssociated = true;
@@ -323,5 +324,15 @@ export class ArkCheckbox extends LitElement {
         )}
       </div>
     `;
+  }
+}
+
+export const defineArkCheckbox = () => {
+  defineElement("ark-checkbox", ArkCheckbox);
+};
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ark-checkbox": ArkCheckbox;
   }
 }

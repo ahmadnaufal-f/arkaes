@@ -1,5 +1,9 @@
 import { css, html, LitElement, nothing } from "lit";
 import { choose } from "lit/directives/choose.js";
+import { defineElement } from "../define-element";
+import { defineArkBadge } from "../primitives/ark-badge";
+import { defineArkBrandLogo } from "../primitives/ark-brand-logo";
+import { defineArkButton } from "../primitives/ark-button";
 
 export enum HeroTitleVariant {
   Text = "text",
@@ -498,3 +502,16 @@ export class ArkHero extends LitElement {
 export const Hero = {
   Root: ArkHero,
 };
+
+export const defineArkHero = () => {
+  defineArkBadge();
+  defineArkBrandLogo();
+  defineArkButton();
+  defineElement("ark-hero", ArkHero);
+};
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ark-hero": ArkHero;
+  }
+}

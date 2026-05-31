@@ -1,4 +1,5 @@
 import { css, html, LitElement } from "lit";
+import { defineElement } from "../define-element";
 
 /**
  * ArkDialogRoot manages the open state of the dialog.
@@ -610,3 +611,59 @@ export const Dialog = {
   Description: ArkDialogDescription,
   Close: ArkDialogClose,
 };
+
+export const defineArkDialogRoot = () => {
+  defineElement("ark-dialog-root", ArkDialogRoot);
+};
+
+export const defineArkDialogTrigger = () => {
+  defineElement("ark-dialog-trigger", ArkDialogTrigger);
+};
+
+export const defineArkDialogPortal = () => {
+  defineElement("ark-dialog-portal", ArkDialogPortal);
+};
+
+export const defineArkDialogOverlay = () => {
+  defineElement("ark-dialog-overlay", ArkDialogOverlay);
+};
+
+export const defineArkDialogContent = () => {
+  defineElement("ark-dialog-content", ArkDialogContent);
+};
+
+export const defineArkDialogTitle = () => {
+  defineElement("ark-dialog-title", ArkDialogTitle);
+};
+
+export const defineArkDialogDescription = () => {
+  defineElement("ark-dialog-description", ArkDialogDescription);
+};
+
+export const defineArkDialogClose = () => {
+  defineElement("ark-dialog-close", ArkDialogClose);
+};
+
+export const defineArkDialog = () => {
+  defineArkDialogRoot();
+  defineArkDialogTrigger();
+  defineArkDialogPortal();
+  defineArkDialogOverlay();
+  defineArkDialogContent();
+  defineArkDialogTitle();
+  defineArkDialogDescription();
+  defineArkDialogClose();
+};
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ark-dialog-root": ArkDialogRoot;
+    "ark-dialog-trigger": ArkDialogTrigger;
+    "ark-dialog-portal": ArkDialogPortal;
+    "ark-dialog-overlay": ArkDialogOverlay;
+    "ark-dialog-content": ArkDialogContent;
+    "ark-dialog-title": ArkDialogTitle;
+    "ark-dialog-description": ArkDialogDescription;
+    "ark-dialog-close": ArkDialogClose;
+  }
+}

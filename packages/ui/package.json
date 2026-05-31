@@ -5,12 +5,37 @@
   "type": "module",
   "sideEffects": [
     "src/**/*.css",
-    "src/components/**/*.ts"
+    "src/register.ts",
+    "src/register/*.ts"
   ],
   "exports": {
     ".": {
       "types": "./src/index.ts",
       "default": "./src/index.ts"
+    },
+    "./register": {
+      "types": "./src/register.ts",
+      "default": "./src/register.ts"
+    },
+    "./register/*": {
+      "types": "./src/register/*.ts",
+      "default": "./src/register/*.ts"
+    },
+    "./primitives": {
+      "types": "./src/primitives/index.ts",
+      "default": "./src/primitives/index.ts"
+    },
+    "./primitives/*": {
+      "types": "./src/primitives/*.ts",
+      "default": "./src/primitives/*.ts"
+    },
+    "./components": {
+      "types": "./src/components/index.ts",
+      "default": "./src/components/index.ts"
+    },
+    "./components/*": {
+      "types": "./src/components/*.ts",
+      "default": "./src/components/*.ts"
     }
   },
   "scripts": {

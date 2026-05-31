@@ -94,14 +94,55 @@ pnpm format
 - `@arkaes/tokens/reset.css`
 - `@arkaes/tokens/typography.css`
 
-`@arkaes/ui` exports Lit custom elements and registers the current component set:
+`@arkaes/ui` exports Lit custom element classes without registering them as a side effect.
+Each component file exports its own guarded `defineArk...()` helper for selective registration.
+Use per-component registration subpaths when an app needs elements registered as a side effect:
+
+Primitives:
 
 - `ark-badge`
+- `ark-brand-logo`
 - `ark-button`
-- `ark-card`
+- `ark-checkbox`
+- `ark-input`
+- `ark-radio`
+- `ark-spinner`
+- `ark-toggle`
 
-Storybook imports both `@arkaes/tokens/css` and `@arkaes/ui` in its preview config so the
-components render with the same theme variables used by the apps.
+Components:
+
+- `ark-card`
+- `ark-card-header`
+- `ark-card-title`
+- `ark-card-description`
+- `ark-card-action`
+- `ark-card-content`
+- `ark-card-footer`
+- `ark-dialog-root`
+- `ark-dialog-trigger`
+- `ark-dialog-portal`
+- `ark-dialog-overlay`
+- `ark-dialog-content`
+- `ark-dialog-title`
+- `ark-dialog-description`
+- `ark-dialog-close`
+- `ark-hero`
+- `ark-navigation-root`
+- `ark-navigation-brand`
+- `ark-navigation-links`
+- `ark-nav-link`
+- `ark-navigation-cta`
+- `ark-navigation-mobile-toggle`
+- `ark-navigation-mobile-menu`
+
+For smaller imports, consumers can use subpaths such as `@arkaes/ui/primitives/ark-button`
+or `@arkaes/ui/components/ark-card`. To register only one component family as a side effect,
+use subpaths such as `@arkaes/ui/register/ark-button` or `@arkaes/ui/register/ark-card`.
+Component files carry their own `HTMLElementTagNameMap` declarations, so those single-component
+imports include the matching TypeScript custom-element typing.
+
+Storybook imports `@arkaes/tokens/css` in its preview config and uses per-component registration
+subpaths in stories so the components render with the same theme variables used by the apps.
 
 ## Project Direction
 

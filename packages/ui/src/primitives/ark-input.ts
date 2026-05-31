@@ -2,6 +2,7 @@ import { css, html, LitElement, nothing } from "lit";
 import type { PropertyValues } from "lit";
 import { ifDefined } from "lit/directives/if-defined.js";
 import { when } from "lit/directives/when.js";
+import { defineElement } from "../define-element";
 
 export enum InputType {
   Text = "text",
@@ -476,5 +477,15 @@ export class ArkInput extends LitElement {
         )}
       </div>
     `;
+  }
+}
+
+export const defineArkInput = () => {
+  defineElement("ark-input", ArkInput);
+};
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ark-input": ArkInput;
   }
 }
