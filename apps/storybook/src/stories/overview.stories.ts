@@ -50,7 +50,7 @@ const meta = {
           <div style="display: grid; gap: 1rem; padding: 1.5rem;">
             <ark-badge variant="eyebrow">Badge</ark-badge>
             <ark-badge variant="soft">Interface System</ark-badge>
-            <ark-badge variant="contact">Contact</ark-badge>
+            <ark-badge variant="eyebrow">Contact</ark-badge>
           </div>
         </ark-card>
         <ark-card interactive>

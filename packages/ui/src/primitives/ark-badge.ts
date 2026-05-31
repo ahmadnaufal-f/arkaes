@@ -2,7 +2,6 @@ import { css, html, LitElement } from "lit";
 
 export enum BadgeVariant {
   Eyebrow = "eyebrow",
-  Contact = "contact",
   Soft = "soft",
   Pill = "pill",
 }
@@ -68,8 +67,7 @@ export class ArkBadge extends LitElement {
     }
 
     :host(:not([variant])) .badge::before,
-    :host([variant="eyebrow"]) .badge::before,
-    :host([variant="contact"]) .badge::before {
+    :host([variant="eyebrow"]) .badge::before {
       background: currentColor;
       content: "";
       display: block;
@@ -89,10 +87,6 @@ export class ArkBadge extends LitElement {
       font-size: var(--badge-pill-font-size);
       letter-spacing: 0.14em;
       padding: var(--badge-pill-padding-block) var(--badge-pill-padding-inline);
-    }
-
-    :host([variant="contact"]) .badge {
-      color: var(--ark-color-accent);
     }
   `;
 
