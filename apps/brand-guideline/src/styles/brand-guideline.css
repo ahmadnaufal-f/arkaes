@@ -1,7 +1,8 @@
 @import "@arkaes/tokens/css";
 
 /* RESET & TOKENS */
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+*, *::before, *::after { box-sizing: border-box; }
+body, h1, h2, h3, h4, h5, h6, p, ul, ol, li, figure, blockquote, dl, dd { margin: 0; padding: 0; }
 
 :root {
   --warm-white: var(--ark-color-background);
@@ -17,7 +18,6 @@
   --sage: var(--ark-color-sage);
   --sage-light: var(--ark-color-secondary-soft);
   --sage-tint: var(--ark-color-sage-tint);
-  --nav-h: 64px;
 }
 
 html { font-size: 16px; scroll-behavior: smooth; }
@@ -44,35 +44,6 @@ body.hov #cur  { width:14px; height:14px; background:var(--sage); }
 body.hov #curR { width:52px; height:52px; border-color:var(--sage-light); }
 
 /* ── NAV ─────────────────────────────────────────────────────────────────── */
-nav {
-  align-items: center;
-  background: linear-gradient(to bottom, rgba(250, 247, 245, 0.96) 60%, transparent);
-  backdrop-filter: blur(2px);
-  display: flex;
-  inset-inline: 0;
-  justify-content: space-between;
-  padding: 28px var(--site-content-padding);
-  position: fixed;
-  top: 0;
-  z-index: 100;
-}
-
-.nav-logo {
-  font-family: var(--ark-font-display);
-  font-size: 1.15rem; font-weight: var(--ark-weight-thin);
-  letter-spacing: .14em; text-transform: uppercase; color: var(--ink);
-}
-.nav-logo span { color: var(--blush-deep); }
-
-.nav-links { display:flex; gap: clamp(20px, 2.6vw, 48px); list-style:none; }
-.nav-links a {
-  font-family: var(--ark-font-mono);
-  font-size: var(--ark-font-size-sm); letter-spacing: var(--ark-letter-spacing-mono); text-transform: uppercase;
-  color: var(--ink-ghost); text-decoration: none;
-  transition: color .25s;
-}
-.nav-links a:hover { color: var(--blush-deep); }
-.nav-links a.active { color: var(--blush-deep); }
 
 .nav-version {
   font-family: var(--ark-font-mono);
@@ -990,8 +961,8 @@ footer {
 body { font-family: var(--ark-font-sans); color: var(--ark-color-text); line-height: var(--ark-leading-normal); cursor: auto; }
 #cur, #curR { display: none; }
 
-.nav-logo, .section-title, .cover-logo, .pillar-num, .pillar-name, .tagline-text, .swatch-name, .type-sample-display, .wm-logo, .dnd-heading, .tone-num, .tone-name, .platform-name, .rules-heading, .closing-quote, .footer-logo { font-family: var(--ark-font-display); }
-.nav-links a, .nav-version, .eyebrow, .cover-tag, .toc-label, .toc-num, .toc-arrow, .c-label, .pos-label, .tagline-label, .swatch-hex, .swatch-role, .sage-note, .cr-label, .type-role, .type-name span, .type-sample-mono, .type-usage, .scale-label, .scale-sz, .scale-role, .wm-panel-label, .wm-logo-mono, .cn-label, .example-label, .platform-role, .closing-meta, .footer-copy { font-family: var(--ark-font-mono); }
+.section-title, .cover-logo, .pillar-num, .pillar-name, .tagline-text, .swatch-name, .type-sample-display, .wm-logo, .dnd-heading, .tone-num, .tone-name, .platform-name, .rules-heading, .closing-quote, .footer-logo { font-family: var(--ark-font-display); }
+.nav-version, .eyebrow, .cover-tag, .toc-label, .toc-num, .toc-arrow, .c-label, .pos-label, .tagline-label, .swatch-hex, .swatch-role, .sage-note, .cr-label, .type-role, .type-name span, .type-sample-mono, .type-usage, .scale-label, .scale-sz, .scale-role, .wm-panel-label, .wm-logo-mono, .cn-label, .example-label, .platform-role, .closing-meta, .footer-copy { font-family: var(--ark-font-mono); }
 .section-lead, .pillar-body, .pos-value, .cr-body, .type-sample-body, .cn-value, .dnd-list li, .tone-desc, .example-text, .platform-rules li, .cn-text, .rules-list li { font-family: var(--ark-font-sans); font-weight: var(--ark-weight-regular); color: var(--ark-color-text-muted); line-height: var(--ark-leading-normal); }
 .section-lead { max-width: var(--ark-measure-sm); font-size: 1.05rem; line-height: var(--ark-leading-relaxed); }
 .pillar-body, .pos-value, .cr-body, .cn-value, .dnd-list li, .tone-desc, .platform-rules li, .rules-list li { font-size: 0.98rem; }
@@ -1023,16 +994,6 @@ body { font-family: var(--ark-font-sans); color: var(--ark-color-text); line-hei
 }
 
 @media (max-width: 1100px) {
-  nav {
-    align-items: flex-start;
-    gap: 20px;
-    padding: 22px 24px;
-  }
-
-  .nav-links {
-    display: none;
-  }
-
   #cover {
     grid-template-columns: 1fr;
     min-height: auto;
@@ -1174,14 +1135,6 @@ body { font-family: var(--ark-font-sans); color: var(--ark-color-text); line-hei
 @media (max-width: 560px) {
   :root {
     --site-content-gutter: 18px;
-  }
-
-  nav {
-    gap: 8px 14px;
-  }
-
-  .nav-logo {
-    font-size: 1rem;
   }
 
   .nav-version {

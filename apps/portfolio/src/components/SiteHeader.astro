@@ -1,24 +1,24 @@
 ---
-import "./SiteHeader.css";
-
-const navItems = [
-  { href: "/#case-studies", label: "Case Studies" },
-  { href: "/#expertise", label: "Expertise" },
-  { href: "/#about", label: "About" },
-  { href: "/projects", label: "Writing" },
-];
+import "@arkaes/ui";
 ---
 
-<header class="site-header">
-  <a class="nav-logo" href="/" aria-label="Arkaes home">ARK<span>&AElig;</span>S</a>
-  <nav class="nav-links" aria-label="Main navigation">
-    {
-      navItems.map((item) => (
-        <a href={item.href}>
-          {item.label}
-        </a>
-      ))
-    }
-  </nav>
-  <a href="/#contact" class="nav-cta">Let's Talk</a>
-</header>
+<ark-navigation-root>
+  <ark-navigation-brand href="/"></ark-navigation-brand>
+
+  <ark-navigation-links>
+    <ark-nav-link href="/#case-studies">Case Studies</ark-nav-link>
+    <ark-nav-link href="/#expertise">Expertise</ark-nav-link>
+    <ark-nav-link href="/#about">About</ark-nav-link>
+    <ark-nav-link href="/projects">Writing</ark-nav-link>
+  </ark-navigation-links>
+
+  <ark-navigation-cta href="/#contact">Let's Talk</ark-navigation-cta>
+  <ark-navigation-mobile-toggle></ark-navigation-mobile-toggle>
+
+  <ark-navigation-mobile-menu>
+    <ark-nav-link href="/#case-studies">Case Studies</ark-nav-link>
+    <ark-nav-link href="/#expertise">Expertise</ark-nav-link>
+    <ark-nav-link href="/#about">About</ark-nav-link>
+    <ark-nav-link href="/projects">Writing</ark-nav-link>
+  </ark-navigation-mobile-menu>
+</ark-navigation-root>

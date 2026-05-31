@@ -34,6 +34,7 @@
   display: block;
   min-height: 100%;
   padding: var(--ark-space-5);
+  width: 100%;
 }
 
 .project-card:focus-visible {

@@ -358,6 +358,10 @@ body.hovering .cursor-ring {
   grid-template-rows: auto auto;
 }
 
+.project-card {
+  width: 100%;
+}
+
 .projects-grid > .project-card:first-child {
   grid-row: 1 / 3;
 }

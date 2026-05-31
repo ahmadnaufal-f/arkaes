@@ -11,19 +11,29 @@ import BrandGuidelineLayout from "../layouts/BrandGuidelineLayout.astro";
 <div id="curR"></div>
 
 <!-- NAV -->
-<nav>
-  <div class="nav-logo">ARK<span>&AElig;</span>S</div>
-  <ul class="nav-links">
-    <li><a href="#foundation">Foundation</a></li>
-    <li><a href="#color">Color</a></li>
-    <li><a href="#typography">Typography</a></li>
-    <li><a href="#logo">Logo</a></li>
-    <li><a href="#voice">Voice</a></li>
-    <li><a href="#touchpoints">Touchpoints</a></li>
-    <li><a href="#rules">Rules</a></li>
-  </ul>
+<ark-navigation-root>
+  <ark-navigation-brand href="#cover"></ark-navigation-brand>
+  <ark-navigation-links>
+    <ark-nav-link href="#foundation">Foundation</ark-nav-link>
+    <ark-nav-link href="#color">Color</ark-nav-link>
+    <ark-nav-link href="#typography">Typography</ark-nav-link>
+    <ark-nav-link href="#logo">Logo</ark-nav-link>
+    <ark-nav-link href="#voice">Voice</ark-nav-link>
+    <ark-nav-link href="#touchpoints">Touchpoints</ark-nav-link>
+    <ark-nav-link href="#rules">Rules</ark-nav-link>
+  </ark-navigation-links>
   <div class="nav-version">v1.1 - 2026</div>
-</nav>
+  <ark-navigation-mobile-toggle></ark-navigation-mobile-toggle>
+  <ark-navigation-mobile-menu>
+    <ark-nav-link href="#foundation">Foundation</ark-nav-link>
+    <ark-nav-link href="#color">Color</ark-nav-link>
+    <ark-nav-link href="#typography">Typography</ark-nav-link>
+    <ark-nav-link href="#logo">Logo</ark-nav-link>
+    <ark-nav-link href="#voice">Voice</ark-nav-link>
+    <ark-nav-link href="#touchpoints">Touchpoints</ark-nav-link>
+    <ark-nav-link href="#rules">Rules</ark-nav-link>
+  </ark-navigation-mobile-menu>
+</ark-navigation-root>
 
 <main>
 
@@ -523,13 +533,13 @@ import BrandGuidelineLayout from "../layouts/BrandGuidelineLayout.astro";
     
     // Active nav link
     const sections = document.querySelectorAll('section[id]');
-    const navLinks = document.querySelectorAll('.nav-links a');
+    const navLinks = document.querySelectorAll('ark-nav-link');
     const navObs = new IntersectionObserver(entries => {
       entries.forEach(e => {
         if (e.isIntersecting) {
-          navLinks.forEach(a => a.classList.remove('active'));
-          const link = document.querySelector(`.nav-links a[href="#${e.target.id}"]`);
-          if (link) link.classList.add('active');
+          navLinks.forEach(a => a.removeAttribute('active'));
+          const links = document.querySelectorAll(`ark-nav-link[href="#${e.target.id}"]`);
+          links.forEach(link => link.setAttribute('active', ''));
         }
       });
     }, { threshold: 0.35 });

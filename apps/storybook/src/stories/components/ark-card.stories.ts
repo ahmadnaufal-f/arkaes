@@ -7,15 +7,46 @@ type CardArgs = {
 };
 
 const renderCard = ({ interactive, variant }: CardArgs) => html`
-  <ark-card ?interactive=${interactive} variant=${variant} style="width: min(28rem, 80vw);">
-    <div style="display: grid; gap: 1rem; padding: 1.5rem;">
-      <ark-badge variant="pill">Case Study</ark-badge>
-      <h2 style="font: var(--ark-font-heading-md); margin: 0;">Quiet systems for sharp work</h2>
-      <p style="color: var(--ark-color-text-muted); line-height: 1.7; margin: 0;">
-        A restrained surface for grouping editorial UI, project summaries, and design-system notes.
+  <ark-card ?interactive=${interactive} variant=${variant}>
+    <ark-card-header>
+      <ark-card-title>Quiet systems for sharp work</ark-card-title>
+      <ark-card-description>
+        A restrained surface for organizing modular interface layouts.
+      </ark-card-description>
+      <ark-card-action>
+        <button
+          type="button"
+          style="
+            background: transparent;
+            border: none;
+            color: var(--ark-color-text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--ark-space-1);
+            transition: color var(--ark-duration-fast) var(--ark-ease-standard);
+          "
+          onmouseover="this.style.color='var(--ark-color-text)'"
+          onmouseout="this.style.color='var(--ark-color-text-muted)'"
+          aria-label="Information"
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="8" cy="8" r="6.25" />
+            <line x1="8" y1="5.25" x2="8" y2="5.25" stroke-linecap="round" stroke-width="2" />
+            <line x1="8" y1="7.75" x2="8" y2="11.25" stroke-linecap="round" />
+          </svg>
+        </button>
+      </ark-card-action>
+    </ark-card-header>
+    <ark-card-content>
+      <p style="margin: 0; line-height: 1.6; font-size: var(--ark-font-size-sm); color: var(--ark-color-text-muted);">
+        Detailed performance diagnostics, build telemetry, and environment details are formatted clean.
       </p>
+    </ark-card-content>
+    <ark-card-footer>
       <ark-button variant="secondary" size="sm">Inspect Component</ark-button>
-    </div>
+    </ark-card-footer>
   </ark-card>
 `;
 
@@ -39,7 +70,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<CardArgs>;
 
-export const Surface = {} satisfies Story;
+export const Default = {} satisfies Story;
 
 export const Interactive = {
   args: {
@@ -52,4 +83,17 @@ export const Project = {
     interactive: true,
     variant: "project",
   },
+} satisfies Story;
+
+export const HeaderOnly = {
+  render: ({ interactive, variant }: CardArgs) => html`
+    <ark-card ?interactive=${interactive} variant=${variant}>
+      <ark-card-header>
+        <ark-card-title>Telemetry Console</ark-card-title>
+        <ark-card-description>
+          Real-time diagnostics and active engine variables.
+        </ark-card-description>
+      </ark-card-header>
+    </ark-card>
+  `,
 } satisfies Story;

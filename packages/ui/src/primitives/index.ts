@@ -1,6 +1,7 @@
 import { ArkBadge, BadgeVariant } from "./ark-badge";
 import { ArkButton, ButtonVariant } from "./ark-button";
 import { ArkCheckbox } from "./ark-checkbox";
+import { ArkInput, InputType } from "./ark-input";
 import { ArkRadio } from "./ark-radio";
 import { ArkSpinner, SpinnerVariant } from "./ark-spinner";
 import { ArkToggle } from "./ark-toggle";
@@ -14,6 +15,7 @@ const defineElement = (tagName: string, element: CustomElementConstructor) => {
 defineElement("ark-badge", ArkBadge);
 defineElement("ark-button", ArkButton);
 defineElement("ark-checkbox", ArkCheckbox);
+defineElement("ark-input", ArkInput);
 defineElement("ark-radio", ArkRadio);
 defineElement("ark-spinner", ArkSpinner);
 defineElement("ark-toggle", ArkToggle);
@@ -24,6 +26,8 @@ export {
   ArkButton,
   ButtonVariant,
   ArkCheckbox,
+  ArkInput,
+  InputType,
   ArkRadio,
   ArkSpinner,
   SpinnerVariant,
@@ -35,9 +39,9 @@ declare global {
     "ark-badge": ArkBadge;
     "ark-button": ArkButton;
     "ark-checkbox": ArkCheckbox;
+    "ark-input": ArkInput;
     "ark-radio": ArkRadio;
     "ark-spinner": ArkSpinner;
     "ark-toggle": ArkToggle;
   }
 }
-
