@@ -1,4 +1,5 @@
 import { ArkBadge, BadgeVariant } from "./ark-badge";
+import type { BadgeSize, BadgeVariantValue } from "./ark-badge";
 import { ArkBrandLogo } from "./ark-brand-logo";
 import { ArkButton, ButtonVariant } from "./ark-button";
 import { ArkCheckbox } from "./ark-checkbox";
@@ -36,6 +37,8 @@ export {
   SpinnerVariant,
   ArkToggle,
 };
+
+export type { BadgeSize, BadgeVariantValue };
 
 declare global {
   interface HTMLElementTagNameMap {
