@@ -1,4 +1,6 @@
 import { css, html, LitElement, nothing } from "lit";
+import type { PropertyValues } from "lit";
+import { ifDefined } from "lit/directives/if-defined.js";
 import { when } from "lit/directives/when.js";
 
 export enum InputType {
@@ -7,21 +9,45 @@ export enum InputType {
   Email = "email",
   Url = "url",
   Number = "number",
+  Tel = "tel",
+  Search = "search",
 }
 
 export class ArkInput extends LitElement {
   static override properties = {
+    // ── Core ────────────────────────────────────────────────────────
     type: { type: String, reflect: true },
     name: { type: String, reflect: true },
     value: { type: String },
     placeholder: { type: String },
+
+    // ── UI meta ─────────────────────────────────────────────────────
     label: { type: String },
     hint: { type: String },
     error: { type: String },
+    size: { type: String, reflect: true },
+
+    // ── Boolean states ───────────────────────────────────────────────
     disabled: { type: Boolean, reflect: true },
     invalid: { type: Boolean, reflect: true },
     required: { type: Boolean, reflect: true },
-    size: { type: String, reflect: true },
+    readonly: { type: Boolean, reflect: true },
+    autofocus: { type: Boolean, reflect: true },
+
+    // ── Text / pattern ───────────────────────────────────────────────
+    autocomplete: { type: String },
+    pattern: { type: String },
+    inputmode: { type: String },
+    minlength: { type: Number },
+    maxlength: { type: Number },
+
+    // ── Numeric range ────────────────────────────────────────────────
+    min: { type: String },
+    max: { type: String },
+    step: { type: String },
+
+    // ── Form association ─────────────────────────────────────────────
+    form: { type: String },
   };
 
   static override styles = css`
@@ -125,6 +151,11 @@ export class ArkInput extends LitElement {
       box-shadow: 0 0 0 3px color-mix(in srgb, var(--ark-color-danger), transparent 75%);
     }
 
+    /* Readonly */
+    :host([readonly]) .control {
+      background: color-mix(in srgb, var(--ark-color-surface) 60%, transparent);
+    }
+
     /* ── Native input ────────────────────────────────────────────── */
     input {
       background: transparent;
@@ -208,32 +239,133 @@ export class ArkInput extends LitElement {
     }
   `;
 
+  // ── Core ──────────────────────────────────────────────────────────
   type: InputType | string = InputType.Text;
   name = "";
   value = "";
   placeholder = "";
+
+  // ── UI meta ───────────────────────────────────────────────────────
   label = "";
   hint = "";
   error = "";
+  size = "md";
+
+  // ── Boolean states ────────────────────────────────────────────────
   disabled = false;
   invalid = false;
   required = false;
-  size = "md";
+  readonly = false;
+  override autofocus = false;
+
+  // ── Text / pattern ────────────────────────────────────────────────
+  autocomplete: string | undefined = undefined;
+  pattern: string | undefined = undefined;
+  inputmode: string | undefined = undefined;
+  minlength: number | undefined = undefined;
+  maxlength: number | undefined = undefined;
+
+  // ── Numeric range ─────────────────────────────────────────────────
+  min: string | undefined = undefined;
+  max: string | undefined = undefined;
+  step: string | undefined = undefined;
+
+  // ── Form association ──────────────────────────────────────────────
+  form: string | undefined = undefined;
 
   private _showPassword = false;
-  private _inputId = `ark-input-${Math.random().toString(36).substring(2, 9)}`;
-  private _errorId = `ark-input-err-${Math.random().toString(36).substring(2, 9)}`;
-  private _hintId = `ark-input-hint-${Math.random().toString(36).substring(2, 9)}`;
+  private readonly _inputId = `ark-input-${Math.random().toString(36).substring(2, 9)}`;
+  private readonly _errorId = `ark-input-err-${Math.random().toString(36).substring(2, 9)}`;
+  private readonly _hintId = `ark-input-hint-${Math.random().toString(36).substring(2, 9)}`;
+
+  // ── Public API ────────────────────────────────────────────────────
+
+  /**
+   * Programmatically focus the internal `<input>`.
+   * Delegates to the native element so that the browser's focus ring
+   * and `:focus-within` styling on the control wrapper both activate.
+   */
+  override focus(options?: FocusOptions) {
+    this._nativeInput?.focus(options);
+  }
+
+  /**
+   * Programmatically blur the internal `<input>`.
+   */
+  override blur() {
+    this._nativeInput?.blur();
+  }
+
+  /**
+   * Returns the `ValidityState` of the internal `<input>`, or an object
+   * that reports `valid: true` when the shadow root is not yet available.
+   */
+  get validity(): ValidityState {
+    return this._nativeInput?.validity ?? ({ valid: true } as ValidityState);
+  }
+
+  /**
+   * Returns `true` if the internal `<input>` satisfies its constraints.
+   * Triggers the browser's built-in validation UI on the native input.
+   */
+  checkValidity(): boolean {
+    return this._nativeInput?.checkValidity() ?? true;
+  }
+
+  /**
+   * Reports validity and, if invalid, shows the browser's built-in
+   * validation tooltip on the native `<input>`.
+   */
+  reportValidity(): boolean {
+    return this._nativeInput?.reportValidity() ?? true;
+  }
+
+  // ── Lifecycle ────────────────────────────────────────────────────
+
+  protected override updated(changed: PropertyValues<this>) {
+    // Keep the live .value property in sync when the property changes
+    // programmatically after first render (Lit sets it via .value binding
+    // already, but we re-sync to be safe for external mutations).
+    if (changed.has("value") && this._nativeInput) {
+      if (this._nativeInput.value !== this.value) {
+        this._nativeInput.value = this.value;
+      }
+    }
+
+    // Forward autofocus after first render — native autofocus only fires
+    // during HTML parse; we replicate it for dynamically inserted elements.
+    if (changed.has("autofocus") && this.autofocus) {
+      this._nativeInput?.focus();
+    }
+  }
+
+  // ── Private helpers ───────────────────────────────────────────────
+
+  private get _nativeInput(): HTMLInputElement | null {
+    return this.renderRoot?.querySelector("input") ?? null;
+  }
 
   private _handleInput(e: Event) {
     e.stopPropagation();
     this.value = (e.target as HTMLInputElement).value;
-    this.dispatchEvent(new Event("input", { bubbles: true, composed: true }));
+    this.dispatchEvent(
+      new CustomEvent<{ value: string }>("input", {
+        bubbles: true,
+        composed: true,
+        detail: { value: this.value },
+      }),
+    );
   }
 
   private _handleChange(e: Event) {
     e.stopPropagation();
-    this.dispatchEvent(new Event("change", { bubbles: true, composed: true }));
+    this.dispatchEvent(
+      new CustomEvent<{ value: string }>("change", {
+        bubbles: true,
+        composed: true,
+        detail: { value: this.value },
+      }),
+    );
   }
 
   private _togglePassword() {
@@ -307,6 +439,16 @@ export class ArkInput extends LitElement {
             placeholder=${this.placeholder}
             ?disabled=${this.disabled}
             ?required=${this.required}
+            ?readonly=${this.readonly}
+            autocomplete=${ifDefined(this.autocomplete)}
+            inputmode=${ifDefined(this.inputmode)}
+            pattern=${ifDefined(this.pattern)}
+            min=${ifDefined(this.min)}
+            max=${ifDefined(this.max)}
+            step=${ifDefined(this.step)}
+            minlength=${ifDefined(this.minlength)}
+            maxlength=${ifDefined(this.maxlength)}
+            form=${ifDefined(this.form)}
             aria-invalid=${this.invalid ? "true" : "false"}
             aria-required=${this.required ? "true" : "false"}
             aria-describedby=${describedBy || nothing}
