@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
-import { html, nothing } from "lit";
+import { html } from "lit";
+import { ifDefined } from "lit/directives/if-defined.js";
 import { ButtonVariant } from "@arkaes/ui";
 
 type ButtonArgs = {
@@ -31,8 +32,8 @@ const renderButton = ({
         href=${href}
         size=${size}
         variant=${variant}
-        target=${target || nothing}
-        rel=${rel || nothing}
+        target=${ifDefined(target || undefined)}
+        rel=${ifDefined(rel || undefined)}
         ?disabled=${disabled}
         ?full-width=${fullWidth}
       >

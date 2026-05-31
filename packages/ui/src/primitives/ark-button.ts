@@ -1,4 +1,5 @@
-import { css, html, LitElement, nothing } from "lit";
+import { css, html, LitElement } from "lit";
+import { ifDefined } from "lit/directives/if-defined.js";
 
 export enum ButtonVariant {
   Primary = "primary",
@@ -157,7 +158,7 @@ export class ArkButton extends LitElement {
 
   private get _linkRel() {
     if (this.rel) return this.rel;
-    return this.target === "_blank" ? "noopener noreferrer" : nothing;
+    return this.target === "_blank" ? "noopener noreferrer" : undefined;
   }
 
   private get _variantClass() {
@@ -179,11 +180,11 @@ export class ArkButton extends LitElement {
       return html`
         <a
           class=${className}
-          href=${this.disabled ? nothing : this.href}
-          target=${this.target || nothing}
-          rel=${this._linkRel}
-          aria-disabled=${this.disabled ? "true" : nothing}
-          tabindex=${this.disabled ? "-1" : nothing}
+          href=${ifDefined(this.disabled ? undefined : this.href)}
+          target=${ifDefined(this.target || undefined)}
+          rel=${ifDefined(this._linkRel)}
+          aria-disabled=${ifDefined(this.disabled ? "true" : undefined)}
+          tabindex=${ifDefined(this.disabled ? "-1" : undefined)}
           @click=${this._handleDisabledClick}
         >
           <slot></slot>
