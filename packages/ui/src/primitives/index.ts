@@ -5,6 +5,7 @@ import { ArkButton, ButtonVariant, defineArkButton } from "./ark-button";
 import { ArkCheckbox, defineArkCheckbox } from "./ark-checkbox";
 import { ArkInput, InputType, defineArkInput } from "./ark-input";
 import { ArkRadio, defineArkRadio } from "./ark-radio";
+import { ArkRadioGroup, defineArkRadioGroup } from "./ark-radio-group";
 import { ArkSpinner, SpinnerVariant, defineArkSpinner } from "./ark-spinner";
 import { ArkToggle, defineArkToggle } from "./ark-toggle";
 
@@ -18,6 +19,7 @@ export {
   ArkInput,
   InputType,
   ArkRadio,
+  ArkRadioGroup,
   ArkSpinner,
   SpinnerVariant,
   ArkToggle,
@@ -27,6 +29,7 @@ export {
   defineArkCheckbox,
   defineArkInput,
   defineArkRadio,
+  defineArkRadioGroup,
   defineArkSpinner,
   defineArkToggle,
 };
