@@ -101,6 +101,11 @@ export class ArkRadioGroup extends LitElement {
     }
   }
 
+  formResetCallback() {
+    this.value = this._defaultValue;
+    this._syncRadios();
+  }
+
   private _getRadios() {
     return Array.from(this.querySelectorAll<ArkRadio>(RADIO_SELECTOR));
   }
@@ -164,6 +169,11 @@ export class ArkRadioGroup extends LitElement {
     this._syncRadios();
   }
 
+  private _getActiveElement() {
+    const root = this.getRootNode();
+    return root instanceof ShadowRoot ? root.activeElement : document.activeElement;
+  }
+
   private _handleKeyDown = (event: KeyboardEvent) => {
     const handledKeys = ["ArrowDown", "ArrowRight", "ArrowUp", "ArrowLeft", "Home", "End"];
 
@@ -174,14 +184,12 @@ export class ArkRadioGroup extends LitElement {
 
     event.preventDefault();
 
-    const activeElement = this.getRootNode() instanceof ShadowRoot
-      ? this.getRootNode().activeElement
-      : document.activeElement;
-    const currentIndex = Math.max(
-      enabledRadios.findIndex((radio) => radio === activeElement || radio.shadowRoot?.contains(activeElement)),
-      enabledRadios.findIndex((radio) => radio.checked),
-      0,
-    );
+    const activeElement = this._getActiveElement();
+    const activeIndex = enabledRadios.findIndex((radio) => {
+      return radio === activeElement || Boolean(activeElement && radio.shadowRoot?.contains(activeElement));
+    });
+    const checkedIndex = enabledRadios.findIndex((radio) => radio.checked);
+    const currentIndex = activeIndex >= 0 ? activeIndex : checkedIndex >= 0 ? checkedIndex : 0;
 
     let nextIndex = currentIndex;
 
