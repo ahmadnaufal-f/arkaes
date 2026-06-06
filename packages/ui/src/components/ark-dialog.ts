@@ -1,5 +1,9 @@
 import { css, html, LitElement } from "lit";
 import { defineElement } from "../define-element";
+import {
+  lockBodyScroll,
+  unlockBodyScroll,
+} from "../utils/body-scroll-lock";
 
 /**
  * ArkDialogRoot manages the open state of the dialog.
@@ -93,9 +97,9 @@ export class ArkDialogRoot extends LitElement {
 
   private _handleScrollLock(lock: boolean) {
     if (lock) {
-      document.body.style.overflow = "hidden";
+      lockBodyScroll(this);
     } else {
-      document.body.style.overflow = "";
+      unlockBodyScroll(this);
     }
   }
 

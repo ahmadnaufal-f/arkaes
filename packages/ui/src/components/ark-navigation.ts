@@ -2,6 +2,12 @@ import { css, html, LitElement, nothing } from "lit";
 import { when } from "lit/directives/when.js";
 import { defineElement } from "../define-element";
 import { defineArkBrandLogo } from "../primitives/ark-brand-logo";
+import {
+  lockBodyScroll,
+  unlockBodyScroll,
+} from "../utils/body-scroll-lock";
+
+let mobileMenuId = 0;
 
 /**
  * ArkNavigationRoot manages the scroll and mobile menu state.
@@ -97,18 +103,27 @@ export class ArkNavigationRoot extends LitElement {
   };
 
   private _syncChildren() {
-    this.querySelectorAll<HTMLElement & { menuOpen: boolean }>(
-      "ark-navigation-mobile-toggle, ark-navigation-mobile-menu",
+    const mobileMenu = this.querySelector<ArkNavigationMobileMenu>(
+      "ark-navigation-mobile-menu",
+    );
+
+    this.querySelectorAll<ArkNavigationMobileToggle>(
+      "ark-navigation-mobile-toggle",
     ).forEach((el) => {
       el.menuOpen = this.menuOpen;
+      el.menuControls = mobileMenu?.id ?? "";
     });
+
+    if (mobileMenu) {
+      mobileMenu.menuOpen = this.menuOpen;
+    }
   }
 
   private _handleScrollLock(lock: boolean) {
     if (lock) {
-      document.body.style.overflow = "hidden";
+      lockBodyScroll(this);
     } else {
-      document.body.style.overflow = "";
+      unlockBodyScroll(this);
     }
   }
 
@@ -192,10 +207,12 @@ export class ArkNavLink extends LitElement {
   static override properties = {
     href: { type: String },
     active: { type: Boolean, reflect: true },
+    autoActive: { type: Boolean, attribute: "auto-active" },
   };
 
   href = "";
   active = false;
+  autoActive = false;
 
   static override styles = css`
     :host {
@@ -250,12 +267,23 @@ export class ArkNavLink extends LitElement {
     this._checkActive();
     window.addEventListener("hashchange", this._checkActive);
     window.addEventListener("popstate", this._checkActive);
+    document.addEventListener("astro:page-load", this._checkActive);
   }
 
   override disconnectedCallback() {
     window.removeEventListener("hashchange", this._checkActive);
     window.removeEventListener("popstate", this._checkActive);
+    document.removeEventListener("astro:page-load", this._checkActive);
     super.disconnectedCallback();
+  }
+
+  protected override updated(changedProperties: Map<PropertyKey, unknown>) {
+    if (
+      changedProperties.has("autoActive") ||
+      changedProperties.has("href")
+    ) {
+      this._checkActive();
+    }
   }
 
   private _normalizePath(path: string) {
@@ -263,6 +291,7 @@ export class ArkNavLink extends LitElement {
   }
 
   private _checkActive = () => {
+    if (!this.autoActive) return;
     // Skip auto-detection in Storybook preview iframe to respect explicit control/story attributes
     if (window.location.pathname.includes("iframe.html")) {
       return;
@@ -313,7 +342,7 @@ export class ArkNavigationCta extends LitElement {
       border: 1px solid var(--ark-color-border);
       border-radius: var(--ark-radius-xs);
       color: var(--ark-color-text);
-      cursor: none;
+      cursor: pointer;
       font-family: var(--ark-font-mono);
       font-size: var(--ark-font-size-sm);
       letter-spacing: var(--ark-letter-spacing-mono);
@@ -381,9 +410,11 @@ export class ArkNavigationCta extends LitElement {
 export class ArkNavigationMobileToggle extends LitElement {
   static override properties = {
     menuOpen: { type: Boolean, reflect: true, attribute: "menu-open" },
+    menuControls: { type: String, attribute: "menu-controls" },
   };
 
   menuOpen = false;
+  menuControls = "";
 
   static override styles = css`
     :host {
@@ -436,6 +467,7 @@ export class ArkNavigationMobileToggle extends LitElement {
         @click=${this._handleClick}
         aria-label=${this.menuOpen ? "Close menu" : "Open menu"}
         aria-expanded=${this.menuOpen ? "true" : "false"}
+        aria-controls=${this.menuControls || nothing}
       >
         ${when(
           this.menuOpen,
@@ -465,9 +497,19 @@ export class ArkNavigationMobileToggle extends LitElement {
 export class ArkNavigationMobileMenu extends LitElement {
   static override properties = {
     menuOpen: { type: Boolean, reflect: true, attribute: "menu-open" },
+    label: { type: String },
   };
 
   menuOpen = false;
+  label = "Mobile navigation";
+
+  override connectedCallback() {
+    if (!this.id) {
+      mobileMenuId += 1;
+      this.id = `ark-navigation-mobile-menu-${mobileMenuId}`;
+    }
+    super.connectedCallback();
+  }
 
   static override styles = css`
     :host {
@@ -522,9 +564,9 @@ export class ArkNavigationMobileMenu extends LitElement {
 
   override render() {
     return html`
-      <div class="mobile-menu">
+      <nav class="mobile-menu" aria-label=${this.label}>
         <slot></slot>
-      </div>
+      </nav>
     `;
   }
 }
