@@ -38,6 +38,15 @@ const getOpenPortalContainer = () => {
   return portal;
 };
 
+const closeDialog = (event: Event) => {
+  event.currentTarget?.dispatchEvent(
+    new CustomEvent("ark-dialog:close", {
+      bubbles: true,
+      composed: true,
+    }),
+  );
+};
+
 const renderDialogWithPortal = () => html`
   <div style="display: flex; justify-content: center; padding: 4rem;">
     <ark-dialog-root>
@@ -54,7 +63,9 @@ const renderDialogWithPortal = () => html`
           </ark-dialog-description>
 
           <div style="display: flex; gap: var(--ark-space-3); justify-content: flex-end; margin-top: var(--ark-space-6);">
-            <ark-button variant="ghost" size="sm">Cancel</ark-button>
+            <ark-button variant="ghost" size="sm" @click=${closeDialog}>
+              Cancel
+            </ark-button>
             <ark-button variant="primary" size="sm">Confirm Action</ark-button>
           </div>
         </ark-dialog-content>
@@ -78,7 +89,9 @@ const renderDialogWithoutPortal = () => html`
         </ark-dialog-description>
 
         <div style="display: flex; gap: var(--ark-space-3); justify-content: flex-end; margin-top: var(--ark-space-6);">
-          <ark-button variant="ghost" size="sm">Cancel</ark-button>
+          <ark-button variant="ghost" size="sm" @click=${closeDialog}>
+            Cancel
+          </ark-button>
           <ark-button variant="primary" size="sm">Confirm Action</ark-button>
         </div>
       </ark-dialog-content>
