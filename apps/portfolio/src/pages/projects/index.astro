@@ -20,13 +20,13 @@ import "./_projects.css";
         <div class="project-grid">
           {
             professionalProjects.map((project) => (
-              <ark-card>
-                <a class="project-card" href={`/projects/${project.slug}`}>
-                  <span>Professional Work</span>
-                  <h3>{project.title}</h3>
-                  <p>{project.summary}</p>
-                </a>
-              </ark-card>
+              <ark-case-study-card
+                category="Professional Work"
+                href={`/projects/${project.slug}`}
+                summary={project.summary}
+                title={project.title}
+                variant="compact"
+              />
             ))
           }
         </div>
@@ -37,13 +37,13 @@ import "./_projects.css";
         <div class="project-grid">
           {
             sideProjects.map((project) => (
-              <ark-card>
-                <a class="project-card" href={`/projects/${project.slug}`}>
-                  <span>Side Project</span>
-                  <h3>{project.title}</h3>
-                  <p>{project.summary}</p>
-                </a>
-              </ark-card>
+              <ark-case-study-card
+                category="Side Project"
+                href={`/projects/${project.slug}`}
+                summary={project.summary}
+                title={project.title}
+                variant="compact"
+              />
             ))
           }
         </div>
@@ -53,6 +53,6 @@ import "./_projects.css";
 
   <script>
     import "@arkaes/ui/register/ark-badge";
-    import "@arkaes/ui/register/ark-card";
+    import "@arkaes/ui/register/ark-case-study-card";
   </script>
 </BaseLayout>

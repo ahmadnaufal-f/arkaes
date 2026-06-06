@@ -106,6 +106,7 @@ Primitives:
 - `ark-checkbox`
 - `ark-input`
 - `ark-radio`
+- `ark-radio-group`
 - `ark-spinner`
 - `ark-toggle`
 
@@ -135,9 +136,15 @@ Components:
 - `ark-navigation-mobile-toggle`
 - `ark-navigation-mobile-menu`
 
+Patterns:
+
+- `ark-case-study-card`
+
 For smaller imports, consumers can use subpaths such as `@arkaes/ui/primitives/ark-button`
-or `@arkaes/ui/components/ark-card`. To register only one component family as a side effect,
-use subpaths such as `@arkaes/ui/register/ark-button` or `@arkaes/ui/register/ark-card`.
+or `@arkaes/ui/components/ark-card`. Patterns are available through subpaths such as
+`@arkaes/ui/patterns/ark-case-study-card`. To register only one component family as a side effect,
+use subpaths such as `@arkaes/ui/register/ark-button`, `@arkaes/ui/register/ark-card`, or
+`@arkaes/ui/register/ark-case-study-card`.
 Component files carry their own `HTMLElementTagNameMap` declarations, so those single-component
 imports include the matching TypeScript custom-element typing.
 
