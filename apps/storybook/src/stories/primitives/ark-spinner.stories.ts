@@ -26,9 +26,17 @@ const meta = {
   argTypes: {
     decorative: {
       control: "boolean",
+      description: "Hides the spinner from assistive technology when nearby content announces the status.",
+      table: {
+        defaultValue: { summary: "false" },
+      },
     },
     label: {
       control: "text",
+      description: "Sets the accessible status label when the spinner is not decorative.",
+      table: {
+        defaultValue: { summary: "Loading" },
+      },
     },
     variant: {
       control: "inline-radio",
@@ -49,6 +57,21 @@ const meta = {
     size: "md",
   },
   component: "ark-spinner",
+  parameters: {
+    docs: {
+      description: {
+        component: `
+\`ark-spinner\` is a non-interactive status indicator and is not included in the keyboard tab order.
+
+Use \`label\` to describe the current operation for assistive technology, such as
+\`label="Saving changes"\`. The default label is \`"Loading"\`.
+
+Set \`decorative\` when nearby content already exposes the loading status. Decorative spinners use
+\`aria-hidden="true"\` and omit \`role="status"\` and \`aria-label\` to avoid duplicate announcements.
+        `,
+      },
+    },
+  },
   render: renderSpinner,
   title: "Primitives/Ark Spinner",
 } satisfies Meta<SpinnerArgs>;
