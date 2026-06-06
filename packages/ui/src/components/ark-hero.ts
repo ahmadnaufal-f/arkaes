@@ -1,5 +1,6 @@
-import { css, html, LitElement, nothing } from "lit";
+import { css, html, LitElement } from "lit";
 import { choose } from "lit/directives/choose.js";
+import { when } from "lit/directives/when.js";
 import { defineElement } from "../define-element";
 import { defineArkBadge } from "../primitives/ark-badge";
 import { defineArkBrandLogo } from "../primitives/ark-brand-logo";
@@ -495,9 +496,15 @@ export class ArkHero extends LitElement {
           () => html`
             <h1 class="hero-title hero-title--brand">
               <ark-brand-logo size="display"></ark-brand-logo>
-              ${this.titleEmphasis
-                ? html`<em><span class="title-line2">${this.titleEmphasis}</span></em>`
-                : nothing}
+              ${when(
+                this.titleEmphasis,
+                () =>
+                  html`<em
+                    ><span class="title-line2"
+                      >${this.titleEmphasis}</span
+                    ></em
+                  >`,
+              )}
             </h1>
           `,
         ],
@@ -506,9 +513,13 @@ export class ArkHero extends LitElement {
       () => html`
         <h1 class="hero-title">
           ${this.heading}
-          ${this.titleEmphasis
-            ? html`<em><span class="title-line2">${this.titleEmphasis}</span></em>`
-            : nothing}
+          ${when(
+            this.titleEmphasis,
+            () =>
+              html`<em
+                ><span class="title-line2">${this.titleEmphasis}</span></em
+              >`,
+          )}
         </h1>
       `,
     );
@@ -521,9 +532,13 @@ export class ArkHero extends LitElement {
         <div class="hero-left">
           <div class="hero-eyebrow">
             <slot name="eyebrow">
-              ${this.eyebrow
-                ? html`<ark-badge variant="eyebrow">${this.eyebrow}</ark-badge>`
-                : nothing}
+              ${when(
+                this.eyebrow,
+                () =>
+                  html`<ark-badge variant="eyebrow"
+                    >${this.eyebrow}</ark-badge
+                  >`,
+              )}
             </slot>
           </div>
           <div class="hero-title-slot">
@@ -531,23 +546,28 @@ export class ArkHero extends LitElement {
           </div>
           <div class="hero-subtitle-slot">
             <slot name="subtitle">
-              ${this.subtitle
-                ? html`<p class="hero-subtitle">${this.subtitle}</p>`
-                : nothing}
+              ${when(
+                this.subtitle,
+                () => html`<p class="hero-subtitle">${this.subtitle}</p>`,
+              )}
             </slot>
           </div>
           <div class="hero-actions">
             <slot name="actions">
-              ${this.primaryLabel
-                ? html`<ark-button href=${this.primaryHref}
+              ${when(
+                this.primaryLabel,
+                () =>
+                  html`<ark-button href=${this.primaryHref}
                     >${this.primaryLabel}</ark-button
-                  >`
-                : nothing}
-              ${this.ghostLabel
-                ? html`<ark-button href=${this.ghostHref} variant="ghost"
+                  >`,
+              )}
+              ${when(
+                this.ghostLabel,
+                () =>
+                  html`<ark-button href=${this.ghostHref} variant="ghost"
                     >${this.ghostLabel}</ark-button
-                  >`
-                : nothing}
+                  >`,
+              )}
             </slot>
           </div>
         </div>
