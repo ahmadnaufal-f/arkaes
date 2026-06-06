@@ -8,18 +8,28 @@ type SpinnerArgs = {
   variant: SpinnerVariant;
   size: "sm" | "md" | "lg" | "xl";
   thickness?: number;
+  label: string;
+  decorative: boolean;
 };
 
-const renderSpinner = ({ variant, size, thickness }: SpinnerArgs) => html`
+const renderSpinner = ({ variant, size, thickness, label, decorative }: SpinnerArgs) => html`
   <ark-spinner
     variant=${variant}
     size=${size}
     thickness=${ifDefined(thickness)}
+    label=${label}
+    ?decorative=${decorative}
   ></ark-spinner>
 `;
 
 const meta = {
   argTypes: {
+    decorative: {
+      control: "boolean",
+    },
+    label: {
+      control: "text",
+    },
     variant: {
       control: "inline-radio",
       options: Object.values(SpinnerVariant),
@@ -33,6 +43,8 @@ const meta = {
     },
   },
   args: {
+    decorative: false,
+    label: "Loading",
     variant: SpinnerVariant.Arc,
     size: "md",
   },
@@ -45,6 +57,21 @@ export default meta;
 type Story = StoryObj<SpinnerArgs>;
 
 export const Default = {} satisfies Story;
+
+export const Accessibility = {
+  render: () => html`
+    <div style="display: flex; flex-direction: column; gap: 16px;">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <ark-spinner label="Saving changes"></ark-spinner>
+        <span>Meaningful spinner with a custom accessible label</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <ark-spinner decorative></ark-spinner>
+        <span role="status">Loading projects</span>
+      </div>
+    </div>
+  `,
+} satisfies Story;
 
 export const Variants = {
   render: () => html`
