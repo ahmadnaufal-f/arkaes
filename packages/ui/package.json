@@ -36,6 +36,14 @@
     "./components/*": {
       "types": "./src/components/*.ts",
       "default": "./src/components/*.ts"
+    },
+    "./patterns": {
+      "types": "./src/patterns/index.ts",
+      "default": "./src/patterns/index.ts"
+    },
+    "./patterns/*": {
+      "types": "./src/patterns/*.ts",
+      "default": "./src/patterns/*.ts"
     }
   },
   "scripts": {

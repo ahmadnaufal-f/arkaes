@@ -29,33 +29,6 @@
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
 }
 
-.project-grid .project-card {
-  border: 1px solid var(--ark-color-border);
-  display: block;
-  min-height: 100%;
-  padding: var(--ark-space-5);
-  width: 100%;
-}
-
-.project-card:focus-visible {
-  outline: 2px solid var(--ark-color-focus);
-  outline-offset: 4px;
-}
-
-.project-grid .project-card span {
-  color: var(--ark-color-accent-strong);
-  font-family: var(--ark-font-mono);
-  font-size: var(--ark-font-size-xs);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
-.project-grid .project-card h3 {
-  font-size: var(--ark-font-size-xl);
-  margin-block: var(--ark-space-3);
-}
-
-.project-grid .project-card p,
 .project-detail section p {
   color: var(--ark-color-text-muted);
   line-height: var(--ark-line-height-relaxed);

@@ -5,6 +5,7 @@ import {
   defineArkCheckbox,
   defineArkInput,
   defineArkRadio,
+  defineArkRadioGroup,
   defineArkSpinner,
   defineArkToggle,
 } from "./primitives";
@@ -14,6 +15,7 @@ import {
   defineArkHero,
   defineArkNavigation,
 } from "./components";
+import { defineArkCaseStudyCard } from "./patterns";
 
 export const registerArkPrimitives = () => {
   defineArkBadge();
@@ -22,6 +24,7 @@ export const registerArkPrimitives = () => {
   defineArkCheckbox();
   defineArkInput();
   defineArkRadio();
+  defineArkRadioGroup();
   defineArkSpinner();
   defineArkToggle();
 };
@@ -33,9 +36,14 @@ export const registerArkComponents = () => {
   defineArkNavigation();
 };
 
+export const registerArkPatterns = () => {
+  defineArkCaseStudyCard();
+};
+
 export const registerArkUi = () => {
   registerArkPrimitives();
   registerArkComponents();
+  registerArkPatterns();
 };
 
 registerArkUi();
