@@ -1,16 +1,23 @@
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
+import { ifDefined } from "lit/directives/if-defined.js";
 
 type CardArgs = {
   interactive: boolean;
+  truncateDescription: boolean;
   variant: "surface" | "project";
+  width: "parent" | "sm" | "md" | "lg" | "xl" | "full";
 };
 
-const renderCard = ({ interactive, variant }: CardArgs) => html`
-  <ark-card ?interactive=${interactive} variant=${variant}>
+const renderCard = ({ interactive, truncateDescription, variant, width }: CardArgs) => html`
+  <ark-card
+    ?interactive=${interactive}
+    variant=${variant}
+    width=${ifDefined(width === "parent" ? undefined : width)}
+  >
     <ark-card-header>
       <ark-card-title>Quiet systems for sharp work</ark-card-title>
-      <ark-card-description>
+      <ark-card-description ?truncate=${truncateDescription}>
         A restrained surface for organizing modular interface layouts.
       </ark-card-description>
       <ark-card-action>
@@ -53,14 +60,24 @@ const renderCard = ({ interactive, variant }: CardArgs) => html`
 const meta = {
   argTypes: {
     interactive: { control: "boolean" },
+    truncateDescription: {
+      control: "boolean",
+      name: "description truncate",
+    },
     variant: {
       control: "inline-radio",
       options: ["surface", "project"],
     },
+    width: {
+      control: "select",
+      options: ["parent", "sm", "md", "lg", "xl", "full"],
+    },
   },
   args: {
     interactive: false,
+    truncateDescription: false,
     variant: "surface",
+    width: "parent",
   },
   component: "ark-card",
   render: renderCard,
@@ -86,11 +103,15 @@ export const Project = {
 } satisfies Story;
 
 export const HeaderOnly = {
-  render: ({ interactive, variant }: CardArgs) => html`
-    <ark-card ?interactive=${interactive} variant=${variant}>
+  render: ({ interactive, truncateDescription, variant, width }: CardArgs) => html`
+    <ark-card
+      ?interactive=${interactive}
+      variant=${variant}
+      width=${ifDefined(width === "parent" ? undefined : width)}
+    >
       <ark-card-header>
         <ark-card-title>Telemetry Console</ark-card-title>
-        <ark-card-description>
+        <ark-card-description ?truncate=${truncateDescription}>
           Real-time diagnostics and active engine variables.
         </ark-card-description>
       </ark-card-header>
