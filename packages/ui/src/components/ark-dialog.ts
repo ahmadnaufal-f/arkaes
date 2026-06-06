@@ -5,6 +5,14 @@ import {
   unlockBodyScroll,
 } from "../utils/body-scroll-lock";
 
+const getDeepActiveElement = (): HTMLElement | null => {
+  let element = document.activeElement;
+  while (element?.shadowRoot?.activeElement) {
+    element = element.shadowRoot.activeElement;
+  }
+  return element instanceof HTMLElement ? element : null;
+};
+
 /**
  * ArkDialogRoot manages the open state of the dialog.
  */
@@ -105,12 +113,12 @@ export class ArkDialogRoot extends LitElement {
 
   private _handleFocusRestoration(lock: boolean) {
     if (lock) {
-      this._previouslyFocusedElement = document.activeElement as HTMLElement;
+      this._previouslyFocusedElement = getDeepActiveElement();
     } else {
-      if (this._previouslyFocusedElement) {
+      if (this._previouslyFocusedElement?.isConnected) {
         this._previouslyFocusedElement.focus();
-        this._previouslyFocusedElement = null;
       }
+      this._previouslyFocusedElement = null;
     }
   }
 
@@ -156,7 +164,8 @@ export class ArkDialogTrigger extends LitElement {
  *
  * This lets the overlay and dialog panel escape any parent stacking context or
  * overflow:hidden while keeping full state-sync and event routing with the
- * parent ArkDialogRoot.
+ * parent ArkDialogRoot. Portal children are restored to this element when it
+ * disconnects, allowing the same portal instance to be mounted again.
  */
 export class ArkDialogPortal extends LitElement {
   /** The detached <div> that lives inside document.body. */
@@ -214,7 +223,10 @@ export class ArkDialogPortal extends LitElement {
       if (this._dialogRoot) {
         this._dialogRoot.unregisterPortalContainer(this._container);
       }
-      document.body.removeChild(this._container);
+      while (this._container.firstChild) {
+        this.appendChild(this._container.firstChild);
+      }
+      this._container.remove();
       this._container = null;
     }
     this._dialogRoot = null;
@@ -300,6 +312,7 @@ export class ArkDialogContent extends LitElement {
 
   private _titleId = `ark-dialog-title-${Math.random().toString(36).substring(2, 9)}`;
   private _descId = `ark-dialog-desc-${Math.random().toString(36).substring(2, 9)}`;
+  private _focusTimer: ReturnType<typeof setTimeout> | null = null;
 
   static override styles = css`
     :host {
@@ -355,26 +368,40 @@ export class ArkDialogContent extends LitElement {
 
   override disconnectedCallback() {
     window.removeEventListener("keydown", this._handleKeyDown);
+    this._clearFocusTimer();
     super.disconnectedCallback();
   }
 
   override firstUpdated() {
+    this._syncAccessibleName();
+  }
+
+  private _syncAccessibleName = () => {
     const title = this.querySelector("ark-dialog-title");
     if (title) {
       if (!title.id) title.id = this._titleId;
       this.setAttribute("aria-labelledby", title.id);
+    } else {
+      this.removeAttribute("aria-labelledby");
     }
+
     const desc = this.querySelector("ark-dialog-description");
     if (desc) {
       if (!desc.id) desc.id = this._descId;
       this.setAttribute("aria-describedby", desc.id);
+    } else {
+      this.removeAttribute("aria-describedby");
     }
-  }
+  };
 
   override updated(changedProperties: Map<PropertyKey, unknown>) {
     if (changedProperties.has("open")) {
       if (this.open) {
-        setTimeout(() => {
+        this._clearFocusTimer();
+        this._focusTimer = setTimeout(() => {
+          this._focusTimer = null;
+          if (!this.open) return;
+
           const focusables = this._getFocusableElements();
           if (focusables.length > 0) {
             focusables[0]?.focus();
@@ -382,16 +409,17 @@ export class ArkDialogContent extends LitElement {
             this.focus();
           }
         }, 50);
+      } else {
+        this._clearFocusTimer();
       }
     }
   }
 
-  private _getDeepActiveElement(): Element | null {
-    let el: Element | null = document.activeElement;
-    while (el?.shadowRoot?.activeElement) {
-      el = el.shadowRoot.activeElement;
+  private _clearFocusTimer() {
+    if (this._focusTimer !== null) {
+      clearTimeout(this._focusTimer);
+      this._focusTimer = null;
     }
-    return el;
   }
 
   private _deepContains(child: Node | null): boolean {
@@ -406,16 +434,38 @@ export class ArkDialogContent extends LitElement {
   }
 
   private _getFocusableElements(): HTMLElement[] {
-    const selector = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+    const selector = [
+      "button",
+      "[href]",
+      "input",
+      "select",
+      "textarea",
+      "[contenteditable]",
+      "[tabindex]",
+    ].join(",");
     const results: HTMLElement[] = [];
+
+    const isUnavailable = (element: HTMLElement) => {
+      if (
+        element.hidden ||
+        element.closest("[hidden], [inert], [aria-hidden='true']")
+      ) {
+        return true;
+      }
+
+      const disabled = "disabled" in element && Boolean(element.disabled);
+      const tabIndex = element.getAttribute("tabindex");
+      if (disabled || (tabIndex !== null && Number(tabIndex) < 0)) {
+        return true;
+      }
+
+      const styles = getComputedStyle(element);
+      return styles.display === "none" || styles.visibility === "hidden";
+    };
 
     const collect = (root: Element | ShadowRoot) => {
       for (const el of Array.from(root.querySelectorAll("*")) as HTMLElement[]) {
-        if (
-          el.matches(selector) &&
-          !el.hasAttribute("disabled") &&
-          el.getAttribute("aria-hidden") !== "true"
-        ) {
+        if (el.matches(selector) && !isUnavailable(el)) {
           results.push(el);
         }
         if (el.shadowRoot) {
@@ -451,7 +501,7 @@ export class ArkDialogContent extends LitElement {
 
       const first = focusables[0];
       const last = focusables[focusables.length - 1];
-      const active = this._getDeepActiveElement();
+      const active = getDeepActiveElement();
 
       if (e.shiftKey) {
         if (active === first || !this._deepContains(active as Node)) {
@@ -468,7 +518,7 @@ export class ArkDialogContent extends LitElement {
   };
 
   override render() {
-    return html`<slot></slot>`;
+    return html`<slot @slotchange=${this._syncAccessibleName}></slot>`;
   }
 }
 
