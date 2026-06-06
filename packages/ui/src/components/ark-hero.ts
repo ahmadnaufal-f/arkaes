@@ -11,20 +11,12 @@ export enum HeroTitleVariant {
 }
 
 /**
- * ArkHero — the full-bleed two-column hero section used across Arkaes apps.
+ * ArkHero is a two-column hero shell with slots for eyebrow, title, subtitle,
+ * actions, and visual content. The existing attributes render default slot
+ * content for simple use cases and backwards compatibility.
  *
- * Structure:
- *   .hero (grid 1fr 1fr)
- *   ├── .hero-left  — eyebrow badge, H1, subtitle, CTAs
- *   ├── .hero-right — blush-tinted panel with abstract geometric composition
- *   └── .hero-scroll — animated scroll indicator at bottom-left
- *
- * Title modes (title-variant attribute):
- *   "text"  — plain-text headline (default, portfolio)
- *   "brand" — renders the <ark-brand-logo size="display"> wordmark (brand-guideline)
- *
- * Mouse parallax on the composition block is handled internally via
- * connectedCallback / disconnectedCallback.
+ * The default visual includes pointer parallax. Custom visuals inherit the
+ * same local parallax wrapper, which is disabled for reduced-motion users.
  */
 export class ArkHero extends LitElement {
   static override properties = {
@@ -53,30 +45,69 @@ export class ArkHero extends LitElement {
   compLabel = "arkaes.dev - mmxxvi";
   scrollLabel = "Explore the work";
 
-  // ── Mouse parallax ──────────────────────────────────────────────────────
+  private _heroElement: HTMLElement | null = null;
+  private _motionPreference: MediaQueryList | null = null;
+
   private _handleParallax = (e: MouseEvent) => {
-    const comp = this.shadowRoot?.querySelector<HTMLElement>(".composition");
-    if (!comp) return;
-    const reduceMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-    if (reduceMotion) return;
-    const x = (e.clientX / window.innerWidth - 0.5) * 14;
-    const y = (e.clientY / window.innerHeight - 0.5) * 9;
-    comp.style.transform = `translate(${x}px, ${y}px)`;
+    const visual = this.renderRoot.querySelector<HTMLElement>(".visual");
+    if (!visual || !this._heroElement) return;
+
+    const bounds = this._heroElement.getBoundingClientRect();
+    const x = ((e.clientX - bounds.left) / bounds.width - 0.5) * 14;
+    const y = ((e.clientY - bounds.top) / bounds.height - 0.5) * 9;
+    visual.style.transform = `translate(${x}px, ${y}px)`;
   };
+
+  private _resetParallax = () => {
+    const visual = this.renderRoot.querySelector<HTMLElement>(".visual");
+    visual?.style.removeProperty("transform");
+  };
+
+  private _syncParallaxListener = () => {
+    if (!this._heroElement || !this._motionPreference) return;
+
+    this._heroElement.removeEventListener("mousemove", this._handleParallax);
+    this._heroElement.removeEventListener("mouseleave", this._resetParallax);
+
+    if (this._motionPreference.matches) {
+      this._resetParallax();
+      return;
+    }
+
+    this._heroElement.addEventListener("mousemove", this._handleParallax);
+    this._heroElement.addEventListener("mouseleave", this._resetParallax);
+  };
+
+  private _setupParallax() {
+    this._heroElement = this.renderRoot.querySelector<HTMLElement>(".hero");
+    this._motionPreference = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    );
+    this._motionPreference.addEventListener("change", this._syncParallaxListener);
+    this._syncParallaxListener();
+  }
 
   override connectedCallback() {
     super.connectedCallback();
-    document.addEventListener("mousemove", this._handleParallax);
+    if (this.hasUpdated) this._setupParallax();
+  }
+
+  protected override firstUpdated() {
+    this._setupParallax();
   }
 
   override disconnectedCallback() {
-    document.removeEventListener("mousemove", this._handleParallax);
+    this._heroElement?.removeEventListener("mousemove", this._handleParallax);
+    this._heroElement?.removeEventListener("mouseleave", this._resetParallax);
+    this._motionPreference?.removeEventListener(
+      "change",
+      this._syncParallaxListener,
+    );
+    this._heroElement = null;
+    this._motionPreference = null;
     super.disconnectedCallback();
   }
 
-  // ── Styles ─────────────────────────────────────────────────────────────
   static override styles = css`
     :host {
       display: block;
@@ -87,12 +118,16 @@ export class ArkHero extends LitElement {
       column-gap: 60px;
       display: grid;
       grid-template-columns: 1fr 1fr;
-      /* nav-height + hero-height = 100vh
-         --ark-nav-header-height is set by <ark-navigation-root> (default 80px) */
-      min-height: calc(max(100vh, 960px) - var(--ark-nav-header-height, 80px));
+      min-height: var(
+        --ark-hero-min-height,
+        calc(max(100vh, 960px) - var(--ark-nav-header-height, 80px))
+      );
       overflow: hidden;
-      padding-inline: var(--site-content-padding);
-      padding-top: 100px;
+      padding-inline: var(
+        --ark-hero-content-padding,
+        var(--site-content-padding, 60px)
+      );
+      padding-top: var(--ark-hero-padding-top, 100px);
       position: relative;
     }
 
@@ -106,16 +141,20 @@ export class ArkHero extends LitElement {
     }
 
     /* ── Hero title ─────────────────────────────────────────────────── */
-    .hero-title {
+    .hero-title-slot {
       animation: fadeSlideUp 1000ms var(--ark-ease-out) forwards 400ms;
+      opacity: 0;
+    }
+
+    .hero-title,
+    ::slotted([slot="title"]) {
       color: var(--ark-color-text);
       font-family: var(--ark-font-display);
       font-size: 4rem;
       font-weight: var(--ark-weight-thin);
       letter-spacing: 0;
       line-height: var(--ark-line-height-tight);
-      margin-top: 36px;
-      opacity: 0;
+      margin: 36px 0 0;
     }
 
     .hero-title em {
@@ -130,7 +169,8 @@ export class ArkHero extends LitElement {
     }
 
     /* ── Brand-variant title ────────────────────────────────────────── */
-    .hero-title--brand {
+    .hero-title--brand,
+    ::slotted([slot="title"][data-variant="brand"]) {
       font-size: 4rem;
     }
 
@@ -140,15 +180,19 @@ export class ArkHero extends LitElement {
     }
 
     /* ── Subtitle ───────────────────────────────────────────────────── */
-    .hero-subtitle {
+    .hero-subtitle-slot {
       animation: fadeSlideUp 900ms var(--ark-ease-out) forwards 650ms;
+      opacity: 0;
+    }
+
+    .hero-subtitle,
+    ::slotted([slot="subtitle"]) {
       color: var(--ark-color-text-muted);
       font-size: var(--ark-font-size-xl);
       font-weight: var(--ark-font-weight-light);
       line-height: var(--ark-line-height-relaxed);
       margin-block: 40px 56px;
       max-width: 380px;
-      opacity: 0;
     }
 
     /* ── Actions ────────────────────────────────────────────────────── */
@@ -160,9 +204,13 @@ export class ArkHero extends LitElement {
       opacity: 0;
     }
 
-    .hero-left ark-badge {
+    .hero-eyebrow {
       animation: fadeSlideUp 900ms var(--ark-ease-out) forwards 200ms;
       opacity: 0;
+    }
+
+    slot {
+      display: contents;
     }
 
     /* ── Right panel (composition) ─────────────────────────────────── */
@@ -183,10 +231,21 @@ export class ArkHero extends LitElement {
     }
 
     /* ── Geometric composition ──────────────────────────────────────── */
+    .visual {
+      align-items: center;
+      display: flex;
+      justify-content: center;
+      transition: transform 600ms var(--ark-ease-out);
+    }
+
+    ::slotted([slot="visual"]) {
+      max-height: 100%;
+      max-width: 100%;
+    }
+
     .composition {
       height: 440px;
       position: relative;
-      transition: transform 600ms var(--ark-ease-out);
       width: 340px;
     }
 
@@ -333,7 +392,8 @@ export class ArkHero extends LitElement {
 
     /* ── Responsive: wide ───────────────────────────────────────────── */
     @media (min-width: 1120px) {
-      .hero-title {
+      .hero-title,
+      ::slotted([slot="title"]) {
         font-size: 6.5rem;
       }
     }
@@ -351,7 +411,8 @@ export class ArkHero extends LitElement {
         padding: 72px 24px 56px;
       }
 
-      .hero-title {
+      .hero-title,
+      ::slotted([slot="title"]) {
         font-size: 4rem;
       }
 
@@ -359,7 +420,8 @@ export class ArkHero extends LitElement {
         padding-left: 0;
       }
 
-      .hero-subtitle {
+      .hero-subtitle,
+      ::slotted([slot="subtitle"]) {
         font-size: 1.14rem;
         max-width: none;
       }
@@ -374,9 +436,12 @@ export class ArkHero extends LitElement {
         min-height: 420px;
       }
 
+      .visual {
+        transform: none !important;
+      }
+
       .composition {
         height: 370px;
-        transform: none !important;
         width: 280px;
       }
 
@@ -406,14 +471,15 @@ export class ArkHero extends LitElement {
         width: 100%;
       }
 
-      .hero-title {
+      .hero-title,
+      ::slotted([slot="title"]) {
         font-size: 3rem;
       }
     }
 
     /* ── Reduced motion ──────────────────────────────────────────────── */
     @media (prefers-reduced-motion: reduce) {
-      .composition {
+      .visual {
         transform: none !important;
       }
     }
@@ -453,37 +519,53 @@ export class ArkHero extends LitElement {
       <div class="hero">
         <!-- ── Left column ──────────────────────────────────── -->
         <div class="hero-left">
-          ${this.eyebrow
-            ? html`<ark-badge variant="eyebrow">${this.eyebrow}</ark-badge>`
-            : nothing}
-          ${this._renderTitle()}
-          ${this.subtitle
-            ? html`<p class="hero-subtitle">${this.subtitle}</p>`
-            : nothing}
+          <div class="hero-eyebrow">
+            <slot name="eyebrow">
+              ${this.eyebrow
+                ? html`<ark-badge variant="eyebrow">${this.eyebrow}</ark-badge>`
+                : nothing}
+            </slot>
+          </div>
+          <div class="hero-title-slot">
+            <slot name="title">${this._renderTitle()}</slot>
+          </div>
+          <div class="hero-subtitle-slot">
+            <slot name="subtitle">
+              ${this.subtitle
+                ? html`<p class="hero-subtitle">${this.subtitle}</p>`
+                : nothing}
+            </slot>
+          </div>
           <div class="hero-actions">
-            ${this.primaryLabel
-              ? html`<ark-button href=${this.primaryHref}
-                  >${this.primaryLabel}</ark-button
-                >`
-              : nothing}
-            ${this.ghostLabel
-              ? html`<ark-button href=${this.ghostHref} variant="ghost"
-                  >${this.ghostLabel}</ark-button
-                >`
-              : nothing}
+            <slot name="actions">
+              ${this.primaryLabel
+                ? html`<ark-button href=${this.primaryHref}
+                    >${this.primaryLabel}</ark-button
+                  >`
+                : nothing}
+              ${this.ghostLabel
+                ? html`<ark-button href=${this.ghostHref} variant="ghost"
+                    >${this.ghostLabel}</ark-button
+                  >`
+                : nothing}
+            </slot>
           </div>
         </div>
 
-        <!-- ── Right column: geometric composition ─────────── -->
+        <!-- ── Right column: custom visual or default composition ──── -->
         <div class="hero-right">
           <div class="hero-image-panel">
-            <div class="composition">
-              <div class="comp-block-large"></div>
-              <div class="comp-block-accent"></div>
-              <div class="comp-block-sage"></div>
-              <div class="comp-circle"></div>
-              <div class="comp-sage-dot"></div>
-              <div class="comp-label">${this.compLabel}</div>
+            <div class="visual">
+              <slot name="visual">
+                <div class="composition">
+                  <div class="comp-block-large"></div>
+                  <div class="comp-block-accent"></div>
+                  <div class="comp-block-sage"></div>
+                  <div class="comp-circle"></div>
+                  <div class="comp-sage-dot"></div>
+                  <div class="comp-label">${this.compLabel}</div>
+                </div>
+              </slot>
             </div>
           </div>
         </div>
