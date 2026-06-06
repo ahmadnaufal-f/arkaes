@@ -8,18 +8,36 @@ type SpinnerArgs = {
   variant: SpinnerVariant;
   size: "sm" | "md" | "lg" | "xl";
   thickness?: number;
+  label: string;
+  decorative: boolean;
 };
 
-const renderSpinner = ({ variant, size, thickness }: SpinnerArgs) => html`
+const renderSpinner = ({ variant, size, thickness, label, decorative }: SpinnerArgs) => html`
   <ark-spinner
     variant=${variant}
     size=${size}
     thickness=${ifDefined(thickness)}
+    label=${label}
+    ?decorative=${decorative}
   ></ark-spinner>
 `;
 
 const meta = {
   argTypes: {
+    decorative: {
+      control: "boolean",
+      description: "Hides the spinner from assistive technology when nearby content announces the status.",
+      table: {
+        defaultValue: { summary: "false" },
+      },
+    },
+    label: {
+      control: "text",
+      description: "Sets the accessible status label when the spinner is not decorative.",
+      table: {
+        defaultValue: { summary: "Loading" },
+      },
+    },
     variant: {
       control: "inline-radio",
       options: Object.values(SpinnerVariant),
@@ -33,10 +51,27 @@ const meta = {
     },
   },
   args: {
+    decorative: false,
+    label: "Loading",
     variant: SpinnerVariant.Arc,
     size: "md",
   },
   component: "ark-spinner",
+  parameters: {
+    docs: {
+      description: {
+        component: `
+\`ark-spinner\` is a non-interactive status indicator and is not included in the keyboard tab order.
+
+Use \`label\` to describe the current operation for assistive technology, such as
+\`label="Saving changes"\`. The default label is \`"Loading"\`.
+
+Set \`decorative\` when nearby content already exposes the loading status. Decorative spinners use
+\`aria-hidden="true"\` and omit \`role="status"\` and \`aria-label\` to avoid duplicate announcements.
+        `,
+      },
+    },
+  },
   render: renderSpinner,
   title: "Primitives/Ark Spinner",
 } satisfies Meta<SpinnerArgs>;
@@ -45,6 +80,21 @@ export default meta;
 type Story = StoryObj<SpinnerArgs>;
 
 export const Default = {} satisfies Story;
+
+export const Accessibility = {
+  render: () => html`
+    <div style="display: flex; flex-direction: column; gap: 16px;">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <ark-spinner label="Saving changes"></ark-spinner>
+        <span>Meaningful spinner with a custom accessible label</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <ark-spinner decorative></ark-spinner>
+        <span role="status">Loading projects</span>
+      </div>
+    </div>
+  `,
+} satisfies Story;
 
 export const Variants = {
   render: () => html`

@@ -1,5 +1,6 @@
 import { css, html, LitElement, svg } from "lit";
 import { choose } from "lit/directives/choose.js";
+import { ifDefined } from "lit/directives/if-defined.js";
 import { defineElement } from "../define-element";
 
 export enum SpinnerVariant {
@@ -15,6 +16,8 @@ export class ArkSpinner extends LitElement {
     variant: { type: String, reflect: true },
     size: { type: String, reflect: true },
     thickness: { type: Number, reflect: true },
+    label: { type: String },
+    decorative: { type: Boolean, reflect: true },
   };
 
   static override styles = css`
@@ -114,11 +117,25 @@ export class ArkSpinner extends LitElement {
       animation: dot-pulse 1.2s ease-in-out infinite;
       border-radius: 50%;
     }
+
+    @media (prefers-reduced-motion: reduce) {
+      .spinner-arc,
+      .spinner-segments,
+      .spinner-orbital-outer,
+      .spinner-orbital-inner,
+      .spinner-dash-svg,
+      .spinner-dash-circle,
+      .dot-pulse-dot {
+        animation: none;
+      }
+    }
   `;
 
   variant: SpinnerVariant | string = SpinnerVariant.Arc;
   size = "md";
   thickness?: number;
+  label = "Loading";
+  decorative = false;
 
   get _pixelSize(): number {
     return { sm: 16, md: 24, lg: 36, xl: 48 }[this.size as "sm" | "md" | "lg" | "xl"] ?? 24;
@@ -130,8 +147,9 @@ export class ArkSpinner extends LitElement {
       <span
         class="spinner-arc"
         style=${style}
-        role="status"
-        aria-label="Loading"
+        role=${ifDefined(this.decorative ? undefined : "status")}
+        aria-label=${ifDefined(this.decorative ? undefined : this.label)}
+        aria-hidden=${ifDefined(this.decorative ? "true" : undefined)}
       ></span>
     `;
   }
@@ -173,8 +191,9 @@ export class ArkSpinner extends LitElement {
         height=${s}
         viewBox="0 0 ${s} ${s}"
         style="width: ${s}px; height: ${s}px;"
-        role="status"
-        aria-label="Loading"
+        role=${ifDefined(this.decorative ? undefined : "status")}
+        aria-label=${ifDefined(this.decorative ? undefined : this.label)}
+        aria-hidden=${ifDefined(this.decorative ? "true" : undefined)}
       >
         ${lines}
       </svg>
@@ -194,8 +213,9 @@ export class ArkSpinner extends LitElement {
         height=${s}
         viewBox="0 0 ${s} ${s}"
         style="width: ${s}px; height: ${s}px;"
-        role="status"
-        aria-label="Loading"
+        role=${ifDefined(this.decorative ? undefined : "status")}
+        aria-label=${ifDefined(this.decorative ? undefined : this.label)}
+        aria-hidden=${ifDefined(this.decorative ? "true" : undefined)}
       >
         <!-- track -->
         <circle
@@ -251,8 +271,9 @@ export class ArkSpinner extends LitElement {
         height=${s}
         viewBox="0 0 ${s} ${s}"
         style="width: ${s}px; height: ${s}px;"
-        role="status"
-        aria-label="Loading"
+        role=${ifDefined(this.decorative ? undefined : "status")}
+        aria-label=${ifDefined(this.decorative ? undefined : this.label)}
+        aria-hidden=${ifDefined(this.decorative ? "true" : undefined)}
       >
         <circle
           cx=${r}
@@ -284,8 +305,9 @@ export class ArkSpinner extends LitElement {
     return html`
       <span
         style="display: inline-flex; gap: ${gap}px; align-items: center;"
-        role="status"
-        aria-label="Loading"
+        role=${ifDefined(this.decorative ? undefined : "status")}
+        aria-label=${ifDefined(this.decorative ? undefined : this.label)}
+        aria-hidden=${ifDefined(this.decorative ? "true" : undefined)}
       >
         <span
           class="dot-pulse-dot"
