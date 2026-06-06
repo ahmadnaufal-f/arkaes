@@ -1,6 +1,8 @@
 import { css, html, LitElement } from "lit";
 import { defineElement } from "../define-element";
 
+export type ArkCardWidth = "sm" | "md" | "lg" | "xl" | "full";
+
 /**
  * ArkCard is the root card container.
  */
@@ -8,11 +10,33 @@ export class ArkCard extends LitElement {
   static override properties = {
     interactive: { reflect: true, type: Boolean },
     variant: { reflect: true, type: String },
+    width: { reflect: true, type: String },
   };
 
   static override styles = css`
     :host {
+      box-sizing: border-box;
       display: block;
+    }
+
+    :host([width="sm"]) {
+      width: min(100%, 20rem);
+    }
+
+    :host([width="md"]) {
+      width: min(100%, 28rem);
+    }
+
+    :host([width="lg"]) {
+      width: min(100%, 36rem);
+    }
+
+    :host([width="xl"]) {
+      width: min(100%, 48rem);
+    }
+
+    :host([width="full"]) {
+      width: 100%;
     }
 
     .card {
@@ -43,6 +67,7 @@ export class ArkCard extends LitElement {
 
   interactive = false;
   variant = "surface";
+  width: ArkCardWidth | undefined = undefined;
 
   override render() {
     return html`<div class="card"><slot></slot></div>`;
