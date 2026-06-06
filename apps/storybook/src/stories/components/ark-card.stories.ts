@@ -3,14 +3,15 @@ import { html } from "lit";
 
 type CardArgs = {
   interactive: boolean;
+  truncateDescription: boolean;
   variant: "surface" | "project";
 };
 
-const renderCard = ({ interactive, variant }: CardArgs) => html`
+const renderCard = ({ interactive, truncateDescription, variant }: CardArgs) => html`
   <ark-card ?interactive=${interactive} variant=${variant}>
     <ark-card-header>
       <ark-card-title>Quiet systems for sharp work</ark-card-title>
-      <ark-card-description>
+      <ark-card-description ?truncate=${truncateDescription}>
         A restrained surface for organizing modular interface layouts.
       </ark-card-description>
       <ark-card-action>
@@ -53,6 +54,10 @@ const renderCard = ({ interactive, variant }: CardArgs) => html`
 const meta = {
   argTypes: {
     interactive: { control: "boolean" },
+    truncateDescription: {
+      control: "boolean",
+      name: "description truncate",
+    },
     variant: {
       control: "inline-radio",
       options: ["surface", "project"],
@@ -60,6 +65,7 @@ const meta = {
   },
   args: {
     interactive: false,
+    truncateDescription: false,
     variant: "surface",
   },
   component: "ark-card",
@@ -86,11 +92,11 @@ export const Project = {
 } satisfies Story;
 
 export const HeaderOnly = {
-  render: ({ interactive, variant }: CardArgs) => html`
+  render: ({ interactive, truncateDescription, variant }: CardArgs) => html`
     <ark-card ?interactive=${interactive} variant=${variant}>
       <ark-card-header>
         <ark-card-title>Telemetry Console</ark-card-title>
-        <ark-card-description>
+        <ark-card-description ?truncate=${truncateDescription}>
           Real-time diagnostics and active engine variables.
         </ark-card-description>
       </ark-card-header>

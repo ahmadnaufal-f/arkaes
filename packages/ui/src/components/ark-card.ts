@@ -13,20 +13,20 @@ export class ArkCard extends LitElement {
   static override styles = css`
     :host {
       display: block;
-      margin-inline: auto;
-      width: min(28rem, calc(100vw - 2rem));
     }
 
     .card {
       background: var(--ark-color-surface);
       border: 1px solid var(--ark-color-border);
       border-radius: var(--ark-radius-md);
+      box-sizing: border-box;
       color: var(--ark-color-text);
       height: 100%;
       overflow: hidden;
       transition:
         border-color var(--ark-duration-normal) var(--ark-ease-out),
         transform var(--ark-duration-slow) var(--ark-ease-standard);
+      width: 100%;
     }
 
     :host([interactive]:hover) .card {
@@ -120,6 +120,10 @@ export class ArkCardTitle extends LitElement {
  * ArkCardDescription provides secondary supporting text inside the card header.
  */
 export class ArkCardDescription extends LitElement {
+  static override properties = {
+    truncate: { reflect: true, type: Boolean },
+  };
+
   static override styles = css`
     :host {
       display: block;
@@ -132,11 +136,16 @@ export class ArkCardDescription extends LitElement {
       font-weight: 300;
       line-height: var(--ark-line-height-normal);
       margin: 0;
+    }
+
+    :host([truncate]) .desc {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
   `;
+
+  truncate = false;
 
   override render() {
     return html`
