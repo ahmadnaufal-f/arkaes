@@ -116,9 +116,9 @@ export class ArkRadioGroup extends LitElement {
 
   private _syncRadios() {
     const radios = this._getRadios();
-    const enabledRadios = radios.filter((radio) => !radio.disabled && !this.disabled);
+    const enabledRadios = radios.filter((radio) => !radio.disabled && !radio.groupDisabled);
     const checkedRadio = radios.find((radio) => radio.value === this.value);
-    const tabbableRadio = checkedRadio && !checkedRadio.disabled && !this.disabled
+    const tabbableRadio = checkedRadio && !checkedRadio.disabled && !checkedRadio.groupDisabled
       ? checkedRadio
       : enabledRadios[0];
 
@@ -186,7 +186,8 @@ export class ArkRadioGroup extends LitElement {
 
     const activeElement = this._getActiveElement();
     const activeIndex = enabledRadios.findIndex((radio) => {
-      return radio === activeElement || Boolean(activeElement && radio.shadowRoot?.contains(activeElement));
+      return radio === activeElement ||
+      Boolean(activeElement && radio.shadowRoot?.contains(activeElement));
     });
     const checkedIndex = enabledRadios.findIndex((radio) => radio.checked);
     const currentIndex = activeIndex >= 0 ? activeIndex : checkedIndex >= 0 ? checkedIndex : 0;
@@ -209,7 +210,9 @@ export class ArkRadioGroup extends LitElement {
       nextIndex = enabledRadios.length - 1;
     }
 
-    this._selectRadio(enabledRadios[nextIndex], true);
+    if (enabledRadios[nextIndex]) {
+      this._selectRadio(enabledRadios[nextIndex]!, true);
+    }
   };
 
   override render() {
