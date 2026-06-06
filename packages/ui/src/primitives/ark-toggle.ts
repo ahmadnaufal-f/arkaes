@@ -1,8 +1,12 @@
 import { css, html, LitElement } from "lit";
+import type { PropertyValues } from "lit";
+import { ifDefined } from "lit/directives/if-defined.js";
 import { when } from "lit/directives/when.js";
 import { defineElement } from "../define-element";
 
 export class ArkToggle extends LitElement {
+  static formAssociated = true;
+
   static override properties = {
     name: { type: String, reflect: true },
     value: { type: String, reflect: true },
@@ -184,9 +188,67 @@ export class ArkToggle extends LitElement {
   size = "md";
   labelPosition = "right";
 
+  private readonly _internals = this.attachInternals();
+  private readonly _labelId = `ark-toggle-label-${Math.random().toString(36).substring(2, 9)}`;
+  private readonly _hintId = `ark-toggle-hint-${Math.random().toString(36).substring(2, 9)}`;
+  private _defaultChecked = false;
+  private _hasCapturedDefaults = false;
+
+  override connectedCallback() {
+    super.connectedCallback();
+
+    if (!this._hasCapturedDefaults) {
+      this._defaultChecked = this.checked;
+      this._hasCapturedDefaults = true;
+    }
+
+    this._syncFormValue();
+  }
+
+  protected override updated(changedProperties: PropertyValues<this>) {
+    if (
+      changedProperties.has("checked")
+      || changedProperties.has("disabled")
+      || changedProperties.has("value")
+    ) {
+      this._syncFormValue();
+    }
+  }
+
+  formDisabledCallback(disabled: boolean) {
+    this.disabled = disabled;
+    this._syncFormValue();
+  }
+
+  formResetCallback() {
+    this.checked = this._defaultChecked;
+    this._syncFormValue();
+  }
+
+  formStateRestoreCallback(state: string | File | FormData | null) {
+    this.checked = String(state) === "checked";
+    this._syncFormValue();
+  }
+
+  private _syncFormValue() {
+    const submittedValue = this.value || "on";
+    const formValue = this.checked && !this.disabled ? submittedValue : null;
+    const state = this.checked ? "checked" : "unchecked";
+
+    this._internals.setFormValue(formValue, state);
+  }
+
   private _toggle() {
     if (this.disabled) return;
     this.checked = !this.checked;
+    this._syncFormValue();
+    this.dispatchEvent(
+      new CustomEvent("input", {
+        bubbles: true,
+        composed: true,
+        detail: { checked: this.checked, value: this.value },
+      }),
+    );
     this.dispatchEvent(
       new CustomEvent("change", {
         bubbles: true,
@@ -204,13 +266,17 @@ export class ArkToggle extends LitElement {
   }
 
   override render() {
+    const labelledBy = this.label ? this._labelId : undefined;
+    const describedBy = this.label && this.hint ? this._hintId : undefined;
+
     return html`
       <div
         class="root"
         role="switch"
         aria-checked=${this.checked}
         aria-disabled=${this.disabled}
-        aria-label=${this.label}
+        aria-labelledby=${ifDefined(labelledBy)}
+        aria-describedby=${ifDefined(describedBy)}
         tabindex=${when(this.disabled, () => "-1", () => "0")}
         @click=${this._toggle}
         @keydown=${this._handleKeyDown}
@@ -222,8 +288,11 @@ export class ArkToggle extends LitElement {
           this.label,
           () => html`
             <div class="text">
-              <span class="label">${this.label}</span>
-              ${when(this.hint, () => html`<span class="hint">${this.hint}</span>`)}
+              <span class="label" id=${this._labelId}>${this.label}</span>
+              ${when(
+                this.hint,
+                () => html`<span class="hint" id=${this._hintId}>${this.hint}</span>`,
+              )}
             </div>
           `,
         )}
