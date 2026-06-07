@@ -314,11 +314,11 @@ export class ArkHero extends LitElement {
       color: var(--ark-color-text-ghost);
       font-family: var(--ark-font-mono);
       font-size: var(--ark-font-size-xs);
-      left: 24px;
+      left: 40px;
       letter-spacing: 0.22em;
       position: absolute;
       text-transform: uppercase;
-      top: 318px;
+      top: 20px;
     }
 
     /* ── Scroll indicator ───────────────────────────────────────────── */

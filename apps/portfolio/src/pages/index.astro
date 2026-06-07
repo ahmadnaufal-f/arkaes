@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import "./_index.css";
+import { techGroups, currentlyLearning } from "../data/techstack";
 ---
 
 <BaseLayout
@@ -20,7 +21,7 @@ import "./_index.css";
     primary-label="View Case Studies"
     ghost-href="#expertise"
     ghost-label="Explore engineering approach"
-    comp-label="arkaes.dev - mmxxvi"
+    comp-label="Ahmad Naufal - mmxxvi"
     scroll-label="Explore the work"
   ></ark-hero>
 
@@ -103,38 +104,6 @@ import "./_index.css";
     </div>
   </section>
 
-  <section class="about-strip" id="about">
-    <div class="about-portrait reveal">
-      <div class="portrait-placeholder">
-        <div class="portrait-monogram">A</div>
-      </div>
-      <div class="portrait-rule"></div>
-    </div>
-    <div class="about-content reveal reveal-delay-2">
-      <div class="section-eyebrow">About</div>
-      <h2 class="about-title">Engineering <em>structure</em><br />for product clarity</h2>
-      <p class="about-body">
-        A frontend engineer focused on the intersection of system quality and interface craft. I
-        build product experiences with clear architecture, thoughtful interaction, and enough visual
-        sensitivity to make complexity feel calm.
-      </p>
-      <div class="about-stats">
-        <div>
-          <div class="stat-number">6<span>+</span></div>
-          <div class="stat-label">Years building</div>
-        </div>
-        <div>
-          <div class="stat-number">40<span>+</span></div>
-          <div class="stat-label">Projects shipped</div>
-        </div>
-        <div>
-          <div class="stat-number">3</div>
-          <div class="stat-label">Core stacks</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <section class="services-section" id="expertise">
     <div class="section-header reveal">
       <div>
@@ -164,6 +133,89 @@ import "./_index.css";
         <span class="service-name">Cross-platform Product Development</span>
         <span class="service-arrow">&rarr;</span>
       </a>
+    </div>
+  </section>
+
+  <section class="techstack-section" id="techstack">
+    <div class="section-header reveal">
+      <div>
+        <div class="section-eyebrow">Tech Stacks &amp; Tools</div>
+        <h2 class="section-title">What I <em>build with</em></h2>
+      </div>
+      <div class="techstack-meta">
+        7 Domains<br />
+        33+ Technologies
+      </div>
+    </div>
+
+    <div class="techstack-grid">
+      {techGroups.map((group, index) => {
+        const num = String(index + 1).padStart(2, "0");
+        const delay = `reveal-delay-${index + 1}`;
+        const extraClasses = [group.emerging && "techstack-card--emerging", group.wide && "techstack-card--wide"].filter(Boolean).join(" ");
+        const classStr = extraClasses ? `techstack-card ${extraClasses}` : "techstack-card";
+        return (
+          <article class={`${classStr} reveal ${delay}`}>
+            <div class="techstack-number">{num}</div>
+            <h3 class="techstack-label">{group.label}</h3>
+            <div class="techstack-rule"></div>
+            <div class="techstack-pills">
+              {group.items.map((item) => (
+                <span class={`techstack-pill${item.primary ? " techstack-pill--primary" : ""}`}>
+                  {item.name}
+                </span>
+              ))}
+            </div>
+          </article>
+        );
+      })}
+    </div>
+
+    <div class="techstack-footer reveal">
+      <p class="techstack-note">
+        Primary framework is Lit for enterprise work. React for side projects and experiments. All
+        stacks applied to shipped, production software.
+      </p>
+      <div class="techstack-learning">
+        <div class="techstack-learning-label">Currently learning</div>
+        <div class="techstack-learning-pills">
+          {currentlyLearning.map((item) => (
+            <span class="techstack-learning-pill">{item}</span>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="about-strip" id="about">
+    <div class="about-portrait reveal">
+      <div class="portrait-placeholder">
+        <div class="portrait-monogram">A</div>
+      </div>
+      <div class="portrait-rule"></div>
+    </div>
+    <div class="about-content reveal reveal-delay-2">
+      <div class="section-eyebrow">About</div>
+      <h2 class="about-title">Engineering <em>structure</em><br />for product clarity</h2>
+      <p class="about-body">
+        A frontend engineer focused on the intersection of system quality and interface craft. I
+        build product experiences with clear architecture, thoughtful interaction, and enough visual
+        sensitivity to make complexity feel calm.
+      </p>
+      <div class="about-stats">
+        <div>
+          <div class="stat-number">6<span>+</span></div>
+          <div class="stat-label">Years building</div>
+        </div>
+        <div>
+          <div class="stat-number">40<span>+</span></div>
+          <div class="stat-label">Projects shipped</div>
+        </div>
+        <div>
+          <div class="stat-number">3</div>
+          <div class="stat-label">Core stacks</div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -234,7 +286,21 @@ import "./_index.css";
       { threshold: 0.1 },
     );
 
-    reveals.forEach((element) => observer.observe(element));
+    reveals.forEach((element) => {
+      const completeReveal = (event: Event) => {
+        if (
+          event instanceof TransitionEvent &&
+          event.propertyName === "opacity" &&
+          element.classList.contains("visible")
+        ) {
+          element.classList.add("reveal-complete");
+          element.removeEventListener("transitionend", completeReveal);
+        }
+      };
+
+      element.addEventListener("transitionend", completeReveal);
+      observer.observe(element);
+    });
 
 
   </script>
