@@ -36,6 +36,7 @@ import {
   defineArkDialogTitle,
   defineArkDialogTrigger,
 } from "./ark-dialog";
+import { ArkCursor, defineArkCursor, enableArkCursor } from "./ark-cursor";
 import { ArkHero, Hero, HeroTitleVariant, defineArkHero } from "./ark-hero";
 import {
   ArkNavigationRoot,
@@ -65,6 +66,7 @@ export {
   ArkCardContent,
   ArkCardFooter,
   Card,
+  ArkCursor,
   ArkDialogRoot,
   ArkDialogTrigger,
   ArkDialogPortal,
@@ -93,6 +95,8 @@ export {
   defineArkCardHeader,
   defineArkCardRoot,
   defineArkCardTitle,
+  defineArkCursor,
+  enableArkCursor,
   defineArkDialog,
   defineArkDialogClose,
   defineArkDialogContent,

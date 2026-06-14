@@ -36,68 +36,9 @@ button:focus-visible {
   outline-offset: 4px;
 }
 
-/* ── Custom cursor (site-wide) ───────────────────────────────────────── */
-/* Driven by the data-custom-cursor attribute on <html> (set in BaseLayout).
-   The same attribute also flips --ark-cursor-interactive to `none` inside
-   every @arkaes/ui component's shadow DOM (see @arkaes/tokens). */
-:root[data-custom-cursor],
-:root[data-custom-cursor] a,
-:root[data-custom-cursor] button,
-:root[data-custom-cursor] ark-card,
-:root[data-custom-cursor] ark-case-study-card {
-  cursor: none;
-}
-
-.cursor,
-.cursor-ring {
-  display: none;
-  pointer-events: none;
-  position: fixed;
-  transform: translate(-50%, -50%);
-}
-
-:root[data-custom-cursor] .cursor,
-:root[data-custom-cursor] .cursor-ring {
-  display: block;
-}
-
-.cursor {
-  background: var(--ark-color-accent);
-  border-radius: 50%;
-  height: 8px;
-  transition:
-    background var(--ark-duration-normal),
-    height var(--ark-duration-normal),
-    transform 100ms,
-    width var(--ark-duration-normal);
-  width: 8px;
-  z-index: 9999;
-}
-
-.cursor-ring {
-  border: 1px solid var(--ark-color-blush-light);
-  border-radius: 50%;
-  height: 32px;
-  transition:
-    border-color 400ms,
-    height 400ms,
-    transform 180ms var(--ark-ease-out),
-    width 400ms;
-  width: 32px;
-  z-index: 9998;
-}
-
-body.hovering .cursor {
-  background: var(--ark-color-counterpoint);
-  height: 12px;
-  width: 12px;
-}
-
-body.hovering .cursor-ring {
-  border-color: var(--ark-color-sage-light);
-  height: 48px;
-  width: 48px;
-}
+/* Custom cursor is provided by <ark-cursor> (see @arkaes/ui), mounted via
+   enableArkCursor() in BaseLayout — it owns the dot/ring, native-cursor
+   hiding, and hover state, so no app-level cursor CSS is needed here. */
 
 /* ── Scroll reveal (site-wide, IntersectionObserver-driven) ──────────── */
 .reveal {

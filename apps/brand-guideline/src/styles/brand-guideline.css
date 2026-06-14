@@ -36,21 +36,11 @@ body::before {
   opacity: 0.022; pointer-events: none; z-index: 9000;
 }
 
-/* ── CURSOR ──────────────────────────────────────────────────────────────── */
-/* Driven by the data-custom-cursor attribute on <html> (set in
-   BrandGuidelineLayout when enabled + a hover/fine pointer is available). The
-   same attribute flips --ark-cursor-interactive to `none` inside every
-   @arkaes/ui component's shadow DOM (see @arkaes/tokens). */
-:root[data-custom-cursor],
-:root[data-custom-cursor] a,
-:root[data-custom-cursor] button { cursor: none; }
-
-#cur  { display:none; position:fixed; width:8px; height:8px; background:var(--blush); border-radius:50%; pointer-events:none; z-index:9999; transform:translate(-50%,-50%); transition:width .3s,height .3s,background .3s; }
-#curR { display:none; position:fixed; width:32px; height:32px; border:1px solid var(--blush-light); border-radius:50%; pointer-events:none; z-index:9998; transform:translate(-50%,-50%); transition:width .4s,height .4s,border-color .4s; }
-:root[data-custom-cursor] #cur,
-:root[data-custom-cursor] #curR { display:block; }
-body.hov #cur  { width:14px; height:14px; background:var(--sage); }
-body.hov #curR { width:52px; height:52px; border-color:var(--sage-light); }
+/* Custom cursor is provided by <ark-cursor> (see @arkaes/ui), mounted via
+   enableArkCursor() in BrandGuidelineLayout — it owns the dot/ring, native-
+   cursor hiding, and hover state, so no app-level cursor CSS is needed here.
+   To match this site's palette it can be themed via the --ark-cursor-* custom
+   properties. */
 
 /* ── NAV ─────────────────────────────────────────────────────────────────── */
 
@@ -1050,14 +1040,5 @@ body { font-family: var(--ark-font-sans); color: var(--ark-color-text); line-hei
 
   .closing-sage-rule {
     width: 28px;
-  }
-}
-
-@media (pointer: coarse) {
-  body { cursor: auto; }
-
-  #cur,
-  #curR {
-    display: none;
   }
 }

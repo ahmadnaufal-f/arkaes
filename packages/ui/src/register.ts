@@ -11,6 +11,7 @@ import {
 } from "./primitives";
 import {
   defineArkCard,
+  defineArkCursor,
   defineArkDialog,
   defineArkHero,
   defineArkNavigation,
@@ -31,6 +32,7 @@ export const registerArkPrimitives = () => {
 
 export const registerArkComponents = () => {
   defineArkCard();
+  defineArkCursor();
   defineArkDialog();
   defineArkHero();
   defineArkNavigation();

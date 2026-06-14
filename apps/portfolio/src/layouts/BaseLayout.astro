@@ -32,21 +32,6 @@ const {
     <title>{title}</title>
   </head>
   <body>
-    <div
-      class="cursor"
-      id="cursor"
-      aria-hidden="true"
-      transition:persist="ark-cursor"
-    >
-    </div>
-    <div
-      class="cursor-ring"
-      id="cursorRing"
-      aria-hidden="true"
-      transition:persist="ark-cursor-ring"
-    >
-    </div>
-
     <SiteHeader />
     <main id="top" transition:animate={fade({ duration: "0.42s" })}>
       <slot />
@@ -57,15 +42,18 @@ const {
       // Register the full custom-element set once for the document lifetime so
       // elements stay defined across client-side View Transitions navigations.
       import "@arkaes/ui/register";
+      import { enableArkCursor } from "@arkaes/ui/components/ark-cursor";
       import Lenis from "lenis";
 
       // ── Persistent setup (runs once for the document lifetime) ──────────
-      const canUseCursor = window.matchMedia(
-        "(hover: hover) and (pointer: fine)",
-      ).matches;
       const reduceMotion = window.matchMedia(
         "(prefers-reduced-motion: reduce)",
       ).matches;
+
+      // Custom cursor — the component owns the dot/ring, native-cursor hiding,
+      // hover detection (across shadow DOM), capability gating, and View
+      // Transition persistence. See @arkaes/ui.
+      enableArkCursor();
 
       // ── Lenis smooth scroll ──────────────────────
       const lenis = reduceMotion ? null : new Lenis({ autoRaf: true, anchors: true });
@@ -90,55 +78,8 @@ const {
         }
       };
 
-      if (canUseCursor) {
-        const cursor = document.getElementById("cursor");
-        const ring = document.getElementById("cursorRing");
-
-        if (cursor && ring) {
-          let mouseX = 0;
-          let mouseY = 0;
-          let ringX = 0;
-          let ringY = 0;
-
-          document.addEventListener("mousemove", (event) => {
-            mouseX = event.clientX;
-            mouseY = event.clientY;
-            cursor.style.left = `${mouseX}px`;
-            cursor.style.top = `${mouseY}px`;
-          });
-
-          const animateRing = () => {
-            ringX += (mouseX - ringX) * 0.12;
-            ringY += (mouseY - ringY) * 0.12;
-            ring.style.left = `${ringX}px`;
-            ring.style.top = `${ringY}px`;
-            requestAnimationFrame(animateRing);
-          };
-
-          animateRing();
-        }
-
-        const interactiveSelector =
-          "a[href], button, ark-button, ark-card, ark-case-study-card";
-        document.addEventListener("pointerover", (event) => {
-          const overInteractive = event
-            .composedPath()
-            .some(
-              (node) =>
-                node instanceof Element && node.matches(interactiveSelector),
-            );
-          document.body.classList.toggle("hovering", overInteractive);
-        });
-      }
-
       // ── Per-page setup (runs on first load and after every navigation) ──
       const initPage = () => {
-        document.body.classList.remove("hovering");
-
-        if (canUseCursor) {
-          document.documentElement.dataset.customCursor = "";
-        }
-
         const reveals = document.querySelectorAll(".reveal");
         const observer = new IntersectionObserver(
           (entries) => {
