@@ -27,7 +27,6 @@ body {
   color: var(--ink);
   font-family: var(--ark-font-sans);
   overflow-x: hidden;
-  cursor: none;
 }
 
 body::before {
@@ -38,8 +37,18 @@ body::before {
 }
 
 /* ── CURSOR ──────────────────────────────────────────────────────────────── */
-#cur  { position:fixed; width:8px; height:8px; background:var(--blush); border-radius:50%; pointer-events:none; z-index:9999; transform:translate(-50%,-50%); transition:width .3s,height .3s,background .3s; }
-#curR { position:fixed; width:32px; height:32px; border:1px solid var(--blush-light); border-radius:50%; pointer-events:none; z-index:9998; transform:translate(-50%,-50%); transition:width .4s,height .4s,border-color .4s; }
+/* Driven by the data-custom-cursor attribute on <html> (set in
+   BrandGuidelineLayout when enabled + a hover/fine pointer is available). The
+   same attribute flips --ark-cursor-interactive to `none` inside every
+   @arkaes/ui component's shadow DOM (see @arkaes/tokens). */
+:root[data-custom-cursor],
+:root[data-custom-cursor] a,
+:root[data-custom-cursor] button { cursor: none; }
+
+#cur  { display:none; position:fixed; width:8px; height:8px; background:var(--blush); border-radius:50%; pointer-events:none; z-index:9999; transform:translate(-50%,-50%); transition:width .3s,height .3s,background .3s; }
+#curR { display:none; position:fixed; width:32px; height:32px; border:1px solid var(--blush-light); border-radius:50%; pointer-events:none; z-index:9998; transform:translate(-50%,-50%); transition:width .4s,height .4s,border-color .4s; }
+:root[data-custom-cursor] #cur,
+:root[data-custom-cursor] #curR { display:block; }
 body.hov #cur  { width:14px; height:14px; background:var(--sage); }
 body.hov #curR { width:52px; height:52px; border-color:var(--sage-light); }
 
@@ -242,7 +251,7 @@ ark-button {
 .swatch {
   height: 140px; padding: 16px;
   display: flex; flex-direction: column; justify-content: space-between;
-  cursor: none; position: relative; overflow: hidden;
+  position: relative; overflow: hidden;
   transition: transform .3s cubic-bezier(.25,.46,.45,.94);
 }
 
@@ -756,8 +765,7 @@ footer {
   --ark-color-focus: #dce8c5;
 }
 
-body { font-family: var(--ark-font-sans); color: var(--ark-color-text); line-height: var(--ark-leading-normal); cursor: auto; }
-#cur, #curR { display: none; }
+body { font-family: var(--ark-font-sans); color: var(--ark-color-text); line-height: var(--ark-leading-normal); }
 
 .section-title, .cover-logo, .pillar-num, .pillar-name, .tagline-text, .swatch-name, .type-sample-display, .wm-logo, .dnd-heading, .tone-num, .tone-name, .platform-name, .rules-heading, .closing-quote, .footer-logo { font-family: var(--ark-font-display); }
 .nav-version, .eyebrow, .cover-tag, .toc-label, .toc-num, .toc-arrow, .c-label, .pos-label, .tagline-label, .swatch-hex, .swatch-role, .sage-note, .cr-label, .type-role, .type-name span, .type-sample-mono, .type-usage, .scale-label, .scale-sz, .scale-role, .wm-panel-label, .wm-logo-mono, .cn-label, .example-label, .platform-role, .closing-meta, .footer-copy { font-family: var(--ark-font-mono); }

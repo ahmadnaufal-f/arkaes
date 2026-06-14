@@ -9,8 +9,6 @@ import { techGroups, currentlyLearning } from "../data/techstack";
   description="Performance-focused frontend engineering portfolio for UI systems, design systems, and cross-platform products."
 >
   <a class="skip-link" href="#case-studies">Skip to case studies</a>
-  <div class="cursor" id="cursor" aria-hidden="true"></div>
-  <div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
 
   <ark-hero
     eyebrow="Frontend Engineer &amp; UI Systems Architect"
@@ -26,21 +24,64 @@ import { techGroups, currentlyLearning } from "../data/techstack";
   ></ark-hero>
 
   <div class="marquee-section" aria-hidden="true">
-    <div class="marquee-track">
-      <div class="marquee-item">Frontend Architecture</div>
-      <div class="marquee-item">Design Systems</div>
-      <div class="marquee-item">Performance Engineering</div>
-      <div class="marquee-item">Cross-platform Apps</div>
-      <div class="marquee-item">Interaction Engineering</div>
-      <div class="marquee-item">Product Thinking</div>
-      <div class="marquee-item">Frontend Architecture</div>
-      <div class="marquee-item">Design Systems</div>
-      <div class="marquee-item">Performance Engineering</div>
-      <div class="marquee-item">Cross-platform Apps</div>
-      <div class="marquee-item">Interaction Engineering</div>
-      <div class="marquee-item">Product Thinking</div>
+    <div class="marquee-track" data-marquee-track>
+      <div class="marquee-group" data-marquee-group>
+        <div class="marquee-item">Frontend Architecture</div>
+        <div class="marquee-item">Design Systems</div>
+        <div class="marquee-item">Performance Engineering</div>
+        <div class="marquee-item">Cross-platform Apps</div>
+        <div class="marquee-item">Interaction Engineering</div>
+        <div class="marquee-item">Product Thinking</div>
+      </div>
     </div>
   </div>
+
+  <script>
+    // Repeat the marquee group enough times to fill the viewport, then duplicate
+    // that filled run so translateX(-50%) loops seamlessly at any screen width.
+    // Items keep their natural spacing — the group count adapts to the width.
+    const SECONDS_PER_GROUP = 24; // crossing time for one group; keeps speed constant
+
+    function setupMarquee(track: HTMLElement) {
+      const base = track.querySelector<HTMLElement>("[data-marquee-group]");
+      if (!base) return;
+
+      // Reset to the single source group before measuring.
+      track
+        .querySelectorAll("[data-marquee-group][data-clone]")
+        .forEach((node) => node.remove());
+
+      const groupWidth = base.offsetWidth;
+      if (groupWidth === 0) return;
+
+      const copiesPerHalf = Math.max(1, Math.ceil(window.innerWidth / groupWidth));
+      const totalGroups = copiesPerHalf * 2;
+
+      const fragment = document.createDocumentFragment();
+      for (let i = 1; i < totalGroups; i += 1) {
+        const clone = base.cloneNode(true) as HTMLElement;
+        clone.setAttribute("data-clone", "");
+        fragment.appendChild(clone);
+      }
+      track.appendChild(fragment);
+
+      track.style.animationDuration = `${copiesPerHalf * SECONDS_PER_GROUP}s`;
+    }
+
+    function initMarquees() {
+      document
+        .querySelectorAll<HTMLElement>("[data-marquee-track]")
+        .forEach(setupMarquee);
+    }
+
+    let resizeTimer: number | undefined;
+    window.addEventListener("resize", () => {
+      window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(initMarquees, 150);
+    });
+
+    initMarquees();
+  </script>
 
   <section class="work-section" id="case-studies">
     <div class="section-header reveal">
@@ -220,88 +261,27 @@ import { techGroups, currentlyLearning } from "../data/techstack";
   </section>
 
   <section class="contact-section" id="contact">
-    <div class="contact-inner reveal">
-      <ark-badge variant="eyebrow">Get in touch</ark-badge>
-      <h2 class="contact-title">Let's build interfaces<br /><em>that hold up.</em></h2>
-      <a href="mailto:ahmadnaufal611@gmail.com" class="contact-email">
+    <div class="contact-inner">
+      <ark-badge variant="eyebrow" class="reveal">Get in touch</ark-badge>
+      <h2 class="contact-title reveal reveal-delay-1">
+        Let's build interfaces<br /><em>that hold up.</em>
+      </h2>
+      <a
+        href="mailto:ahmadnaufal611@gmail.com"
+        class="contact-email reveal reveal-delay-2"
+      >
         ahmadnaufal611@gmail.com
       </a>
-      <div class="contact-socials">
+      <div class="contact-socials reveal reveal-delay-3">
         <a href="#" class="contact-social-link">GitHub</a>
         <a href="#" class="contact-social-link">LinkedIn</a>
         <a href="#case-studies" class="contact-social-link">Case Studies</a>
       </div>
     </div>
+
+    <div class="contact-wordmark" aria-hidden="true">
+      <span class="wordmark">ARK<em class="ae">&AElig;</em>S</span>
+    </div>
   </section>
 
-  <script>
-    import "@arkaes/ui/register/ark-badge";
-    import "@arkaes/ui/register/ark-case-study-card";
-    import "@arkaes/ui/register/ark-hero";
-
-    const cursor = document.getElementById("cursor");
-    const ring = document.getElementById("cursorRing");
-    const canUseCursor = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
-
-    if (cursor && ring && canUseCursor) {
-      let mouseX = 0;
-      let mouseY = 0;
-      let ringX = 0;
-      let ringY = 0;
-
-      document.body.classList.add("has-custom-cursor");
-
-      document.addEventListener("mousemove", (event) => {
-        mouseX = event.clientX;
-        mouseY = event.clientY;
-        cursor.style.left = `${mouseX}px`;
-        cursor.style.top = `${mouseY}px`;
-      });
-
-      const animateRing = () => {
-        ringX += (mouseX - ringX) * 0.12;
-        ringY += (mouseY - ringY) * 0.12;
-        ring.style.left = `${ringX}px`;
-        ring.style.top = `${ringY}px`;
-        requestAnimationFrame(animateRing);
-      };
-
-      animateRing();
-
-      document.querySelectorAll("a, button, ark-card, ark-case-study-card").forEach((element) => {
-        element.addEventListener("mouseenter", () => document.body.classList.add("hovering"));
-        element.addEventListener("mouseleave", () => document.body.classList.remove("hovering"));
-      });
-    }
-
-    const reveals = document.querySelectorAll(".reveal");
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("visible");
-          }
-        });
-      },
-      { threshold: 0.1 },
-    );
-
-    reveals.forEach((element) => {
-      const completeReveal = (event: Event) => {
-        if (
-          event instanceof TransitionEvent &&
-          event.propertyName === "opacity" &&
-          element.classList.contains("visible")
-        ) {
-          element.classList.add("reveal-complete");
-          element.removeEventListener("transitionend", completeReveal);
-        }
-      };
-
-      element.addEventListener("transitionend", completeReveal);
-      observer.observe(element);
-    });
-
-
-  </script>
 </BaseLayout>

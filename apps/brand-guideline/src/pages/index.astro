@@ -485,7 +485,10 @@ import BrandGuidelineLayout from "../layouts/BrandGuidelineLayout.astro";
 </footer>
 
   <script is:inline>
-    // Decorative cursor nodes are present for legacy parity, but CSS keeps the native cursor active.
+    // Custom cursor. The dot/ring nodes are revealed only when <html> carries
+    // data-custom-cursor (set by BrandGuidelineLayout on hover/fine pointers);
+    // otherwise this animation runs against hidden nodes and the native cursor
+    // shows. See brand-guideline.css and the layout for the gating.
     const cur = document.getElementById('cur');
     const curR = document.getElementById('curR');
     let mx = 0, my = 0, rx = 0, ry = 0;
@@ -504,9 +507,18 @@ import BrandGuidelineLayout from "../layouts/BrandGuidelineLayout.astro";
       requestAnimationFrame(animR);
     })();
     
-    document.querySelectorAll('a, button, ark-button, .swatch, .pillar, .pos-item, .platform-card, .tone-attr, .toc-item').forEach(el => {
-      el.addEventListener('mouseenter', () => document.body.classList.add('hov'));
-      el.addEventListener('mouseleave', () => document.body.classList.remove('hov'));
+    // Enlarge the cursor over interactive elements. Delegated on the document
+    // and matched via composedPath() so it also sees elements inside component
+    // shadow roots (e.g. the <a> links in <ark-navigation>), which a light-DOM
+    // querySelectorAll could never reach. pointerover bubbles, so one handler
+    // covers enter and leave: each move recomputes whether the pointer is over
+    // something interactive.
+    const hoverSelector = 'a[href], button, ark-button, .swatch, .pillar, .pos-item, .platform-card, .tone-attr, .toc-item';
+    document.addEventListener('pointerover', e => {
+      const overInteractive = e.composedPath().some(
+        node => node instanceof Element && node.matches(hoverSelector),
+      );
+      document.body.classList.toggle('hov', overInteractive);
     });
     
     // Scroll reveal

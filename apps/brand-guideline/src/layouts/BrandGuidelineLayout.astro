@@ -32,6 +32,20 @@ const {
       import "@arkaes/ui/register/ark-badge";
       import "@arkaes/ui/register/ark-hero";
       import "@arkaes/ui/register/ark-navigation";
+
+      // Custom cursor: enabled for this site, but only activated when the
+      // device actually has a hover-capable, fine pointer. Setting the
+      // attribute on <html> reveals the cursor nodes (see brand-guideline.css)
+      // and flips --ark-cursor-interactive to `none` inside every @arkaes/ui
+      // component's shadow DOM (see @arkaes/tokens).
+      const CUSTOM_CURSOR_ENABLED = true;
+      const pointerAllowsCursor = window.matchMedia(
+        "(hover: hover) and (pointer: fine)",
+      ).matches;
+
+      if (CUSTOM_CURSOR_ENABLED && pointerAllowsCursor) {
+        document.documentElement.dataset.customCursor = "";
+      }
     </script>
   </body>
 </html>

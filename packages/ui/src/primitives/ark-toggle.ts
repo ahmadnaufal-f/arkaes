@@ -30,7 +30,7 @@ export class ArkToggle extends LitElement {
 
     .root {
       align-items: center;
-      cursor: pointer;
+      cursor: var(--ark-cursor-interactive, pointer);
       display: inline-flex;
       gap: var(--gap);
       outline: none;

@@ -31,6 +31,7 @@ export class ArkCaseStudyCard extends LitElement {
     .link {
       background: var(--ark-color-background);
       color: inherit;
+      cursor: var(--ark-cursor-interactive, pointer);
       display: grid;
       height: 100%;
       overflow: hidden;
