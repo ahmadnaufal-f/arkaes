@@ -601,7 +601,7 @@ export class ArkDialogClose extends LitElement {
       background: transparent;
       border: none;
       color: var(--ark-color-text-muted);
-      cursor: pointer;
+      cursor: var(--ark-cursor-interactive, pointer);
       display: flex;
       align-items: center;
       justify-content: center;

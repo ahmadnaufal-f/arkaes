@@ -33,7 +33,7 @@ export class ArkButton extends LitElement {
     button {
       align-items: center;
       border: 0;
-      cursor: pointer;
+      cursor: var(--ark-cursor-interactive, pointer);
       display: inline-flex;
       font-family: var(--ark-font-mono);
       justify-content: center;

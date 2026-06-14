@@ -32,7 +32,7 @@ export class ArkRadio extends LitElement {
 
     .root {
       align-items: flex-start;
-      cursor: pointer;
+      cursor: var(--ark-cursor-interactive, pointer);
       display: inline-flex;
       gap: var(--gap);
       outline: none;

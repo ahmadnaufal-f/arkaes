@@ -391,6 +391,83 @@ export class ArkHero extends LitElement {
       100% { left: 100%; }
     }
 
+    @keyframes compScatter {
+      to {
+        scale: var(--scatter-scale, 1.4);
+        translate: var(--scatter-x, 0) var(--scatter-y, 0);
+        opacity: 0;
+      }
+    }
+
+    /* Native scroll-driven scatter — the composition pieces drift apart and
+       grow as the hero scrolls away, flying out of frame. Each piece keeps its
+       time-based entrance (auto timeline) and rides the root scroll timeline
+       for the scatter, animating the independent translate/scale properties so
+       it composes with the entrance transform instead of overriding it.
+       Progressive enhancement: browsers without scroll-driven animation, and
+       reduced-motion users, keep the static composition. */
+    @supports (animation-timeline: scroll()) {
+      @media (prefers-reduced-motion: no-preference) {
+        .comp-block-large {
+          --scatter-x: -132px;
+          --scatter-y: -102px;
+          animation:
+            compIn 1000ms var(--ark-ease-out) forwards 500ms,
+            compScatter linear both;
+          animation-range: normal, 0 90vh;
+          animation-timeline: auto, scroll(root block);
+        }
+
+        .comp-block-accent {
+          --scatter-x: 130px;
+          --scatter-y: -74px;
+          animation:
+            compIn 1000ms var(--ark-ease-out) forwards 720ms,
+            compScatter linear both;
+          animation-range: normal, 0 90vh;
+          animation-timeline: auto, scroll(root block);
+        }
+
+        .comp-block-sage {
+          --scatter-x: -120px;
+          --scatter-y: 98px;
+          animation:
+            compIn 1000ms var(--ark-ease-out) forwards 920ms,
+            compScatter linear both;
+          animation-range: normal, 0 90vh;
+          animation-timeline: auto, scroll(root block);
+        }
+
+        .comp-circle {
+          --scatter-x: 132px;
+          --scatter-y: 90px;
+          animation:
+            compIn 1100ms var(--ark-ease-out) forwards 1100ms,
+            compScatter linear both;
+          animation-range: normal, 0 90vh;
+          animation-timeline: auto, scroll(root block);
+        }
+
+        .comp-sage-dot {
+          --scatter-x: 170px;
+          --scatter-y: 72px;
+          animation:
+            compIn 1000ms var(--ark-ease-out) forwards 1300ms,
+            compScatter linear both;
+          animation-range: normal, 0 90vh;
+          animation-timeline: auto, scroll(root block);
+        }
+
+        .comp-label {
+          --scatter-x: -54px;
+          --scatter-y: -42px;
+          animation: compScatter linear both;
+          animation-range: 0 90vh;
+          animation-timeline: scroll(root block);
+        }
+      }
+    }
+
     /* ── Responsive: wide ───────────────────────────────────────────── */
     @media (min-width: 1120px) {
       .hero-title,

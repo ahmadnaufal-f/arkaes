@@ -1,6 +1,8 @@
 ---
+import { ClientRouter, fade } from "astro:transitions";
 import SiteFooter from "../components/SiteFooter.astro";
 import SiteHeader from "../components/SiteHeader.astro";
+import "lenis/dist/lenis.css";
 import "../styles/global.css";
 
 interface Props {
@@ -23,16 +25,86 @@ const {
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400&family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&display=swap"
       rel="stylesheet"
     />
+    <ClientRouter />
     <title>{title}</title>
   </head>
   <body>
     <SiteHeader />
-    <main>
+    <main id="top" transition:animate={fade({ duration: "0.42s" })}>
       <slot />
     </main>
     <SiteFooter />
+
+    <script>
+      // Register the full custom-element set once for the document lifetime so
+      // elements stay defined across client-side View Transitions navigations.
+      import "@arkaes/ui/register";
+      import { enableArkCursor } from "@arkaes/ui/components/ark-cursor";
+      import Lenis from "lenis";
+
+      // ── Persistent setup (runs once for the document lifetime) ──────────
+      const reduceMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      ).matches;
+
+      // Custom cursor — the component owns the dot/ring, native-cursor hiding,
+      // hover detection (across shadow DOM), capability gating, and View
+      // Transition persistence. See @arkaes/ui.
+      enableArkCursor();
+
+      // ── Lenis smooth scroll ──────────────────────
+      const lenis = reduceMotion ? null : new Lenis({ autoRaf: true, anchors: true });
+
+      if (lenis) {
+        // View Transitions keep the document alive, so re-sync Lenis to the
+        // new page's scroll position (hash target or top) after each swap,
+        // otherwise it would lerp back toward the previous page's offset.
+        document.addEventListener("astro:after-swap", () => {
+          const target = window.location.hash
+            ? document.querySelector<HTMLElement>(window.location.hash)
+            : null;
+          lenis.scrollTo(target ?? 0, { immediate: true });
+        });
+      }
+
+      const scrollToTop = () => {
+        if (lenis) {
+          lenis.scrollTo(0);
+        } else {
+          window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
+        }
+      };
+
+      // ── Per-page setup (runs on first load and after every navigation) ──
+      const initPage = () => {
+        const reveals = document.querySelectorAll(".reveal");
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("visible");
+                observer.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.08 },
+        );
+        reveals.forEach((element) => observer.observe(element));
+
+        document.querySelectorAll<HTMLElement>("[data-scroll-top]").forEach(
+          (element) => {
+            element.addEventListener("click", (event) => {
+              event.preventDefault();
+              scrollToTop();
+            });
+          },
+        );
+      };
+
+      document.addEventListener("astro:page-load", initPage);
+    </script>
   </body>
 </html>

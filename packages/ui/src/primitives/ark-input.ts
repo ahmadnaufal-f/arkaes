@@ -191,7 +191,7 @@ export class ArkInput extends LitElement {
       background: transparent;
       border: none;
       color: var(--ark-color-text-muted);
-      cursor: pointer;
+      cursor: var(--ark-cursor-interactive, pointer);
       display: flex;
       flex-shrink: 0;
       height: var(--icon-size);

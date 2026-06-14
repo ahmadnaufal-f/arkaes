@@ -151,6 +151,7 @@ export class ArkNavigationBrand extends LitElement {
     .brand {
       display: inline-flex;
       align-items: center;
+      cursor: var(--ark-cursor-interactive, pointer);
       text-decoration: none;
     }
 
@@ -221,6 +222,7 @@ export class ArkNavLink extends LitElement {
 
     .nav-link {
       color: var(--ark-color-text-ghost);
+      cursor: var(--ark-cursor-interactive, pointer);
       display: inline-flex;
       flex-direction: column;
       font-family: var(--ark-font-mono);
@@ -342,7 +344,7 @@ export class ArkNavigationCta extends LitElement {
       border: 1px solid var(--ark-color-border);
       border-radius: var(--ark-radius-xs);
       color: var(--ark-color-text);
-      cursor: pointer;
+      cursor: var(--ark-cursor-interactive, pointer);
       font-family: var(--ark-font-mono);
       font-size: var(--ark-font-size-sm);
       letter-spacing: var(--ark-letter-spacing-mono);
@@ -432,7 +434,7 @@ export class ArkNavigationMobileToggle extends LitElement {
       background: transparent;
       border: none;
       color: var(--ark-color-text);
-      cursor: pointer;
+      cursor: var(--ark-cursor-interactive, pointer);
       display: flex;
       justify-content: center;
       padding: 6px;
