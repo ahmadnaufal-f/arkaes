@@ -115,8 +115,15 @@ export function renderSectionHtml(
       continue;
     }
 
-    // Regular paragraph
-    parts.push(`<p>${trimmed.replace(/\n/g, " ")}</p>`);
+    // Regular paragraph — supports inline [text](url) links
+    const rendered = trimmed
+      .replace(/\n/g, " ")
+      .replace(
+        /\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g,
+        (_, text, href) =>
+          `<a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(text)}</a>`,
+      );
+    parts.push(`<p>${rendered}</p>`);
   }
 
   return parts.join("");

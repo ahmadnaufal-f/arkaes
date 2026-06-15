@@ -60,6 +60,18 @@ For users who want AI summaries, the app can also use optional context:
 
 This keeps the main tracker simple while giving the AI enough context to create more useful summaries.
 
+## Design approach
+
+The visual design was inspired by Samsung's One UI design language.
+
+One UI places interactive content in the lower half of the screen so users can reach it with one thumb. It sounds obvious, but most apps still force you to stretch to the top of a large screen just to tap something. One UI treats thumb reachability as a core design constraint, not an afterthought.
+
+When I applied this thinking to the tracker, I noticed that the start and stop buttons were positioned near the top of the screen. Fine on paper — but the target user is a mother who may be holding a pump in one hand and navigating the app with the other. That was not a layout problem. That was an empathy problem.
+
+Taking a page from One UI's approach, I moved those buttons to a floating position at the bottom, where the hand naturally rests. The difference is immediately noticeable — not because it looks different, but because it just feels easier to use.
+
+I wrote more about this thinking in a [LinkedIn post](https://www.linkedin.com/posts/ahmad-naufal-f_oneui-taught-me-something-activity-7462405914063540224-z2tb?utm_source=share&utm_medium=member_android&rcm=ACoAACBA6AwBV5_PTernV1TdRQgzpNomavm4nzk) after shipping the change.
+
 ## AI integration
 
 The AI feature uses the OpenAI API to summarize the user's pumping logs.
