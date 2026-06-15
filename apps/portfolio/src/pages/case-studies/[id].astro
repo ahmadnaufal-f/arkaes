@@ -1,0 +1,91 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { parseSections, renderSectionHtml } from "../../utils/case-study";
+import "./_case-study.css";
+
+export async function getStaticPaths() {
+  const studies = await getCollection("caseStudies");
+  return studies.map((study) => ({
+    params: { id: study.id },
+    props: { study },
+  }));
+}
+
+const { study } = Astro.props;
+const { title, shortDesc, tags, visual } = study.data;
+
+const allSections = parseSections(study.body);
+const overviewSection = allSections.find((s) => s.heading === "Overview");
+const accordionSections = allSections.filter((s) => s.heading !== "Overview");
+---
+
+<BaseLayout title={`${title} — Arkaes`} description={shortDesc}>
+  <article class="cs-page">
+
+    <header class="cs-hero">
+      <div class="cs-hero-visual">
+        {visual === "virtual-home" && (
+          <div
+            class="thumb-vhome thumb-vhome--hero"
+            style={`view-transition-name: cs-thumb-${study.id};`}
+          >
+            <div class="thumb-vhome-frame">
+              <div class="thumb-vhome-shared"></div>
+              <div class="thumb-vhome-split">
+                <div class="thumb-vhome-panel"></div>
+                <div class="thumb-vhome-panel"></div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div class="cs-hero-meta">
+        <div class="cs-hero-eyebrow">Case Study</div>
+        <div class="cs-hero-tags">
+          {tags.map((tag) => <ark-badge variant="pill">{tag}</ark-badge>)}
+        </div>
+        <h1 class="cs-hero-title">{title}</h1>
+      </div>
+    </header>
+
+    {overviewSection && (
+      <section class="cs-overview-section">
+        <div class="cs-overview-inner">
+          <div class="cs-overview-label">Overview</div>
+          <div
+            class="cs-overview-body"
+            set:html={renderSectionHtml(overviewSection.content)}
+          />
+        </div>
+      </section>
+    )}
+
+    <section class="cs-accordion-section">
+      <div class="cs-accordion-inner">
+        {accordionSections.map((section) => (
+          <details class="cs-accordion-item">
+            <summary class="cs-accordion-summary">
+              <span class="cs-accordion-heading">{section.heading}</span>
+              <span class="cs-accordion-icon" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M3 6l5 5 5-5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+            </summary>
+            <div
+              class="cs-accordion-body"
+              set:html={renderSectionHtml(section.content)}
+            />
+          </details>
+        ))}
+      </div>
+    </section>
+
+    <div class="cs-back">
+      <a href="/#case-studies" class="cs-back-link">&larr; Back to case studies</a>
+    </div>
+
+  </article>
+</BaseLayout>

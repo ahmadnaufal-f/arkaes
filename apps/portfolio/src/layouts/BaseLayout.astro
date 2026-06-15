@@ -70,6 +70,14 @@ const {
         });
       }
 
+      // Before the DOM swap, close any open dialogs so their portal containers
+      // don't linger on the body after navigation.
+      document.addEventListener("astro:before-swap", () => {
+        document.querySelectorAll<HTMLElement & { open: boolean }>("ark-dialog-root[open]").forEach((root) => {
+          root.open = false;
+        });
+      });
+
       const scrollToTop = () => {
         if (lenis) {
           lenis.scrollTo(0);
