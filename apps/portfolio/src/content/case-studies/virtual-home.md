@@ -1,6 +1,6 @@
 ---
 title: "Modernizing Virtual Home into a shared frontend platform"
-shortDesc: "Led a frontend monorepo migration for a smart home simulation platform, unifying two product variants and achieving 87% code sharing, 40% smaller app size, and 65% faster Time To Interactive."
+shortDesc: "Led a frontend monorepo migration for a smart home simulation platform, unifying two product variants and achieving ±87% code sharing, ±40% smaller app size, and ±65% faster Time To Interactive."
 featured: true
 visual: "virtual-home"
 tags:
@@ -29,7 +29,7 @@ Virtual Home needed to support more than one product context.
 
 ![Two product variants sharing a common foundation](/case-studies/virtual-home/project-context.svg)
 
-One variant was built for a mobile experience. Another variant was built for a larger screen experience. Both variants shared many parts of the same foundation, including UI, logic, assets, translations, and device related behavior.
+One variant was built for a mobile experience. Another variant was built for the Family Hub Refrigerator screen. Both variants shared many parts of the same foundation, including UI, logic, assets, translations, and device related behavior.
 
 Maintaining those variants separately would create repeated work and make future changes harder to align. The team needed a shared foundation that could support both variants while still allowing product specific behavior where needed.
 
@@ -74,7 +74,7 @@ The modernization had several goals:
 
 ## Why a monorepo
 
-The two product variants shared most of their foundation. Around 87 percent of the UI and logic could be shared, while the remaining parts were specific to each product context.
+The two product variants shared most of their foundation. Around ±87% of the UI and logic could be shared, while the remaining parts were specific to each product context.
 
 A monorepo allowed the team to keep shared code in one place and separate product specific behavior only where needed.
 
@@ -168,11 +168,11 @@ The modernization produced measurable improvements:
 
 ![Key results — 87% code sharing, 40% smaller app, 65% faster TTI, 70% faster bug resolution, 31% quicker onboarding](/case-studies/virtual-home/results.svg)
 
-• Around 40 percent smaller app size
-• Around 65 percent faster Time To Interactive
-• Around 70 percent faster bug resolution
-• Around 31 percent quicker onboarding
-• Around 87 percent shared UI and logic across variants
+• ±40% smaller app size
+• ±65% faster Time To Interactive
+• ±70% faster bug resolution
+• ±31% quicker onboarding
+• ±87% shared UI and logic across variants
 • One unified repository for both product variants
 • Fewer duplicated assets, translations, and shared logic
 

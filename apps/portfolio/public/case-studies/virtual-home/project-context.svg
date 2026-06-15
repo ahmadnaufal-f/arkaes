@@ -18,10 +18,10 @@
   <rect x="448" y="24" width="300" height="108" rx="4" fill="#f1eee9" stroke="#d4cec8" stroke-width="1"/>
   <rect x="448" y="24" width="300" height="34" rx="4" fill="#e8e4dc" stroke="none"/>
   <rect x="448" y="44" width="300" height="14" fill="#e8e4dc" stroke="none"/>
-  <text x="468" y="46" font-family="'Courier New',monospace" font-size="9.5" fill="#76695f" letter-spacing="0.12em">VARIANT B · DESKTOP</text>
+  <text x="468" y="46" font-family="'Courier New',monospace" font-size="9.5" fill="#76695f" letter-spacing="0.12em">VARIANT B · FAMILY HUB</text>
   <line x1="448" y1="58" x2="748" y2="58" stroke="#d4cec8" stroke-width="0.75"/>
-  <text x="598" y="92" text-anchor="middle" font-family="Georgia,serif" font-size="17" fill="#17130f">Desktop experience</text>
-  <text x="598" y="114" text-anchor="middle" font-family="'Courier New',monospace" font-size="10" fill="#5f534a">Larger screen · richer layout</text>
+  <text x="598" y="92" text-anchor="middle" font-family="Georgia,serif" font-size="17" fill="#17130f">Family Hub Refrigerator</text>
+  <text x="598" y="114" text-anchor="middle" font-family="'Courier New',monospace" font-size="10" fill="#5f534a">Refrigerator screen · embedded UI</text>
 
   <!-- Converging lines -->
   <line x1="182" y1="133" x2="390" y2="210" stroke="#aeb997" stroke-width="1.5" marker-end="url(#arr)"/>

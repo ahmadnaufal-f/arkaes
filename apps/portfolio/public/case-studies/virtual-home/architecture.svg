@@ -51,12 +51,12 @@
 
   <!-- Variant B block -->
   <rect x="432" y="218" width="300" height="104" rx="4" fill="#f1eee9" stroke="#d4cec8" stroke-width="1"/>
-  <text x="452" y="238" font-family="'Courier New',monospace" font-size="9" fill="#76695f" letter-spacing="0.14em">VARIANT B · DESKTOP</text>
+  <text x="452" y="238" font-family="'Courier New',monospace" font-size="9" fill="#76695f" letter-spacing="0.14em">VARIANT B · FAMILY HUB</text>
   <line x1="432" y1="246" x2="732" y2="246" stroke="#d4cec8" stroke-width="0.5"/>
   <rect x="452" y="256" width="120" height="28" rx="3" fill="#e8e4dc" stroke="none"/>
   <text x="512" y="275" text-anchor="middle" font-family="'Courier New',monospace" font-size="10" fill="#5f534a">Product behavior</text>
   <rect x="588" y="256" width="120" height="28" rx="3" fill="#e8e4dc" stroke="none"/>
   <text x="648" y="275" text-anchor="middle" font-family="'Courier New',monospace" font-size="10" fill="#5f534a">Layout adapter</text>
   <rect x="452" y="294" width="256" height="20" rx="3" fill="none" stroke="none"/>
-  <text x="580" y="309" text-anchor="middle" font-family="'Courier New',monospace" font-size="9" fill="#9d9185">larger screen · richer views · expanded layout</text>
+  <text x="580" y="309" text-anchor="middle" font-family="'Courier New',monospace" font-size="9" fill="#9d9185">refrigerator screen · embedded UI · touch interface</text>
 </svg>

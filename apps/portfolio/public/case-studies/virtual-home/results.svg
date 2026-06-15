@@ -11,35 +11,35 @@
 
   <!-- Stat 1 — 87% shared code -->
   <text x="78" y="42" text-anchor="middle" font-family="'Courier New',monospace" font-size="9" fill="#5f6f48" letter-spacing="0.12em">CODE SHARING</text>
-  <text x="78" y="108" text-anchor="middle" font-family="Georgia,serif" font-size="56" fill="#5f6f48" font-weight="300">87%</text>
+  <text x="78" y="108" text-anchor="middle" font-family="Georgia,serif" font-size="46" fill="#5f6f48" font-weight="300">±87%</text>
   <line x1="28" y1="120" x2="128" y2="120" stroke="#c5ceb5" stroke-width="0.5"/>
   <text x="78" y="142" text-anchor="middle" font-family="'Courier New',monospace" font-size="9.5" fill="#5f534a">UI &amp; logic shared</text>
   <text x="78" y="158" text-anchor="middle" font-family="'Courier New',monospace" font-size="9.5" fill="#5f534a">across variants</text>
 
   <!-- Stat 2 — 40% smaller app -->
   <text x="234" y="42" text-anchor="middle" font-family="'Courier New',monospace" font-size="9" fill="#5f6f48" letter-spacing="0.12em">APP SIZE</text>
-  <text x="234" y="108" text-anchor="middle" font-family="Georgia,serif" font-size="56" fill="#5f6f48" font-weight="300">40%</text>
+  <text x="234" y="108" text-anchor="middle" font-family="Georgia,serif" font-size="46" fill="#5f6f48" font-weight="300">±40%</text>
   <line x1="184" y1="120" x2="284" y2="120" stroke="#c5ceb5" stroke-width="0.5"/>
   <text x="234" y="142" text-anchor="middle" font-family="'Courier New',monospace" font-size="9.5" fill="#5f534a">reduction in</text>
   <text x="234" y="158" text-anchor="middle" font-family="'Courier New',monospace" font-size="9.5" fill="#5f534a">bundle size</text>
 
   <!-- Stat 3 — 65% faster TTI -->
   <text x="390" y="42" text-anchor="middle" font-family="'Courier New',monospace" font-size="9" fill="#5f6f48" letter-spacing="0.12em">TIME TO INTERACTIVE</text>
-  <text x="390" y="108" text-anchor="middle" font-family="Georgia,serif" font-size="56" fill="#5f6f48" font-weight="300">65%</text>
+  <text x="390" y="108" text-anchor="middle" font-family="Georgia,serif" font-size="46" fill="#5f6f48" font-weight="300">±65%</text>
   <line x1="340" y1="120" x2="440" y2="120" stroke="#c5ceb5" stroke-width="0.5"/>
   <text x="390" y="142" text-anchor="middle" font-family="'Courier New',monospace" font-size="9.5" fill="#5f534a">faster initial</text>
   <text x="390" y="158" text-anchor="middle" font-family="'Courier New',monospace" font-size="9.5" fill="#5f534a">interaction speed</text>
 
   <!-- Stat 4 — 70% faster bugs -->
   <text x="546" y="42" text-anchor="middle" font-family="'Courier New',monospace" font-size="9" fill="#8f554d" letter-spacing="0.12em">BUG RESOLUTION</text>
-  <text x="546" y="108" text-anchor="middle" font-family="Georgia,serif" font-size="56" fill="#8f554d" font-weight="300">70%</text>
+  <text x="546" y="108" text-anchor="middle" font-family="Georgia,serif" font-size="46" fill="#8f554d" font-weight="300">±70%</text>
   <line x1="496" y1="120" x2="596" y2="120" stroke="#e9c8be" stroke-width="0.5"/>
   <text x="546" y="142" text-anchor="middle" font-family="'Courier New',monospace" font-size="9.5" fill="#5f534a">faster bug</text>
   <text x="546" y="158" text-anchor="middle" font-family="'Courier New',monospace" font-size="9.5" fill="#5f534a">investigation</text>
 
   <!-- Stat 5 — 31% quicker onboarding -->
   <text x="702" y="42" text-anchor="middle" font-family="'Courier New',monospace" font-size="9" fill="#8f554d" letter-spacing="0.12em">ONBOARDING</text>
-  <text x="702" y="108" text-anchor="middle" font-family="Georgia,serif" font-size="56" fill="#8f554d" font-weight="300">31%</text>
+  <text x="702" y="108" text-anchor="middle" font-family="Georgia,serif" font-size="46" fill="#8f554d" font-weight="300">±31%</text>
   <line x1="652" y1="120" x2="752" y2="120" stroke="#e9c8be" stroke-width="0.5"/>
   <text x="702" y="142" text-anchor="middle" font-family="'Courier New',monospace" font-size="9.5" fill="#5f534a">quicker new</text>
   <text x="702" y="158" text-anchor="middle" font-family="'Courier New',monospace" font-size="9.5" fill="#5f534a">engineer ramp-up</text>
