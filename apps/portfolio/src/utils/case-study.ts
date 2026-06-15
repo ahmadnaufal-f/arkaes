@@ -28,7 +28,10 @@ function escapeHtml(str: string): string {
     .replace(/"/g, "&quot;");
 }
 
-export function renderSectionHtml(markdown: string): string {
+export function renderSectionHtml(
+  markdown: string,
+  diagrams: Record<string, string> = {},
+): string {
   const parts: string[] = [];
 
   // Extract code blocks first to avoid processing their internals
@@ -63,10 +66,18 @@ export function renderSectionHtml(markdown: string): string {
     const imgMatch = trimmed.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
     if (imgMatch) {
       const alt = escapeHtml(imgMatch[1]);
-      const src = escapeHtml(imgMatch[2]);
-      parts.push(
-        `<figure class="cs-figure"><img src="${src}" alt="${alt}" class="cs-diagram" /></figure>`,
-      );
+      const src = imgMatch[2];
+      const key = src.split("/").pop()?.replace(".svg", "") ?? "";
+      if (key && diagrams[key]) {
+        // Inline the SVG so the page's loaded fonts apply inside it
+        parts.push(
+          `<figure class="cs-figure" role="img" aria-label="${alt}">${diagrams[key]}</figure>`,
+        );
+      } else {
+        parts.push(
+          `<figure class="cs-figure"><img src="${escapeHtml(src)}" alt="${alt}" class="cs-diagram" /></figure>`,
+        );
+      }
       continue;
     }
 

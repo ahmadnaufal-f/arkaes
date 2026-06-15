@@ -27,8 +27,6 @@ Some product details are generalized for confidentiality.
 
 Virtual Home needed to support more than one product context.
 
-![Two product variants sharing a common foundation](/case-studies/virtual-home/project-context.svg)
-
 One variant was built for a mobile experience. Another variant was built for the Family Hub Refrigerator screen. Both variants shared many parts of the same foundation, including UI, logic, assets, translations, and device related behavior.
 
 Maintaining those variants separately would create repeated work and make future changes harder to align. The team needed a shared foundation that could support both variants while still allowing product specific behavior where needed.

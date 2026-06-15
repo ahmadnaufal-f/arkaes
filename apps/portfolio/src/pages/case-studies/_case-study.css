@@ -200,12 +200,12 @@
   margin: 1.8em 0;
 }
 
+.cs-section-content .cs-figure svg,
 .cs-section-content .cs-diagram {
-  border: 1px solid var(--ark-color-border);
-  border-radius: var(--ark-radius-sm);
   display: block;
   height: auto;
   max-width: 100%;
+  width: 100%;
 }
 
 .cs-section-content .cs-code {

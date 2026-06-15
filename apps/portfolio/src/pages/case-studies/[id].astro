@@ -1,4 +1,6 @@
 ---
+import { readFileSync, existsSync, readdirSync } from "fs";
+import { join } from "path";
 import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { parseSections, renderSectionHtml } from "../../utils/case-study";
@@ -14,6 +16,15 @@ export async function getStaticPaths() {
 
 const { study } = Astro.props;
 const { title, shortDesc, tags, visual } = study.data;
+
+// Load SVG diagrams from public/ and inline them so the page's Google Fonts apply
+const diagramDir = join(process.cwd(), "public/case-studies", study.id);
+const diagrams: Record<string, string> = {};
+if (existsSync(diagramDir)) {
+  for (const file of readdirSync(diagramDir).filter((f) => f.endsWith(".svg"))) {
+    diagrams[file.replace(".svg", "")] = readFileSync(join(diagramDir, file), "utf-8");
+  }
+}
 
 const allSections = parseSections(study.body);
 const overviewSection = allSections.find((s) => s.heading === "Overview");
@@ -56,7 +67,7 @@ const accordionSections = allSections.filter((s) => s.heading !== "Overview");
           <div class="cs-overview-label">Overview</div>
           <div
             class="cs-overview-body"
-            set:html={renderSectionHtml(overviewSection.content)}
+            set:html={renderSectionHtml(overviewSection.content, diagrams)}
           />
         </div>
       </section>
@@ -69,7 +80,7 @@ const accordionSections = allSections.filter((s) => s.heading !== "Overview");
             <ark-accordion-item heading={section.heading}>
               <div
                 class="cs-section-content"
-                set:html={renderSectionHtml(section.content)}
+                set:html={renderSectionHtml(section.content, diagrams)}
               />
             </ark-accordion-item>
           ))}
