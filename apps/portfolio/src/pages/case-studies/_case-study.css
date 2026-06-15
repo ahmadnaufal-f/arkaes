@@ -2,22 +2,70 @@
   padding-bottom: 120px;
 }
 
+/* ── Virtual Home visual (duplicated from _index.css so it renders on this page) */
+
+.thumb-vhome {
+  align-items: center;
+  background: linear-gradient(150deg, #131b10 0%, #0c1509 60%, #182214 100%);
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.thumb-vhome-frame {
+  border: 1px solid rgba(174, 185, 151, 0.38);
+  display: flex;
+  flex-direction: column;
+  height: 220px;
+  overflow: hidden;
+  position: relative;
+  width: 200px;
+}
+
+.thumb-vhome-frame::before {
+  border: 1px solid rgba(174, 185, 151, 0.12);
+  content: "";
+  inset: 12px;
+  pointer-events: none;
+  position: absolute;
+  z-index: 1;
+}
+
+.thumb-vhome-shared {
+  background: rgba(174, 185, 151, 0.1);
+  border-bottom: 1px solid rgba(174, 185, 151, 0.28);
+  flex: 0 0 48%;
+}
+
+.thumb-vhome-split {
+  background: rgba(174, 185, 151, 0.18);
+  display: grid;
+  flex: 1;
+  gap: 1px;
+  grid-template-columns: 1fr 1fr;
+}
+
+.thumb-vhome-panel {
+  background: #0c1509;
+}
+
 /* ── Hero ─────────────────────────────────────────────────── */
 
 .cs-hero {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  min-height: 480px;
+  height: 500px;
 }
 
 .cs-hero-visual {
+  height: 100%;
   overflow: hidden;
   position: relative;
 }
 
 .cs-hero-visual .thumb-vhome--hero {
   height: 100%;
-  min-height: 420px;
 }
 
 .cs-hero-meta {
@@ -246,12 +294,11 @@
 @media (max-width: 860px) {
   .cs-hero {
     grid-template-columns: 1fr;
-    min-height: auto;
+    height: auto;
   }
 
-  .cs-hero-visual .thumb-vhome--hero {
+  .cs-hero-visual {
     height: 300px;
-    min-height: 0;
   }
 
   .cs-hero-meta {
