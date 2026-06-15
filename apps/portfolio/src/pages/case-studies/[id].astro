@@ -1,10 +1,15 @@
 ---
-import { readFileSync, existsSync, readdirSync } from "fs";
-import { join } from "path";
 import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { parseSections, renderSectionHtml } from "../../utils/case-study";
 import "./_case-study.css";
+
+// Eagerly import every case study SVG as a raw string so we can inline it and
+// let the page's loaded Google Fonts apply inside the diagram markup.
+const svgModules = import.meta.glob<string>(
+  "../../../public/case-studies/**/*.svg",
+  { query: "?raw", import: "default", eager: true },
+);
 
 export async function getStaticPaths() {
   const studies = await getCollection("caseStudies");
@@ -17,16 +22,17 @@ export async function getStaticPaths() {
 const { study } = Astro.props;
 const { title, shortDesc, tags, visual } = study.data;
 
-// Load SVG diagrams from public/ and inline them so the page's Google Fonts apply
-const diagramDir = join(process.cwd(), "public/case-studies", study.id);
+// Build a map of { fileName (no extension) → SVG source } for this study
 const diagrams: Record<string, string> = {};
-if (existsSync(diagramDir)) {
-  for (const file of readdirSync(diagramDir).filter((f) => f.endsWith(".svg"))) {
-    diagrams[file.replace(".svg", "")] = readFileSync(join(diagramDir, file), "utf-8");
-  }
+const prefix = `/case-studies/${study.id}/`;
+for (const [path, source] of Object.entries(svgModules)) {
+  const idx = path.indexOf(prefix);
+  if (idx === -1) continue;
+  const fileName = path.slice(idx + prefix.length).replace(".svg", "");
+  diagrams[fileName] = source;
 }
 
-const allSections = parseSections(study.body);
+const allSections = parseSections(study.body ?? "");
 const overviewSection = allSections.find((s) => s.heading === "Overview");
 const accordionSections = allSections.filter((s) => s.heading !== "Overview");
 ---
@@ -68,6 +74,32 @@ const accordionSections = allSections.filter((s) => s.heading !== "Overview");
                 <div class="thumb-tv-card"></div>
                 <div class="thumb-tv-card"></div>
                 <div class="thumb-tv-card"></div>
+              </div>
+            </div>
+          </div>
+        )}
+        {visual === "milk-pumping" && (
+          <div
+            class="thumb-milk thumb-milk--hero"
+            style={`view-transition-name: cs-thumb-${study.id};`}
+          >
+            <div class="thumb-milk-phone">
+              <div class="thumb-milk-greet">
+                <div class="thumb-milk-greet-line thumb-milk-greet-line--lg"></div>
+                <div class="thumb-milk-greet-line"></div>
+              </div>
+              <div class="thumb-milk-session">
+                <div class="thumb-milk-bottle">
+                  <div class="thumb-milk-bottle-cap"></div>
+                  <div class="thumb-milk-bottle-neck"></div>
+                  <div class="thumb-milk-bottle-body">
+                    <div class="thumb-milk-bottle-fill"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="thumb-milk-timer">
+                <div class="thumb-milk-timer-dot"></div>
+                <div class="thumb-milk-timer-bar"></div>
               </div>
             </div>
           </div>

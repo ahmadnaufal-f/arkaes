@@ -110,6 +110,124 @@
   box-shadow: 0 0 0 2px rgba(232, 228, 217, 0.08);
 }
 
+/* ── Milk pumping tracker visual (duplicated from _index.css) ─ */
+
+.thumb-milk {
+  align-items: center;
+  background: linear-gradient(160deg, #ece3f5 0%, #ddccef 55%, #d0bce9 100%);
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.thumb-milk-phone {
+  background: #fbf9fd;
+  border: 1px solid rgba(123, 90, 168, 0.16);
+  border-radius: 20px;
+  box-shadow: 0 16px 36px rgba(78, 52, 120, 0.16);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px 16px;
+  width: 184px;
+}
+
+.thumb-milk-greet {
+  background: #fff;
+  border: 1px solid rgba(123, 90, 168, 0.1);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 14px;
+}
+
+.thumb-milk-greet-line {
+  background: rgba(123, 90, 168, 0.16);
+  border-radius: 3px;
+  height: 6px;
+  width: 60%;
+}
+
+.thumb-milk-greet-line--lg {
+  background: rgba(123, 90, 168, 0.4);
+  height: 8px;
+  width: 80%;
+}
+
+.thumb-milk-session {
+  align-items: center;
+  background: #fff;
+  border: 1px solid rgba(123, 90, 168, 0.1);
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  padding: 22px 0;
+}
+
+.thumb-milk-bottle {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.thumb-milk-bottle-cap {
+  background: #c9a8e6;
+  border-radius: 3px 3px 0 0;
+  height: 9px;
+  width: 22px;
+}
+
+.thumb-milk-bottle-neck {
+  background: #d8c2ec;
+  height: 5px;
+  width: 16px;
+}
+
+.thumb-milk-bottle-body {
+  background: #f3ecfa;
+  border: 1.5px solid #c9a8e6;
+  border-radius: 6px 6px 9px 9px;
+  height: 54px;
+  overflow: hidden;
+  position: relative;
+  width: 38px;
+}
+
+.thumb-milk-bottle-fill {
+  background: linear-gradient(180deg, #e7d4f6, #d9bff0);
+  bottom: 0;
+  height: 58%;
+  left: 0;
+  position: absolute;
+  width: 100%;
+}
+
+.thumb-milk-timer {
+  align-items: center;
+  background: #fff;
+  border: 1px solid rgba(123, 90, 168, 0.1);
+  border-radius: 999px;
+  display: flex;
+  gap: 8px;
+  padding: 9px 14px;
+}
+
+.thumb-milk-timer-dot {
+  background: #b98bdd;
+  border-radius: 50%;
+  height: 8px;
+  width: 8px;
+}
+
+.thumb-milk-timer-bar {
+  background: rgba(123, 90, 168, 0.22);
+  border-radius: 3px;
+  flex: 1;
+  height: 6px;
+}
+
 /* ── Hero ─────────────────────────────────────────────────── */
 
 .cs-hero {
@@ -131,6 +249,10 @@
 }
 
 .cs-hero-visual .thumb-vhome-tv--hero {
+  height: 100%;
+}
+
+.cs-hero-visual .thumb-milk--hero {
   height: 100%;
 }
 
@@ -270,6 +392,41 @@
   height: auto;
   max-width: 100%;
   width: 100%;
+}
+
+/* Phone screenshots — constrained, framed, displayed in a centered row */
+
+.cs-section-content .cs-shots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  margin: 1.8em 0;
+}
+
+.cs-section-content .cs-shot {
+  flex: 0 1 200px;
+  margin: 0;
+  max-width: 220px;
+}
+
+.cs-section-content .cs-screenshot {
+  border: 1px solid color-mix(in srgb, var(--ark-color-accent) 24%, transparent);
+  border-radius: 20px;
+  box-shadow: 0 16px 36px rgba(78, 52, 120, 0.16);
+  display: block;
+  height: auto;
+  width: 100%;
+}
+
+.cs-section-content .cs-shot figcaption {
+  color: var(--ark-color-text-subtle);
+  font-family: var(--ark-font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  line-height: 1.5;
+  margin-top: 12px;
+  text-align: center;
 }
 
 .cs-section-content .cs-code {

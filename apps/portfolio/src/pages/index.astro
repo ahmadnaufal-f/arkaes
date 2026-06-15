@@ -138,6 +138,33 @@ const featuredStudies = allStudies
               </div>
             </div>
           )}
+          {study.data.visual === "milk-pumping" && (
+            <div
+              class="thumb-milk"
+              slot="media"
+              style={`view-transition-name: cs-thumb-${study.id};`}
+            >
+              <div class="thumb-milk-phone">
+                <div class="thumb-milk-greet">
+                  <div class="thumb-milk-greet-line thumb-milk-greet-line--lg"></div>
+                  <div class="thumb-milk-greet-line"></div>
+                </div>
+                <div class="thumb-milk-session">
+                  <div class="thumb-milk-bottle">
+                    <div class="thumb-milk-bottle-cap"></div>
+                    <div class="thumb-milk-bottle-neck"></div>
+                    <div class="thumb-milk-bottle-body">
+                      <div class="thumb-milk-bottle-fill"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="thumb-milk-timer">
+                  <div class="thumb-milk-timer-dot"></div>
+                  <div class="thumb-milk-timer-bar"></div>
+                </div>
+              </div>
+            </div>
+          )}
           {study.data.tags.map((tag) => (
             <ark-badge slot="tag" variant="pill">{tag}</ark-badge>
           ))}

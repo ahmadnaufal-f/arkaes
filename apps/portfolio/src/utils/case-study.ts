@@ -62,21 +62,34 @@ export function renderSectionHtml(
       continue;
     }
 
-    // Image: ![alt](src)
-    const imgMatch = trimmed.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
-    if (imgMatch) {
-      const alt = escapeHtml(imgMatch[1]);
-      const src = imgMatch[2];
-      const key = src.split("/").pop()?.replace(".svg", "") ?? "";
-      if (key && diagrams[key]) {
-        // Inline the SVG so the page's loaded fonts apply inside it
+    // Image block — one or more ![alt](src) lines (consecutive lines render
+    // together, e.g. a row of phone screenshots)
+    const blockLines = trimmed.split("\n").filter((l) => l.trim());
+    const imgRe = /^!\[([^\]]*)\]\(([^)]+)\)$/;
+    if (blockLines.length > 0 && blockLines.every((l) => imgRe.test(l.trim()))) {
+      let hasScreenshot = false;
+      const figures = blockLines.map((line) => {
+        const [, rawAlt, src] = line.trim().match(imgRe)!;
+        const alt = escapeHtml(rawAlt);
+        if (src.endsWith(".svg")) {
+          const key = src.split("/").pop()?.replace(".svg", "") ?? "";
+          if (key && diagrams[key]) {
+            // Inline the SVG so the page's loaded fonts apply inside it
+            return `<figure class="cs-figure" role="img" aria-label="${alt}">${diagrams[key]}</figure>`;
+          }
+          return `<figure class="cs-figure"><img src="${escapeHtml(src)}" alt="${alt}" class="cs-diagram" /></figure>`;
+        }
+        // Raster image (screenshot) — constrained, framed, with a caption
+        hasScreenshot = true;
+        return `<figure class="cs-shot"><img src="${escapeHtml(src)}" alt="${alt}" class="cs-screenshot" loading="lazy" />${alt ? `<figcaption>${alt}</figcaption>` : ""}</figure>`;
+      });
+
+      if (hasScreenshot) {
         parts.push(
-          `<figure class="cs-figure" role="img" aria-label="${alt}">${diagrams[key]}</figure>`,
+          `<div class="cs-shots" data-count="${figures.length}">${figures.join("")}</div>`,
         );
       } else {
-        parts.push(
-          `<figure class="cs-figure"><img src="${escapeHtml(src)}" alt="${alt}" class="cs-diagram" /></figure>`,
-        );
+        parts.push(figures.join(""));
       }
       continue;
     }
