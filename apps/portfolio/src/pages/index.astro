@@ -115,6 +115,29 @@ const featuredStudies = allStudies
               </div>
             </div>
           )}
+          {study.data.visual === "virtual-home-tv" && (
+            <div
+              class="thumb-vhome-tv"
+              slot="media"
+              style={`view-transition-name: cs-thumb-${study.id};`}
+            >
+              <div class="thumb-tv-screen">
+                <div class="thumb-tv-topbar">
+                  <div class="thumb-tv-tab thumb-tv-tab--active"></div>
+                  <div class="thumb-tv-tab"></div>
+                  <div class="thumb-tv-tab"></div>
+                </div>
+                <div class="thumb-tv-grid">
+                  <div class="thumb-tv-card"></div>
+                  <div class="thumb-tv-card thumb-tv-card--focused"></div>
+                  <div class="thumb-tv-card"></div>
+                  <div class="thumb-tv-card"></div>
+                  <div class="thumb-tv-card"></div>
+                  <div class="thumb-tv-card"></div>
+                </div>
+              </div>
+            </div>
+          )}
           {study.data.tags.map((tag) => (
             <ark-badge slot="tag" variant="pill">{tag}</ark-badge>
           ))}

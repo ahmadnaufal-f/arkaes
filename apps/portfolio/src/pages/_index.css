@@ -110,7 +110,12 @@
   grid-template-columns: 1fr;
 }
 
-/* Three cards: revert to the asymmetric featured layout */
+/* Two cards side by side */
+.projects-grid:has(.project-card:nth-child(2)) {
+  grid-template-columns: 1fr 1fr;
+}
+
+/* Three cards: asymmetric featured layout (overrides 2-card rule) */
 .projects-grid:has(.project-card:nth-child(3)) {
   grid-template-columns: 1.6fr 1fr;
   grid-template-rows: auto auto;
@@ -171,6 +176,67 @@
 
 .thumb-vhome-panel {
   background: #0c1509;
+}
+
+/* ── Virtual Home for TV visual illustration ───────────────── */
+
+.thumb-vhome-tv {
+  align-items: center;
+  background: #0e1017;
+  display: flex;
+  height: 400px;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.thumb-tv-screen {
+  border: 1px solid rgba(232, 228, 217, 0.12);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow: hidden;
+  padding: 16px;
+  width: 230px;
+}
+
+.thumb-tv-topbar {
+  display: flex;
+  gap: 7px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(232, 228, 217, 0.07);
+}
+
+.thumb-tv-tab {
+  background: rgba(232, 228, 217, 0.12);
+  border-radius: 2px;
+  height: 3px;
+  width: 22px;
+}
+
+.thumb-tv-tab--active {
+  background: rgba(232, 228, 217, 0.45);
+  width: 30px;
+}
+
+.thumb-tv-grid {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.thumb-tv-card {
+  background: rgba(232, 228, 217, 0.04);
+  border: 1px solid rgba(232, 228, 217, 0.07);
+  border-radius: 2px;
+  height: 44px;
+}
+
+.thumb-tv-card--focused {
+  background: rgba(232, 228, 217, 0.07);
+  border-color: rgba(232, 228, 217, 0.55);
+  box-shadow: 0 0 0 2px rgba(232, 228, 217, 0.08);
 }
 
 .techstack-section {
