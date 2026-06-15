@@ -27,6 +27,8 @@ Some product details are generalized for confidentiality.
 
 Virtual Home needed to support more than one product context.
 
+![Two product variants sharing a common foundation](/case-studies/virtual-home/project-context.svg)
+
 One variant was built for a mobile experience. Another variant was built for a larger screen experience. Both variants shared many parts of the same foundation, including UI, logic, assets, translations, and device related behavior.
 
 Maintaining those variants separately would create repeated work and make future changes harder to align. The team needed a shared foundation that could support both variants while still allowing product specific behavior where needed.
@@ -123,6 +125,8 @@ The app needed to support shared behavior across variants, many device states, a
 
 The new repository was organized around shared foundation code and product specific code.
 
+![Monorepo architecture — shared foundation with product-specific variant layers](/case-studies/virtual-home/architecture.svg)
+
 ```txt
 Virtual Home monorepo
 
@@ -161,6 +165,8 @@ The rewrite was shipped successfully.
 ## Results
 
 The modernization produced measurable improvements:
+
+![Key results — 87% code sharing, 40% smaller app, 65% faster TTI, 70% faster bug resolution, 31% quicker onboarding](/case-studies/virtual-home/results.svg)
 
 • Around 40 percent smaller app size
 • Around 65 percent faster Time To Interactive

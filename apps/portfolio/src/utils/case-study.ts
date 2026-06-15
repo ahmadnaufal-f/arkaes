@@ -59,6 +59,17 @@ export function renderSectionHtml(markdown: string): string {
       continue;
     }
 
+    // Image: ![alt](src)
+    const imgMatch = trimmed.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
+    if (imgMatch) {
+      const alt = escapeHtml(imgMatch[1]);
+      const src = escapeHtml(imgMatch[2]);
+      parts.push(
+        `<figure class="cs-figure"><img src="${src}" alt="${alt}" class="cs-diagram" /></figure>`,
+      );
+      continue;
+    }
+
     // ### Subheading
     if (trimmed.startsWith("### ")) {
       parts.push(`<h4 class="cs-subheading">${trimmed.substring(4)}</h4>`);
