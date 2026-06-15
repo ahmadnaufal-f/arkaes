@@ -64,22 +64,16 @@ const accordionSections = allSections.filter((s) => s.heading !== "Overview");
 
     <section class="cs-accordion-section">
       <div class="cs-accordion-inner">
-        {accordionSections.map((section) => (
-          <details class="cs-accordion-item">
-            <summary class="cs-accordion-summary">
-              <span class="cs-accordion-heading">{section.heading}</span>
-              <span class="cs-accordion-icon" aria-hidden="true">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-                  <path d="M3 6l5 5 5-5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </span>
-            </summary>
-            <div
-              class="cs-accordion-body"
-              set:html={renderSectionHtml(section.content)}
-            />
-          </details>
-        ))}
+        <ark-accordion>
+          {accordionSections.map((section) => (
+            <ark-accordion-item heading={section.heading}>
+              <div
+                class="cs-section-content"
+                set:html={renderSectionHtml(section.content)}
+              />
+            </ark-accordion-item>
+          ))}
+        </ark-accordion>
       </div>
     </section>
 

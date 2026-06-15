@@ -54,8 +54,10 @@
 
 .cs-hero {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 2fr;
   height: 500px;
+  margin-inline: auto;
+  max-width: 80vw;
 }
 
 .cs-hero-visual {
@@ -143,75 +145,13 @@
 }
 
 .cs-accordion-inner {
-  border-top: 1px solid var(--ark-color-border);
   margin-top: 80px;
   max-width: 920px;
 }
 
-.cs-accordion-item {
-  border-bottom: 1px solid var(--ark-color-border);
-}
+/* Slotted content styles inside ark-accordion-item */
 
-.cs-accordion-summary {
-  align-items: center;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  list-style: none;
-  padding: 28px 0;
-  user-select: none;
-}
-
-.cs-accordion-summary::-webkit-details-marker {
-  display: none;
-}
-
-.cs-accordion-summary:focus-visible {
-  outline: 2px solid var(--ark-color-focus);
-  outline-offset: 4px;
-}
-
-.cs-accordion-heading {
-  color: var(--ark-color-text);
-  font-family: var(--ark-font-display);
-  font-size: clamp(1.25rem, 2vw, 1.75rem);
-  font-weight: var(--ark-weight-thin);
-  transition: color var(--ark-duration-fast);
-}
-
-.cs-accordion-item:hover .cs-accordion-heading,
-.cs-accordion-item[open] .cs-accordion-heading {
-  color: var(--ark-color-accent-strong);
-}
-
-.cs-accordion-icon {
-  color: var(--ark-color-text-subtle);
-  flex-shrink: 0;
-  margin-left: 24px;
-  transition: transform var(--ark-duration-normal) var(--ark-ease-standard);
-}
-
-.cs-accordion-item[open] .cs-accordion-icon {
-  transform: rotate(180deg);
-}
-
-.cs-accordion-body {
-  animation: accordionSlideIn 280ms var(--ark-ease-standard);
-  padding-bottom: 40px;
-}
-
-@keyframes accordionSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.cs-accordion-body p {
+.cs-section-content p {
   color: var(--ark-color-text-muted);
   font-size: var(--ark-text-lg);
   font-weight: var(--ark-weight-thin);
@@ -220,11 +160,11 @@
   max-width: 72ch;
 }
 
-.cs-accordion-body p:last-child {
+.cs-section-content p:last-child {
   margin-bottom: 0;
 }
 
-.cs-accordion-body .cs-list {
+.cs-section-content .cs-list {
   color: var(--ark-color-text-muted);
   font-size: var(--ark-text-md);
   font-weight: var(--ark-weight-thin);
@@ -234,20 +174,20 @@
   padding: 0;
 }
 
-.cs-accordion-body .cs-list li {
+.cs-section-content .cs-list li {
   max-width: 68ch;
   padding: 5px 0 5px 20px;
   position: relative;
 }
 
-.cs-accordion-body .cs-list li::before {
+.cs-section-content .cs-list li::before {
   color: var(--ark-color-accent);
   content: "•";
   left: 0;
   position: absolute;
 }
 
-.cs-accordion-body .cs-subheading {
+.cs-section-content .cs-subheading {
   color: var(--ark-color-text-soft);
   font-family: var(--ark-font-sans);
   font-size: var(--ark-text-md);
@@ -256,7 +196,7 @@
   margin: 1.6em 0 0.5em;
 }
 
-.cs-accordion-body .cs-code {
+.cs-section-content .cs-code {
   background: var(--ark-color-neutral-900);
   border-radius: var(--ark-radius-xs);
   color: var(--ark-color-neutral-100);
@@ -295,6 +235,9 @@
   .cs-hero {
     grid-template-columns: 1fr;
     height: auto;
+    margin-inline: 10px;
+    max-width: none;
+    width: calc(100vw - 20px);
   }
 
   .cs-hero-visual {

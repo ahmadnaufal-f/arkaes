@@ -95,96 +95,33 @@ const featuredStudies = allStudies
 
     <div class="projects-grid reveal reveal-delay-1" data-count={featuredStudies.length}>
       {featuredStudies.map((study) => (
-        <div
-          class="project-card-wrapper"
-          data-cs-trigger={study.id}
+        <ark-case-study-card
+          class="project-card"
+          href={`/case-studies/${study.id}`}
+          title={study.data.title}
         >
-          <ark-case-study-card
-            class="project-card"
-            href={`/case-studies/${study.id}`}
-            title={study.data.title}
-          >
-            {study.data.visual === "virtual-home" && (
-              <div class="thumb-vhome" slot="media">
-                <div class="thumb-vhome-frame">
-                  <div class="thumb-vhome-shared"></div>
-                  <div class="thumb-vhome-split">
-                    <div class="thumb-vhome-panel"></div>
-                    <div class="thumb-vhome-panel"></div>
-                  </div>
+          {study.data.visual === "virtual-home" && (
+            <div
+              class="thumb-vhome"
+              slot="media"
+              style={`view-transition-name: cs-thumb-${study.id};`}
+            >
+              <div class="thumb-vhome-frame">
+                <div class="thumb-vhome-shared"></div>
+                <div class="thumb-vhome-split">
+                  <div class="thumb-vhome-panel"></div>
+                  <div class="thumb-vhome-panel"></div>
                 </div>
               </div>
-            )}
-            {study.data.tags.map((tag) => (
-              <ark-badge slot="tag" variant="pill">{tag}</ark-badge>
-            ))}
-          </ark-case-study-card>
-        </div>
+            </div>
+          )}
+          {study.data.tags.map((tag) => (
+            <ark-badge slot="tag" variant="pill">{tag}</ark-badge>
+          ))}
+        </ark-case-study-card>
       ))}
     </div>
   </section>
-
-  {/* Case study preview popups */}
-  {featuredStudies.map((study) => (
-    <ark-dialog-root data-cs-dialog={study.id}>
-      <ark-dialog-portal>
-        <ark-dialog-overlay></ark-dialog-overlay>
-        <ark-dialog-content class="cs-popup-content">
-          <ark-dialog-close absolute></ark-dialog-close>
-
-          <div class="cs-popup-visual">
-            {study.data.visual === "virtual-home" && (
-              <div
-                class="thumb-vhome thumb-vhome--popup"
-                style={`view-transition-name: cs-thumb-${study.id};`}
-              >
-                <div class="thumb-vhome-frame">
-                  <div class="thumb-vhome-shared"></div>
-                  <div class="thumb-vhome-split">
-                    <div class="thumb-vhome-panel"></div>
-                    <div class="thumb-vhome-panel"></div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div class="cs-popup-body">
-            <div class="cs-popup-tags">
-              {study.data.tags.map((tag) => (
-                <ark-badge variant="pill">{tag}</ark-badge>
-              ))}
-            </div>
-            <ark-dialog-title>{study.data.title}</ark-dialog-title>
-            <p class="cs-popup-overview">{study.data.shortDesc}</p>
-            <a href={`/case-studies/${study.id}`} class="cs-popup-cta">
-              Read full case study &nbsp;&nearr;
-            </a>
-          </div>
-        </ark-dialog-content>
-      </ark-dialog-portal>
-    </ark-dialog-root>
-  ))}
-
-  <script>
-    function initCaseStudyTriggers() {
-      document.querySelectorAll<HTMLElement>("[data-cs-trigger]").forEach((trigger) => {
-        trigger.addEventListener("click", (e) => {
-          if ((e as MouseEvent).button !== 0) return;
-          // Allow modifier-key clicks (open in new tab, etc.) to pass through
-          if ((e as MouseEvent).metaKey || (e as MouseEvent).ctrlKey || (e as MouseEvent).shiftKey) return;
-          e.preventDefault();
-          const id = trigger.dataset.csTrigger;
-          const dialogRoot = document.querySelector<HTMLElement & { open: boolean }>(
-            `ark-dialog-root[data-cs-dialog="${id}"]`,
-          );
-          if (dialogRoot) dialogRoot.open = true;
-        });
-      });
-    }
-
-    document.addEventListener("astro:page-load", initCaseStudyTriggers);
-  </script>
 
   <section class="services-section" id="expertise">
     <div class="section-header reveal">

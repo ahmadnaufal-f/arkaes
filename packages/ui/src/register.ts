@@ -10,6 +10,7 @@ import {
   defineArkToggle,
 } from "./primitives";
 import {
+  defineArkAccordion,
   defineArkCard,
   defineArkCursor,
   defineArkDialog,
@@ -31,6 +32,7 @@ export const registerArkPrimitives = () => {
 };
 
 export const registerArkComponents = () => {
+  defineArkAccordion();
   defineArkCard();
   defineArkCursor();
   defineArkDialog();
