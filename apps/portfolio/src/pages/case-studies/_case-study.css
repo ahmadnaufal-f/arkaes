@@ -240,17 +240,17 @@
   position: relative;
 }
 
-/* Visual illustration: a faint, background-less watermark pinned to the
-   right edge of the page, behind the text. */
+/* Visual illustration: a faint, background-less watermark fixed to the
+   right edge of the viewport — stays in place as the user scrolls. */
 .cs-hero-visual {
-  height: 520px;
+  height: 760px;
   opacity: 0.25;
   pointer-events: none;
-  position: absolute;
+  position: fixed;
   right: 0;
   top: 50%;
   transform: translateY(-50%);
-  width: 440px;
+  width: 600px;
   z-index: 0;
 }
 
@@ -259,7 +259,7 @@
 .cs-hero-visual .thumb-milk {
   background: none;
   height: 100%;
-  transform: scale(1.35);
+  transform: scale(1.6);
   transform-origin: right center;
 }
 
@@ -480,9 +480,7 @@
   }
 
   .cs-hero-visual {
-    height: 360px;
-    opacity: 0.16;
-    width: 300px;
+    display: none;
   }
 
   .cs-overview-inner {
