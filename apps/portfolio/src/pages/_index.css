@@ -565,8 +565,12 @@
 }
 
 .service-body {
-  /* Align body with the service name, past the number column + trigger gap. */
-  padding-left: calc(80px + 24px);
+  /* Inset via margin (not padding) so the separator's inline start aligns
+     with the content rather than spanning the full service-item width. */
+  margin-left: calc(80px + 24px);
+  /* Separator clarifies that the body is distinct from the clickable trigger. */
+  border-top: 1px solid var(--ark-color-border);
+  padding-top: 32px;
 }
 
 .service-desc {
@@ -910,7 +914,7 @@
   }
 
   .service-body {
-    padding-left: calc(52px + 18px);
+    margin-left: calc(52px + 18px);
   }
 
   .service-meta {
