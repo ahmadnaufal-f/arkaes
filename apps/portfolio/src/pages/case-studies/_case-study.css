@@ -6,7 +6,7 @@
 
 .thumb-vhome {
   align-items: center;
-  background: linear-gradient(150deg, #131b10 0%, #0c1509 60%, #182214 100%);
+  background: var(--ark-color-accent-soft);
   display: flex;
   justify-content: center;
   overflow: hidden;
@@ -14,7 +14,7 @@
 }
 
 .thumb-vhome-frame {
-  border: 1px solid rgba(174, 185, 151, 0.38);
+  border: 1px solid color-mix(in srgb, var(--ark-color-accent) 38%, transparent);
   display: flex;
   flex-direction: column;
   height: 220px;
@@ -24,7 +24,7 @@
 }
 
 .thumb-vhome-frame::before {
-  border: 1px solid rgba(174, 185, 151, 0.12);
+  border: 1px solid color-mix(in srgb, var(--ark-color-accent) 14%, transparent);
   content: "";
   inset: 12px;
   pointer-events: none;
@@ -33,13 +33,13 @@
 }
 
 .thumb-vhome-shared {
-  background: rgba(174, 185, 151, 0.1);
-  border-bottom: 1px solid rgba(174, 185, 151, 0.28);
+  background: var(--ark-color-secondary-soft);
+  border-bottom: 1px solid color-mix(in srgb, var(--ark-color-secondary) 36%, transparent);
   flex: 0 0 48%;
 }
 
 .thumb-vhome-split {
-  background: rgba(174, 185, 151, 0.18);
+  background: color-mix(in srgb, var(--ark-color-accent) 24%, transparent);
   display: grid;
   flex: 1;
   gap: 1px;
@@ -47,14 +47,14 @@
 }
 
 .thumb-vhome-panel {
-  background: #0c1509;
+  background: var(--ark-color-surface);
 }
 
 /* ── Virtual Home for TV visual (duplicated from _index.css) ─ */
 
 .thumb-vhome-tv {
   align-items: center;
-  background: #0e1017;
+  background: var(--ark-color-accent-soft);
   display: flex;
   justify-content: center;
   overflow: hidden;
@@ -62,7 +62,8 @@
 }
 
 .thumb-tv-screen {
-  border: 1px solid rgba(232, 228, 217, 0.12);
+  background: var(--ark-color-surface);
+  border: 1px solid var(--ark-color-border);
   border-radius: 4px;
   display: flex;
   flex-direction: column;
@@ -73,21 +74,21 @@
 }
 
 .thumb-tv-topbar {
-  border-bottom: 1px solid rgba(232, 228, 217, 0.07);
+  border-bottom: 1px solid var(--ark-color-border);
   display: flex;
   gap: 7px;
   padding-bottom: 10px;
 }
 
 .thumb-tv-tab {
-  background: rgba(232, 228, 217, 0.12);
+  background: var(--ark-color-neutral-200);
   border-radius: 2px;
   height: 3px;
   width: 22px;
 }
 
 .thumb-tv-tab--active {
-  background: rgba(232, 228, 217, 0.45);
+  background: var(--ark-color-accent);
   width: 30px;
 }
 
@@ -98,23 +99,23 @@
 }
 
 .thumb-tv-card {
-  background: rgba(232, 228, 217, 0.04);
-  border: 1px solid rgba(232, 228, 217, 0.07);
+  background: var(--ark-color-neutral-100);
+  border: 1px solid var(--ark-color-border);
   border-radius: 2px;
   height: 44px;
 }
 
 .thumb-tv-card--focused {
-  background: rgba(232, 228, 217, 0.07);
-  border-color: rgba(232, 228, 217, 0.55);
-  box-shadow: 0 0 0 2px rgba(232, 228, 217, 0.08);
+  background: var(--ark-color-accent-soft);
+  border-color: var(--ark-color-accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--ark-color-accent) 22%, transparent);
 }
 
 /* ── Milk pumping tracker visual (duplicated from _index.css) ─ */
 
 .thumb-milk {
   align-items: center;
-  background: linear-gradient(160deg, #ece3f5 0%, #ddccef 55%, #d0bce9 100%);
+  background: var(--ark-color-accent-soft);
   display: flex;
   justify-content: center;
   overflow: hidden;
@@ -122,10 +123,10 @@
 }
 
 .thumb-milk-phone {
-  background: #fbf9fd;
-  border: 1px solid rgba(123, 90, 168, 0.16);
+  background: var(--ark-color-surface);
+  border: 1px solid var(--ark-color-border);
   border-radius: 20px;
-  box-shadow: 0 16px 36px rgba(78, 52, 120, 0.16);
+  box-shadow: var(--ark-shadow-md);
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -134,8 +135,8 @@
 }
 
 .thumb-milk-greet {
-  background: #fff;
-  border: 1px solid rgba(123, 90, 168, 0.1);
+  background: var(--ark-color-neutral-50);
+  border: 1px solid var(--ark-color-border);
   border-radius: 12px;
   display: flex;
   flex-direction: column;
@@ -144,22 +145,22 @@
 }
 
 .thumb-milk-greet-line {
-  background: rgba(123, 90, 168, 0.16);
+  background: color-mix(in srgb, var(--ark-color-accent) 22%, transparent);
   border-radius: 3px;
   height: 6px;
   width: 60%;
 }
 
 .thumb-milk-greet-line--lg {
-  background: rgba(123, 90, 168, 0.4);
+  background: color-mix(in srgb, var(--ark-color-accent) 50%, transparent);
   height: 8px;
   width: 80%;
 }
 
 .thumb-milk-session {
   align-items: center;
-  background: #fff;
-  border: 1px solid rgba(123, 90, 168, 0.1);
+  background: var(--ark-color-neutral-50);
+  border: 1px solid var(--ark-color-border);
   border-radius: 12px;
   display: flex;
   justify-content: center;
@@ -173,21 +174,21 @@
 }
 
 .thumb-milk-bottle-cap {
-  background: #c9a8e6;
+  background: var(--ark-color-accent);
   border-radius: 3px 3px 0 0;
   height: 9px;
   width: 22px;
 }
 
 .thumb-milk-bottle-neck {
-  background: #d8c2ec;
+  background: color-mix(in srgb, var(--ark-color-accent) 60%, transparent);
   height: 5px;
   width: 16px;
 }
 
 .thumb-milk-bottle-body {
-  background: #f3ecfa;
-  border: 1.5px solid #c9a8e6;
+  background: var(--ark-color-accent-soft);
+  border: 1.5px solid var(--ark-color-accent);
   border-radius: 6px 6px 9px 9px;
   height: 54px;
   overflow: hidden;
@@ -196,7 +197,7 @@
 }
 
 .thumb-milk-bottle-fill {
-  background: linear-gradient(180deg, #e7d4f6, #d9bff0);
+  background: color-mix(in srgb, var(--ark-color-accent) 32%, var(--ark-color-accent-soft));
   bottom: 0;
   height: 58%;
   left: 0;
@@ -206,8 +207,8 @@
 
 .thumb-milk-timer {
   align-items: center;
-  background: #fff;
-  border: 1px solid rgba(123, 90, 168, 0.1);
+  background: var(--ark-color-neutral-50);
+  border: 1px solid var(--ark-color-border);
   border-radius: 999px;
   display: flex;
   gap: 8px;
@@ -215,14 +216,14 @@
 }
 
 .thumb-milk-timer-dot {
-  background: #b98bdd;
+  background: var(--ark-color-accent);
   border-radius: 50%;
   height: 8px;
   width: 8px;
 }
 
 .thumb-milk-timer-bar {
-  background: rgba(123, 90, 168, 0.22);
+  background: var(--ark-color-neutral-200);
   border-radius: 3px;
   flex: 1;
   height: 6px;
@@ -231,36 +232,44 @@
 /* ── Hero ─────────────────────────────────────────────────── */
 
 .cs-hero {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  height: 500px;
-  margin-inline: auto;
-  max-width: 80vw;
-}
-
-.cs-hero-visual {
-  height: 100%;
+  align-items: center;
+  display: flex;
+  min-height: 460px;
   overflow: hidden;
+  padding: 100px var(--site-content-padding) 84px;
   position: relative;
 }
 
-.cs-hero-visual .thumb-vhome--hero {
-  height: 100%;
+/* Visual illustration: a faint, background-less watermark pinned to the
+   right edge of the page, behind the text. */
+.cs-hero-visual {
+  height: 520px;
+  opacity: 0.25;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 440px;
+  z-index: 0;
 }
 
-.cs-hero-visual .thumb-vhome-tv--hero {
+.cs-hero-visual .thumb-vhome,
+.cs-hero-visual .thumb-vhome-tv,
+.cs-hero-visual .thumb-milk {
+  background: none;
   height: 100%;
-}
-
-.cs-hero-visual .thumb-milk--hero {
-  height: 100%;
+  transform: scale(1.35);
+  transform-origin: right center;
 }
 
 .cs-hero-meta {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  padding: 60px 64px 60px 56px;
+  max-width: 920px;
+  position: relative;
+  width: 100%;
+  z-index: 1;
 }
 
 .cs-hero-eyebrow {
@@ -466,19 +475,14 @@
 
 @media (max-width: 860px) {
   .cs-hero {
-    grid-template-columns: 1fr;
-    height: auto;
-    margin-inline: 10px;
-    max-width: none;
-    width: calc(100vw - 20px);
+    min-height: 320px;
+    padding-block: 72px 56px;
   }
 
   .cs-hero-visual {
-    height: 300px;
-  }
-
-  .cs-hero-meta {
-    padding: 40px 24px;
+    height: 360px;
+    opacity: 0.16;
+    width: 300px;
   }
 
   .cs-overview-inner {

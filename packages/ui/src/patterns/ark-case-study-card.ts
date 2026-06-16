@@ -54,7 +54,7 @@ export class ArkCaseStudyCard extends LitElement {
     }
 
     :host(:hover) .media::slotted(*) {
-      transform: scale(1.04);
+      transform: scale(1.07);
     }
 
     .content {
