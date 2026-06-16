@@ -54,6 +54,7 @@ export class ArkNavigationRoot extends LitElement {
       background: linear-gradient(to bottom, rgba(251, 248, 243, 0.96) 60%, transparent);
       display: flex;
       inset-inline: 0;
+      width: 100vw;
       justify-content: space-between;
       padding: 28px var(--site-content-padding);
       position: fixed;

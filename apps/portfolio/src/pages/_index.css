@@ -752,7 +752,7 @@
     gap: 12px;
     grid-template-columns: unset;
     grid-template-rows: unset;
-    overflow-x: auto;
+    overflow-x: hidden;
     padding-bottom: 4px;
     padding-inline: 20px;
     scroll-behavior: smooth;
