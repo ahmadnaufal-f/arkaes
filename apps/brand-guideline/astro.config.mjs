@@ -1,5 +1,5 @@
 import { defineConfig } from "astro/config";
 
 export default defineConfig({
-  site: "https://arkaes.dev",
+  site: "https://brand.arkaes.dev",
 });
