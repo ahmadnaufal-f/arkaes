@@ -14,6 +14,70 @@ const allStudies = await getCollection("caseStudies");
 const featuredStudies = allStudies
   .filter((s) => s.data.featured)
   .sort((a, b) => getOrder(a.id) - getOrder(b.id));
+
+const services = [
+  {
+    name: "Frontend Architecture & UI Systems",
+    description:
+      "I design frontend foundations for scalable product interfaces, including component structure, routing, state management, API integration, accessibility, and maintainable UI patterns.",
+    techStack: [
+      "React",
+      "Next.js",
+      "Lit",
+      "TypeScript",
+      "Zustand",
+      "Redux Toolkit",
+      "React Query",
+      "Zod",
+    ],
+    relatedWork: [
+      "SmartThings Virtual Home",
+      "Aircare Service Plugin",
+      "Treely",
+      "Arkaes Design System",
+    ],
+  },
+  {
+    name: "Design Systems Engineering",
+    description:
+      "I build reusable UI systems that help teams ship consistent interfaces faster, with attention to accessibility, design tokens, variants, component APIs, and documentation.",
+    techStack: [
+      "React",
+      "Lit",
+      "Web Components",
+      "Storybook",
+      "Tailwind CSS",
+      "Figma",
+      "Design Tokens",
+    ],
+    relatedWork: ["Arkaes Design System", "Internal React Design System"],
+  },
+  {
+    name: "Performance-focused Frontend Engineering",
+    description:
+      "I improve frontend performance through caching, bundle optimization, lazy loading, rendering strategy, and refactoring heavy UI logic.",
+    techStack: [
+      "Vite",
+      "Zustand",
+      "Browser Performance Tools",
+      "Code Splitting",
+      "Caching Strategies",
+      "Bundle Analysis",
+    ],
+    relatedWork: [
+      "Aircare Service Plugin Caching",
+      "Virtual Home Major Refactor",
+      "Virtual Home TV Lazy Loading",
+    ],
+  },
+  {
+    name: "Cross-platform Product Development",
+    description:
+      "I build product interfaces across web and mobile, focusing on consistent user experience, maintainable architecture, and practical engineering tradeoffs.",
+    techStack: ["React Native", "Expo", "React", "Next.js", "TypeScript", "NativeWind"],
+    relatedWork: ["Treely", "SmartThings Web Plugins"],
+  },
+];
 ---
 
 <BaseLayout
@@ -201,28 +265,37 @@ const featuredStudies = allStudies
       </div>
     </div>
 
-    <div class="services-list">
-      <a class="service-item reveal" href="/projects">
-        <span class="service-num">01</span>
-        <span class="service-name">Frontend Architecture &amp; UI Systems</span>
-        <span class="service-arrow">&rarr;</span>
-      </a>
-      <a class="service-item reveal reveal-delay-1" href="/projects">
-        <span class="service-num">02</span>
-        <span class="service-name">Design Systems Engineering</span>
-        <span class="service-arrow">&rarr;</span>
-      </a>
-      <a class="service-item reveal reveal-delay-2" href="/projects">
-        <span class="service-num">03</span>
-        <span class="service-name">Performance-focused Frontend Engineering</span>
-        <span class="service-arrow">&rarr;</span>
-      </a>
-      <a class="service-item reveal reveal-delay-3" href="/projects">
-        <span class="service-num">04</span>
-        <span class="service-name">Cross-platform Product Development</span>
-        <span class="service-arrow">&rarr;</span>
-      </a>
-    </div>
+    <ark-accordion class="services-list" type="single">
+      {services.map((service, index) => (
+        <ark-accordion-item class={`service-item reveal${index > 0 ? ` reveal-delay-${index}` : ""}`}>
+          <span slot="trigger" class="service-trigger">
+            <span class="service-num">{String(index + 1).padStart(2, "0")}</span>
+            <span class="service-name">{service.name}</span>
+          </span>
+          <div class="service-body">
+            <p class="service-desc">{service.description}</p>
+            <div class="service-meta">
+              <div class="service-meta-group">
+                <div class="service-meta-label">Tech stack</div>
+                <div class="service-tags">
+                  {service.techStack.map((tech) => (
+                    <span class="service-tag">{tech}</span>
+                  ))}
+                </div>
+              </div>
+              <div class="service-meta-group">
+                <div class="service-meta-label">Related work</div>
+                <div class="service-tags">
+                  {service.relatedWork.map((work) => (
+                    <span class="service-tag service-tag--work">{work}</span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </ark-accordion-item>
+      ))}
+    </ark-accordion>
   </section>
 
   <section class="techstack-section" id="techstack">
