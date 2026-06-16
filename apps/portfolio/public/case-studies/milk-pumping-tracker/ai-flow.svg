@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 230" width="100%" preserveAspectRatio="xMidYMid meet">
+
+  <!-- ── Inputs (left lane) ── -->
+  <rect x="20" y="40" width="178" height="46" rx="6" fill="#faf9f7" stroke="#d4cec8" stroke-width="1"/>
+  <text x="109" y="62" text-anchor="middle" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="11" font-weight="500" fill="#17130f">Pumping session logs</text>
+  <text x="109" y="77" text-anchor="middle" font-family="'DM Mono','Courier New',monospace" font-size="8" fill="#9d9185" letter-spacing="0.04em">time · amount · duration</text>
+
+  <rect x="20" y="120" width="178" height="46" rx="6" fill="#f6f3fa" stroke="#d8d2e4" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="109" y="142" text-anchor="middle" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="11" font-weight="500" fill="#5a4d7a">Optional context</text>
+  <text x="109" y="157" text-anchor="middle" font-family="'DM Mono','Courier New',monospace" font-size="8" fill="#9b8fb5" letter-spacing="0.04em">birth date · feeding · goals</text>
+
+  <!-- Merge connectors into prepared context -->
+  <line x1="198" y1="63" x2="248" y2="93" stroke="#c8c2ba" stroke-width="1.25"/>
+  <line x1="198" y1="143" x2="248" y2="113" stroke="#c8c2ba" stroke-width="1.25"/>
+  <polygon points="245,88 254,93 244,98" fill="#c8c2ba"/>
+  <polygon points="245,108 254,103 244,118" fill="#c8c2ba" opacity="0"/>
+  <polygon points="246,109 255,103 246,118" fill="#c8c2ba"/>
+
+  <!-- ── Prepare focused context (highlight) ── -->
+  <rect x="256" y="78" width="170" height="50" rx="8" fill="#eae7f0" stroke="#c9c0dd" stroke-width="1.25"/>
+  <text x="341" y="101" text-anchor="middle" font-family="'Fraunces',Georgia,serif" font-size="13" font-style="italic" fill="#4a3d6a">Prepare context</text>
+  <text x="341" y="117" text-anchor="middle" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="8.5" font-weight="300" fill="#6f6388">relevant logs only · focused input</text>
+
+  <!-- arrow to OpenAI -->
+  <line x1="426" y1="103" x2="476" y2="103" stroke="#c8c2ba" stroke-width="1.5"/>
+  <polygon points="471,98 481,103 471,108" fill="#c8c2ba"/>
+
+  <!-- ── OpenAI API ── -->
+  <rect x="484" y="80" width="120" height="46" rx="6" fill="#f2ddd7" stroke="#e9c8be" stroke-width="1.25"/>
+  <text x="544" y="100" text-anchor="middle" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="11" font-weight="500" fill="#8f554d">OpenAI API</text>
+  <text x="544" y="115" text-anchor="middle" font-family="'DM Mono','Courier New',monospace" font-size="8" fill="#b58a80" letter-spacing="0.04em">summarize</text>
+
+  <!-- arrow to output -->
+  <line x1="604" y1="103" x2="638" y2="103" stroke="#c8c2ba" stroke-width="1.5"/>
+  <polygon points="633,98 643,103 633,108" fill="#c8c2ba"/>
+
+  <!-- ── Output ── -->
+  <rect x="646" y="62" width="114" height="82" rx="6" fill="#faf9f7" stroke="#d4cec8" stroke-width="1"/>
+  <text x="703" y="82" text-anchor="middle" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="10" font-weight="500" fill="#17130f">Review layer</text>
+  <rect x="658" y="92" width="90" height="14" rx="7" fill="#e2e7d6"/>
+  <text x="703" y="102" text-anchor="middle" font-family="'DM Mono','Courier New',monospace" font-size="7.5" fill="#5f6f48">summary</text>
+  <rect x="658" y="112" width="90" height="14" rx="7" fill="#eae7f0"/>
+  <text x="703" y="122" text-anchor="middle" font-family="'DM Mono','Courier New',monospace" font-size="7.5" fill="#5a4d7a">follow-up Qs</text>
+
+  <!-- ── Caption ── -->
+  <text x="390" y="200" text-anchor="middle" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="10" font-weight="300" fill="#76695f">The tracker stays useful on its own — AI is an optional review layer over the recorded logs.</text>
+
+</svg>

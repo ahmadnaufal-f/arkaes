@@ -1,4 +1,9 @@
 import {
+  ArkAccordion,
+  ArkAccordionItem,
+  defineArkAccordion,
+} from "./ark-accordion";
+import {
   ArkCard,
   ArkCardHeader,
   ArkCardTitle,
@@ -58,6 +63,9 @@ import {
 } from "./ark-navigation";
 
 export {
+  ArkAccordion,
+  ArkAccordionItem,
+  defineArkAccordion,
   ArkCard,
   ArkCardHeader,
   ArkCardTitle,

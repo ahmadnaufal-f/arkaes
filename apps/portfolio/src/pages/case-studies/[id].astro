@@ -1,0 +1,127 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { parseSections, renderSectionHtml } from "../../utils/case-study";
+import "./_case-study.css";
+import "@arkaes/ui/components/ark-accordion";
+import VirtualHomeThumbnail from "../../components/case-studies-thumbnail/virtual-home/thumbnail.astro";
+import VirtualHomeTvThumbnail from "../../components/case-studies-thumbnail/virtual-home-tv/thumbnail.astro";
+import MilkPumpingThumbnail from "../../components/case-studies-thumbnail/milk-pumping-tracker/thumbnail.astro";
+
+// Eagerly import every case study SVG as a raw string so we can inline it and
+// let the page's loaded Google Fonts apply inside the diagram markup.
+const svgModules = import.meta.glob<string>(
+  "../../../public/case-studies/**/*.svg",
+  { query: "?raw", import: "default", eager: true },
+);
+
+type CaseStudy = {
+  id: string;
+  data: {
+    title: string;
+    shortDesc: string;
+    tags: string[];
+    visual: string;
+  };
+  body?: string;
+};
+
+export async function getStaticPaths() {
+  const studies = (await getCollection("caseStudies")) as CaseStudy[];
+
+  return studies.map((study) => ({
+    params: { id: study.id },
+    props: { study },
+  }));
+}
+
+const { study } = Astro.props;
+const { title, shortDesc, tags, visual } = study.data;
+
+// Build a map of { fileName (no extension) → SVG source } for this study
+const diagrams: Record<string, string> = {};
+const prefix = `/case-studies/${study.id}/`;
+for (const [path, source] of Object.entries(svgModules)) {
+  const idx = path.indexOf(prefix);
+  if (idx === -1) continue;
+  const fileName = path.slice(idx + prefix.length).replace(".svg", "");
+  diagrams[fileName] = source;
+}
+
+const allSections = parseSections(study.body ?? "");
+const overviewSection = allSections.find((s) => s.heading === "Overview");
+const accordionSections = allSections.filter((s) => s.heading !== "Overview");
+---
+
+<BaseLayout title={`${title} — Arkaes`} description={shortDesc}>
+  <article class="cs-page">
+    <header class="cs-hero">
+      <div class="cs-hero-visual">
+        {
+          visual === "virtual-home" && (
+            <VirtualHomeThumbnail transitionName={`cs-thumb-${study.id}`} />
+          )
+        }
+        {
+          visual === "virtual-home-tv" && (
+            <VirtualHomeTvThumbnail transitionName={`cs-thumb-${study.id}`} />
+          )
+        }
+        {
+          visual === "milk-pumping" && (
+            <MilkPumpingThumbnail transitionName={`cs-thumb-${study.id}`} />
+          )
+        }
+      </div>
+
+      <div class="cs-hero-meta">
+        <div class="cs-hero-eyebrow">Case Study</div>
+        <div class="cs-hero-tags">
+          {
+            tags.map((tag: string) => (
+              <ark-badge variant="pill">{tag}</ark-badge>
+            ))
+          }
+        </div>
+        <h1 class="cs-hero-title">{title}</h1>
+      </div>
+    </header>
+
+    {
+      overviewSection && (
+        <section class="cs-overview-section">
+          <div class="cs-overview-inner">
+            <div class="cs-overview-label">Overview</div>
+            <div
+              class="cs-overview-body"
+              set:html={renderSectionHtml(overviewSection.content, diagrams)}
+            />
+          </div>
+        </section>
+      )
+    }
+
+    <section class="cs-accordion-section">
+      <div class="cs-accordion-inner">
+        <ark-accordion type="single">
+          {
+            accordionSections.map((section) => (
+              <ark-accordion-item heading={section.heading}>
+                <div
+                  class="cs-section-content"
+                  set:html={renderSectionHtml(section.content, diagrams)}
+                />
+              </ark-accordion-item>
+            ))
+          }
+        </ark-accordion>
+      </div>
+    </section>
+
+    <div class="cs-back">
+      <a href="/#case-studies" class="cs-back-link"
+        >&larr; Back to case studies</a
+      >
+    </div>
+  </article>
+</BaseLayout>

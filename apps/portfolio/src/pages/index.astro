@@ -1,7 +1,19 @@
 ---
+import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import "./_index.css";
 import { techGroups, currentlyLearning } from "../data/techstack";
+import VirtualHomeThumbnail from "../components/case-studies-thumbnail/virtual-home/thumbnail.astro";
+import VirtualHomeTvThumbnail from "../components/case-studies-thumbnail/virtual-home-tv/thumbnail.astro";
+import MilkPumpingThumbnail from "../components/case-studies-thumbnail/milk-pumping-tracker/thumbnail.astro";
+
+const CARD_ORDER = ["virtual-home", "virtual-home-tv", "milk-pumping-tracker"];
+const getOrder = (id: string) => { const i = CARD_ORDER.indexOf(id); return i === -1 ? Infinity : i; };
+
+const allStudies = await getCollection("caseStudies");
+const featuredStudies = allStudies
+  .filter((s) => s.data.featured)
+  .sort((a, b) => getOrder(a.id) - getOrder(b.id));
 ---
 
 <BaseLayout
@@ -37,16 +49,12 @@ import { techGroups, currentlyLearning } from "../data/techstack";
   </div>
 
   <script>
-    // Repeat the marquee group enough times to fill the viewport, then duplicate
-    // that filled run so translateX(-50%) loops seamlessly at any screen width.
-    // Items keep their natural spacing — the group count adapts to the width.
-    const SECONDS_PER_GROUP = 24; // crossing time for one group; keeps speed constant
+    const SECONDS_PER_GROUP = 24;
 
     function setupMarquee(track: HTMLElement) {
       const base = track.querySelector<HTMLElement>("[data-marquee-group]");
       if (!base) return;
 
-      // Reset to the single source group before measuring.
       track
         .querySelectorAll("[data-marquee-group][data-clone]")
         .forEach((node) => node.remove());
@@ -64,7 +72,6 @@ import { techGroups, currentlyLearning } from "../data/techstack";
         fragment.appendChild(clone);
       }
       track.appendChild(fragment);
-
       track.style.animationDuration = `${copiesPerHalf * SECONDS_PER_GROUP}s`;
     }
 
@@ -89,61 +96,102 @@ import { techGroups, currentlyLearning } from "../data/techstack";
         <div class="section-eyebrow">Selected Case Studies</div>
         <h2 class="section-title">Systems I have <em>shaped</em></h2>
       </div>
-      <div class="section-count">04 / Selected</div>
+      <div class="section-count">{String(featuredStudies.length).padStart(2, "0")} / Selected</div>
     </div>
 
+    <div class="projects-carousel">
     <div class="projects-grid reveal reveal-delay-1">
-      <ark-case-study-card
-        class="project-card"
-        href="/projects/smartthings-air-care-service"
-        title="Samsung Plugin Optimization"
-      >
-        <div class="thumb-1" slot="media">
-          <div class="thumb-1-inner">
-            <div class="thumb-1-text">&AElig;</div>
-          </div>
-        </div>
-        <ark-badge slot="tag" variant="pill">Performance</ark-badge>
-        <ark-badge slot="tag" variant="pill">UI Architecture</ark-badge>
-        <ark-badge slot="tag" variant="pill">Samsung</ark-badge>
-      </ark-case-study-card>
+      {featuredStudies.map((study) => (
+        <ark-case-study-card
+          class="project-card"
+          href={`/case-studies/${study.id}`}
+          title={study.data.title}
+        >
+          {study.data.visual === "virtual-home" && (
+            <VirtualHomeThumbnail
+              asSlot="media"
+              transitionName={`cs-thumb-${study.id}`}
+            />
+          )}
+          {study.data.visual === "virtual-home-tv" && (
+            <VirtualHomeTvThumbnail
+              asSlot="media"
+              transitionName={`cs-thumb-${study.id}`}
+            />
+          )}
+          {study.data.visual === "milk-pumping" && (
+            <MilkPumpingThumbnail
+              asSlot="media"
+              transitionName={`cs-thumb-${study.id}`}
+            />
+          )}
+          {study.data.tags.map((tag) => (
+            <ark-badge slot="tag" variant="pill">{tag}</ark-badge>
+          ))}
+        </ark-case-study-card>
+      ))}
+    </div>
 
-      <ark-case-study-card
-        class="project-card"
-        href="/projects/treely"
-        title="Treely Family Tree App"
-      >
-        <div class="thumb-2" slot="media">
-          <div class="thumb-2-grid">
-            <div class="thumb-2-cell"></div>
-            <div class="thumb-2-cell"></div>
-            <div class="thumb-2-cell"></div>
-            <div class="thumb-2-cell"></div>
-            <div class="thumb-2-cell"></div>
-            <div class="thumb-2-cell"></div>
-            <div class="thumb-2-cell"></div>
-            <div class="thumb-2-cell"></div>
-          </div>
-        </div>
-        <ark-badge slot="tag" variant="pill">React Native</ark-badge>
-        <ark-badge slot="tag" variant="pill">Product Lead</ark-badge>
-      </ark-case-study-card>
-
-      <ark-case-study-card
-        class="project-card"
-        href="/projects/milk-tracker-app"
-        title="Milk Pumping Insights"
-      >
-        <div class="thumb-3" slot="media">
-          <div class="thumb-3-ring">
-            <div class="thumb-3-fill"></div>
-          </div>
-        </div>
-        <ark-badge slot="tag" variant="pill">AI Feature</ark-badge>
-        <ark-badge slot="tag" variant="pill">Product UX</ark-badge>
-      </ark-case-study-card>
+    <div class="projects-nav" aria-label="Case study navigation">
+      <button class="projects-nav-btn" data-carousel-prev aria-label="Previous case study" disabled>&#8592;</button>
+      <span class="projects-nav-indicator" aria-live="polite">
+        <span data-carousel-current>01</span> / {String(featuredStudies.length).padStart(2, "0")}
+      </span>
+      <button class="projects-nav-btn" data-carousel-next aria-label="Next case study">&#8594;</button>
+    </div>
     </div>
   </section>
+
+  <script>
+    (function () {
+      const grid = document.querySelector<HTMLElement>(".projects-grid");
+      const prevBtn = document.querySelector<HTMLButtonElement>("[data-carousel-prev]");
+      const nextBtn = document.querySelector<HTMLButtonElement>("[data-carousel-next]");
+      const currentEl = document.querySelector<HTMLElement>("[data-carousel-current]");
+      if (!grid || !prevBtn || !nextBtn || !currentEl) return;
+
+      const cards = Array.from(grid.querySelectorAll<HTMLElement>(".project-card"));
+      const total = cards.length;
+      let current = 0;
+
+      function isActive() {
+        return window.getComputedStyle(prevBtn!).display !== "none";
+      }
+
+      function updateNav() {
+        currentEl!.textContent = String(current + 1).padStart(2, "0");
+        prevBtn!.disabled = current === 0;
+        nextBtn!.disabled = current === total - 1;
+      }
+
+      function goTo(index: number) {
+        current = Math.max(0, Math.min(total - 1, index));
+        cards[current].scrollIntoView({ behavior: "smooth", block: "nearest", inline: "start" });
+        updateNav();
+      }
+
+      let scrollTimer: ReturnType<typeof setTimeout>;
+      grid.addEventListener("scroll", () => {
+        if (!isActive()) return;
+        clearTimeout(scrollTimer);
+        scrollTimer = setTimeout(() => {
+          const gridLeft = grid.getBoundingClientRect().left;
+          let closest = 0;
+          let closestDist = Infinity;
+          cards.forEach((card, i) => {
+            const dist = Math.abs(card.getBoundingClientRect().left - gridLeft);
+            if (dist < closestDist) { closestDist = dist; closest = i; }
+          });
+          if (closest !== current) { current = closest; updateNav(); }
+        }, 80);
+      }, { passive: true });
+
+      prevBtn.addEventListener("click", () => { if (isActive()) goTo(current - 1); });
+      nextBtn.addEventListener("click", () => { if (isActive()) goTo(current + 1); });
+
+      updateNav();
+    })();
+  </script>
 
   <section class="services-section" id="expertise">
     <div class="section-header reveal">

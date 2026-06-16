@@ -1,0 +1,92 @@
+---
+interface Props {
+  transitionName: string;
+  asSlot?: string;
+}
+const { transitionName, asSlot } = Astro.props;
+---
+
+<div
+  class="thumb-vhome-tv"
+  slot={asSlot}
+  style={`view-transition-name: ${transitionName};`}
+>
+  <div class="thumb-tv-screen">
+    <div class="thumb-tv-topbar">
+      <div class="thumb-tv-tab thumb-tv-tab--active"></div>
+      <div class="thumb-tv-tab"></div>
+      <div class="thumb-tv-tab"></div>
+    </div>
+    <div class="thumb-tv-grid">
+      <div class="thumb-tv-card"></div>
+      <div class="thumb-tv-card thumb-tv-card--focused"></div>
+      <div class="thumb-tv-card"></div>
+      <div class="thumb-tv-card"></div>
+      <div class="thumb-tv-card"></div>
+      <div class="thumb-tv-card"></div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .thumb-vhome-tv {
+    align-items: center;
+    background: var(--thumbnail-background, var(--ark-color-accent-soft));
+    display: flex;
+    height: var(--thumbnail-height, auto);
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .thumb-tv-screen {
+    background: var(--ark-color-surface);
+    border: 1px solid var(--ark-color-border);
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overflow: hidden;
+    padding: 16px;
+    width: 230px;
+  }
+
+  .thumb-tv-topbar {
+    border-bottom: 1px solid var(--ark-color-border);
+    display: flex;
+    gap: 7px;
+    padding-bottom: 10px;
+  }
+
+  .thumb-tv-tab {
+    background: var(--ark-color-neutral-200);
+    border-radius: 2px;
+    height: 3px;
+    width: 22px;
+  }
+
+  .thumb-tv-tab--active {
+    background: var(--ark-color-accent);
+    width: 30px;
+  }
+
+  .thumb-tv-grid {
+    display: grid;
+    gap: 6px;
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  .thumb-tv-card {
+    background: var(--ark-color-neutral-100);
+    border: 1px solid var(--ark-color-border);
+    border-radius: 2px;
+    height: 44px;
+  }
+
+  .thumb-tv-card--focused {
+    background: var(--ark-color-accent-soft);
+    border-color: var(--ark-color-accent);
+    box-shadow: 0 0 0 2px
+      color-mix(in srgb, var(--ark-color-accent) 22%, transparent);
+  }
+</style>

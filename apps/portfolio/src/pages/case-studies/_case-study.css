@@ -1,0 +1,282 @@
+.cs-page {
+  padding-bottom: 120px;
+}
+
+/* ── Hero ─────────────────────────────────────────────────── */
+
+.cs-hero {
+  align-items: center;
+  display: flex;
+  min-height: 460px;
+  overflow: hidden;
+  padding: 100px var(--site-content-padding);
+  position: relative;
+}
+
+/* Visual illustration: a faint, background-less watermark fixed to the
+   right edge of the viewport — stays in place as the user scrolls. */
+.cs-hero-visual {
+  --thumbnail-background: none;
+  --thumbnail-height: 100%;
+  height: 760px;
+  opacity: 0.25;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 600px;
+  z-index: 0;
+}
+
+.cs-hero-meta {
+  display: flex;
+  flex-direction: column;
+  max-width: 920px;
+  position: relative;
+  width: 100%;
+  z-index: 1;
+}
+
+.cs-hero-eyebrow {
+  color: var(--ark-color-accent-strong);
+  font-family: var(--ark-font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.16em;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+}
+
+.cs-hero-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 24px;
+}
+
+.cs-hero-title {
+  color: var(--ark-color-text);
+  font-family: var(--ark-font-display);
+  font-size: clamp(1.8rem, 3vw, 2.8rem);
+  font-weight: var(--ark-weight-thin);
+  line-height: 1.12;
+  margin: 0;
+}
+
+/* ── Overview ─────────────────────────────────────────────── */
+
+.cs-overview-section {
+  background: var(--ark-color-accent-soft);
+  border-block: 1px solid color-mix(in srgb, var(--ark-color-accent) 20%, transparent);
+  padding: 72px var(--site-content-padding);
+}
+
+.cs-overview-inner {
+  display: grid;
+  gap: 40px;
+  grid-template-columns: 180px 1fr;
+  max-width: 920px;
+}
+
+.cs-overview-label {
+  color: var(--ark-color-accent-strong);
+  font-family: var(--ark-font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.16em;
+  padding-top: 6px;
+  text-transform: uppercase;
+}
+
+.cs-overview-body p {
+  color: var(--ark-color-text-soft);
+  font-size: var(--ark-text-lg);
+  font-weight: var(--ark-weight-thin);
+  line-height: var(--ark-leading-relaxed);
+  margin: 0 0 1.2em;
+}
+
+.cs-overview-body p:last-child {
+  margin-bottom: 0;
+}
+
+/* ── Accordion ────────────────────────────────────────────── */
+
+.cs-accordion-section {
+  padding: 0 var(--site-content-padding);
+}
+
+.cs-accordion-inner {
+  margin-top: 80px;
+  max-width: 920px;
+}
+
+/* Slotted content styles inside ark-accordion-item */
+
+.cs-section-content p {
+  color: var(--ark-color-text-muted);
+  font-size: var(--ark-text-lg);
+  font-weight: var(--ark-weight-thin);
+  line-height: var(--ark-leading-relaxed);
+  margin: 0 0 1em;
+  max-width: 72ch;
+}
+
+.cs-section-content p:last-child {
+  margin-bottom: 0;
+}
+
+.cs-section-content .cs-list {
+  color: var(--ark-color-text-muted);
+  font-size: var(--ark-text-md);
+  font-weight: var(--ark-weight-thin);
+  line-height: var(--ark-leading-relaxed);
+  list-style: none;
+  margin: 0 0 1em;
+  padding: 0;
+}
+
+.cs-section-content .cs-list li {
+  max-width: 68ch;
+  padding: 5px 0 5px 20px;
+  position: relative;
+}
+
+.cs-section-content .cs-list li::before {
+  color: var(--ark-color-accent);
+  content: "•";
+  left: 0;
+  position: absolute;
+}
+
+.cs-section-content .cs-subheading {
+  color: var(--ark-color-text-soft);
+  font-family: var(--ark-font-sans);
+  font-size: var(--ark-text-md);
+  font-weight: var(--ark-weight-medium);
+  letter-spacing: 0.01em;
+  margin: 1.6em 0 0.5em;
+}
+
+.cs-section-content .cs-figure {
+  margin: 1.8em 0;
+}
+
+.cs-section-content .cs-figure svg,
+.cs-section-content .cs-diagram {
+  display: block;
+  height: auto;
+  max-width: 100%;
+  width: 100%;
+}
+
+/* Phone screenshots — constrained, framed, displayed in a centered row */
+
+.cs-section-content .cs-shots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  margin: 1.8em 0;
+}
+
+.cs-section-content .cs-shot {
+  flex: 0 1 200px;
+  margin: 0;
+  max-width: 220px;
+}
+
+.cs-section-content .cs-screenshot {
+  border: 1px solid color-mix(in srgb, var(--ark-color-accent) 24%, transparent);
+  border-radius: 20px;
+  box-shadow: 0 16px 36px rgba(78, 52, 120, 0.16);
+  display: block;
+  height: auto;
+  width: 100%;
+}
+
+.cs-section-content .cs-shot figcaption {
+  color: var(--ark-color-text-subtle);
+  font-family: var(--ark-font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  line-height: 1.5;
+  margin-top: 12px;
+  text-align: center;
+}
+
+.cs-section-content .cs-code {
+  background: var(--ark-color-neutral-900);
+  border-radius: var(--ark-radius-xs);
+  color: var(--ark-color-neutral-100);
+  font-family: var(--ark-font-mono);
+  font-size: 0.8rem;
+  line-height: 1.7;
+  margin: 1.2em 0;
+  overflow-x: auto;
+  padding: 20px 24px;
+  white-space: pre;
+}
+
+/* ── Back link ────────────────────────────────────────────── */
+
+.cs-back {
+  padding: 56px var(--site-content-padding) 0;
+}
+
+.cs-back-link {
+  color: var(--ark-color-text-subtle);
+  font-family: var(--ark-font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color var(--ark-duration-fast);
+}
+
+.cs-back-link:hover {
+  color: var(--ark-color-accent-strong);
+}
+
+/* ── Responsive ───────────────────────────────────────────── */
+
+@media (max-width: 860px) {
+  .cs-hero {
+    min-height: 320px;
+    padding-block: 72px 56px;
+  }
+
+  .cs-hero-visual {
+    display: none;
+  }
+
+  .cs-overview-inner {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .cs-overview-label {
+    padding-top: 0;
+  }
+
+  .cs-accordion-inner {
+    margin-top: 48px;
+  }
+}
+
+@media (max-width: 520px) {
+  .cs-hero-meta {
+    padding: 32px 20px;
+  }
+
+  .cs-overview-section {
+    padding: 48px 20px;
+  }
+
+  .cs-accordion-section {
+    padding: 0 20px;
+  }
+
+  .cs-back {
+    padding: 40px 20px 0;
+  }
+}

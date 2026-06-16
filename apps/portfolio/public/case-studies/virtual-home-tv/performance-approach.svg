@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 210" width="100%" preserveAspectRatio="xMidYMid meet">
+
+  <!-- ── Phase 1: Render time ── -->
+  <rect x="20" y="20" width="330" height="170" rx="6" fill="#faf9f7" stroke="#d4cec8" stroke-width="1"/>
+  <rect x="20" y="20" width="330" height="36" rx="6" fill="#f1eee9" stroke="none"/>
+  <rect x="20" y="40" width="330" height="16" fill="#f1eee9" stroke="none"/>
+  <text x="40" y="43" font-family="'DM Mono','Courier New',monospace" font-size="9" fill="#9d9185" letter-spacing="0.12em">RENDER TIME</text>
+  <text x="336" y="43" text-anchor="end" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="9" font-weight="300" fill="#aeb997">runs once per page</text>
+
+  <!-- Step boxes -->
+  <rect x="40" y="68" width="290" height="30" rx="4" fill="#e8e4dc" stroke="none"/>
+  <text x="185" y="87" text-anchor="middle" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="10" font-weight="400" fill="#17130f">Page structure ready</text>
+
+  <line x1="185" y1="98" x2="185" y2="110" stroke="#c8c2ba" stroke-width="1"/>
+  <polygon points="181,108 185,115 189,108" fill="#c8c2ba"/>
+
+  <rect x="40" y="114" width="290" height="30" rx="4" fill="#e2e7d6" stroke="none"/>
+  <text x="185" y="133" text-anchor="middle" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="10" font-weight="400" fill="#3a5020">Query &amp; measure focusable elements</text>
+
+  <line x1="185" y1="144" x2="185" y2="156" stroke="#c8c2ba" stroke-width="1"/>
+  <polygon points="181,154 185,161 189,154" fill="#c8c2ba"/>
+
+  <rect x="40" y="159" width="290" height="22" rx="4" fill="#dde5cc" stroke="#c5ceb5" stroke-width="0.75"/>
+  <text x="185" y="174" text-anchor="middle" font-family="'DM Mono','Courier New',monospace" font-size="9" fill="#3a5020" letter-spacing="0.06em">Focus map built &amp; stored</text>
+
+  <!-- ── Center arrow ── -->
+  <line x1="350" y1="105" x2="430" y2="105" stroke="#c8c2ba" stroke-width="1.5"/>
+  <polygon points="425,100 435,105 425,110" fill="#c8c2ba"/>
+  <text x="390" y="98" text-anchor="middle" font-family="'DM Mono','Courier New',monospace" font-size="7.5" fill="#aeb997" letter-spacing="0.08em">CACHED</text>
+
+  <!-- ── Phase 2: Navigation time ── -->
+  <rect x="430" y="20" width="330" height="170" rx="6" fill="#faf9f7" stroke="#d4cec8" stroke-width="1"/>
+  <rect x="430" y="20" width="330" height="36" rx="6" fill="#f1eee9" stroke="none"/>
+  <rect x="430" y="40" width="330" height="16" fill="#f1eee9" stroke="none"/>
+  <text x="450" y="43" font-family="'DM Mono','Courier New',monospace" font-size="9" fill="#9d9185" letter-spacing="0.12em">NAVIGATION TIME</text>
+  <text x="746" y="43" text-anchor="end" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="9" font-weight="300" fill="#aeb997">runs on every key press</text>
+
+  <!-- Step boxes -->
+  <rect x="450" y="68" width="290" height="30" rx="4" fill="#e8e4dc" stroke="none"/>
+  <text x="595" y="87" text-anchor="middle" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="10" font-weight="400" fill="#17130f">Remote control directional press</text>
+
+  <line x1="595" y1="98" x2="595" y2="110" stroke="#c8c2ba" stroke-width="1"/>
+  <polygon points="591,108 595,115 599,108" fill="#c8c2ba"/>
+
+  <rect x="450" y="114" width="290" height="30" rx="4" fill="#dde5cc" stroke="#c5ceb5" stroke-width="0.75"/>
+  <text x="595" y="133" text-anchor="middle" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="10" font-weight="400" fill="#3a5020">Look up next target in focus map</text>
+
+  <line x1="595" y1="144" x2="595" y2="156" stroke="#c8c2ba" stroke-width="1"/>
+  <polygon points="591,154 595,161 599,154" fill="#c8c2ba"/>
+
+  <rect x="450" y="159" width="290" height="22" rx="4" fill="#e2e7d6" stroke="none"/>
+  <text x="595" y="174" text-anchor="middle" font-family="'DM Mono','Courier New',monospace" font-size="9" fill="#3a5020" letter-spacing="0.06em">Focus moves — no DOM query</text>
+
+</svg>
