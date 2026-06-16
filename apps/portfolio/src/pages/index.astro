@@ -4,10 +4,13 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import "./_index.css";
 import { techGroups, currentlyLearning } from "../data/techstack";
 
+const CARD_ORDER = ["virtual-home", "virtual-home-tv", "milk-pumping-tracker"];
+const getOrder = (id: string) => { const i = CARD_ORDER.indexOf(id); return i === -1 ? Infinity : i; };
+
 const allStudies = await getCollection("caseStudies");
 const featuredStudies = allStudies
   .filter((s) => s.data.featured)
-  .slice(0, 3);
+  .sort((a, b) => getOrder(a.id) - getOrder(b.id));
 ---
 
 <BaseLayout
@@ -93,7 +96,8 @@ const featuredStudies = allStudies
       <div class="section-count">{String(featuredStudies.length).padStart(2, "0")} / Selected</div>
     </div>
 
-    <div class="projects-grid reveal reveal-delay-1" data-count={featuredStudies.length}>
+    <div class="projects-carousel">
+    <div class="projects-grid reveal reveal-delay-1">
       {featuredStudies.map((study) => (
         <ark-case-study-card
           class="project-card"
@@ -171,7 +175,67 @@ const featuredStudies = allStudies
         </ark-case-study-card>
       ))}
     </div>
+
+    <div class="projects-nav" aria-label="Case study navigation">
+      <button class="projects-nav-btn" data-carousel-prev aria-label="Previous case study" disabled>&#8592;</button>
+      <span class="projects-nav-indicator" aria-live="polite">
+        <span data-carousel-current>01</span> / {String(featuredStudies.length).padStart(2, "0")}
+      </span>
+      <button class="projects-nav-btn" data-carousel-next aria-label="Next case study">&#8594;</button>
+    </div>
+    </div>
   </section>
+
+  <script>
+    (function () {
+      const grid = document.querySelector<HTMLElement>(".projects-grid");
+      const prevBtn = document.querySelector<HTMLButtonElement>("[data-carousel-prev]");
+      const nextBtn = document.querySelector<HTMLButtonElement>("[data-carousel-next]");
+      const currentEl = document.querySelector<HTMLElement>("[data-carousel-current]");
+      if (!grid || !prevBtn || !nextBtn || !currentEl) return;
+
+      const cards = Array.from(grid.querySelectorAll<HTMLElement>(".project-card"));
+      const total = cards.length;
+      let current = 0;
+
+      function isActive() {
+        return window.getComputedStyle(prevBtn!).display !== "none";
+      }
+
+      function updateNav() {
+        currentEl!.textContent = String(current + 1).padStart(2, "0");
+        prevBtn!.disabled = current === 0;
+        nextBtn!.disabled = current === total - 1;
+      }
+
+      function goTo(index: number) {
+        current = Math.max(0, Math.min(total - 1, index));
+        cards[current].scrollIntoView({ behavior: "smooth", block: "nearest", inline: "start" });
+        updateNav();
+      }
+
+      let scrollTimer: ReturnType<typeof setTimeout>;
+      grid.addEventListener("scroll", () => {
+        if (!isActive()) return;
+        clearTimeout(scrollTimer);
+        scrollTimer = setTimeout(() => {
+          const gridLeft = grid.getBoundingClientRect().left;
+          let closest = 0;
+          let closestDist = Infinity;
+          cards.forEach((card, i) => {
+            const dist = Math.abs(card.getBoundingClientRect().left - gridLeft);
+            if (dist < closestDist) { closestDist = dist; closest = i; }
+          });
+          if (closest !== current) { current = closest; updateNav(); }
+        }, 80);
+      }, { passive: true });
+
+      prevBtn.addEventListener("click", () => { if (isActive()) goTo(current - 1); });
+      nextBtn.addEventListener("click", () => { if (isActive()) goTo(current + 1); });
+
+      updateNav();
+    })();
+  </script>
 
   <section class="services-section" id="expertise">
     <div class="section-header reveal">

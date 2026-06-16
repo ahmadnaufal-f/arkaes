@@ -107,26 +107,35 @@
   background: var(--ark-color-border);
   display: grid;
   gap: 3px;
-  grid-template-columns: 1fr;
-}
-
-/* Two cards side by side */
-.projects-grid:has(.project-card:nth-child(2)) {
-  grid-template-columns: 1fr 1fr;
-}
-
-/* Three cards: asymmetric featured layout (overrides 2-card rule) */
-.projects-grid:has(.project-card:nth-child(3)) {
   grid-template-columns: 1.6fr 1fr;
-  grid-template-rows: auto auto;
+  grid-template-rows: 290px 290px;
 }
 
-.projects-grid:has(.project-card:nth-child(3)) > .project-card:first-child {
+.projects-grid > .project-card:first-child {
   grid-row: 1 / 3;
 }
 
 .project-card {
   width: 100%;
+}
+
+.projects-nav {
+  display: none;
+}
+
+/* Visual heights derived from grid rows:
+   big card (spans 2 rows + gap = 583px) minus content area (~108px) = 475px
+   small card (1 row = 290px) minus content area (~108px) = 182px          */
+.projects-grid > .project-card:first-child .thumb-vhome,
+.projects-grid > .project-card:first-child .thumb-vhome-tv,
+.projects-grid > .project-card:first-child .thumb-milk {
+  height: 475px;
+}
+
+.projects-grid > .project-card:not(:first-child) .thumb-vhome,
+.projects-grid > .project-card:not(:first-child) .thumb-vhome-tv,
+.projects-grid > .project-card:not(:first-child) .thumb-milk {
+  height: 182px;
 }
 
 /* ── Virtual Home visual illustration ─────────────────────── */
@@ -135,7 +144,6 @@
   align-items: center;
   background: linear-gradient(150deg, #131b10 0%, #0c1509 60%, #182214 100%);
   display: flex;
-  height: 400px;
   justify-content: center;
   overflow: hidden;
   position: relative;
@@ -184,7 +192,6 @@
   align-items: center;
   background: #0e1017;
   display: flex;
-  height: 400px;
   justify-content: center;
   overflow: hidden;
   position: relative;
@@ -245,7 +252,6 @@
   align-items: center;
   background: linear-gradient(160deg, #ece3f5 0%, #ddccef 55%, #d0bce9 100%);
   display: flex;
-  height: 400px;
   justify-content: center;
   overflow: hidden;
   position: relative;
@@ -963,18 +969,96 @@
     margin-top: 18px;
   }
 
-  .projects-grid,
-  .projects-grid:has(.project-card-wrapper:nth-child(3)) {
-    gap: 1px;
-    grid-template-columns: 1fr;
+  /* ── Mobile carousel ─────────────────────────────────────── */
+
+  .projects-carousel {
+    overflow: hidden;
   }
 
-  .projects-grid:has(.project-card-wrapper:nth-child(3)) > .project-card-wrapper:first-child {
+  .projects-grid {
+    background: transparent;
+    display: flex;
+    gap: 12px;
+    grid-template-columns: unset;
+    grid-template-rows: unset;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    padding-inline: 20px;
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .projects-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .projects-grid > .project-card:first-child {
     grid-row: auto;
   }
 
-  .thumb-vhome {
-    height: 320px;
+  .project-card {
+    flex: 0 0 calc(100vw - 56px);
+    scroll-snap-align: start;
+    width: unset;
+  }
+
+  .projects-grid .thumb-vhome,
+  .projects-grid .thumb-vhome-tv,
+  .projects-grid .thumb-milk {
+    height: 280px;
+  }
+
+  /* Reset scoped desktop heights */
+  .projects-grid > .project-card:first-child .thumb-vhome,
+  .projects-grid > .project-card:first-child .thumb-vhome-tv,
+  .projects-grid > .project-card:first-child .thumb-milk,
+  .projects-grid > .project-card:not(:first-child) .thumb-vhome,
+  .projects-grid > .project-card:not(:first-child) .thumb-vhome-tv,
+  .projects-grid > .project-card:not(:first-child) .thumb-milk {
+    height: 280px;
+  }
+
+  .projects-nav {
+    align-items: center;
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    padding-top: 20px;
+  }
+
+  .projects-nav-btn {
+    align-items: center;
+    background: transparent;
+    border: 1px solid var(--ark-color-border);
+    border-radius: 50%;
+    color: var(--ark-color-text-muted);
+    cursor: pointer;
+    display: flex;
+    font-size: 14px;
+    height: 36px;
+    justify-content: center;
+    transition: border-color var(--ark-duration-fast), color var(--ark-duration-fast);
+    width: 36px;
+  }
+
+  .projects-nav-btn:hover:not(:disabled) {
+    border-color: var(--ark-color-accent);
+    color: var(--ark-color-accent-strong);
+  }
+
+  .projects-nav-btn:disabled {
+    cursor: default;
+    opacity: 0.3;
+  }
+
+  .projects-nav-indicator {
+    color: var(--ark-color-text-subtle);
+    font-family: var(--ark-font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    min-width: 48px;
+    text-align: center;
   }
 
   .techstack-grid {
