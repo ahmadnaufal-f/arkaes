@@ -22,6 +22,11 @@ export class ArkCaseStudyCard extends LitElement {
     :host {
       display: block;
       height: 100%;
+      --_thumb-scale: 1;
+    }
+
+    :host(:hover) {
+      --_thumb-scale: 1.07;
     }
 
     ark-card {
@@ -48,13 +53,10 @@ export class ArkCaseStudyCard extends LitElement {
       overflow: hidden;
     }
 
-    .media::slotted(*) {
+    slot[name="media"]::slotted(*) {
+      transform: scale(var(--_thumb-scale));
       transition: transform 700ms var(--ark-ease-standard);
       width: 100%;
-    }
-
-    :host(:hover) .media::slotted(*) {
-      transform: scale(1.07);
     }
 
     .content {

@@ -126,244 +126,14 @@
 /* Visual heights derived from grid rows:
    big card (spans 2 rows + gap = 583px) minus content area (~108px) = 475px
    small card (1 row = 290px) minus content area (~108px) = 182px          */
-.projects-grid > .project-card:first-child .thumb-vhome,
-.projects-grid > .project-card:first-child .thumb-vhome-tv,
-.projects-grid > .project-card:first-child .thumb-milk {
-  height: 475px;
+.projects-grid > .project-card:first-child {
+  --thumbnail-height: 475px;
 }
 
-.projects-grid > .project-card:not(:first-child) .thumb-vhome,
-.projects-grid > .project-card:not(:first-child) .thumb-vhome-tv,
-.projects-grid > .project-card:not(:first-child) .thumb-milk {
-  height: 182px;
+.projects-grid > .project-card:not(:first-child) {
+  --thumbnail-height: 182px;
 }
 
-/* ── Virtual Home visual illustration ─────────────────────── */
-
-.thumb-vhome {
-  align-items: center;
-  background: var(--ark-color-accent-soft);
-  display: flex;
-  justify-content: center;
-  overflow: hidden;
-  position: relative;
-}
-
-.thumb-vhome-frame {
-  border: 1px solid color-mix(in srgb, var(--ark-color-accent) 38%, transparent);
-  display: flex;
-  flex-direction: column;
-  height: 220px;
-  overflow: hidden;
-  position: relative;
-  width: 200px;
-}
-
-.thumb-vhome-frame::before {
-  border: 1px solid color-mix(in srgb, var(--ark-color-accent) 14%, transparent);
-  content: "";
-  inset: 12px;
-  pointer-events: none;
-  position: absolute;
-  z-index: 1;
-}
-
-.thumb-vhome-shared {
-  background: var(--ark-color-secondary-soft);
-  border-bottom: 1px solid color-mix(in srgb, var(--ark-color-secondary) 36%, transparent);
-  flex: 0 0 48%;
-}
-
-.thumb-vhome-split {
-  background: color-mix(in srgb, var(--ark-color-accent) 24%, transparent);
-  display: grid;
-  flex: 1;
-  gap: 1px;
-  grid-template-columns: 1fr 1fr;
-}
-
-.thumb-vhome-panel {
-  background: var(--ark-color-surface);
-}
-
-/* ── Virtual Home for TV visual illustration ───────────────── */
-
-.thumb-vhome-tv {
-  align-items: center;
-  background: var(--ark-color-accent-soft);
-  display: flex;
-  justify-content: center;
-  overflow: hidden;
-  position: relative;
-}
-
-.thumb-tv-screen {
-  background: var(--ark-color-surface);
-  border: 1px solid var(--ark-color-border);
-  border-radius: 4px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  overflow: hidden;
-  padding: 16px;
-  width: 230px;
-}
-
-.thumb-tv-topbar {
-  border-bottom: 1px solid var(--ark-color-border);
-  display: flex;
-  gap: 7px;
-  padding-bottom: 10px;
-}
-
-.thumb-tv-tab {
-  background: var(--ark-color-neutral-200);
-  border-radius: 2px;
-  height: 3px;
-  width: 22px;
-}
-
-.thumb-tv-tab--active {
-  background: var(--ark-color-accent);
-  width: 30px;
-}
-
-.thumb-tv-grid {
-  display: grid;
-  gap: 6px;
-  grid-template-columns: 1fr 1fr 1fr;
-}
-
-.thumb-tv-card {
-  background: var(--ark-color-neutral-100);
-  border: 1px solid var(--ark-color-border);
-  border-radius: 2px;
-  height: 44px;
-}
-
-.thumb-tv-card--focused {
-  background: var(--ark-color-accent-soft);
-  border-color: var(--ark-color-accent);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--ark-color-accent) 22%, transparent);
-}
-
-/* ── Milk pumping tracker visual illustration ──────────────── */
-
-.thumb-milk {
-  align-items: center;
-  background: var(--ark-color-accent-soft);
-  display: flex;
-  justify-content: center;
-  overflow: hidden;
-  position: relative;
-}
-
-.thumb-milk-phone {
-  background: var(--ark-color-surface);
-  border: 1px solid var(--ark-color-border);
-  border-radius: 20px;
-  box-shadow: var(--ark-shadow-md);
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 18px 16px;
-  width: 184px;
-}
-
-.thumb-milk-greet {
-  background: var(--ark-color-neutral-50);
-  border: 1px solid var(--ark-color-border);
-  border-radius: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-  padding: 14px;
-}
-
-.thumb-milk-greet-line {
-  background: color-mix(in srgb, var(--ark-color-accent) 22%, transparent);
-  border-radius: 3px;
-  height: 6px;
-  width: 60%;
-}
-
-.thumb-milk-greet-line--lg {
-  background: color-mix(in srgb, var(--ark-color-accent) 50%, transparent);
-  height: 8px;
-  width: 80%;
-}
-
-.thumb-milk-session {
-  align-items: center;
-  background: var(--ark-color-neutral-50);
-  border: 1px solid var(--ark-color-border);
-  border-radius: 12px;
-  display: flex;
-  justify-content: center;
-  padding: 22px 0;
-}
-
-.thumb-milk-bottle {
-  align-items: center;
-  display: flex;
-  flex-direction: column;
-}
-
-.thumb-milk-bottle-cap {
-  background: var(--ark-color-accent);
-  border-radius: 3px 3px 0 0;
-  height: 9px;
-  width: 22px;
-}
-
-.thumb-milk-bottle-neck {
-  background: color-mix(in srgb, var(--ark-color-accent) 60%, transparent);
-  height: 5px;
-  width: 16px;
-}
-
-.thumb-milk-bottle-body {
-  background: var(--ark-color-accent-soft);
-  border: 1.5px solid var(--ark-color-accent);
-  border-radius: 6px 6px 9px 9px;
-  height: 54px;
-  overflow: hidden;
-  position: relative;
-  width: 38px;
-}
-
-.thumb-milk-bottle-fill {
-  background: color-mix(in srgb, var(--ark-color-accent) 32%, var(--ark-color-accent-soft));
-  bottom: 0;
-  height: 58%;
-  left: 0;
-  position: absolute;
-  width: 100%;
-}
-
-.thumb-milk-timer {
-  align-items: center;
-  background: var(--ark-color-neutral-50);
-  border: 1px solid var(--ark-color-border);
-  border-radius: 999px;
-  display: flex;
-  gap: 8px;
-  padding: 9px 14px;
-}
-
-.thumb-milk-timer-dot {
-  background: var(--ark-color-accent);
-  border-radius: 50%;
-  height: 8px;
-  width: 8px;
-}
-
-.thumb-milk-timer-bar {
-  background: var(--ark-color-neutral-200);
-  border-radius: 3px;
-  flex: 1;
-  height: 6px;
-}
 
 .techstack-section {
   background: var(--ark-color-warm-white);
@@ -1004,20 +774,14 @@
     width: unset;
   }
 
-  .projects-grid .thumb-vhome,
-  .projects-grid .thumb-vhome-tv,
-  .projects-grid .thumb-milk {
-    height: 280px;
+  .projects-grid {
+    --thumbnail-height: 280px;
   }
 
-  /* Reset scoped desktop heights */
-  .projects-grid > .project-card:first-child .thumb-vhome,
-  .projects-grid > .project-card:first-child .thumb-vhome-tv,
-  .projects-grid > .project-card:first-child .thumb-milk,
-  .projects-grid > .project-card:not(:first-child) .thumb-vhome,
-  .projects-grid > .project-card:not(:first-child) .thumb-vhome-tv,
-  .projects-grid > .project-card:not(:first-child) .thumb-milk {
-    height: 280px;
+  /* Reset per-card desktop heights */
+  .projects-grid > .project-card:first-child,
+  .projects-grid > .project-card:not(:first-child) {
+    --thumbnail-height: 280px;
   }
 
   .projects-nav {

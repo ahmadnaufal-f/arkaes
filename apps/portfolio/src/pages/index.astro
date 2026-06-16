@@ -3,6 +3,9 @@ import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import "./_index.css";
 import { techGroups, currentlyLearning } from "../data/techstack";
+import VirtualHomeThumbnail from "../components/case-studies-thumbnail/virtual-home/thumbnail.astro";
+import VirtualHomeTvThumbnail from "../components/case-studies-thumbnail/virtual-home-tv/thumbnail.astro";
+import MilkPumpingThumbnail from "../components/case-studies-thumbnail/milk-pumping-tracker/thumbnail.astro";
 
 const CARD_ORDER = ["virtual-home", "virtual-home-tv", "milk-pumping-tracker"];
 const getOrder = (id: string) => { const i = CARD_ORDER.indexOf(id); return i === -1 ? Infinity : i; };
@@ -105,69 +108,22 @@ const featuredStudies = allStudies
           title={study.data.title}
         >
           {study.data.visual === "virtual-home" && (
-            <div
-              class="thumb-vhome"
-              slot="media"
-              style={`view-transition-name: cs-thumb-${study.id};`}
-            >
-              <div class="thumb-vhome-frame">
-                <div class="thumb-vhome-shared"></div>
-                <div class="thumb-vhome-split">
-                  <div class="thumb-vhome-panel"></div>
-                  <div class="thumb-vhome-panel"></div>
-                </div>
-              </div>
-            </div>
+            <VirtualHomeThumbnail
+              asSlot="media"
+              transitionName={`cs-thumb-${study.id}`}
+            />
           )}
           {study.data.visual === "virtual-home-tv" && (
-            <div
-              class="thumb-vhome-tv"
-              slot="media"
-              style={`view-transition-name: cs-thumb-${study.id};`}
-            >
-              <div class="thumb-tv-screen">
-                <div class="thumb-tv-topbar">
-                  <div class="thumb-tv-tab thumb-tv-tab--active"></div>
-                  <div class="thumb-tv-tab"></div>
-                  <div class="thumb-tv-tab"></div>
-                </div>
-                <div class="thumb-tv-grid">
-                  <div class="thumb-tv-card"></div>
-                  <div class="thumb-tv-card thumb-tv-card--focused"></div>
-                  <div class="thumb-tv-card"></div>
-                  <div class="thumb-tv-card"></div>
-                  <div class="thumb-tv-card"></div>
-                  <div class="thumb-tv-card"></div>
-                </div>
-              </div>
-            </div>
+            <VirtualHomeTvThumbnail
+              asSlot="media"
+              transitionName={`cs-thumb-${study.id}`}
+            />
           )}
           {study.data.visual === "milk-pumping" && (
-            <div
-              class="thumb-milk"
-              slot="media"
-              style={`view-transition-name: cs-thumb-${study.id};`}
-            >
-              <div class="thumb-milk-phone">
-                <div class="thumb-milk-greet">
-                  <div class="thumb-milk-greet-line thumb-milk-greet-line--lg"></div>
-                  <div class="thumb-milk-greet-line"></div>
-                </div>
-                <div class="thumb-milk-session">
-                  <div class="thumb-milk-bottle">
-                    <div class="thumb-milk-bottle-cap"></div>
-                    <div class="thumb-milk-bottle-neck"></div>
-                    <div class="thumb-milk-bottle-body">
-                      <div class="thumb-milk-bottle-fill"></div>
-                    </div>
-                  </div>
-                </div>
-                <div class="thumb-milk-timer">
-                  <div class="thumb-milk-timer-dot"></div>
-                  <div class="thumb-milk-timer-bar"></div>
-                </div>
-              </div>
-            </div>
+            <MilkPumpingThumbnail
+              asSlot="media"
+              transitionName={`cs-thumb-${study.id}`}
+            />
           )}
           {study.data.tags.map((tag) => (
             <ark-badge slot="tag" variant="pill">{tag}</ark-badge>

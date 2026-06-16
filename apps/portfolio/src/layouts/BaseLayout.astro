@@ -33,7 +33,7 @@ const {
   </head>
   <body>
     <SiteHeader />
-    <main id="top" transition:animate={fade({ duration: "0.42s" })}>
+    <main id="top" transition:animate={fade({ duration: "1s" })}>
       <slot />
     </main>
     <SiteFooter />
@@ -56,7 +56,9 @@ const {
       enableArkCursor();
 
       // ── Lenis smooth scroll ──────────────────────
-      const lenis = reduceMotion ? null : new Lenis({ autoRaf: true, anchors: true });
+      const lenis = reduceMotion
+        ? null
+        : new Lenis({ autoRaf: true, anchors: true });
 
       if (lenis) {
         // View Transitions keep the document alive, so re-sync Lenis to the
@@ -73,16 +75,23 @@ const {
       // Before the DOM swap, close any open dialogs so their portal containers
       // don't linger on the body after navigation.
       document.addEventListener("astro:before-swap", () => {
-        document.querySelectorAll<HTMLElement & { open: boolean }>("ark-dialog-root[open]").forEach((root) => {
-          root.open = false;
-        });
+        document
+          .querySelectorAll<
+            HTMLElement & { open: boolean }
+          >("ark-dialog-root[open]")
+          .forEach((root) => {
+            root.open = false;
+          });
       });
 
       const scrollToTop = () => {
         if (lenis) {
           lenis.scrollTo(0);
         } else {
-          window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
+          window.scrollTo({
+            top: 0,
+            behavior: reduceMotion ? "auto" : "smooth",
+          });
         }
       };
 
@@ -102,14 +111,14 @@ const {
         );
         reveals.forEach((element) => observer.observe(element));
 
-        document.querySelectorAll<HTMLElement>("[data-scroll-top]").forEach(
-          (element) => {
+        document
+          .querySelectorAll<HTMLElement>("[data-scroll-top]")
+          .forEach((element) => {
             element.addEventListener("click", (event) => {
               event.preventDefault();
               scrollToTop();
             });
-          },
-        );
+          });
       };
 
       document.addEventListener("astro:page-load", initPage);

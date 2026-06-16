@@ -4,8 +4,8 @@ export interface CaseStudySection {
 }
 
 export function parseSections(body: string): CaseStudySection[] {
-  // Prepend newline so every ## heading is preceded by \n for consistent splitting
-  const text = "\n" + body.trim();
+  // Normalize line endings to LF for consistent splitting
+  const text = "\n" + body.replace(/\r\n/g, "\n").trim();
   const rawSections = text.split(/\n## /);
 
   return rawSections
@@ -33,14 +33,17 @@ export function renderSectionHtml(
   diagrams: Record<string, string> = {},
 ): string {
   const parts: string[] = [];
+  // Normalize line endings to LF so all regex and string operations work
+  // correctly regardless of whether the source file uses CRLF or LF.
+  markdown = markdown.replace(/\r\n/g, "\n");
 
   // Extract code blocks first to avoid processing their internals
-  const codeBlocks: string[] = [];
+  const codeBlocks: { lang: string; code: string }[] = [];
   const withPlaceholders = markdown.replace(
-    /```[\w]*\n([\s\S]*?)```/g,
-    (_, code: string) => {
+    /```([\w-]*)\n([\s\S]*?)```/g,
+    (_, lang: string, code: string) => {
       const idx = codeBlocks.length;
-      codeBlocks.push(code.trimEnd());
+      codeBlocks.push({ lang, code: code.trimEnd() });
       return `%%CB_${idx}%%`;
     },
   );
@@ -56,8 +59,10 @@ export function renderSectionHtml(
     const cbMatch = trimmed.match(/^%%CB_(\d+)%%$/);
     if (cbMatch) {
       const idx = parseInt(cbMatch[1]);
+      const block = codeBlocks[idx];
+      const langClass = block?.lang ? ` class="language-${escapeHtml(block.lang)}"` : "";
       parts.push(
-        `<pre class="cs-code"><code>${escapeHtml(codeBlocks[idx] ?? "")}</code></pre>`,
+        `<pre class="cs-code"><code${langClass}>${escapeHtml(block?.code ?? "")}</code></pre>`,
       );
       continue;
     }

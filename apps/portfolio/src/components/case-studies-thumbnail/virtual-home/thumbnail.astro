@@ -1,0 +1,73 @@
+---
+interface Props {
+  transitionName: string;
+  asSlot?: string;
+}
+const { transitionName, asSlot } = Astro.props;
+---
+
+<div
+  class="thumb-vhome"
+  slot={asSlot}
+  style={`view-transition-name: ${transitionName};`}
+>
+  <div class="thumb-vhome-frame">
+    <div class="thumb-vhome-shared"></div>
+    <div class="thumb-vhome-split">
+      <div class="thumb-vhome-panel"></div>
+      <div class="thumb-vhome-panel"></div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .thumb-vhome {
+    align-items: center;
+    background: var(--thumbnail-background, var(--ark-color-accent-soft));
+    display: flex;
+    height: var(--thumbnail-height, auto);
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .thumb-vhome-frame {
+    border: 1px solid
+      color-mix(in srgb, var(--ark-color-accent) 38%, transparent);
+    display: flex;
+    flex-direction: column;
+    height: 220px;
+    overflow: hidden;
+    position: relative;
+    width: 200px;
+  }
+
+  .thumb-vhome-frame::before {
+    border: 1px solid
+      color-mix(in srgb, var(--ark-color-accent) 14%, transparent);
+    content: "";
+    inset: 12px;
+    pointer-events: none;
+    position: absolute;
+    z-index: 1;
+  }
+
+  .thumb-vhome-shared {
+    background: var(--ark-color-secondary-soft);
+    border-bottom: 1px solid
+      color-mix(in srgb, var(--ark-color-secondary) 36%, transparent);
+    flex: 0 0 48%;
+  }
+
+  .thumb-vhome-split {
+    background: color-mix(in srgb, var(--ark-color-accent) 24%, transparent);
+    display: grid;
+    flex: 1;
+    gap: 1px;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .thumb-vhome-panel {
+    background: var(--ark-color-surface);
+  }
+</style>
