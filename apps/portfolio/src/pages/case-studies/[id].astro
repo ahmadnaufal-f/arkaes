@@ -44,7 +44,7 @@ const accordionSections = allSections.filter((s) => s.heading !== "Overview");
       <div class="cs-hero-visual">
         {visual === "virtual-home" && (
           <div
-            class="thumb-vhome thumb-vhome--hero"
+            class="thumb-vhome"
             style={`view-transition-name: cs-thumb-${study.id};`}
           >
             <div class="thumb-vhome-frame">
@@ -58,7 +58,7 @@ const accordionSections = allSections.filter((s) => s.heading !== "Overview");
         )}
         {visual === "virtual-home-tv" && (
           <div
-            class="thumb-vhome-tv thumb-vhome-tv--hero"
+            class="thumb-vhome-tv"
             style={`view-transition-name: cs-thumb-${study.id};`}
           >
             <div class="thumb-tv-screen">
@@ -80,7 +80,7 @@ const accordionSections = allSections.filter((s) => s.heading !== "Overview");
         )}
         {visual === "milk-pumping" && (
           <div
-            class="thumb-milk thumb-milk--hero"
+            class="thumb-milk"
             style={`view-transition-name: cs-thumb-${study.id};`}
           >
             <div class="thumb-milk-phone">
