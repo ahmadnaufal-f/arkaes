@@ -1,16 +1,44 @@
 .cs-page {
+  /* Offset that sits above the hero; also the gap the sentinel measures. */
+  --cs-hero-stick-top: 60px;
   padding-bottom: 120px;
 }
 
 /* ── Hero ─────────────────────────────────────────────────── */
 
+/* Spacer in normal flow above the hero that the IntersectionObserver watches.
+   Its height matches the stick offset so (a) the hero pins with no jump and
+   (b) once this spacer scrolls fully past the top of the viewport, the hero
+   is pinned and we mark it "stuck". */
+.cs-hero-sentinel {
+  display: block;
+  height: var(--cs-hero-stick-top);
+}
+
 .cs-hero {
   align-items: center;
+  background: var(--ark-color-background);
   display: flex;
+  flex-direction: row-reverse;
   min-height: 460px;
   overflow: hidden;
-  padding: 100px var(--site-content-padding);
-  position: relative;
+  padding-block: 100px;
+  padding-inline: var(--site-content-padding);
+  position: sticky;
+  top: var(--cs-hero-stick-top);
+  z-index: 10;
+  gap: 80px;
+  transition:
+    padding-block var(--ark-duration-slow) var(--ark-ease-standard),
+    min-height var(--ark-duration-slow) var(--ark-ease-standard);
+}
+
+/* Stuck: collapse the vertical padding (and the min-height so the shrink is
+   actually visible) for a compact, pinned header. */
+.cs-hero.is-stuck {
+  min-height: 0;
+  padding-block: 20px;
+  box-shadow: var(--ark-shadow-md);
 }
 
 /* Visual illustration: a faint, background-less watermark fixed to the
@@ -18,15 +46,10 @@
 .cs-hero-visual {
   --thumbnail-background: none;
   --thumbnail-height: 100%;
-  height: 760px;
-  opacity: 0.25;
+  opacity: 0.5;
   pointer-events: none;
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 600px;
   z-index: 0;
+  flex: 1;
 }
 
 .cs-hero-meta {
@@ -243,6 +266,10 @@
   .cs-hero {
     min-height: 320px;
     padding-block: 72px 56px;
+  }
+
+  .cs-hero.cs-hero.is-stuck {
+    padding-block: 10px;
   }
 
   .cs-hero-visual {

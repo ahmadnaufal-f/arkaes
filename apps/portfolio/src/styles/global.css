@@ -25,6 +25,11 @@ body::before {
   z-index: 1000;
 }
 
+main,
+section {
+  overflow-x: hidden;
+}
+
 a {
   color: inherit;
   text-decoration: none;
