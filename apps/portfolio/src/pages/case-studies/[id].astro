@@ -104,7 +104,7 @@ const accordionSections = allSections.filter((s) => s.heading !== "Overview");
 
     <section class="cs-accordion-section">
       <div class="cs-accordion-inner">
-        <ark-accordion type="single">
+        <ark-accordion>
           {
             accordionSections.map((section) => (
               <ark-accordion-item heading={section.heading}>

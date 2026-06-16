@@ -146,6 +146,53 @@ export class ArkCaseStudyCard extends LitElement {
   override title = "";
   variant: ArkCaseStudyCardVariant = "featured";
 
+  override connectedCallback() {
+    super.connectedCallback();
+    this.addEventListener("click", this.#forwardClickToLink);
+  }
+
+  override disconnectedCallback() {
+    this.removeEventListener("click", this.#forwardClickToLink);
+    super.disconnectedCallback();
+  }
+
+  // The navigating <a> lives in this element's shadow DOM, but the media is
+  // projected light-DOM (slotted) content. Slotted nodes are not DOM
+  // descendants of the shadow <a>, so a click on the thumbnail has no anchor
+  // in its event path — SPA routers (e.g. Astro's ClientRouter, which does
+  // `composedPath()[0].closest('a')`) can't see the link and fall back to a
+  // full page load (skipping view transitions). Re-dispatch such clicks on the
+  // real anchor so they route normally, preserving modifier keys for new-tab.
+  #forwardClickToLink = (event: MouseEvent) => {
+    if (event.defaultPrevented || event.button !== 0) return;
+
+    // Mirror how SPA routers locate the link: the real-DOM `.closest('a')` from
+    // the deepest target. Shadow content inside the anchor (and our own
+    // re-dispatch) resolves to an anchor here, so we leave it untouched and
+    // avoid re-entrancy. Slotted light-DOM media has no anchor ancestor in the
+    // real tree — even though it appears under the <a> in the flat tree — so it
+    // resolves to null and needs forwarding.
+    const target = event.composedPath()[0];
+    if (!(target instanceof Element) || target.closest("a, area")) return;
+
+    const link = this.renderRoot.querySelector<HTMLAnchorElement>("a.link");
+    if (!link) return;
+
+    event.preventDefault();
+    link.dispatchEvent(
+      new MouseEvent("click", {
+        altKey: event.altKey,
+        bubbles: true,
+        button: event.button,
+        cancelable: true,
+        composed: true,
+        ctrlKey: event.ctrlKey,
+        metaKey: event.metaKey,
+        shiftKey: event.shiftKey,
+      }),
+    );
+  };
+
   override render() {
     const hasMedia = this.variant !== "compact";
 

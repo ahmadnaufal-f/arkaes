@@ -115,6 +115,7 @@
   --ark-ease-standard: cubic-bezier(0.2, 0, 0, 1);
   --ark-ease-emphasized: cubic-bezier(0.2, 0, 0, 1.2);
   --ark-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ark-ease-quad-out: cubic-bezier(0.5, 1, 0.89, 1);
 
   /* Cursor: components reference this for interactive (clickable) elements so
      the native pointer can be hidden site-wide when a custom cursor is active.

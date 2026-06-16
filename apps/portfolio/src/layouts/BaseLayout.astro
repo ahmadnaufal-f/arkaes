@@ -1,7 +1,8 @@
 ---
-import { ClientRouter, fade } from "astro:transitions";
+import { ClientRouter } from "astro:transitions";
 import SiteFooter from "../components/SiteFooter.astro";
 import SiteHeader from "../components/SiteHeader.astro";
+import { fadeThroughBlank } from "../transitions/fade-through-blank";
 import "lenis/dist/lenis.css";
 import "../styles/global.css";
 
@@ -33,7 +34,7 @@ const {
   </head>
   <body>
     <SiteHeader />
-    <main id="top" transition:animate={fade({ duration: "1s" })}>
+    <main id="top" transition:animate={fadeThroughBlank}>
       <slot />
     </main>
     <SiteFooter />

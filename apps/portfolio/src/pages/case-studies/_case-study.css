@@ -46,10 +46,18 @@
 .cs-hero-visual {
   --thumbnail-background: none;
   --thumbnail-height: 100%;
-  opacity: 0.5;
   pointer-events: none;
   z-index: 0;
   flex: 1;
+}
+
+/* The faded opacity must live on the thumbnail itself — the element that
+   carries `view-transition-name` — not on this wrapper. A named element is
+   snapshotted without its ancestors' effects, so wrapper opacity is dropped
+   during the transition (causing a hard jump at the end). Applied to the named
+   element it is baked into the snapshot and the cross-fade animates smoothly. */
+.cs-hero-visual > * {
+  opacity: 0.5;
 }
 
 .cs-hero-meta {

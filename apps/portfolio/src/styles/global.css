@@ -25,9 +25,27 @@ body::before {
   z-index: 1000;
 }
 
+/* Page-transition keyframes for the "fade through blank" view transition.
+   Used by src/transitions/fade-through-blank.ts; the outgoing page fades to
+   the background, then the incoming page fades in from it. */
+@keyframes ark-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes ark-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
 main,
 section {
-  overflow-x: hidden;
+  /* `clip` (not `hidden`) prevents these from becoming scroll containers,
+     which would otherwise break `position: sticky` for descendants like the
+     case-study hero (a scroll container captures the sticky element). */
+  overflow-x: clip;
 }
 
 a {
