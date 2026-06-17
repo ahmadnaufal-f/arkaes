@@ -18,6 +18,7 @@ import {
   defineArkDialog,
   defineArkHero,
   defineArkNavigation,
+  defineArkToast,
 } from "./components";
 import { defineArkCaseStudyCard } from "./patterns";
 
@@ -42,6 +43,7 @@ export const registerArkComponents = () => {
   defineArkDialog();
   defineArkHero();
   defineArkNavigation();
+  defineArkToast();
 };
 
 export const registerArkPatterns = () => {
