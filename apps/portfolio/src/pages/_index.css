@@ -127,35 +127,9 @@
   border-top: 1px solid var(--ark-color-border);
   display: flex;
   flex-wrap: wrap;
-  gap: 32px 48px;
+  gap: 16px 24px;
   margin-top: 48px;
-  padding-top: 32px;
-}
-
-.section-cta-link {
-  align-items: center;
-  color: var(--ark-color-text);
-  display: inline-flex;
-  font-family: var(--ark-font-mono);
-  font-size: 0.72rem;
-  gap: 10px;
-  letter-spacing: var(--ark-letter-spacing-wide);
-  text-decoration: none;
-  text-transform: uppercase;
-  transition: color var(--ark-duration-normal) var(--ark-ease-standard);
-}
-
-.section-cta-link span {
-  color: var(--ark-color-accent);
-  transition: transform var(--ark-duration-normal) var(--ark-ease-standard);
-}
-
-.section-cta-link:hover {
-  color: var(--ark-color-accent-strong);
-}
-
-.section-cta-link:hover span {
-  transform: translateX(4px);
+  padding-top: 40px;
 }
 
 /* Visual heights derived from grid rows:
