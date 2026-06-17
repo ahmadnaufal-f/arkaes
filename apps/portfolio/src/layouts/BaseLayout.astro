@@ -31,8 +31,58 @@ const {
     />
     <ClientRouter />
     <title>{title}</title>
+    <style>
+      #page-loader {
+        align-items: center;
+        background: var(--ark-color-bg, #fbf8f3);
+        display: flex;
+        inset: 0;
+        justify-content: center;
+        opacity: 1;
+        pointer-events: all;
+        position: fixed;
+        transition: opacity 300ms var(--ark-ease-standard, cubic-bezier(0.2, 0, 0, 1));
+        z-index: 9999;
+      }
+      #page-loader.page-loader--done {
+        opacity: 0;
+        pointer-events: none;
+      }
+      @keyframes page-loader-spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .page-loader-spinner {
+        animation: page-loader-spin 0.9s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        border-color: transparent;
+        border-radius: 50%;
+        border-style: solid;
+        border-top-color: var(--ark-color-accent, #8f554d);
+        border-right-color: color-mix(
+          in srgb,
+          var(--ark-color-accent, #8f554d) 33%,
+          transparent
+        );
+        border-width: 2px;
+        display: inline-block;
+        height: 36px;
+        width: 36px;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #page-loader {
+          transition: none;
+        }
+        .page-loader-spinner {
+          animation: none;
+        }
+      }
+    </style>
   </head>
   <body>
+    <div id="page-loader" aria-hidden="true">
+      <span class="page-loader-spinner"></span>
+    </div>
     <SiteHeader />
     <main id="top" transition:animate={fadeThroughBlank}>
       <slot />
@@ -98,6 +148,12 @@ const {
 
       // ── Per-page setup (runs on first load and after every navigation) ──
       const initPage = () => {
+        const loader = document.getElementById("page-loader");
+        if (loader) {
+          loader.classList.add("page-loader--done");
+          setTimeout(() => loader.remove(), 350);
+        }
+
         const reveals = document.querySelectorAll(".reveal");
         const observer = new IntersectionObserver(
           (entries) => {
