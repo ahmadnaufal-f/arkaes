@@ -3,14 +3,18 @@ import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import FilterableListing from "../../components/FilterableListing.astro";
 import type { ListingItem } from "../../components/FilterableListing.astro";
+import { expertiseForProject } from "../../data/expertise";
 
-const entries = await getCollection("projects");
+// Order by shipped date, most recent first.
+const entries = (await getCollection("projects")).sort(
+  (a, b) => b.data.shippedDate.getTime() - a.data.shippedDate.getTime(),
+);
 const items: ListingItem[] = entries.map((project) => ({
   title: project.data.title,
   summary: project.data.summary,
   href: `/projects/${project.id}`,
   categorySlug: project.data.category,
-  expertise: project.data.expertise,
+  expertise: expertiseForProject(project.data.projectName),
   tags: project.data.stack.slice(0, 3),
 }));
 ---

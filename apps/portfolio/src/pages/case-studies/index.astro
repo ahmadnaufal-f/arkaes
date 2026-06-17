@@ -3,14 +3,17 @@ import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import FilterableListing from "../../components/FilterableListing.astro";
 import type { ListingItem } from "../../components/FilterableListing.astro";
+import { expertiseForProject } from "../../data/expertise";
 
-const entries = await getCollection("caseStudies");
+const entries = (await getCollection("caseStudies")).sort(
+  (a, b) => a.data.order - b.data.order,
+);
 const items: ListingItem[] = entries.map((study) => ({
   title: study.data.title,
   summary: study.data.shortDesc,
   href: `/case-studies/${study.id}`,
   categorySlug: study.data.category,
-  expertise: study.data.expertise,
+  expertise: expertiseForProject(study.data.projectName),
   tags: study.data.tags.slice(0, 3),
 }));
 ---

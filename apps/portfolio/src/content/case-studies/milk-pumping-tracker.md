@@ -1,6 +1,8 @@
 ---
 title: "Building a milk pumping tracker with AI summaries"
 shortDesc: "Designed, built, and shipped a milk pumping tracker for busy mothers — a fast logging flow backed by Firebase, plus an OpenAI-powered review layer that summarizes sessions and suggests follow-up questions."
+projectName: "Milk Tracker App"
+order: 3
 featured: true
 visual: "milk-pumping"
 category: "side-project"

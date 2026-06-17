@@ -1,6 +1,8 @@
 ---
 title: "Modernizing Virtual Home into a shared frontend platform"
 shortDesc: "Led a frontend monorepo migration for a smart home simulation platform, unifying two product variants and achieving ±87% code sharing, ±40% smaller app size, and ±65% faster Time To Interactive."
+projectName: "Virtual Home"
+order: 1
 featured: true
 visual: "virtual-home"
 tags:

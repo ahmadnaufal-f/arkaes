@@ -3,7 +3,7 @@ import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import "./_index.css";
 import { techGroups, currentlyLearning } from "../data/techstack";
-import { expertiseLabel } from "../data/expertise";
+import { EXPERTISE } from "../data/expertise";
 import VirtualHomeThumbnail from "../components/case-studies-thumbnail/virtual-home/thumbnail.astro";
 import VirtualHomeTvThumbnail from "../components/case-studies-thumbnail/virtual-home-tv/thumbnail.astro";
 import MilkPumpingThumbnail from "../components/case-studies-thumbnail/milk-pumping-tracker/thumbnail.astro";
@@ -16,69 +16,12 @@ const featuredStudies = allStudies
   .filter((s) => s.data.featured)
   .sort((a, b) => getOrder(a.id) - getOrder(b.id));
 
-const services = [
-  {
-    name: expertiseLabel("frontend-architecture"),
-    description:
-      "I design frontend foundations for scalable product interfaces, including component structure, routing, state management, API integration, accessibility, and maintainable UI patterns.",
-    techStack: [
-      "React",
-      "Next.js",
-      "Lit",
-      "TypeScript",
-      "Zustand",
-      "Redux Toolkit",
-      "React Query",
-      "Zod",
-    ],
-    relatedWork: [
-      "SmartThings Virtual Home",
-      "Aircare Service Plugin",
-      "Treely",
-      "Arkaes Design System",
-    ],
-  },
-  {
-    name: expertiseLabel("design-systems"),
-    description:
-      "I build reusable UI systems that help teams ship consistent interfaces faster, with attention to accessibility, design tokens, variants, component APIs, and documentation.",
-    techStack: [
-      "React",
-      "Lit",
-      "Web Components",
-      "Storybook",
-      "Tailwind CSS",
-      "Figma",
-      "Design Tokens",
-    ],
-    relatedWork: ["Arkaes Design System", "Internal React Design System"],
-  },
-  {
-    name: expertiseLabel("performance"),
-    description:
-      "I improve frontend performance through caching, bundle optimization, lazy loading, rendering strategy, and refactoring heavy UI logic.",
-    techStack: [
-      "Vite",
-      "Zustand",
-      "Browser Performance Tools",
-      "Code Splitting",
-      "Caching Strategies",
-      "Bundle Analysis",
-    ],
-    relatedWork: [
-      "Aircare Service Plugin Caching",
-      "Virtual Home Major Refactor",
-      "Virtual Home TV Lazy Loading",
-    ],
-  },
-  {
-    name: expertiseLabel("cross-platform"),
-    description:
-      "I build product interfaces across web and mobile, focusing on consistent user experience, maintainable architecture, and practical engineering tradeoffs.",
-    techStack: ["React Native", "Expo", "React", "Next.js", "TypeScript", "NativeWind"],
-    relatedWork: ["Treely", "SmartThings Web Plugins"],
-  },
-];
+const services = EXPERTISE.map((area) => ({
+  name: area.label,
+  description: area.description,
+  techStack: area.techStack,
+  relatedWork: area.relatedWork,
+}));
 ---
 
 <BaseLayout

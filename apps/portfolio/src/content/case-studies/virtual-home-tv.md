@@ -1,6 +1,8 @@
 ---
 title: "Building focus navigation for Virtual Home for TV"
 shortDesc: "Designed and implemented a TV remote navigation system from scratch, supporting three distinct page layout patterns with precalculated focus mapping for performant directional navigation."
+projectName: "Virtual Home TV"
+order: 2
 featured: true
 visual: "virtual-home-tv"
 tags:
