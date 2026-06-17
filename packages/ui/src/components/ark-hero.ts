@@ -479,26 +479,10 @@ export class ArkHero extends LitElement {
             view-timeline-name: --comp-view;
           }
 
-          .comp-block-large {
-            animation-range: normal, cover 50% cover 100%;
-            animation-timeline: auto, --comp-view;
-          }
-
-          .comp-block-accent {
-            animation-range: normal, cover 50% cover 100%;
-            animation-timeline: auto, --comp-view;
-          }
-
-          .comp-block-sage {
-            animation-range: normal, cover 50% cover 100%;
-            animation-timeline: auto, --comp-view;
-          }
-
-          .comp-circle {
-            animation-range: normal, cover 50% cover 100%;
-            animation-timeline: auto, --comp-view;
-          }
-
+          .comp-block-large,
+          .comp-block-accent,
+          .comp-block-sage,
+          .comp-circle,
           .comp-sage-dot {
             animation-range: normal, cover 50% cover 100%;
             animation-timeline: auto, --comp-view;
