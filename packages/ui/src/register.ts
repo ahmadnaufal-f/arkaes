@@ -3,6 +3,8 @@ import {
   defineArkBrandLogo,
   defineArkButton,
   defineArkCheckbox,
+  defineArkDropdown,
+  defineArkEmpty,
   defineArkInput,
   defineArkRadio,
   defineArkRadioGroup,
@@ -24,6 +26,8 @@ export const registerArkPrimitives = () => {
   defineArkBrandLogo();
   defineArkButton();
   defineArkCheckbox();
+  defineArkDropdown();
+  defineArkEmpty();
   defineArkInput();
   defineArkRadio();
   defineArkRadioGroup();

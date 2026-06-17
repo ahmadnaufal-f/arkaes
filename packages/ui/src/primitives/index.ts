@@ -3,6 +3,8 @@ import type { BadgeSize, BadgeVariantValue } from "./ark-badge";
 import { ArkBrandLogo, defineArkBrandLogo } from "./ark-brand-logo";
 import { ArkButton, ButtonVariant, defineArkButton } from "./ark-button";
 import { ArkCheckbox, defineArkCheckbox } from "./ark-checkbox";
+import { ArkDropdown, ArkDropdownOption, defineArkDropdown } from "./ark-dropdown";
+import { ArkEmpty, defineArkEmpty } from "./ark-empty";
 import { ArkInput, InputType, defineArkInput } from "./ark-input";
 import { ArkRadio, defineArkRadio } from "./ark-radio";
 import { ArkRadioGroup, defineArkRadioGroup } from "./ark-radio-group";
@@ -16,6 +18,9 @@ export {
   ArkButton,
   ButtonVariant,
   ArkCheckbox,
+  ArkDropdown,
+  ArkDropdownOption,
+  ArkEmpty,
   ArkInput,
   InputType,
   ArkRadio,
@@ -27,6 +32,8 @@ export {
   defineArkBrandLogo,
   defineArkButton,
   defineArkCheckbox,
+  defineArkDropdown,
+  defineArkEmpty,
   defineArkInput,
   defineArkRadio,
   defineArkRadioGroup,

@@ -1,47 +1,45 @@
 ---
-import { projects } from "../../data/projects";
+import { getCollection, render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import { categoryLabel } from "../../data/expertise";
 import "./_projects.css";
 
-export function getStaticPaths() {
+export async function getStaticPaths() {
+  const projects = await getCollection("projects");
   return projects.map((project) => ({
-    params: { slug: project.slug },
+    params: { slug: project.id },
     props: { project },
   }));
 }
 
 const { project } = Astro.props;
-const categoryLabel =
-  project.category === "professional-work" ? "Professional Work" : "Side Project";
+const { title, summary, role, impact, stack, category } = project.data;
+const { Content } = await render(project);
 ---
 
-<BaseLayout title={`${project.title} | Arkaes`} description={project.summary}>
+<BaseLayout title={`${title} | Arkaes`} description={summary}>
   <article class="page-section narrow project-detail">
-    <ark-badge>{categoryLabel}</ark-badge>
-    <h1>{project.title}</h1>
-    <p class="lead">{project.summary}</p>
+    <ark-badge>{categoryLabel(category)}</ark-badge>
+    <h1>{title}</h1>
+    <p class="lead">{summary}</p>
 
     <dl class="project-meta">
       <div>
         <dt>Role</dt>
-        <dd>{project.role}</dd>
+        <dd>{role}</dd>
       </div>
       <div>
         <dt>Main signal</dt>
-        <dd>{project.impact}</dd>
+        <dd>{impact}</dd>
       </div>
       <div>
         <dt>Stack</dt>
-        <dd>{project.stack.join(", ")}</dd>
+        <dd>{stack.join(", ")}</dd>
       </div>
     </dl>
 
     <section>
-      <h2>Case study direction</h2>
-      <p>
-        This page is intentionally a placeholder for the first writing pass. Keep the final story
-        specific, credible, and careful with confidential implementation details.
-      </p>
+      <Content />
     </section>
   </article>
 </BaseLayout>

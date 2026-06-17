@@ -1,0 +1,140 @@
+---
+import "@arkaes/ui/register/ark-dropdown";
+import "@arkaes/ui/register/ark-empty";
+import { CATEGORIES, EXPERTISE, categoryLabel } from "../data/expertise";
+import "./_filterable-listing.css";
+
+export interface ListingItem {
+  title: string;
+  summary: string;
+  href: string;
+  categorySlug: string;
+  expertise: string[];
+  tags?: string[];
+}
+
+interface Props {
+  eyebrow: string;
+  title: string;
+  description?: string;
+  items: ListingItem[];
+}
+
+const { eyebrow, title, description, items } = Astro.props;
+---
+
+<section class="page-section listing">
+  <div class="section-heading">
+    <ark-badge>{eyebrow}</ark-badge>
+    <h1>{title}</h1>
+    {description && <p class="lead">{description}</p>}
+  </div>
+
+  <div class="filter-bar" data-filter-bar>
+    <ark-dropdown
+      name="category"
+      data-filter="category"
+      label="Filter by category"
+      placeholder="All work"
+      value=""
+    >
+      <ark-dropdown-option value="">All work</ark-dropdown-option>
+      {
+        CATEGORIES.map((c) => (
+          <ark-dropdown-option value={c.slug}>{c.label}</ark-dropdown-option>
+        ))
+      }
+    </ark-dropdown>
+
+    <ark-dropdown
+      name="expertise"
+      data-filter="expertise"
+      label="Filter by expertise"
+      placeholder="All expertise"
+      value=""
+    >
+      <ark-dropdown-option value="">All expertise</ark-dropdown-option>
+      {
+        EXPERTISE.map((e) => (
+          <ark-dropdown-option value={e.slug}>{e.label}</ark-dropdown-option>
+        ))
+      }
+    </ark-dropdown>
+  </div>
+
+  <div class="project-grid" data-listing-grid>
+    {
+      items.map((item) => (
+        <div
+          class="listing-card"
+          data-category={item.categorySlug}
+          data-expertise={item.expertise.join(" ")}
+        >
+          <ark-case-study-card
+            category={categoryLabel(item.categorySlug)}
+            href={item.href}
+            summary={item.summary}
+            title={item.title}
+            variant="compact"
+          >
+            {(item.tags ?? []).map((tag) => (
+              <ark-badge slot="tag" variant="pill">
+                {tag}
+              </ark-badge>
+            ))}
+          </ark-case-study-card>
+        </div>
+      ))
+    }
+  </div>
+
+  <ark-empty
+    class="listing-empty"
+    data-listing-empty
+    eyebrow="No results"
+    heading="Nothing matches"
+    heading-emphasis="just yet."
+    description="No work fits this combination of filters. Try widening your selection."
+    hidden
+  ></ark-empty>
+</section>
+
+<script>
+  function initFilterableListing() {
+    document.querySelectorAll<HTMLElement>("[data-filter-bar]").forEach((bar) => {
+      const section = bar.closest(".listing");
+      if (!section) return;
+
+      const cards = Array.from(section.querySelectorAll<HTMLElement>(".listing-card"));
+      const empty = section.querySelector<HTMLElement>("[data-listing-empty]");
+      const state = { category: "", expertise: "" };
+
+      const apply = () => {
+        let visible = 0;
+        for (const card of cards) {
+          const cat = card.dataset.category ?? "";
+          const exp = (card.dataset.expertise ?? "").split(/\s+/).filter(Boolean);
+          const matchCat = !state.category || cat === state.category;
+          const matchExp = !state.expertise || exp.includes(state.expertise);
+          const show = matchCat && matchExp;
+          card.hidden = !show;
+          if (show) visible += 1;
+        }
+        if (empty) empty.hidden = visible !== 0;
+      };
+
+      bar.querySelectorAll<HTMLElement>("[data-filter]").forEach((dropdown) => {
+        dropdown.addEventListener("change", (event) => {
+          const detail = (event as CustomEvent<{ value: string }>).detail;
+          const key = dropdown.dataset.filter as "category" | "expertise";
+          state[key] = detail?.value ?? "";
+          apply();
+        });
+      });
+
+      apply();
+    });
+  }
+
+  document.addEventListener("astro:page-load", initFilterableListing);
+</script>

@@ -123,6 +123,15 @@
   display: none;
 }
 
+.section-cta {
+  border-top: 1px solid var(--ark-color-border);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 24px;
+  margin-top: 48px;
+  padding-top: 40px;
+}
+
 /* Visual heights derived from grid rows:
    big card (spans 2 rows + gap = 583px) minus content area (~108px) = 475px
    small card (1 row = 290px) minus content area (~108px) = 182px          */
