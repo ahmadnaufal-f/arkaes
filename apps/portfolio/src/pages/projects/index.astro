@@ -1,53 +1,28 @@
 ---
-import { professionalProjects, sideProjects } from "../../data/projects";
+import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import "./_projects.css";
+import FilterableListing from "../../components/FilterableListing.astro";
+import type { ListingItem } from "../../components/FilterableListing.astro";
+
+const entries = await getCollection("projects");
+const items: ListingItem[] = entries.map((project) => ({
+  title: project.data.title,
+  summary: project.data.summary,
+  href: `/projects/${project.id}`,
+  categorySlug: project.data.category,
+  expertise: project.data.expertise,
+  tags: project.data.stack.slice(0, 3),
+}));
 ---
 
 <BaseLayout
   title="Projects | Arkaes"
   description="Professional work and side projects from the Arkaes portfolio."
 >
-  <section class="page-section">
-    <div class="section-heading">
-      <ark-badge>Projects</ark-badge>
-      <h1>Professional work and side projects, separated by context.</h1>
-    </div>
-
-    <div class="project-listing">
-      <section aria-labelledby="professional-work">
-        <h2 id="professional-work">Professional Works</h2>
-        <div class="project-grid">
-          {
-            professionalProjects.map((project) => (
-              <ark-case-study-card
-                category="Professional Work"
-                href={`/projects/${project.slug}`}
-                summary={project.summary}
-                title={project.title}
-                variant="compact"
-              />
-            ))
-          }
-        </div>
-      </section>
-
-      <section aria-labelledby="side-projects">
-        <h2 id="side-projects">Side Projects</h2>
-        <div class="project-grid">
-          {
-            sideProjects.map((project) => (
-              <ark-case-study-card
-                category="Side Project"
-                href={`/projects/${project.slug}`}
-                summary={project.summary}
-                title={project.title}
-                variant="compact"
-              />
-            ))
-          }
-        </div>
-      </section>
-    </div>
-  </section>
+  <FilterableListing
+    eyebrow="Projects"
+    title="Selected work, by context and expertise."
+    description="Professional engagements and side projects, filterable in one place."
+    items={items}
+  />
 </BaseLayout>

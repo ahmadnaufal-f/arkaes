@@ -3,6 +3,7 @@ import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import "./_index.css";
 import { techGroups, currentlyLearning } from "../data/techstack";
+import { expertiseLabel } from "../data/expertise";
 import VirtualHomeThumbnail from "../components/case-studies-thumbnail/virtual-home/thumbnail.astro";
 import VirtualHomeTvThumbnail from "../components/case-studies-thumbnail/virtual-home-tv/thumbnail.astro";
 import MilkPumpingThumbnail from "../components/case-studies-thumbnail/milk-pumping-tracker/thumbnail.astro";
@@ -17,7 +18,7 @@ const featuredStudies = allStudies
 
 const services = [
   {
-    name: "Frontend Architecture & UI Systems",
+    name: expertiseLabel("frontend-architecture"),
     description:
       "I design frontend foundations for scalable product interfaces, including component structure, routing, state management, API integration, accessibility, and maintainable UI patterns.",
     techStack: [
@@ -38,7 +39,7 @@ const services = [
     ],
   },
   {
-    name: "Design Systems Engineering",
+    name: expertiseLabel("design-systems"),
     description:
       "I build reusable UI systems that help teams ship consistent interfaces faster, with attention to accessibility, design tokens, variants, component APIs, and documentation.",
     techStack: [
@@ -53,7 +54,7 @@ const services = [
     relatedWork: ["Arkaes Design System", "Internal React Design System"],
   },
   {
-    name: "Performance-focused Frontend Engineering",
+    name: expertiseLabel("performance"),
     description:
       "I improve frontend performance through caching, bundle optimization, lazy loading, rendering strategy, and refactoring heavy UI logic.",
     techStack: [
@@ -71,7 +72,7 @@ const services = [
     ],
   },
   {
-    name: "Cross-platform Product Development",
+    name: expertiseLabel("cross-platform"),
     description:
       "I build product interfaces across web and mobile, focusing on consistent user experience, maintainable architecture, and practical engineering tradeoffs.",
     techStack: ["React Native", "Expo", "React", "Next.js", "TypeScript", "NativeWind"],

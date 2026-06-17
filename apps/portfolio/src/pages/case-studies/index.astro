@@ -1,0 +1,28 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import FilterableListing from "../../components/FilterableListing.astro";
+import type { ListingItem } from "../../components/FilterableListing.astro";
+
+const entries = await getCollection("caseStudies");
+const items: ListingItem[] = entries.map((study) => ({
+  title: study.data.title,
+  summary: study.data.shortDesc,
+  href: `/case-studies/${study.id}`,
+  categorySlug: study.data.category,
+  expertise: study.data.expertise,
+  tags: study.data.tags.slice(0, 3),
+}));
+---
+
+<BaseLayout
+  title="Case Studies | Arkaes"
+  description="In-depth engineering case studies from the Arkaes portfolio."
+>
+  <FilterableListing
+    eyebrow="Case Studies"
+    title="Deep dives into shipped frontend work."
+    description="Detailed engineering case studies, filterable by context and expertise."
+    items={items}
+  />
+</BaseLayout>
