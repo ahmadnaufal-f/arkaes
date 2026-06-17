@@ -4,6 +4,7 @@ import {
   defineArkButton,
   defineArkCheckbox,
   defineArkDropdown,
+  defineArkEmpty,
   defineArkInput,
   defineArkRadio,
   defineArkRadioGroup,
@@ -26,6 +27,7 @@ export const registerArkPrimitives = () => {
   defineArkButton();
   defineArkCheckbox();
   defineArkDropdown();
+  defineArkEmpty();
   defineArkInput();
   defineArkRadio();
   defineArkRadioGroup();

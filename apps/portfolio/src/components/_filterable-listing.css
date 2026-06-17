@@ -37,14 +37,6 @@
   display: none;
 }
 
-.listing-empty {
-  color: var(--ark-color-text-muted);
-  font-family: var(--ark-font-mono);
-  font-size: var(--ark-font-size-sm);
-  letter-spacing: 0.04em;
-  padding-block: var(--ark-space-8);
-}
-
 .listing-empty[hidden] {
   display: none;
 }

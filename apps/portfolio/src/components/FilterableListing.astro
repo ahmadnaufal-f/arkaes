@@ -1,5 +1,6 @@
 ---
 import "@arkaes/ui/register/ark-dropdown";
+import "@arkaes/ui/register/ark-empty";
 import { CATEGORIES, EXPERTISE, categoryLabel } from "../data/expertise";
 import "./_filterable-listing.css";
 
@@ -87,9 +88,15 @@ const { eyebrow, title, description, items } = Astro.props;
     }
   </div>
 
-  <p class="listing-empty" data-listing-empty hidden>
-    No matching work for these filters yet.
-  </p>
+  <ark-empty
+    class="listing-empty"
+    data-listing-empty
+    eyebrow="No results"
+    heading="Nothing matches"
+    heading-emphasis="just yet."
+    description="No work fits this combination of filters. Try widening your selection."
+    hidden
+  ></ark-empty>
 </section>
 
 <script>
