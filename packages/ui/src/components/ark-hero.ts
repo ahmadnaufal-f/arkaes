@@ -123,7 +123,10 @@ export class ArkHero extends LitElement {
         --ark-hero-min-height,
         calc(max(100vh, 960px) - var(--ark-nav-header-height, 80px))
       );
-      overflow: hidden;
+      /* clip instead of hidden: hidden creates a scroll container (per the
+         Scroll-Driven Animations spec), which would intercept view-timeline
+         lookups and prevent the mobile scatter from reaching the root viewport. */
+      overflow: clip;
       padding-inline: var(
         --ark-hero-content-padding,
         var(--site-content-padding, 60px)
@@ -218,7 +221,7 @@ export class ArkHero extends LitElement {
     .hero-right {
       animation: fadeIn 1200ms var(--ark-ease-out) forwards 300ms;
       opacity: 0;
-      overflow: hidden;
+      overflow: clip; /* same reason as .hero above */
       position: relative;
     }
 
