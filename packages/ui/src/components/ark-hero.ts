@@ -465,6 +465,50 @@ export class ArkHero extends LitElement {
           animation-range: 0 90vh;
           animation-timeline: scroll(root block);
         }
+
+        /* ── Mobile: scatter relative to composition's own viewport position ─
+           On narrow screens the composition is below the fold, so the
+           absolute scroll-range "0 90vh" starts the scatter before the user
+           has even seen the composition.  Instead we track the composition
+           element itself with a named view-timeline and begin scattering only
+           once its centre crosses 50 vh (cover 50%) — right in the middle of
+           the screen — finishing as it exits the top (cover 100%). */
+        @media (max-width: 900px) {
+          .composition {
+            view-timeline-axis: block;
+            view-timeline-name: --comp-view;
+          }
+
+          .comp-block-large {
+            animation-range: normal, cover 50% cover 100%;
+            animation-timeline: auto, --comp-view;
+          }
+
+          .comp-block-accent {
+            animation-range: normal, cover 50% cover 100%;
+            animation-timeline: auto, --comp-view;
+          }
+
+          .comp-block-sage {
+            animation-range: normal, cover 50% cover 100%;
+            animation-timeline: auto, --comp-view;
+          }
+
+          .comp-circle {
+            animation-range: normal, cover 50% cover 100%;
+            animation-timeline: auto, --comp-view;
+          }
+
+          .comp-sage-dot {
+            animation-range: normal, cover 50% cover 100%;
+            animation-timeline: auto, --comp-view;
+          }
+
+          .comp-label {
+            animation-range: cover 50% cover 100%;
+            animation-timeline: --comp-view;
+          }
+        }
       }
     }
 
