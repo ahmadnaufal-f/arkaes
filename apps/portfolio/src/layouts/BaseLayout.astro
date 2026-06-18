@@ -3,7 +3,6 @@ import { ClientRouter } from "astro:transitions";
 import SiteFooter from "../components/SiteFooter.astro";
 import SiteHeader from "../components/SiteHeader.astro";
 import { fadeThroughBlank } from "../transitions/fade-through-blank";
-import "lenis/dist/lenis.css";
 import "../styles/global.css";
 
 interface Props {
@@ -94,7 +93,6 @@ const {
       // elements stay defined across client-side View Transitions navigations.
       import "@arkaes/ui/register";
       import { enableArkCursor } from "@arkaes/ui/components/ark-cursor";
-      import Lenis from "lenis";
 
       // ── Persistent setup (runs once for the document lifetime) ──────────
       const reduceMotion = window.matchMedia(
@@ -105,23 +103,6 @@ const {
       // hover detection (across shadow DOM), capability gating, and View
       // Transition persistence. See @arkaes/ui.
       enableArkCursor();
-
-      // ── Lenis smooth scroll ──────────────────────
-      const lenis = reduceMotion
-        ? null
-        : new Lenis({ autoRaf: true, anchors: true });
-
-      if (lenis) {
-        // View Transitions keep the document alive, so re-sync Lenis to the
-        // new page's scroll position (hash target or top) after each swap,
-        // otherwise it would lerp back toward the previous page's offset.
-        document.addEventListener("astro:after-swap", () => {
-          const target = window.location.hash
-            ? document.querySelector<HTMLElement>(window.location.hash)
-            : null;
-          lenis.scrollTo(target ?? 0, { immediate: true });
-        });
-      }
 
       // Before the DOM swap, close any open dialogs so their portal containers
       // don't linger on the body after navigation.
@@ -136,14 +117,10 @@ const {
       });
 
       const scrollToTop = () => {
-        if (lenis) {
-          lenis.scrollTo(0);
-        } else {
-          window.scrollTo({
-            top: 0,
-            behavior: reduceMotion ? "auto" : "smooth",
-          });
-        }
+        window.scrollTo({
+          top: 0,
+          behavior: reduceMotion ? "auto" : "smooth",
+        });
       };
 
       // ── Per-page setup (runs on first load and after every navigation) ──

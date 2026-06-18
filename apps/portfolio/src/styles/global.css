@@ -3,8 +3,7 @@
 html {
   background: var(--ark-color-background);
   color: var(--ark-color-text);
-  /* Smooth scrolling is handled by Lenis (see BaseLayout); native
-     scroll-behavior is intentionally omitted so the two don't conflict. */
+  scroll-behavior: smooth;
 }
 
 body {
