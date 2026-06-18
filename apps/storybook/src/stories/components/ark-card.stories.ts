@@ -80,6 +80,17 @@ const meta = {
     width: "parent",
   },
   component: "ark-card",
+  parameters: {
+    docs: {
+      description: {
+        component: `
+\`ark-card\` is a composable container for grouped content with structured regions.
+
+Compose cards from \`ark-card-header\`, \`ark-card-content\`, and \`ark-card-footer\`. Inside the header, use \`ark-card-title\`, \`ark-card-description\`, and \`ark-card-action\`. Set \`interactive\` for hover states, choose \`variant\` (surface or project), and control width with responsive sizing.
+        `,
+      },
+    },
+  },
   render: renderCard,
   title: "Components/Ark Card",
 } satisfies Meta<CardArgs>;

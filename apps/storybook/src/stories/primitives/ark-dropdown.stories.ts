@@ -23,6 +23,17 @@ const meta = {
     value: "",
     disabled: false,
   },
+  parameters: {
+    docs: {
+      description: {
+        component: `
+\`ark-dropdown\` is a native HTML \`select\` wrapper that presents options in a visually consistent combobox interface.
+
+Add \`ark-dropdown-option\` elements as children to define choices. Provide a \`label\` for the field and \`placeholder\` text for the initial selection prompt. Use \`disabled\` to prevent interaction.
+        `,
+      },
+    },
+  },
   render: ({ label, placeholder, value, disabled }) => html`
     <ark-dropdown
       label=${label}

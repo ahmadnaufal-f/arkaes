@@ -26,6 +26,17 @@ const meta = {
     description: "No work fits this combination of filters. Try widening your selection.",
     symbol: "Æ",
   },
+  parameters: {
+    docs: {
+      description: {
+        component: `
+\`ark-empty\` provides a friendly, branded placeholder for vacant states like "no results" or "no items yet."
+
+Customize the message with \`eyebrow\`, \`heading\`, and \`headingEmphasis\` (the emphasized part of the heading), plus an optional \`description\` and \`symbol\`. Slot in action buttons or links to guide users next steps.
+        `,
+      },
+    },
+  },
   render: ({ eyebrow, heading, headingEmphasis, description, symbol }) => html`
     <ark-empty
       eyebrow=${eyebrow}

@@ -91,6 +91,17 @@ const meta = {
     variant: ButtonVariant.Primary,
   },
   component: "ark-button",
+  parameters: {
+    docs: {
+      description: {
+        component: `
+\`ark-button\` is a versatile button element that works both as a native button and as a link.
+
+Provide an \`href\` to render as an anchor; omit it for a regular button. Use \`type\` to set button behavior (\`button\`, \`submit\`, \`reset\`). Choose from three variants for different visual emphasis and multiple sizes to fit your layout.
+        `,
+      },
+    },
+  },
   render: renderButton,
   title: "Primitives/Ark Button",
 } satisfies Meta<ButtonArgs>;
