@@ -9,7 +9,8 @@ interface DropdownArgs {
 }
 
 const meta = {
-  title: "Primitives/Dropdown",
+  component: "ark-dropdown",
+  title: "Primitives/Ark Dropdown",
   argTypes: {
     label: { control: "text" },
     placeholder: { control: "text" },

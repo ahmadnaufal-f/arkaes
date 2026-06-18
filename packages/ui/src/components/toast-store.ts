@@ -47,6 +47,9 @@ export interface ToastRecord {
 const DEFAULT_DURATION = 4000;
 const DEFAULT_POSITION: ToastPosition = "bottom-center";
 
+/** Maximum number of toasts kept on screen at once. Oldest are dropped first. */
+export const MAX_TOASTS = 5;
+
 type ToastListener = (toasts: readonly ToastRecord[]) => void;
 
 const listeners = new Set<ToastListener>();
@@ -83,8 +86,11 @@ const addToast = (message: string, options: ToastOptions = {}): string => {
     position: options.position ?? DEFAULT_POSITION,
   };
 
-  // Replace any existing record with the same id, otherwise append.
-  toasts = [...toasts.filter((existing) => existing.id !== id), record];
+  // Replace any existing record with the same id, otherwise append, then cap
+  // the queue at MAX_TOASTS by dropping the oldest entries.
+  toasts = [...toasts.filter((existing) => existing.id !== id), record].slice(
+    -MAX_TOASTS,
+  );
   notify();
   return id;
 };

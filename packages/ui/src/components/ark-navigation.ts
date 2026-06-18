@@ -121,6 +121,11 @@ export class ArkNavigationRoot extends LitElement {
   }
 
   private _handleScrollLock(lock: boolean) {
+    // Skip body scroll lock inside the Storybook preview iframe so a statically
+    // rendered `menu-open` story doesn't leave the page permanently unscrollable.
+    if (window.location.pathname.includes("iframe.html")) {
+      return;
+    }
     if (lock) {
       lockBodyScroll(this);
     } else {
