@@ -123,7 +123,10 @@ export class ArkHero extends LitElement {
         --ark-hero-min-height,
         calc(max(100vh, 960px) - var(--ark-nav-header-height, 80px))
       );
-      overflow: hidden;
+      /* clip instead of hidden: hidden creates a scroll container (per the
+         Scroll-Driven Animations spec), which would intercept view-timeline
+         lookups and prevent the mobile scatter from reaching the root viewport. */
+      overflow: clip;
       padding-inline: var(
         --ark-hero-content-padding,
         var(--site-content-padding, 60px)
@@ -218,7 +221,7 @@ export class ArkHero extends LitElement {
     .hero-right {
       animation: fadeIn 1200ms var(--ark-ease-out) forwards 300ms;
       opacity: 0;
-      overflow: hidden;
+      overflow: clip; /* same reason as .hero above */
       position: relative;
     }
 
@@ -464,6 +467,34 @@ export class ArkHero extends LitElement {
           animation: compScatter linear both;
           animation-range: 0 90vh;
           animation-timeline: scroll(root block);
+        }
+
+        /* ── Mobile: scatter relative to composition's own viewport position ─
+           On narrow screens the composition is below the fold, so the
+           absolute scroll-range "0 90vh" starts the scatter before the user
+           has even seen the composition.  Instead we track the composition
+           element itself with a named view-timeline and begin scattering only
+           once its centre crosses 50 vh (cover 50%) — right in the middle of
+           the screen — finishing as it exits the top (cover 100%). */
+        @media (max-width: 900px) {
+          .composition {
+            view-timeline-axis: block;
+            view-timeline-name: --comp-view;
+          }
+
+          .comp-block-large,
+          .comp-block-accent,
+          .comp-block-sage,
+          .comp-circle,
+          .comp-sage-dot {
+            animation-range: normal, cover 50% cover 100%;
+            animation-timeline: auto, --comp-view;
+          }
+
+          .comp-label {
+            animation-range: cover 50% cover 100%;
+            animation-timeline: --comp-view;
+          }
         }
       }
     }
