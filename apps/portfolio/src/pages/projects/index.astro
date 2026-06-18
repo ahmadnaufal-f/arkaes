@@ -16,6 +16,8 @@ const items: ListingItem[] = entries.map((project) => ({
   categorySlug: project.data.category,
   expertise: expertiseForProject(project.data.projectName),
   tags: project.data.stack.slice(0, 3),
+  visual: project.data.visual,
+  transitionName: `proj-thumb-${project.id}`,
 }));
 ---
 

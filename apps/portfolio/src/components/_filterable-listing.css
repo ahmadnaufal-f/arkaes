@@ -33,6 +33,12 @@
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
 }
 
+/* Uniform thumbnail band for every listing card. The custom property inherits
+   through the card's slot into the thumbnail, which reads it for its height. */
+.listing-card {
+  --thumbnail-height: 200px;
+}
+
 .listing-card[hidden] {
   display: none;
 }

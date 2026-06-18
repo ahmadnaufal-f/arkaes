@@ -1,0 +1,207 @@
+---
+interface Props {
+  transitionName: string;
+  asSlot?: string;
+}
+const { transitionName, asSlot } = Astro.props;
+---
+
+<div
+  class="thumb-air"
+  slot={asSlot}
+  style={`view-transition-name: ${transitionName};`}
+>
+  <div class="thumb-air-scene">
+    <div class="thumb-air-flow" aria-hidden="true">
+      <span class="thumb-air-stream thumb-air-stream--l"></span>
+      <span class="thumb-air-stream thumb-air-stream--c"></span>
+      <span class="thumb-air-stream thumb-air-stream--r"></span>
+    </div>
+    <div class="thumb-air-purifier">
+      <div class="thumb-air-vent">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <div class="thumb-air-grille">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <div class="thumb-air-status"></div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .thumb-air {
+    align-items: center;
+    background: var(--thumbnail-background, var(--ark-color-accent-soft));
+    display: flex;
+    height: var(--thumbnail-height, auto);
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* The scene is deliberately smaller than the container and centered, so the
+     purifier's drop shadow always has room to breathe and is never clipped by
+     the container's overflow:hidden. */
+  .thumb-air-scene {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* ── Airflow rising out of the top vent ── */
+  .thumb-air-flow {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    height: 34px;
+  }
+
+  .thumb-air-stream {
+    background: linear-gradient(
+      to top,
+      color-mix(in srgb, var(--ark-color-accent) 55%, transparent),
+      transparent
+    );
+    border-radius: 3px;
+    width: 4px;
+  }
+
+  .thumb-air-stream--l {
+    height: 20px;
+    transform: rotate(-12deg);
+  }
+
+  .thumb-air-stream--c {
+    height: 32px;
+  }
+
+  .thumb-air-stream--r {
+    height: 20px;
+    transform: rotate(12deg);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .thumb-air-stream {
+      animation: thumb-air-rise 2.6s ease-in-out infinite;
+    }
+    .thumb-air-stream--c {
+      animation-delay: 0.3s;
+    }
+    .thumb-air-stream--r {
+      animation-delay: 0.6s;
+    }
+  }
+
+  @keyframes thumb-air-rise {
+    0%,
+    100% {
+      opacity: 0.45;
+      transform: translateY(2px) var(--thumb-air-tilt, none);
+    }
+    50% {
+      opacity: 1;
+      transform: translateY(-2px) var(--thumb-air-tilt, none);
+    }
+  }
+
+  .thumb-air-stream--l {
+    --thumb-air-tilt: rotate(-12deg);
+  }
+  .thumb-air-stream--r {
+    --thumb-air-tilt: rotate(12deg);
+  }
+
+  /* ── Purifier body ── */
+  .thumb-air-purifier {
+    align-items: center;
+    background: var(--ark-color-surface);
+    border: 1px solid var(--ark-color-border);
+    border-radius: 22px 22px 16px 16px;
+    box-shadow: var(--ark-shadow-md);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 18px 0 16px;
+    width: 108px;
+  }
+
+  /* Top outlet — concentric vent the air streams out of */
+  .thumb-air-vent {
+    align-items: center;
+    border: 2px solid
+      color-mix(in srgb, var(--ark-color-accent) 45%, transparent);
+    border-radius: 50%;
+    display: flex;
+    height: 44px;
+    justify-content: center;
+    position: relative;
+    width: 44px;
+  }
+
+  .thumb-air-vent span {
+    background: color-mix(in srgb, var(--ark-color-accent) 30%, transparent);
+    border-radius: 2px;
+    position: absolute;
+  }
+
+  .thumb-air-vent span:nth-child(1) {
+    height: 2px;
+    width: 22px;
+  }
+
+  .thumb-air-vent span:nth-child(2) {
+    height: 22px;
+    width: 2px;
+  }
+
+  .thumb-air-vent span:nth-child(3) {
+    background: var(--ark-color-accent);
+    border-radius: 50%;
+    height: 8px;
+    width: 8px;
+  }
+
+  /* Lower intake grille */
+  .thumb-air-grille {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: 66px;
+  }
+
+  .thumb-air-grille span {
+    background: var(--ark-color-neutral-200);
+    border-radius: 2px;
+    height: 3px;
+  }
+
+  .thumb-air-grille span:nth-child(1) {
+    width: 100%;
+  }
+  .thumb-air-grille span:nth-child(2) {
+    width: 86%;
+  }
+  .thumb-air-grille span:nth-child(3) {
+    width: 100%;
+  }
+  .thumb-air-grille span:nth-child(4) {
+    width: 72%;
+  }
+
+  /* Power / status indicator */
+  .thumb-air-status {
+    background: var(--ark-color-accent);
+    border-radius: 50%;
+    box-shadow: 0 0 0 4px
+      color-mix(in srgb, var(--ark-color-accent) 18%, transparent);
+    height: 6px;
+    width: 6px;
+  }
+</style>

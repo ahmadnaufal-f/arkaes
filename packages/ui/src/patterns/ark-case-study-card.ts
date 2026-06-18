@@ -16,6 +16,7 @@ export class ArkCaseStudyCard extends LitElement {
     summary: { type: String },
     title: { type: String },
     variant: { reflect: true, type: String },
+    _hasMedia: { state: true },
   };
 
   static override styles = css`
@@ -51,6 +52,10 @@ export class ArkCaseStudyCard extends LitElement {
     .media {
       min-height: 0;
       overflow: hidden;
+    }
+
+    .media[hidden] {
+      display: none;
     }
 
     slot[name="media"]::slotted(*) {
@@ -146,10 +151,22 @@ export class ArkCaseStudyCard extends LitElement {
   override title = "";
   variant: ArkCaseStudyCardVariant = "featured";
 
+  // Whether any media is projected into the "media" slot. Drives showing the
+  // thumbnail region for any variant (so compact listing cards can carry a
+  // visual), instead of gating it on the variant alone. Seeded from the light
+  // DOM for a flash-free first paint, then kept in sync via @slotchange.
+  _hasMedia = false;
+
   override connectedCallback() {
     super.connectedCallback();
+    this._hasMedia = this.querySelector(':scope > [slot="media"]') !== null;
     this.addEventListener("click", this.#forwardClickToLink);
   }
+
+  #onMediaSlotChange = (event: Event) => {
+    const slot = event.target as HTMLSlotElement;
+    this._hasMedia = slot.assignedElements().length > 0;
+  };
 
   override disconnectedCallback() {
     this.removeEventListener("click", this.#forwardClickToLink);
@@ -194,22 +211,15 @@ export class ArkCaseStudyCard extends LitElement {
   };
 
   override render() {
-    const hasMedia = this.variant !== "compact";
-
     return html`
       <ark-card
         interactive
         variant=${this.variant === "featured" ? "project" : "surface"}
       >
         <a class="link" href=${this.href || "#"}>
-          ${when(
-            hasMedia,
-            () => html`
-                <div class="media">
-                  <slot name="media"></slot>
-                </div>
-              `,
-          )}
+          <div class="media" ?hidden=${!this._hasMedia}>
+            <slot name="media" @slotchange=${this.#onMediaSlotChange}></slot>
+          </div>
           <div class="content">
             <div class="copy">
               ${when(

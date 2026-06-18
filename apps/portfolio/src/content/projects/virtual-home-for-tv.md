@@ -10,6 +10,7 @@ stack:
   - TV UX
   - Platform adaptation
   - Frontend
+visual: "virtual-home-tv"
 category: "professional-work"
 ---
 
