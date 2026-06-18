@@ -101,6 +101,17 @@ const renderDialogWithoutPortal = () => html`
 
 const meta = {
   component: "ark-dialog-root",
+  parameters: {
+    docs: {
+      description: {
+        component: `
+\`ark-dialog\` is an accessible modal component with focus trapping, keyboard support, and optional portal rendering.
+
+Wrap content in \`ark-dialog-root\`, \`ark-dialog-trigger\`, and \`ark-dialog-content\`. Use \`ark-dialog-portal\` to render content into the document body, escaping parent stacking contexts. Include \`ark-dialog-overlay\`, \`ark-dialog-title\`, \`ark-dialog-description\`, and \`ark-dialog-close\` for complete accessibility and user control.
+        `,
+      },
+    },
+  },
   render: renderDialogWithPortal,
   title: "Components/Ark Dialog",
 } satisfies Meta;

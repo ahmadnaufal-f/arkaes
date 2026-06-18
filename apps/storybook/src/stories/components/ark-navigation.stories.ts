@@ -90,6 +90,17 @@ const renderMobileOpen = () => navWrapper(html`
 
 const meta = {
   component: "ark-navigation-root",
+  parameters: {
+    docs: {
+      description: {
+        component: `
+\`ark-navigation\` is a fixed-position header with responsive mobile toggle and collapsible menu.
+
+Structure the header with \`ark-navigation-root\`, \`ark-navigation-brand\`, \`ark-navigation-links\`, \`ark-navigation-cta\`, \`ark-navigation-mobile-toggle\`, and \`ark-navigation-mobile-menu\`. Use \`ark-nav-link\` for menu items and set \`active\` to highlight the current page. The \`scrolled\` attribute changes appearance when the page is scrolled.
+        `,
+      },
+    },
+  },
   render: renderDefault,
   title: "Components/Ark Navigation",
 } satisfies Meta;

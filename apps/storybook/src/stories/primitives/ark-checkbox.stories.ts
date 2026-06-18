@@ -51,6 +51,17 @@ const meta = {
     value: "analytics",
   },
   component: "ark-checkbox",
+  parameters: {
+    docs: {
+      description: {
+        component: `
+\`ark-checkbox\` is a multi-select form control allowing users to independently toggle multiple options.
+
+Supports checked, unchecked, and indeterminate states (useful for parent checkboxes in hierarchies). Add a \`label\` and optional \`hint\` for context. Use \`disabled\` to prevent interaction, and set \`size\` to match your layout rhythm.
+        `,
+      },
+    },
+  },
   render: renderCheckbox,
   title: "Primitives/Ark Checkbox",
 } satisfies Meta<CheckboxArgs>;

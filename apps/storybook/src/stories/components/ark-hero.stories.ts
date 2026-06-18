@@ -5,6 +5,15 @@ const meta = {
   component: "ark-hero",
   parameters: {
     layout: "fullscreen",
+    docs: {
+      description: {
+        component: `
+\`ark-hero\` is a full-viewport landing section with responsive layout and smooth animations.
+
+Accepts content via slots: \`eyebrow\` for a leading badge, \`title\` and \`subtitle\` for messaging (including emphasis), \`actions\` for button groups, and \`visual\` for imagery or graphics. CSS custom properties control height, padding, and motion behavior for complete layout control.
+        `,
+      },
+    },
   },
   render: () => html`
     <ark-hero

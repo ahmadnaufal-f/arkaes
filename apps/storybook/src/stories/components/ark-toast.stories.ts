@@ -29,6 +29,15 @@ const meta = {
   component: "ark-toaster",
   parameters: {
     layout: "fullscreen",
+    docs: {
+      description: {
+        component: `
+\`ark-toast\` is a transient notification system supporting both declarative and imperative usage.
+
+Mount a single \`ark-toaster\` container (typically once per page) and control \`position\`. Show toasts declaratively by toggling the \`open\` property on \`ark-toast\` elements, or imperatively using the \`toast()\` function. Support multiple variants (default, success, error, warning, info, loading) and auto-dismiss with \`duration\`.
+        `,
+      },
+    },
   },
   title: "Components/Ark Toast",
 } satisfies Meta<ToastArgs>;

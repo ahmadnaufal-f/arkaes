@@ -48,6 +48,17 @@ const renderStandaloneItems = () => html`
 
 const meta = {
   component: "ark-accordion",
+  parameters: {
+    docs: {
+      description: {
+        component: `
+\`ark-accordion\` manages collapsible content sections with smooth grid-based animations.
+
+Use \`type="single"\` to allow only one section open at a time, or omit it (default: multiple) to let users compare content across expanded sections. Wrap \`ark-accordion-item\` children and provide a \`heading\` for each. Accordion items can also stand alone for custom layouts.
+        `,
+      },
+    },
+  },
   title: "Components/Ark Accordion",
 } satisfies Meta;
 

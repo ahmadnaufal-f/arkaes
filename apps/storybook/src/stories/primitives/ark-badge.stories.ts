@@ -30,6 +30,17 @@ const meta = {
     variant: BadgeVariant.Eyebrow,
   },
   component: "ark-badge",
+  parameters: {
+    docs: {
+      description: {
+        component: `
+\`ark-badge\` labels content with small, visually distinct tags. Use it to categorize, highlight, or mark items with contextual metadata.
+
+Three variants provide different visual weights: \`eyebrow\` for subtle labels, \`soft\` for muted backgrounds, and \`pill\` for rounded pill-shaped badges. Choose the size that matches your layout context.
+        `,
+      },
+    },
+  },
   render: renderBadge,
   title: "Primitives/Ark Badge",
 } satisfies Meta<BadgeArgs>;

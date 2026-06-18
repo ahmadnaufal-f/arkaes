@@ -4,6 +4,17 @@ import "@arkaes/ui/register/ark-radio";
 
 const meta = {
   component: "ark-radio",
+  parameters: {
+    docs: {
+      description: {
+        component: `
+\`ark-radio\` provides single-select options where only one choice can be active at a time.
+
+Use \`ark-radio-group\` as a container for semantic grouping and keyboard navigation support. Without a group, individual radios with the same \`name\` still coordinate unchecking (one checked per name). Each radio accepts a \`label\`, optional \`hint\`, and size control.
+        `,
+      },
+    },
+  },
   title: "Primitives/Ark Radio",
 } satisfies Meta;
 

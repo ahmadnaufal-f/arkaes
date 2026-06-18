@@ -61,6 +61,17 @@ const meta = {
     variant: "featured",
   },
   component: "ark-case-study-card",
+  parameters: {
+    docs: {
+      description: {
+        component: `
+\`ark-case-study-card\` showcases project work with a linked title, metadata, and custom media slot.
+
+Provide a \`title\`, \`category\`, \`summary\`, and \`href\` to make the entire card clickable. Slot custom media in the \`media\` slot for hero imagery and badges via the \`tag\` slot. Choose \`featured\` for full-height showcase layouts or \`compact\` for dense grid presentations.
+        `,
+      },
+    },
+  },
   render: renderCard,
   title: "Patterns/Ark Case Study Card",
 } satisfies Meta<CaseStudyCardArgs>;

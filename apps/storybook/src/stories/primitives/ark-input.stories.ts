@@ -78,6 +78,17 @@ const meta = {
     value: "",
   },
   component: "ark-input",
+  parameters: {
+    docs: {
+      description: {
+        component: `
+\`ark-input\` captures user text input with optional label, hint, and error messaging.
+
+Supports multiple input types (text, password, email, url, number) for semantic form handling. Use \`label\` for the field name, \`hint\` for helper text, and \`error\` with \`invalid\` to display validation messages. Set \`required\` for mandatory fields and control availability with \`disabled\`.
+        `,
+      },
+    },
+  },
   render: renderInput,
   title: "Primitives/Ark Input",
 } satisfies Meta<InputArgs>;

@@ -54,6 +54,17 @@ const meta = {
     value: "on",
   },
   component: "ark-toggle",
+  parameters: {
+    docs: {
+      description: {
+        component: `
+\`ark-toggle\` is a switch for binary on/off states, ideal for settings and feature flags.
+
+Display the label on either side with \`label-position\`, add a \`hint\` for supplementary context, and disable with \`disabled\`. Includes smooth animation between states and full keyboard support.
+        `,
+      },
+    },
+  },
   render: renderToggle,
   title: "Primitives/Ark Toggle",
 } satisfies Meta<ToggleArgs>;
