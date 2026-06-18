@@ -1,0 +1,63 @@
+---
+interface Props {
+  transitionName: string;
+  asSlot?: string;
+}
+const { transitionName, asSlot } = Astro.props;
+---
+
+<div
+  class="thumb-fallback"
+  slot={asSlot}
+  style={`view-transition-name: ${transitionName};`}
+>
+  <div class="thumb-fallback-tile">
+    <span class="thumb-fallback-mono">A</span>
+    <span class="thumb-fallback-label">Arkaes</span>
+  </div>
+</div>
+
+<style>
+  .thumb-fallback {
+    align-items: center;
+    background: var(--thumbnail-background, var(--ark-color-accent-soft));
+    display: flex;
+    height: var(--thumbnail-height, auto);
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* The tile is deliberately smaller than the container and centered, so its
+     drop shadow always has room to breathe and is never clipped. */
+  .thumb-fallback-tile {
+    align-items: center;
+    background: var(--ark-color-surface);
+    border: 1px solid var(--ark-color-border);
+    border-radius: 18px;
+    box-shadow: var(--ark-shadow-md);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    height: 120px;
+    justify-content: center;
+    width: 120px;
+  }
+
+  .thumb-fallback-mono {
+    color: var(--ark-color-accent);
+    font-family: var(--ark-font-display);
+    font-size: 58px;
+    font-weight: var(--ark-weight-thin, 300);
+    line-height: 1;
+  }
+
+  .thumb-fallback-label {
+    color: var(--ark-color-text-muted);
+    font-family: var(--ark-font-mono);
+    font-size: 0.55rem;
+    letter-spacing: 0.28em;
+    text-indent: 0.28em;
+    text-transform: uppercase;
+  }
+</style>

@@ -2,6 +2,7 @@
 import "@arkaes/ui/register/ark-dropdown";
 import "@arkaes/ui/register/ark-empty";
 import { CATEGORIES, EXPERTISE, categoryLabel } from "../data/expertise";
+import CaseStudyVisual from "./CaseStudyVisual.astro";
 import "./_filterable-listing.css";
 
 export interface ListingItem {
@@ -11,6 +12,8 @@ export interface ListingItem {
   categorySlug: string;
   expertise: string[];
   tags?: string[];
+  visual?: string;
+  transitionName: string;
 }
 
 interface Props {
@@ -77,6 +80,11 @@ const { eyebrow, title, description, items } = Astro.props;
             title={item.title}
             variant="compact"
           >
+            <CaseStudyVisual
+              visual={item.visual}
+              asSlot="media"
+              transitionName={item.transitionName}
+            />
             {(item.tags ?? []).map((tag) => (
               <ark-badge slot="tag" variant="pill">
                 {tag}

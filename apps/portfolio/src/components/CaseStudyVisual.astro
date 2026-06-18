@@ -1,0 +1,29 @@
+---
+import VirtualHomeThumbnail from "./case-studies-thumbnail/virtual-home/thumbnail.astro";
+import VirtualHomeTvThumbnail from "./case-studies-thumbnail/virtual-home-tv/thumbnail.astro";
+import MilkPumpingThumbnail from "./case-studies-thumbnail/milk-pumping-tracker/thumbnail.astro";
+import AirCareThumbnail from "./case-studies-thumbnail/air-care/thumbnail.astro";
+import FallbackThumbnail from "./case-studies-thumbnail/fallback/thumbnail.astro";
+
+interface Props {
+  visual?: string;
+  transitionName: string;
+  asSlot?: string;
+}
+
+const { visual, transitionName, asSlot } = Astro.props;
+
+// Single source of truth for mapping a `visual` key to its thumbnail. Anything
+// not registered (or a missing key) falls back to the brand placeholder.
+const REGISTRY = {
+  "virtual-home": VirtualHomeThumbnail,
+  "virtual-home-tv": VirtualHomeTvThumbnail,
+  "milk-pumping": MilkPumpingThumbnail,
+  "air-care": AirCareThumbnail,
+} as const;
+
+const Thumbnail =
+  (visual && REGISTRY[visual as keyof typeof REGISTRY]) || FallbackThumbnail;
+---
+
+<Thumbnail transitionName={transitionName} asSlot={asSlot} />

@@ -10,6 +10,7 @@ stack:
   - JavaScript
   - Plugin architecture
   - Refactoring
+visual: "virtual-home"
 category: "professional-work"
 ---
 

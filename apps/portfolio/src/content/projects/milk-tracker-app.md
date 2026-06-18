@@ -10,6 +10,7 @@ stack:
   - Mobile
   - AI-assisted insights
   - Utility
+visual: "milk-pumping"
 category: "side-project"
 ---
 

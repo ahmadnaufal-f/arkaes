@@ -4,10 +4,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import "./_index.css";
 import { techGroups, currentlyLearning } from "../data/techstack";
 import { EXPERTISE } from "../data/expertise";
-import VirtualHomeThumbnail from "../components/case-studies-thumbnail/virtual-home/thumbnail.astro";
-import VirtualHomeTvThumbnail from "../components/case-studies-thumbnail/virtual-home-tv/thumbnail.astro";
-import MilkPumpingThumbnail from "../components/case-studies-thumbnail/milk-pumping-tracker/thumbnail.astro";
-import AirCareThumbnail from "../components/case-studies-thumbnail/air-care/thumbnail.astro";
+import CaseStudyVisual from "../components/CaseStudyVisual.astro";
 
 const CARD_ORDER = ["virtual-home", "virtual-home-tv", "milk-pumping-tracker", "smartthings-air-care"];
 const getOrder = (id: string) => { const i = CARD_ORDER.indexOf(id); return i === -1 ? Infinity : i; };
@@ -116,30 +113,11 @@ const services = EXPERTISE.map((area) => ({
           href={`/case-studies/${study.id}`}
           title={study.data.title}
         >
-          {study.data.visual === "virtual-home" && (
-            <VirtualHomeThumbnail
-              asSlot="media"
-              transitionName={`cs-thumb-${study.id}`}
-            />
-          )}
-          {study.data.visual === "virtual-home-tv" && (
-            <VirtualHomeTvThumbnail
-              asSlot="media"
-              transitionName={`cs-thumb-${study.id}`}
-            />
-          )}
-          {study.data.visual === "milk-pumping" && (
-            <MilkPumpingThumbnail
-              asSlot="media"
-              transitionName={`cs-thumb-${study.id}`}
-            />
-          )}
-          {study.data.visual === "air-care" && (
-            <AirCareThumbnail
-              asSlot="media"
-              transitionName={`cs-thumb-${study.id}`}
-            />
-          )}
+          <CaseStudyVisual
+            visual={study.data.visual}
+            asSlot="media"
+            transitionName={`cs-thumb-${study.id}`}
+          />
           {study.data.tags.map((tag) => (
             <ark-badge slot="tag" variant="pill">{tag}</ark-badge>
           ))}

@@ -10,6 +10,7 @@ stack:
   - JavaScript
   - SmartThings
   - Performance
+visual: "air-care"
 category: "professional-work"
 ---
 

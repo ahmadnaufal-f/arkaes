@@ -29,6 +29,8 @@ const projects = defineCollection({
     stack: z.array(z.string()).default([]),
     category: categorySchema,
     shippedDate: z.coerce.date(),
+    // Optional thumbnail key; unset (or unknown) renders the fallback visual.
+    visual: z.string().optional(),
   }),
 });
 

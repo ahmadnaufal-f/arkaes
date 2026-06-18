@@ -4,10 +4,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import { parseSections, renderSectionHtml } from "../../utils/case-study";
 import "./_case-study.css";
 import "@arkaes/ui/components/ark-accordion";
-import VirtualHomeThumbnail from "../../components/case-studies-thumbnail/virtual-home/thumbnail.astro";
-import VirtualHomeTvThumbnail from "../../components/case-studies-thumbnail/virtual-home-tv/thumbnail.astro";
-import MilkPumpingThumbnail from "../../components/case-studies-thumbnail/milk-pumping-tracker/thumbnail.astro";
-import AirCareThumbnail from "../../components/case-studies-thumbnail/air-care/thumbnail.astro";
+import CaseStudyVisual from "../../components/CaseStudyVisual.astro";
 
 // Eagerly import every case study SVG as a raw string so we can inline it and
 // let the page's loaded Google Fonts apply inside the diagram markup.
@@ -59,26 +56,7 @@ const accordionSections = allSections.filter((s) => s.heading !== "Overview");
     <span class="cs-hero-sentinel" aria-hidden="true"></span>
     <header class="cs-hero">
       <div class="cs-hero-visual">
-        {
-          visual === "virtual-home" && (
-            <VirtualHomeThumbnail transitionName={`cs-thumb-${study.id}`} />
-          )
-        }
-        {
-          visual === "virtual-home-tv" && (
-            <VirtualHomeTvThumbnail transitionName={`cs-thumb-${study.id}`} />
-          )
-        }
-        {
-          visual === "milk-pumping" && (
-            <MilkPumpingThumbnail transitionName={`cs-thumb-${study.id}`} />
-          )
-        }
-        {
-          visual === "air-care" && (
-            <AirCareThumbnail transitionName={`cs-thumb-${study.id}`} />
-          )
-        }
+        <CaseStudyVisual visual={visual} transitionName={`cs-thumb-${study.id}`} />
       </div>
 
       <div class="cs-hero-meta">
