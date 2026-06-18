@@ -1,41 +1,37 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 160" width="100%" preserveAspectRatio="xMidYMid meet">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 180" width="100%" preserveAspectRatio="xMidYMid meet" font-family="'Plus Jakarta Sans', system-ui, sans-serif">
 
-  <!-- Background -->
-  <rect width="780" height="160" rx="8" fill="#faf9f7" stroke="#d4cec8" stroke-width="1"/>
+  <!-- Background card -->
+  <rect width="780" height="180" rx="8" fill="#faf9f7" stroke="#d4cec8" stroke-width="1"/>
 
-  <!-- ── Stage 1: Legacy JS ── -->
-  <rect x="40" y="52" width="160" height="56" rx="6" fill="#f9f6f2" stroke="#d4cec8" stroke-width="1"/>
-  <text x="120" y="77" text-anchor="middle" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="11" font-weight="500" fill="#17130f">Legacy codebase</text>
-  <rect x="58" y="87" width="104" height="13" rx="6.5" fill="#ede8e2"/>
-  <text x="110" y="97" text-anchor="middle" font-family="'DM Mono', 'Courier New', monospace" font-size="8" fill="#9d9185" letter-spacing="0.04em">plain JavaScript</text>
+  <!-- ── Stage 1: Legacy JavaScript ── -->
+  <rect x="40" y="42" width="180" height="68" rx="8" fill="#f9f6f2" stroke="#d4cec8" stroke-width="1"/>
+  <text x="130" y="72" text-anchor="middle" font-size="12" font-weight="500" fill="#17130f">Legacy codebase</text>
+  <rect x="74" y="84" width="112" height="16" rx="8" fill="#ede8e2"/>
+  <text x="130" y="95" text-anchor="middle" font-family="'DM Mono','Courier New',monospace" font-size="8" fill="#9d9185" letter-spacing="0.04em">plain JavaScript</text>
 
-  <!-- Arrow 1→2 -->
-  <line x1="200" y1="80" x2="252" y2="80" stroke="#c8c2ba" stroke-width="1.5"/>
-  <polygon points="247,75 257,80 247,85" fill="#c8c2ba"/>
+  <!-- Arrow 1 → 2 -->
+  <line x1="228" y1="76" x2="294" y2="76" stroke="#c8c2ba" stroke-width="1.5"/>
+  <polygon points="290,71 300,76 290,81" fill="#c8c2ba"/>
 
-  <!-- ── Stage 2: Mixed (gradual) ── -->
-  <rect x="260" y="52" width="160" height="56" rx="6" fill="#faf9f7" stroke="#c9c0dd" stroke-width="1.25" stroke-dasharray="5,3"/>
-  <text x="340" y="77" text-anchor="middle" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="11" font-weight="500" fill="#17130f">Gradual migration</text>
-  <!-- Split badge -->
-  <rect x="278" y="87" width="48" height="13" rx="6.5" fill="#ede8e2"/>
-  <text x="302" y="97" text-anchor="middle" font-family="'DM Mono', 'Courier New', monospace" font-size="8" fill="#9d9185" letter-spacing="0.04em">.js</text>
-  <rect x="334" y="87" width="48" height="13" rx="6.5" fill="#eae7f0"/>
-  <text x="358" y="97" text-anchor="middle" font-family="'DM Mono', 'Courier New', monospace" font-size="8" fill="#5a4d7a" letter-spacing="0.04em">.ts</text>
+  <!-- ── Stage 2: Gradual migration ── -->
+  <rect x="308" y="42" width="180" height="68" rx="8" fill="#faf9f7" stroke="#c9c0dd" stroke-width="1.25" stroke-dasharray="5,3"/>
+  <text x="398" y="72" text-anchor="middle" font-size="12" font-weight="500" fill="#17130f">Gradual migration</text>
+  <rect x="338" y="84" width="52" height="16" rx="8" fill="#ede8e2"/>
+  <text x="364" y="95" text-anchor="middle" font-family="'DM Mono','Courier New',monospace" font-size="8" fill="#9d9185" letter-spacing="0.04em">.js</text>
+  <rect x="406" y="84" width="52" height="16" rx="8" fill="#eae7f0"/>
+  <text x="432" y="95" text-anchor="middle" font-family="'DM Mono','Courier New',monospace" font-size="8" fill="#5a4d7a" letter-spacing="0.04em">.ts</text>
 
-  <!-- Step label -->
-  <text x="340" y="130" text-anchor="middle" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="8.5" font-weight="300" fill="#9d9185">file by file, feature by feature</text>
-
-  <!-- Arrow 2→3 -->
-  <line x1="420" y1="80" x2="472" y2="80" stroke="#c8c2ba" stroke-width="1.5"/>
-  <polygon points="467,75 477,80 467,85" fill="#c8c2ba"/>
+  <!-- Arrow 2 → 3 -->
+  <line x1="496" y1="76" x2="562" y2="76" stroke="#c8c2ba" stroke-width="1.5"/>
+  <polygon points="558,71 568,76 558,81" fill="#c8c2ba"/>
 
   <!-- ── Stage 3: Full TypeScript ── -->
-  <rect x="480" y="52" width="160" height="56" rx="6" fill="#eae7f0" stroke="#c9c0dd" stroke-width="1.25"/>
-  <text x="560" y="77" text-anchor="middle" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="11" font-weight="500" fill="#4a3d6a">Full TypeScript</text>
-  <rect x="498" y="87" width="124" height="13" rx="6.5" fill="#c9c0dd"/>
-  <text x="560" y="97" text-anchor="middle" font-family="'DM Mono', 'Courier New', monospace" font-size="8" fill="#4a3d6a" letter-spacing="0.04em">explicit types throughout</text>
+  <rect x="576" y="42" width="164" height="68" rx="8" fill="#eae7f0" stroke="#c9c0dd" stroke-width="1.25"/>
+  <text x="658" y="72" text-anchor="middle" font-size="12" font-weight="500" fill="#4a3d6a">Full TypeScript</text>
+  <rect x="600" y="84" width="116" height="16" rx="8" fill="#d6cfe6"/>
+  <text x="658" y="95" text-anchor="middle" font-family="'DM Mono','Courier New',monospace" font-size="8" fill="#4a3d6a" letter-spacing="0.04em">typed throughout</text>
 
   <!-- Caption -->
-  <text x="390" y="148" text-anchor="middle" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="9" font-weight="300" fill="#76695f">The migration ran alongside product delivery — no big-bang rewrite, just steady progress.</text>
+  <text x="390" y="148" text-anchor="middle" font-size="10" font-weight="300" fill="#76695f">Migrated file by file while still shipping product work — no big-bang rewrite.</text>
 
 </svg>

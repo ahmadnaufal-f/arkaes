@@ -11,43 +11,25 @@ const { transitionName, asSlot } = Astro.props;
   slot={asSlot}
   style={`view-transition-name: ${transitionName};`}
 >
-  <div class="thumb-air-panel">
-    <div class="thumb-air-topbar">
-      <div class="thumb-air-dot"></div>
-      <div class="thumb-air-topbar-label"></div>
+  <div class="thumb-air-scene">
+    <div class="thumb-air-flow" aria-hidden="true">
+      <span class="thumb-air-stream thumb-air-stream--l"></span>
+      <span class="thumb-air-stream thumb-air-stream--c"></span>
+      <span class="thumb-air-stream thumb-air-stream--r"></span>
     </div>
-    <div class="thumb-air-gauge-wrap">
-      <div class="thumb-air-gauge">
-        <div class="thumb-air-gauge-ring"></div>
-        <div class="thumb-air-gauge-inner">
-          <div class="thumb-air-gauge-value"></div>
-          <div class="thumb-air-gauge-unit"></div>
-        </div>
+    <div class="thumb-air-purifier">
+      <div class="thumb-air-vent">
+        <span></span>
+        <span></span>
+        <span></span>
       </div>
-    </div>
-    <div class="thumb-air-devices">
-      <div class="thumb-air-device thumb-air-device--active">
-        <div class="thumb-air-device-icon">
-          <div class="thumb-air-device-fan"></div>
-        </div>
-        <div class="thumb-air-device-label"></div>
+      <div class="thumb-air-grille">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
       </div>
-      <div class="thumb-air-device">
-        <div class="thumb-air-device-icon thumb-air-device-icon--dim">
-          <div class="thumb-air-device-bars">
-            <div></div>
-            <div></div>
-            <div></div>
-          </div>
-        </div>
-        <div class="thumb-air-device-label"></div>
-      </div>
-      <div class="thumb-air-device">
-        <div class="thumb-air-device-icon thumb-air-device-icon--dim">
-          <div class="thumb-air-device-drop"></div>
-        </div>
-        <div class="thumb-air-device-label"></div>
-      </div>
+      <div class="thumb-air-status"></div>
     </div>
   </div>
 </div>
@@ -63,179 +45,163 @@ const { transitionName, asSlot } = Astro.props;
     position: relative;
   }
 
-  .thumb-air-panel {
+  /* The scene is deliberately smaller than the container and centered, so the
+     purifier's drop shadow always has room to breathe and is never clipped by
+     the container's overflow:hidden. */
+  .thumb-air-scene {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* ── Airflow rising out of the top vent ── */
+  .thumb-air-flow {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    height: 34px;
+  }
+
+  .thumb-air-stream {
+    background: linear-gradient(
+      to top,
+      color-mix(in srgb, var(--ark-color-accent) 55%, transparent),
+      transparent
+    );
+    border-radius: 3px;
+    width: 4px;
+  }
+
+  .thumb-air-stream--l {
+    height: 20px;
+    transform: rotate(-12deg);
+  }
+
+  .thumb-air-stream--c {
+    height: 32px;
+  }
+
+  .thumb-air-stream--r {
+    height: 20px;
+    transform: rotate(12deg);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .thumb-air-stream {
+      animation: thumb-air-rise 2.6s ease-in-out infinite;
+    }
+    .thumb-air-stream--c {
+      animation-delay: 0.3s;
+    }
+    .thumb-air-stream--r {
+      animation-delay: 0.6s;
+    }
+  }
+
+  @keyframes thumb-air-rise {
+    0%,
+    100% {
+      opacity: 0.45;
+      transform: translateY(2px) var(--thumb-air-tilt, none);
+    }
+    50% {
+      opacity: 1;
+      transform: translateY(-2px) var(--thumb-air-tilt, none);
+    }
+  }
+
+  .thumb-air-stream--l {
+    --thumb-air-tilt: rotate(-12deg);
+  }
+  .thumb-air-stream--r {
+    --thumb-air-tilt: rotate(12deg);
+  }
+
+  /* ── Purifier body ── */
+  .thumb-air-purifier {
+    align-items: center;
     background: var(--ark-color-surface);
     border: 1px solid var(--ark-color-border);
-    border-radius: 20px;
+    border-radius: 22px 22px 16px 16px;
     box-shadow: var(--ark-shadow-md);
     display: flex;
     flex-direction: column;
     gap: 12px;
-    padding: 16px;
-    width: 192px;
+    padding: 18px 0 16px;
+    width: 108px;
   }
 
-  .thumb-air-topbar {
+  /* Top outlet — concentric vent the air streams out of */
+  .thumb-air-vent {
     align-items: center;
+    border: 2px solid
+      color-mix(in srgb, var(--ark-color-accent) 45%, transparent);
+    border-radius: 50%;
     display: flex;
-    gap: 8px;
+    height: 44px;
+    justify-content: center;
+    position: relative;
+    width: 44px;
   }
 
-  .thumb-air-dot {
-    background: color-mix(in srgb, var(--ark-color-accent) 70%, transparent);
+  .thumb-air-vent span {
+    background: color-mix(in srgb, var(--ark-color-accent) 30%, transparent);
+    border-radius: 2px;
+    position: absolute;
+  }
+
+  .thumb-air-vent span:nth-child(1) {
+    height: 2px;
+    width: 22px;
+  }
+
+  .thumb-air-vent span:nth-child(2) {
+    height: 22px;
+    width: 2px;
+  }
+
+  .thumb-air-vent span:nth-child(3) {
+    background: var(--ark-color-accent);
     border-radius: 50%;
     height: 8px;
     width: 8px;
   }
 
-  .thumb-air-topbar-label {
-    background: var(--ark-color-neutral-200);
-    border-radius: 3px;
-    height: 6px;
-    width: 72px;
-  }
-
-  .thumb-air-gauge-wrap {
-    align-items: center;
-    background: var(--ark-color-neutral-50);
-    border: 1px solid var(--ark-color-border);
-    border-radius: 14px;
-    display: flex;
-    justify-content: center;
-    padding: 18px 0 14px;
-  }
-
-  .thumb-air-gauge {
-    align-items: center;
-    display: flex;
-    justify-content: center;
-    position: relative;
-  }
-
-  .thumb-air-gauge-ring {
-    border: 6px solid var(--ark-color-accent-soft);
-    border-radius: 50%;
-    border-top-color: var(--ark-color-accent);
-    border-right-color: var(--ark-color-accent);
-    height: 56px;
-    width: 56px;
-  }
-
-  .thumb-air-gauge-inner {
-    align-items: center;
+  /* Lower intake grille */
+  .thumb-air-grille {
     display: flex;
     flex-direction: column;
-    gap: 2px;
-    inset: 0;
-    justify-content: center;
-    position: absolute;
+    gap: 5px;
+    width: 66px;
   }
 
-  .thumb-air-gauge-value {
-    background: color-mix(in srgb, var(--ark-color-accent) 60%, transparent);
-    border-radius: 3px;
-    height: 10px;
-    width: 24px;
-  }
-
-  .thumb-air-gauge-unit {
+  .thumb-air-grille span {
     background: var(--ark-color-neutral-200);
     border-radius: 2px;
-    height: 6px;
-    width: 16px;
+    height: 3px;
   }
 
-  .thumb-air-devices {
-    display: flex;
-    gap: 6px;
+  .thumb-air-grille span:nth-child(1) {
+    width: 100%;
+  }
+  .thumb-air-grille span:nth-child(2) {
+    width: 86%;
+  }
+  .thumb-air-grille span:nth-child(3) {
+    width: 100%;
+  }
+  .thumb-air-grille span:nth-child(4) {
+    width: 72%;
   }
 
-  .thumb-air-device {
-    align-items: center;
-    background: var(--ark-color-neutral-50);
-    border: 1px solid var(--ark-color-border);
-    border-radius: 10px;
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    gap: 7px;
-    padding: 10px 6px 8px;
-  }
-
-  .thumb-air-device--active {
-    background: var(--ark-color-accent-soft);
-    border-color: color-mix(in srgb, var(--ark-color-accent) 40%, transparent);
-  }
-
-  .thumb-air-device-icon {
-    align-items: center;
-    border-radius: 50%;
-    display: flex;
-    height: 26px;
-    justify-content: center;
-    width: 26px;
+  /* Power / status indicator */
+  .thumb-air-status {
     background: var(--ark-color-accent);
-  }
-
-  .thumb-air-device-icon--dim {
-    background: var(--ark-color-neutral-200);
-  }
-
-  .thumb-air-device-fan {
-    border: 2px solid var(--ark-color-surface);
     border-radius: 50%;
-    height: 12px;
-    position: relative;
-    width: 12px;
-  }
-
-  .thumb-air-device-fan::before,
-  .thumb-air-device-fan::after {
-    background: var(--ark-color-surface);
-    border-radius: 2px;
-    content: "";
-    height: 5px;
-    left: 50%;
-    position: absolute;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: 2px;
-  }
-
-  .thumb-air-device-fan::after {
-    height: 2px;
-    width: 5px;
-  }
-
-  .thumb-air-device-bars {
-    display: flex;
-    gap: 2px;
-    align-items: flex-end;
-    height: 12px;
-  }
-
-  .thumb-air-device-bars > div {
-    background: var(--ark-color-surface);
-    border-radius: 1px;
-    width: 3px;
-  }
-
-  .thumb-air-device-bars > div:nth-child(1) { height: 5px; }
-  .thumb-air-device-bars > div:nth-child(2) { height: 9px; }
-  .thumb-air-device-bars > div:nth-child(3) { height: 12px; }
-
-  .thumb-air-device-drop {
-    background: var(--ark-color-surface);
-    border-radius: 50% 50% 50% 0;
-    height: 10px;
-    transform: rotate(45deg);
-    width: 10px;
-  }
-
-  .thumb-air-device-label {
-    background: var(--ark-color-neutral-200);
-    border-radius: 2px;
-    height: 5px;
-    width: 80%;
+    box-shadow: 0 0 0 4px
+      color-mix(in srgb, var(--ark-color-accent) 18%, transparent);
+    height: 6px;
+    width: 6px;
   }
 </style>
