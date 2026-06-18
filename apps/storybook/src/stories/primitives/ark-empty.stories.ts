@@ -10,7 +10,8 @@ interface EmptyArgs {
 }
 
 const meta = {
-  title: "Primitives/Empty",
+  component: "ark-empty",
+  title: "Primitives/Ark Empty",
   argTypes: {
     eyebrow: { control: "text" },
     heading: { control: "text" },
