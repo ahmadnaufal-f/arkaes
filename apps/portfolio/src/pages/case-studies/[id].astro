@@ -7,6 +7,7 @@ import "@arkaes/ui/components/ark-accordion";
 import VirtualHomeThumbnail from "../../components/case-studies-thumbnail/virtual-home/thumbnail.astro";
 import VirtualHomeTvThumbnail from "../../components/case-studies-thumbnail/virtual-home-tv/thumbnail.astro";
 import MilkPumpingThumbnail from "../../components/case-studies-thumbnail/milk-pumping-tracker/thumbnail.astro";
+import AirCareThumbnail from "../../components/case-studies-thumbnail/air-care/thumbnail.astro";
 
 // Eagerly import every case study SVG as a raw string so we can inline it and
 // let the page's loaded Google Fonts apply inside the diagram markup.
@@ -71,6 +72,11 @@ const accordionSections = allSections.filter((s) => s.heading !== "Overview");
         {
           visual === "milk-pumping" && (
             <MilkPumpingThumbnail transitionName={`cs-thumb-${study.id}`} />
+          )
+        }
+        {
+          visual === "air-care" && (
+            <AirCareThumbnail transitionName={`cs-thumb-${study.id}`} />
           )
         }
       </div>
