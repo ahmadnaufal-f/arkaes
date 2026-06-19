@@ -97,10 +97,14 @@ export class ArkCaseStudyCard extends LitElement {
 
     .summary {
       color: var(--ark-color-text-muted);
+      display: -webkit-box;
       font-family: var(--ark-font-sans);
       font-size: var(--ark-font-size-sm);
       line-height: var(--ark-line-height-relaxed);
       margin: var(--ark-space-3) 0 0;
+      overflow: hidden;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
     }
 
     .tags {

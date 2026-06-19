@@ -1,0 +1,17 @@
+{
+  "slug": "virtual-home-tv",
+  "title": "SmartThings Virtual Home for TV",
+  "projectName": "SmartThings Virtual Home for TV",
+  "shippedDate": "2025-03-31",
+  "body": "SmartThings Virtual Home for TV is a SmartThings experience for Samsung TV that lets users explore virtual devices directly from the TV interface. Instead of requiring users to own physical SmartThings devices, the app provides simulated devices so they can understand how the SmartThings experience works on a larger screen.\n\nI worked as the main contributor and code architect during the initial development of the project. Although I was not the project lead, I was responsible for one of the most important parts of the TV experience: focus navigation. On TV, users do not interact with the interface in the same way they do on mobile or desktop. The experience needs to feel natural when controlled using a remote, and every movement between UI elements needs to be predictable, smooth, and easy to understand.\n\nThe main challenge was making the focus navigation system work across different types of Samsung TVs, input methods, and page layouts. The system needed to support standard remote control navigation, rotating TV behavior, TVs with mouse input, and TVs with touch screen interaction. It also needed to handle focus differently depending on the page layout type, including structured pages, static scattered pages, and dynamic scattered pages. Because of that, the navigation logic could not depend only on simple assumptions about screen layout or input type.\n\nTo solve this, I helped design and implement a reusable focus navigation architecture using Lit, Redux, TypeScript, and Webpack. The system handled how focus moved between components, how UI elements responded to directional input, and how the experience stayed consistent across different TV environments and layout patterns. This made the interface easier to operate with a remote control while still allowing the app to support more flexible input patterns.\n\nThis project was meaningful because the feature I developed became a crucial foundation for the TV experience. Even though my involvement was focused on the initial development phase, the focus navigation system shaped how users interacted with the product and helped make the SmartThings simulation feel usable on Samsung TV. The detailed technical approach is explained further in the dedicated case study page.",
+  "featured": true,
+  "role": "Main Contributor and Code Architect",
+  "challenges": "Built a focus navigation system for remote control interaction across different TV types, input methods, and page layouts, including structured pages, static scattered pages, and dynamic scattered pages.",
+  "stack": [
+    "Lit",
+    "Webpack",
+    "Redux",
+    "TypeScript"
+  ],
+  "category": "professional-work"
+}

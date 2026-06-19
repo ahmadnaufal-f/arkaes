@@ -40,7 +40,12 @@ export const EXPERTISE: ExpertiseArea[] = [
       "React Query",
       "Zod",
     ],
-    relatedWork: ["Virtual Home", "SmartThings Air Care Service", "Treely", "Arkaes Design System"],
+    relatedWork: [
+      "SmartThings Virtual Home",
+      "SmartThings Air Care",
+      "Treely - Family Tree App",
+      "Arkaes Design System",
+    ],
   },
   {
     slug: "design-systems",
@@ -63,7 +68,11 @@ export const EXPERTISE: ExpertiseArea[] = [
       "Caching Strategies",
       "Bundle Analysis",
     ],
-    relatedWork: ["SmartThings Air Care Service", "Virtual Home", "Virtual Home TV"],
+    relatedWork: [
+      "SmartThings Air Care",
+      "SmartThings Virtual Home",
+      "SmartThings Virtual Home for TV",
+    ],
   },
   {
     slug: "cross-platform",
@@ -71,7 +80,11 @@ export const EXPERTISE: ExpertiseArea[] = [
     description:
       "I build product interfaces across web and mobile, focusing on consistent user experience, maintainable architecture, and practical engineering tradeoffs.",
     techStack: ["React Native", "Expo", "React", "Next.js", "TypeScript", "NativeWind"],
-    relatedWork: ["Treely", "Virtual Home TV", "Milk Tracker App"],
+    relatedWork: [
+      "Treely - Family Tree App",
+      "SmartThings Virtual Home for TV",
+      "Milk Pumping Tracker",
+    ],
   },
 ];
 

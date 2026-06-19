@@ -1,0 +1,20 @@
+{
+  "slug": "milk-tracker",
+  "title": "Milk Pumping Tracker",
+  "projectName": "Milk Pumping Tracker",
+  "shippedDate": "2026-01-31",
+  "body": "Milk Pumping Tracker is a personal product that helps mothers record and review their breast milk pumping data. The app focuses on the core logging flow, including pumping time, milk amount, and pumping duration, so users can track their sessions without going through too many steps.\n\nI built this project as the project owner, handling the product direction, frontend implementation, Firebase setup, and OpenAI API integration. The app also provides weekly AI summaries so users can understand their pumping patterns more easily instead of manually reviewing every entry.\n\nThis project became my starting point for exploring AI integration in a real frontend product. It may not be perfect, but I keep improving it as I learn more about building useful AI assisted experiences. For me, the value of this project is not only in the tracking feature itself, but also in learning how to connect user data, product context, and AI output into a feature that feels practical for real users.",
+  "featured": true,
+  "role": "Project Owner",
+  "challenges": "Designed an AI summary flow that turns pumping logs into useful weekly insights while keeping the core tracking experience simple, fast, and focused for busy mothers.",
+  "stack": [
+    "React",
+    "Vite",
+    "Firebase",
+    "OpenAI API",
+    "TypeScript"
+  ],
+  "category": "side-project",
+  "github-url": "https://github.com/ahmadnaufal-f/milk-tracker",
+  "screenshots": []
+}

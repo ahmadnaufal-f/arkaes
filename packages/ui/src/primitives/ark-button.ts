@@ -105,7 +105,6 @@ export class ArkButton extends LitElement {
 
     .ghost {
       background: transparent;
-      border-bottom: 1px solid var(--ark-color-border);
       color: var(--ark-color-text-muted);
       font-family: var(--ark-font-serif);
       font-size: var(--ark-font-size-md);
@@ -115,7 +114,6 @@ export class ArkButton extends LitElement {
     }
 
     .ghost:not(:disabled):not([aria-disabled="true"]):hover {
-      border-color: var(--ark-color-accent);
       color: var(--ark-color-accent-strong);
     }
 

@@ -1,45 +1,126 @@
 ---
-import { getCollection, render } from "astro:content";
+import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { categoryLabel } from "../../data/expertise";
+import CaseStudyVisual from "../../components/CaseStudyVisual.astro";
+// Share the case study page's visual language so the project detail feels
+// like the same family of pages.
+import "../case-studies/_case-study.css";
 import "./_projects.css";
 
 export async function getStaticPaths() {
   const projects = await getCollection("projects");
+  const caseStudyIds = new Set(
+    (await getCollection("caseStudies")).map((study) => study.id),
+  );
   return projects.map((project) => ({
     params: { slug: project.id },
-    props: { project },
+    props: {
+      project,
+      // A case study shares the project's slug when one exists for it.
+      relatedCaseStudyId: caseStudyIds.has(project.id) ? project.id : null,
+    },
   }));
 }
 
-const { project } = Astro.props;
-const { title, summary, role, impact, stack, category } = project.data;
-const { Content } = await render(project);
+const { project, relatedCaseStudyId } = Astro.props;
+const { title, body, role, challenges, stack, category, screenshots } =
+  project.data;
+const githubUrl = project.data["github-url"];
+
+// Body is plain prose with blank-line-separated paragraphs.
+const paragraphs = body.split("\n\n").map((p) => p.trim()).filter(Boolean);
 ---
 
-<BaseLayout title={`${title} | Arkaes`} description={summary}>
-  <article class="page-section narrow project-detail">
-    <ark-badge>{categoryLabel(category)}</ark-badge>
-    <h1>{title}</h1>
-    <p class="lead">{summary}</p>
+<BaseLayout title={`${title} | Arkaes`} description={challenges}>
+  <article class="cs-page">
+    <span class="cs-hero-sentinel" aria-hidden="true"></span>
+    <header class="cs-hero">
+      <div class="cs-hero-visual">
+        <CaseStudyVisual visual={project.id} transitionName={`proj-thumb-${project.id}`} />
+      </div>
 
-    <dl class="project-meta">
-      <div>
-        <dt>Role</dt>
-        <dd>{role}</dd>
+      <div class="cs-hero-meta">
+        <div class="cs-hero-eyebrow">{categoryLabel(category)}</div>
+        <div class="cs-hero-tags">
+          {stack.map((tech) => <ark-badge variant="pill">{tech}</ark-badge>)}
+        </div>
+        <h1 class="cs-hero-title">{title}</h1>
       </div>
-      <div>
-        <dt>Main signal</dt>
-        <dd>{impact}</dd>
-      </div>
-      <div>
-        <dt>Stack</dt>
-        <dd>{stack.join(", ")}</dd>
-      </div>
-    </dl>
+    </header>
 
-    <section>
-      <Content />
+    <section class="cs-overview-section">
+      <div class="cs-overview-inner">
+        <div class="proj-overview-meta">
+          <div class="cs-overview-label">Role</div>
+          <p class="proj-overview-role">{role}</p>
+        </div>
+        <div class="cs-overview-body">
+          <p>{challenges}</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="cs-accordion-section">
+      <div class="cs-accordion-inner proj-body">
+        {paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+
+        {
+          screenshots.length > 0 && (
+            <div class="proj-gallery" role="group" aria-label="Screenshots">
+              {screenshots.map((src) => (
+                <img src={src} alt={`${title} screenshot`} loading="lazy" />
+              ))}
+            </div>
+          )
+        }
+
+        <div class="project-footer-nav">
+          {
+            githubUrl && (
+              <ark-button href={githubUrl} target="_blank" variant="ghost">
+                View on GitHub &rarr;
+              </ark-button>
+            )
+          }
+          {
+            relatedCaseStudyId && (
+              <ark-button href={`/case-studies/${relatedCaseStudyId}`} variant="ghost">
+                View related case study &rarr;
+              </ark-button>
+            )
+          }
+          <ark-button class="project-footer-back" href="/projects" variant="ghost">
+            &larr; Back to projects
+          </ark-button>
+        </div>
+      </div>
     </section>
   </article>
 </BaseLayout>
+
+<script>
+  // Mirror the case study hero: pin it to the top and collapse its padding
+  // once a sentinel above it scrolls out of view. See _case-study.css.
+  function initHeroStick() {
+    const hero = document.querySelector<HTMLElement>(".cs-hero");
+    const sentinel = document.querySelector<HTMLElement>(".cs-hero-sentinel");
+    if (!hero || !sentinel) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        hero.classList.toggle("is-stuck", !entry.isIntersecting);
+      },
+      { threshold: 0 },
+    );
+    observer.observe(sentinel);
+
+    document.addEventListener(
+      "astro:before-swap",
+      () => observer.disconnect(),
+      { once: true },
+    );
+  }
+
+  document.addEventListener("astro:page-load", initHeroStick);
+</script>
