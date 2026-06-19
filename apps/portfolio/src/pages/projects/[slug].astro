@@ -6,13 +6,20 @@ import "./_projects.css";
 
 export async function getStaticPaths() {
   const projects = await getCollection("projects");
+  const caseStudyIds = new Set(
+    (await getCollection("caseStudies")).map((study) => study.id),
+  );
   return projects.map((project) => ({
     params: { slug: project.id },
-    props: { project },
+    props: {
+      project,
+      // A case study shares the project's slug when one exists for it.
+      relatedCaseStudyId: caseStudyIds.has(project.id) ? project.id : null,
+    },
   }));
 }
 
-const { project } = Astro.props;
+const { project, relatedCaseStudyId } = Astro.props;
 const { title, body, role, challenges, stack, category, screenshots } =
   project.data;
 const githubUrl = project.data["github-url"];
@@ -62,5 +69,16 @@ const paragraphs = body.split("\n\n").map((p) => p.trim()).filter(Boolean);
         </section>
       )
     }
+
+    <div class="project-footer-nav">
+      {
+        relatedCaseStudyId && (
+          <ark-button href={`/case-studies/${relatedCaseStudyId}`} variant="secondary">
+            View related case study
+          </ark-button>
+        )
+      }
+      <ark-button href="/projects" variant="ghost">View all projects</ark-button>
+    </div>
   </article>
 </BaseLayout>

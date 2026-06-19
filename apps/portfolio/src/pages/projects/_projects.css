@@ -106,6 +106,14 @@
   width: 100%;
 }
 
+.project-footer-nav {
+  border-top: 1px solid var(--ark-color-border);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ark-space-3);
+  padding-top: var(--ark-space-6);
+}
+
 @media (max-width: 900px) {
   .page-section {
     padding: 140px 24px 86px;
