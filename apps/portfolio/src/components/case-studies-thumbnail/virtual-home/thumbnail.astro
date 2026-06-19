@@ -5,21 +5,17 @@ interface Props {
 }
 const { transitionName, asSlot } = Astro.props;
 
-// Tells the case study's headline at a glance: two product variants — a mobile
-// app (phone) and the Family Hub fridge screen (wide display) — both wired down
-// into one shared monorepo foundation (±87% shared code).
+// Two product variants — a mobile app (phone) and the Family Hub screen (wide
+// display) — resting on one shared monorepo foundation. Kept deliberately
+// minimal: a couple of clean device shapes, two links, and a base.
 type Tile = { x: number; y: number; on?: boolean; alt?: boolean };
-const gridTiles: Tile[] = [
-  { x: 132, y: 48 },
-  { x: 156, y: 48, on: true },
-  { x: 180, y: 48 },
-  { x: 132, y: 66 },
-  { x: 156, y: 66 },
-  { x: 180, y: 66, alt: true },
+const tiles: Tile[] = [
+  { x: 130, y: 42 },
+  { x: 164, y: 42, on: true },
+  { x: 130, y: 64, alt: true },
+  { x: 164, y: 64 },
 ];
-
-type Module = { x: number; alt?: boolean };
-const modules: Module[] = [{ x: 46 }, { x: 98, alt: true }, { x: 150 }];
+const pills = [{ x: 52 }, { x: 100, alt: true }, { x: 148 }];
 ---
 
 <div
@@ -30,60 +26,51 @@ const modules: Module[] = [{ x: 46 }, { x: 98, alt: true }, { x: 150 }];
   <div class="thumb-vhome-card">
     <svg
       class="thumb-vhome-svg"
-      viewBox="0 0 240 188"
+      viewBox="0 0 240 180"
       role="img"
-      aria-label="Two product variants — a mobile app and a Family Hub screen — built on one shared monorepo foundation"
+      aria-label="A mobile app and a Family Hub screen resting on one shared foundation"
     >
-      <!-- Connectors: each variant wired down to the shared foundation -->
+      <!-- Links from each variant down to the shared foundation -->
       <g class="vh-links" fill="none">
-        <path d="M69 96 C69 110 96 116 120 120" />
-        <path d="M160 90 C160 108 142 114 120 120" />
-        <path class="vh-link--static" d="M120 124 V134" />
+        <path d="M74 96 C74 108 100 116 118 120" />
+        <path d="M162 90 C162 106 138 114 118 120" />
       </g>
-      <circle class="vh-node-halo" cx="120" cy="120" r="9" />
-      <circle class="vh-node" cx="120" cy="120" r="5" />
-      <circle class="vh-dot" cx="69" cy="96" r="2.5" />
-      <circle class="vh-dot" cx="160" cy="90" r="2.5" />
+      <circle class="vh-node" cx="118" cy="121" r="4" />
 
       <!-- Shared monorepo foundation -->
-      <rect class="vh-platform-base" x="34" y="140" width="176" height="40" rx="12" />
-      <rect class="vh-platform" x="32" y="134" width="176" height="40" rx="12" />
-      <rect class="vh-heading" x="46" y="142" width="28" height="3" rx="1.5" />
+      <rect class="vh-base" x="42" y="132" width="156" height="32" rx="10" />
+      <rect class="vh-slab" x="40" y="126" width="156" height="32" rx="10" />
       {
-        modules.map((m) => (
-          <g class={m.alt ? "vh-module vh-module--alt" : "vh-module"}>
-            <rect class="vh-module-bg" x={m.x} y="152" width="44" height="15" rx="4" />
-            <circle class="vh-module-dot" cx={m.x + 8} cy="159.5" r="2.5" />
-            <rect class="vh-module-line" x={m.x + 16} y="158" width="20" height="3" rx="1.5" />
-          </g>
+        pills.map((p) => (
+          <rect
+            class={p.alt ? "vh-pill vh-pill--alt" : "vh-pill"}
+            x={p.x}
+            y="138"
+            width="40"
+            height="8"
+            rx="4"
+          />
         ))
       }
 
       <!-- Mobile variant -->
-      <rect class="vh-device" x="46" y="16" width="46" height="80" rx="9" />
-      <rect class="vh-screen" x="50" y="22" width="38" height="68" rx="5" />
-      <polygon class="vh-house" points="58,44 69,34 80,44" />
-      <rect class="vh-house" x="61" y="44" width="16" height="15" rx="1.5" />
-      <rect class="vh-window" x="66" y="48" width="6" height="6" rx="1" />
-      <rect class="vh-toggle" x="54" y="68" width="30" height="11" rx="5.5" />
-      <circle class="vh-knob" cx="78" cy="73.5" r="4" />
-      <path class="vh-line" d="M54 85 H72" />
+      <rect class="vh-device" x="52" y="18" width="44" height="78" rx="9" />
+      <rect class="vh-screen" x="56" y="24" width="36" height="66" rx="5" />
+      <polygon class="vh-house" points="63,56 74,44 85,56" />
+      <rect class="vh-house" x="66" y="56" width="16" height="18" rx="2" />
+      <rect class="vh-window" x="71" y="61" width="6" height="7" rx="1" />
 
-      <!-- Family Hub fridge-screen variant -->
-      <rect class="vh-device" x="112" y="26" width="96" height="64" rx="8" />
-      <rect class="vh-handle" x="117" y="42" width="3" height="32" rx="1.5" />
-      <rect class="vh-screen" x="126" y="32" width="76" height="52" rx="5" />
-      <path class="vh-line" d="M132 39 H160" />
-      <circle class="vh-dot vh-dot--soft" cx="190" cy="39" r="1.6" />
-      <circle class="vh-dot vh-dot--soft" cx="196" cy="39" r="1.6" />
+      <!-- Family Hub screen variant -->
+      <rect class="vh-device" x="116" y="30" width="92" height="60" rx="8" />
+      <rect class="vh-screen" x="124" y="36" width="76" height="48" rx="5" />
       {
-        gridTiles.map((t) => (
+        tiles.map((t) => (
           <rect
             class={`vh-tile${t.on ? " vh-tile--on" : ""}${t.alt ? " vh-tile--alt" : ""}`}
             x={t.x}
             y={t.y}
-            width="20"
-            height="13"
+            width="30"
+            height="18"
             rx="3"
           />
         ))
@@ -119,73 +106,35 @@ const modules: Module[] = [{ x: 46 }, { x: 98, alt: true }, { x: 150 }];
     width: 100%;
   }
 
-  /* ── Connectors / shared-code flow ── */
+  /* ── Links ── */
   .vh-links path {
-    stroke: color-mix(in srgb, var(--ark-color-accent) 50%, transparent);
+    stroke: color-mix(in srgb, var(--ark-color-accent) 45%, transparent);
+    stroke-dasharray: 4 6;
     stroke-linecap: round;
     stroke-width: 1.6;
-  }
-
-  .vh-links path:not(.vh-link--static) {
-    stroke-dasharray: 4 6;
   }
 
   .vh-node {
     fill: var(--ark-color-accent);
   }
 
-  .vh-node-halo {
-    fill: color-mix(in srgb, var(--ark-color-accent) 18%, transparent);
-  }
-
-  .vh-dot {
-    fill: var(--ark-color-accent);
-  }
-
-  .vh-dot--soft {
-    fill: color-mix(in srgb, var(--ark-color-accent) 45%, transparent);
-  }
-
   /* ── Shared foundation ── */
-  .vh-platform-base {
-    fill: color-mix(in srgb, var(--ark-color-accent) 22%, transparent);
+  .vh-base {
+    fill: color-mix(in srgb, var(--ark-color-accent) 20%, transparent);
   }
 
-  .vh-platform {
+  .vh-slab {
     fill: var(--ark-color-surface);
     stroke: color-mix(in srgb, var(--ark-color-accent) 42%, transparent);
     stroke-width: 1.5;
   }
 
-  .vh-heading {
-    fill: var(--ark-color-accent);
-  }
-
-  .vh-module-bg {
+  .vh-pill {
     fill: var(--ark-color-accent-soft);
-    stroke: color-mix(in srgb, var(--ark-color-accent) 40%, transparent);
-    stroke-width: 1;
   }
 
-  .vh-module-dot {
-    fill: var(--ark-color-accent);
-  }
-
-  .vh-module-line {
-    fill: color-mix(in srgb, var(--ark-color-accent) 35%, transparent);
-  }
-
-  .vh-module--alt .vh-module-bg {
+  .vh-pill--alt {
     fill: var(--ark-color-secondary-soft);
-    stroke: color-mix(in srgb, var(--ark-color-secondary) 42%, transparent);
-  }
-
-  .vh-module--alt .vh-module-dot {
-    fill: var(--ark-color-secondary);
-  }
-
-  .vh-module--alt .vh-module-line {
-    fill: color-mix(in srgb, var(--ark-color-secondary) 38%, transparent);
   }
 
   /* ── Device bodies ── */
@@ -199,10 +148,6 @@ const modules: Module[] = [{ x: 46 }, { x: 98, alt: true }, { x: 150 }];
     fill: var(--ark-color-neutral-50);
   }
 
-  .vh-handle {
-    fill: color-mix(in srgb, var(--ark-color-accent) 48%, transparent);
-  }
-
   /* ── Mobile content ── */
   .vh-house {
     fill: var(--ark-color-accent);
@@ -210,23 +155,6 @@ const modules: Module[] = [{ x: 46 }, { x: 98, alt: true }, { x: 150 }];
 
   .vh-window {
     fill: var(--ark-color-secondary);
-  }
-
-  .vh-toggle {
-    fill: var(--ark-color-accent-soft);
-    stroke: color-mix(in srgb, var(--ark-color-accent) 45%, transparent);
-    stroke-width: 1;
-  }
-
-  .vh-knob {
-    fill: var(--ark-color-accent);
-  }
-
-  .vh-line {
-    fill: none;
-    stroke: var(--ark-color-neutral-300);
-    stroke-linecap: round;
-    stroke-width: 2;
   }
 
   /* ── Family Hub grid ── */
@@ -238,42 +166,24 @@ const modules: Module[] = [{ x: 46 }, { x: 98, alt: true }, { x: 150 }];
 
   .vh-tile--on {
     fill: var(--ark-color-accent-soft);
-    stroke: color-mix(in srgb, var(--ark-color-accent) 55%, transparent);
+    stroke: color-mix(in srgb, var(--ark-color-accent) 52%, transparent);
   }
 
   .vh-tile--alt {
     fill: var(--ark-color-secondary-soft);
-    stroke: color-mix(in srgb, var(--ark-color-secondary) 48%, transparent);
+    stroke: color-mix(in srgb, var(--ark-color-secondary) 46%, transparent);
   }
 
-  /* ── Motion: shared code flowing down the connectors ── */
+  /* ── Motion: subtle shared-code flow down the links ── */
   @media (prefers-reduced-motion: no-preference) {
-    .vh-links path:not(.vh-link--static) {
+    .vh-links path {
       animation: vh-flow 1.8s linear infinite;
-    }
-
-    .vh-node-halo {
-      animation: vh-pulse 2.6s ease-in-out infinite;
-      transform-box: fill-box;
-      transform-origin: center;
     }
   }
 
   @keyframes vh-flow {
     to {
       stroke-dashoffset: -20;
-    }
-  }
-
-  @keyframes vh-pulse {
-    0%,
-    100% {
-      opacity: 0.5;
-      transform: scale(0.85);
-    }
-    50% {
-      opacity: 1;
-      transform: scale(1.1);
     }
   }
 </style>
