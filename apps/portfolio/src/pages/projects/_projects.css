@@ -77,22 +77,6 @@
   margin-top: var(--ark-space-2);
 }
 
-.project-link {
-  align-items: center;
-  color: var(--ark-color-accent-strong);
-  display: inline-flex;
-  font-family: var(--ark-font-mono);
-  font-size: var(--ark-font-size-sm);
-  gap: var(--ark-space-2);
-  letter-spacing: 0.04em;
-  text-decoration: none;
-  width: fit-content;
-}
-
-.project-link:hover {
-  text-decoration: underline;
-}
-
 .project-gallery {
   display: grid;
   gap: var(--ark-space-4);

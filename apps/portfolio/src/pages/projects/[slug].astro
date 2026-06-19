@@ -53,14 +53,6 @@ const paragraphs = body.split("\n\n").map((p) => p.trim()).filter(Boolean);
     </section>
 
     {
-      githubUrl && (
-        <a class="project-link" href={githubUrl} target="_blank" rel="noopener noreferrer">
-          View on GitHub &nearr;
-        </a>
-      )
-    }
-
-    {
       screenshots.length > 0 && (
         <section class="project-gallery" aria-label="Screenshots">
           {screenshots.map((src) => (
@@ -72,13 +64,20 @@ const paragraphs = body.split("\n\n").map((p) => p.trim()).filter(Boolean);
 
     <div class="project-footer-nav">
       {
-        relatedCaseStudyId && (
-          <a class="project-link" href={`/case-studies/${relatedCaseStudyId}`}>
-            View related case study &nearr;
-          </a>
+        githubUrl && (
+          <ark-button href={githubUrl} target="_blank" variant="ghost">
+            View on GitHub &nearr;
+          </ark-button>
         )
       }
-      <a class="project-link" href="/projects">View all projects &swarr;</a>
+      {
+        relatedCaseStudyId && (
+          <ark-button href={`/case-studies/${relatedCaseStudyId}`} variant="ghost">
+            View related case study &nearr;
+          </ark-button>
+        )
+      }
+      <ark-button href="/projects" variant="ghost">View all projects &swarr;</ark-button>
     </div>
   </article>
 </BaseLayout>
