@@ -56,9 +56,9 @@ const pills = [{ x: 52 }, { x: 100, alt: true }, { x: 148 }];
       <!-- Mobile variant -->
       <rect class="vh-device" x="52" y="18" width="44" height="78" rx="9" />
       <rect class="vh-screen" x="56" y="24" width="36" height="66" rx="5" />
-      <polygon class="vh-house" points="63,56 74,44 85,56" />
-      <rect class="vh-house" x="66" y="56" width="16" height="18" rx="2" />
-      <rect class="vh-window" x="71" y="61" width="6" height="7" rx="1" />
+      <polygon class="vh-house" points="62,55 74,47 86,55" />
+      <rect class="vh-house" x="66" y="55" width="16" height="17" rx="2" />
+      <rect class="vh-window" x="71" y="60" width="6" height="7" rx="1" />
 
       <!-- Family Hub screen variant -->
       <rect class="vh-device" x="116" y="30" width="92" height="60" rx="8" />
@@ -150,11 +150,11 @@ const pills = [{ x: 52 }, { x: 100, alt: true }, { x: 148 }];
 
   /* ── Mobile content ── */
   .vh-house {
-    fill: var(--ark-color-accent);
+    fill: var(--ark-color-accent-soft);
   }
 
   .vh-window {
-    fill: var(--ark-color-secondary);
+    fill: color-mix(in srgb, var(--ark-color-accent) 38%, transparent);
   }
 
   /* ── Family Hub grid ── */
