@@ -1,0 +1,31 @@
+.blogs-section {
+  align-items: center;
+  display: flex;
+  min-height: 100vh;
+  justify-content: center;
+  padding-inline: var(--site-content-padding);
+}
+
+.blogs-content {
+  max-width: 680px;
+  text-align: center;
+}
+
+.blogs-content h1 {
+  font-size: 4rem;
+  letter-spacing: 0;
+  line-height: 1;
+  margin-block: 24px;
+}
+
+.lead {
+  color: var(--ark-color-text-muted);
+  font-size: var(--ark-font-size-xl);
+  line-height: var(--ark-line-height-relaxed);
+}
+
+@media (max-width: 520px) {
+  .blogs-content h1 {
+    font-size: 3rem;
+  }
+}
