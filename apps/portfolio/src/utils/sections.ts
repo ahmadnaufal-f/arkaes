@@ -1,9 +1,9 @@
-export interface CaseStudySection {
+export interface Section {
   heading: string;
   content: string;
 }
 
-export function parseSections(body: string): CaseStudySection[] {
+export function parseSections(body: string): Section[] {
   // Normalize line endings to LF for consistent splitting
   const text = "\n" + body.replace(/\r\n/g, "\n").trim();
   const rawSections = text.split(/\n## /);
@@ -26,6 +26,17 @@ function escapeHtml(str: string): string {
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
+}
+
+function renderInline(text: string): string {
+  return text
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*(.+?)\*/g, "<em>$1</em>")
+    .replace(
+      /\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g,
+      (_, t, href) =>
+        `<a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(t)}</a>`,
+    );
 }
 
 export function renderSectionHtml(
@@ -113,22 +124,15 @@ export function renderSectionHtml(
         .map((l) => {
           const t = l.trim();
           return t.startsWith("•")
-            ? `<li>${t.substring(1).trim()}</li>`
-            : `<p>${t}</p>`;
+            ? `<li>${renderInline(t.substring(1).trim())}</li>`
+            : `<p>${renderInline(t)}</p>`;
         });
       parts.push(`<ul class="cs-list">${items.join("")}</ul>`);
       continue;
     }
 
-    // Regular paragraph — supports inline [text](url) links
-    const rendered = trimmed
-      .replace(/\n/g, " ")
-      .replace(
-        /\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g,
-        (_, text, href) =>
-          `<a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(text)}</a>`,
-      );
-    parts.push(`<p>${rendered}</p>`);
+    // Regular paragraph — supports inline bold, italic, and [text](url) links
+    parts.push(`<p>${renderInline(trimmed.replace(/\n/g, " "))}</p>`);
   }
 
   return parts.join("");

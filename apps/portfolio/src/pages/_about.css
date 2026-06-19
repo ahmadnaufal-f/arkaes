@@ -42,7 +42,7 @@
   margin-bottom: 0;
 }
 
-.about-body h3 {
+.about-body .cs-subheading {
   color: var(--ark-color-text);
   font-family: var(--ark-font-sans);
   font-size: var(--ark-text-md);
@@ -51,7 +51,7 @@
   margin: 0 0 var(--ark-space-2);
 }
 
-.about-body h3:not(:first-child) {
+.about-body .cs-subheading:not(:first-child) {
   margin-top: var(--ark-space-8);
 }
 
