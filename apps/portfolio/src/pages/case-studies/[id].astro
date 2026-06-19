@@ -54,6 +54,14 @@ const accordionSections = allSections.filter((s) => s.heading !== "Overview");
 <BaseLayout title={`${title} — Arkaes`} description={shortDesc}>
   <article class="cs-page">
     <span class="cs-hero-sentinel" aria-hidden="true"></span>
+
+    {/* Compact, pinned title bar — only ever shown on mobile touch screens,
+        where it cross-fades in as the large hero title scrolls away (One UI
+        extendable app-bar pattern). Decorative duplicate of the <h1>. */}
+    <div class="cs-titlebar" aria-hidden="true">
+      <span class="cs-titlebar-text">{title}</span>
+    </div>
+
     <header class="cs-hero">
       <div class="cs-hero-visual">
         <CaseStudyVisual visual={visual} transitionName={`cs-thumb-${study.id}`} />
@@ -112,14 +120,13 @@ const accordionSections = allSections.filter((s) => s.heading !== "Overview");
 </BaseLayout>
 
 <script>
+  type Teardown = () => void;
+
+  // ── Desktop / pointer: fine ────────────────────────────────────────────
   // Toggle a `.is-stuck` class on the hero once it pins to the top, so it can
   // collapse its padding. A zero-cost IntersectionObserver watches a sentinel
   // sitting at the hero's top edge instead of listening to every scroll frame.
-  function initHeroStick() {
-    const hero = document.querySelector<HTMLElement>(".cs-hero");
-    const sentinel = document.querySelector<HTMLElement>(".cs-hero-sentinel");
-    if (!hero || !sentinel) return;
-
+  function initStuckHero(hero: HTMLElement, sentinel: HTMLElement): Teardown {
     // The spacer sits at the very top of the page and is as tall as the stick
     // offset, so it's fully visible at rest (not stuck) and only scrolls past
     // the viewport top once the hero is pinned (stuck).
@@ -130,14 +137,145 @@ const accordionSections = allSections.filter((s) => s.heading !== "Overview");
       { threshold: 0 },
     );
     observer.observe(sentinel);
+    return () => {
+      observer.disconnect();
+      hero.classList.remove("is-stuck");
+    };
+  }
+
+  // ── Mobile + touch: One UI extendable title bar ────────────────────────
+  // Replicates Samsung One UI's large app-bar title. The hero scrolls away
+  // normally; its progress (0 → 1) is fed to CSS via `--cs-collapse` so the
+  // big centered title fades out while the pinned compact bar fades in. At the
+  // very top, dragging down stretches the header (rubber band) through
+  // `--cs-extend`, which springs back on release.
+  function initOneUiHero(hero: HTMLElement): Teardown {
+    hero.classList.remove("is-stuck");
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    const MAX_EXTEND = 96; // px the header can be pulled open
+    // Scroll span over which the big title fully collapses — the hero's own
+    // height minus the docked toolbar, so it fades out right as it leaves.
+    let distance = Math.max(120, hero.offsetHeight - 60);
+    let extend = 0;
+    let ticking = false;
+    let springTimer = 0;
+
+    const applyCollapse = () => {
+      ticking = false;
+      const progress = Math.min(1, Math.max(0, window.scrollY / distance));
+      hero.style.setProperty("--cs-collapse", progress.toFixed(4));
+    };
+    const onScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(applyCollapse);
+      }
+    };
+    const onResize = () => {
+      distance = Math.max(120, hero.offsetHeight - 60);
+      applyCollapse();
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onResize, { passive: true });
+    applyCollapse();
+
+    // Rubber-band pull-to-extend while resting at the top of the page.
+    let startY = 0;
+    let pulling = false;
+    const setExtend = (value: number) => {
+      extend = value;
+      hero.style.setProperty("--cs-extend", value.toFixed(1));
+    };
+    const springBack = () => {
+      if (!reduceMotion) {
+        hero.classList.add("cs-hero--springing");
+        clearTimeout(springTimer);
+        springTimer = window.setTimeout(
+          () => hero.classList.remove("cs-hero--springing"),
+          520,
+        );
+      }
+      setExtend(0);
+    };
+    const onTouchStart = (event: TouchEvent) => {
+      if (window.scrollY > 0) {
+        pulling = false;
+        return;
+      }
+      startY = event.touches[0].clientY;
+      pulling = true;
+      clearTimeout(springTimer);
+      hero.classList.remove("cs-hero--springing");
+    };
+    const onTouchMove = (event: TouchEvent) => {
+      if (!pulling) return;
+      const dy = event.touches[0].clientY - startY;
+      if (dy <= 0 || window.scrollY > 0) {
+        if (extend) springBack();
+        pulling = false;
+        return;
+      }
+      // Stop native overscroll so our own stretch shows instead.
+      event.preventDefault();
+      // Diminishing returns the further you pull.
+      setExtend(MAX_EXTEND * (1 - Math.exp(-dy / 220)));
+    };
+    const onTouchEnd = () => {
+      if (pulling && extend > 0) springBack();
+      pulling = false;
+    };
+
+    if (!reduceMotion) {
+      window.addEventListener("touchstart", onTouchStart, { passive: true });
+      window.addEventListener("touchmove", onTouchMove, { passive: false });
+      window.addEventListener("touchend", onTouchEnd, { passive: true });
+      window.addEventListener("touchcancel", onTouchEnd, { passive: true });
+    }
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchmove", onTouchMove);
+      window.removeEventListener("touchend", onTouchEnd);
+      window.removeEventListener("touchcancel", onTouchEnd);
+      clearTimeout(springTimer);
+      hero.classList.remove("cs-hero--springing");
+      hero.style.removeProperty("--cs-collapse");
+      hero.style.removeProperty("--cs-extend");
+    };
+  }
+
+  function initHero() {
+    const hero = document.querySelector<HTMLElement>(".cs-hero");
+    const sentinel = document.querySelector<HTMLElement>(".cs-hero-sentinel");
+    if (!hero || !sentinel) return;
+
+    // Only touch-capable phone-sized screens get the One UI treatment.
+    const mql = window.matchMedia("(pointer: coarse) and (max-width: 860px)");
+    let teardown: Teardown = () => {};
+    const setup = () => {
+      teardown();
+      teardown = mql.matches
+        ? initOneUiHero(hero)
+        : initStuckHero(hero, sentinel);
+    };
+    setup();
+    mql.addEventListener("change", setup);
 
     // Tear down before a View Transition swaps the page out.
     document.addEventListener(
       "astro:before-swap",
-      () => observer.disconnect(),
+      () => {
+        teardown();
+        mql.removeEventListener("change", setup);
+      },
       { once: true },
     );
   }
 
-  document.addEventListener("astro:page-load", initHeroStick);
+  document.addEventListener("astro:page-load", initHero);
 </script>

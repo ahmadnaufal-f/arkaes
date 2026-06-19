@@ -298,6 +298,11 @@
   }
 }
 
+/* The compact pinned title bar only exists for the One UI mobile experience. */
+.cs-titlebar {
+  display: none;
+}
+
 @media (max-width: 520px) {
   .cs-hero-meta {
     padding: 32px 20px;
@@ -313,5 +318,102 @@
 
   .cs-back {
     padding: 40px 20px 0;
+  }
+}
+
+/* ── One UI extendable title bar (mobile + touch only) ─────────
+   Replicates Samsung One UI's large app-bar title. On phone-sized,
+   touch-capable screens the hero becomes a tall header with a big,
+   centered title that scrolls away and fades, while a compact pinned
+   bar cross-fades in to take its place. Dragging down at the very top
+   stretches the header (rubber band) and springs back on release.
+
+   Two custom properties, set by the page script, drive everything:
+     --cs-collapse  0 → 1   scroll progress (expanded → docked)
+     --cs-extend    px       how far the header is pulled open
+   With JS disabled both default to their resting values, so the header
+   simply renders in its expanded state. */
+@media (pointer: coarse) and (max-width: 860px) {
+  .cs-hero {
+    --cs-collapse: 0;
+    --cs-extend: 0;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    min-height: calc(300px + var(--cs-extend) * 1px);
+    padding-block: 0;
+    padding-inline: 24px;
+    position: static;
+    text-align: center;
+    /* Scroll-linked: updates must be instant. The spring-back enables a
+       transition only for the duration of the rubber-band release. */
+    transition: none;
+  }
+
+  /* Re-enabled briefly by JS so the pulled-open header eases back. */
+  .cs-hero--springing,
+  .cs-hero--springing .cs-hero-meta {
+    transition:
+      min-height var(--ark-duration-slow) cubic-bezier(0.2, 0.9, 0.2, 1),
+      transform var(--ark-duration-slow) cubic-bezier(0.2, 0.9, 0.2, 1);
+  }
+
+  /* The big title: centered, fades and lifts away as the page scrolls,
+     and scales up slightly while the header is pulled open. */
+  .cs-hero-meta {
+    align-items: center;
+    max-width: none;
+    opacity: calc(1 - var(--cs-collapse) * 1.25);
+    padding: 0;
+    transform: translateY(calc(var(--cs-collapse) * -16px))
+      scale(calc(1 + var(--cs-extend) * 0.0009 - var(--cs-collapse) * 0.06));
+    transform-origin: center bottom;
+  }
+
+  .cs-hero-tags {
+    justify-content: center;
+  }
+
+  .cs-hero-title {
+    font-size: clamp(2rem, 8vw, 2.6rem);
+  }
+
+  /* Compact toolbar title pinned just under the site nav. It only reveals
+     once the big title has mostly scrolled off (collapse ≳ 0.55). */
+  .cs-titlebar {
+    align-items: center;
+    backdrop-filter: blur(8px);
+    background: color-mix(in srgb, var(--ark-color-background) 92%, transparent);
+    box-shadow: var(--ark-shadow-sm);
+    display: flex;
+    height: 52px;
+    left: 0;
+    opacity: calc((var(--cs-collapse) - 0.55) * 2.6);
+    padding-inline: 24px;
+    pointer-events: none;
+    position: fixed;
+    right: 0;
+    top: var(--cs-hero-stick-top);
+    z-index: 9;
+  }
+
+  .cs-titlebar-text {
+    color: var(--ark-color-text);
+    font-family: var(--ark-font-display);
+    font-size: 1.1rem;
+    font-weight: var(--ark-weight-medium);
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+@media (pointer: coarse) and (max-width: 860px) and (prefers-reduced-motion: reduce) {
+  /* No rubber band or eased motion when the user prefers reduced motion;
+     the collapse still tracks scroll since it is fully user-driven. */
+  .cs-hero,
+  .cs-hero-meta {
+    transition: none;
   }
 }
