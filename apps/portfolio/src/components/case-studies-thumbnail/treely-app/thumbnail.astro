@@ -1,0 +1,155 @@
+---
+interface Props {
+  transitionName: string;
+  asSlot?: string;
+}
+const { transitionName, asSlot } = Astro.props;
+
+// A small family tree: a "lead" couple at the root branching down to three
+// children. Each node is a soft avatar (head + shoulders) so the diagram reads
+// as people, not just dots — matching Treely's calm, approachable framing.
+type Node = { x: number; y: number; r: number; lead?: boolean };
+const nodes: Node[] = [
+  { x: 80, y: 32, r: 14, lead: true },
+  { x: 120, y: 32, r: 14, lead: true },
+  { x: 40, y: 106, r: 16 },
+  { x: 100, y: 106, r: 16 },
+  { x: 160, y: 106, r: 16 },
+];
+
+// Derive the avatar silhouette geometry from each node's radius so the head and
+// shoulders scale together.
+const avatars = nodes.map((n) => ({
+  ...n,
+  headCy: +(n.y - 0.22 * n.r).toFixed(2),
+  headR: +(0.3 * n.r).toFixed(2),
+  shX: +(n.x - 0.42 * n.r).toFixed(2),
+  shY: +(n.y + 0.18 * n.r).toFixed(2),
+  shW: +(0.84 * n.r).toFixed(2),
+  shH: +(0.5 * n.r).toFixed(2),
+  shRx: +(0.25 * n.r).toFixed(2),
+}));
+---
+
+<div
+  class="thumb-treely"
+  slot={asSlot}
+  style={`view-transition-name: ${transitionName};`}
+>
+  <div class="thumb-treely-card">
+    <svg
+      class="thumb-treely-svg"
+      viewBox="0 0 200 150"
+      role="img"
+      aria-label="Family tree connecting a couple to three children"
+    >
+      <!-- Connectors: marriage link, trunk, sibling bar, and child drops -->
+      <g class="thumb-treely-links" fill="none">
+        <path d="M94 32 H106" />
+        <path d="M100 32 V74" />
+        <path d="M40 74 H160" />
+        <path d="M40 74 V90" />
+        <path d="M100 74 V90" />
+        <path d="M160 74 V90" />
+      </g>
+
+      <!-- A small heart crowning the root couple -->
+      <path
+        class="thumb-treely-heart"
+        transform="translate(100 11) scale(1.5)"
+        d="M0 3 C-1 1.2 -4 1 -4 -1.4 C-4 -3.8 0 -4.2 0 -1.8 C0 -4.2 4 -3.8 4 -1.4 C4 1 1 1.2 0 3 Z"
+      />
+
+      <!-- Family members -->
+      {
+        avatars.map((a) => (
+          <g class={`thumb-treely-node ${a.lead ? "thumb-treely-node--lead" : "thumb-treely-node--child"}`}>
+            <circle class="thumb-treely-node-bg" cx={a.x} cy={a.y} r={a.r} />
+            <circle class="thumb-treely-node-fg" cx={a.x} cy={a.headCy} r={a.headR} />
+            <rect
+              class="thumb-treely-node-fg"
+              x={a.shX}
+              y={a.shY}
+              width={a.shW}
+              height={a.shH}
+              rx={a.shRx}
+            />
+          </g>
+        ))
+      }
+    </svg>
+  </div>
+</div>
+
+<style>
+  .thumb-treely {
+    align-items: center;
+    background: var(--thumbnail-background, var(--ark-color-accent-soft));
+    display: flex;
+    height: var(--thumbnail-height, auto);
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* The card is deliberately smaller than the container and centered, so its
+     drop shadow always has room to breathe and is never clipped. */
+  .thumb-treely-card {
+    background: var(--ark-color-surface);
+    border: 1px solid var(--ark-color-border);
+    border-radius: 20px;
+    box-shadow: var(--ark-shadow-md);
+    padding: 16px 18px;
+    width: 208px;
+  }
+
+  .thumb-treely-svg {
+    display: block;
+    height: auto;
+    width: 100%;
+  }
+
+  .thumb-treely-links path {
+    stroke: color-mix(in srgb, var(--ark-color-accent) 38%, transparent);
+    stroke-linecap: round;
+    stroke-width: 2;
+  }
+
+  .thumb-treely-node--lead .thumb-treely-node-bg {
+    fill: var(--ark-color-accent);
+  }
+
+  .thumb-treely-node--lead .thumb-treely-node-fg {
+    fill: var(--ark-color-neutral-0);
+  }
+
+  .thumb-treely-node--child .thumb-treely-node-bg {
+    fill: var(--ark-color-accent-soft);
+    stroke: var(--ark-color-accent);
+    stroke-width: 1.5;
+  }
+
+  .thumb-treely-node--child .thumb-treely-node-fg {
+    fill: var(--ark-color-accent);
+  }
+
+  .thumb-treely-heart {
+    fill: var(--ark-color-accent-strong);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .thumb-treely-heart {
+      animation: thumb-treely-beat 2.8s ease-in-out infinite;
+    }
+  }
+
+  @keyframes thumb-treely-beat {
+    0%,
+    100% {
+      opacity: 0.85;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+</style>
