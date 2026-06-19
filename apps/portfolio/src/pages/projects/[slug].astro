@@ -54,7 +54,7 @@ const paragraphs = body.split("\n\n").map((p) => p.trim()).filter(Boolean);
 
     {
       githubUrl && (
-        <a class="project-github" href={githubUrl} target="_blank" rel="noopener noreferrer">
+        <a class="project-link" href={githubUrl} target="_blank" rel="noopener noreferrer">
           View on GitHub &nearr;
         </a>
       )
@@ -73,12 +73,12 @@ const paragraphs = body.split("\n\n").map((p) => p.trim()).filter(Boolean);
     <div class="project-footer-nav">
       {
         relatedCaseStudyId && (
-          <ark-button href={`/case-studies/${relatedCaseStudyId}`} variant="secondary">
-            View related case study
-          </ark-button>
+          <a class="project-link" href={`/case-studies/${relatedCaseStudyId}`}>
+            View related case study &nearr;
+          </a>
         )
       }
-      <ark-button href="/projects" variant="ghost">View all projects</ark-button>
+      <a class="project-link" href="/projects">View all projects &swarr;</a>
     </div>
   </article>
 </BaseLayout>

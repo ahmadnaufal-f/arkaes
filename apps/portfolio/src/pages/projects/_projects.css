@@ -77,7 +77,7 @@
   margin-top: var(--ark-space-2);
 }
 
-.project-github {
+.project-link {
   align-items: center;
   color: var(--ark-color-accent-strong);
   display: inline-flex;
@@ -89,7 +89,7 @@
   width: fit-content;
 }
 
-.project-github:hover {
+.project-link:hover {
   text-decoration: underline;
 }
 
