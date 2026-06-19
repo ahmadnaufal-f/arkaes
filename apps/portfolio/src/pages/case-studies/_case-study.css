@@ -254,20 +254,6 @@
   padding: 56px var(--site-content-padding) 0;
 }
 
-.cs-back-link {
-  color: var(--ark-color-text-subtle);
-  font-family: var(--ark-font-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.1em;
-  text-decoration: none;
-  text-transform: uppercase;
-  transition: color var(--ark-duration-fast);
-}
-
-.cs-back-link:hover {
-  color: var(--ark-color-accent-strong);
-}
-
 /* ── Responsive ───────────────────────────────────────────── */
 
 @media (max-width: 860px) {

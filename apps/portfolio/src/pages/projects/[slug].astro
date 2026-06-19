@@ -79,25 +79,23 @@ const paragraphs = body.split("\n\n").map((p) => p.trim()).filter(Boolean);
           {
             githubUrl && (
               <ark-button href={githubUrl} target="_blank" variant="ghost">
-                View on GitHub &nearr;
+                View on GitHub &rarr;
               </ark-button>
             )
           }
           {
             relatedCaseStudyId && (
               <ark-button href={`/case-studies/${relatedCaseStudyId}`} variant="ghost">
-                View related case study &nearr;
+                View related case study &rarr;
               </ark-button>
             )
           }
-          <ark-button href="/projects" variant="ghost">View all projects &swarr;</ark-button>
+          <ark-button class="project-footer-back" href="/projects" variant="ghost">
+            &larr; Back to projects
+          </ark-button>
         </div>
       </div>
     </section>
-
-    <div class="cs-back">
-      <a href="/projects" class="cs-back-link">&larr; Back to projects</a>
-    </div>
   </article>
 </BaseLayout>
 

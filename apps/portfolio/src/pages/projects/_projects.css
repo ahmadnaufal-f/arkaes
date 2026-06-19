@@ -43,12 +43,33 @@
   max-width: 220px;
 }
 
-/* Footer navigation links. */
+/* Footer navigation links. On wide screens "Back to projects" sits at the
+   inline start while the forward links (GitHub / related case study) sit at
+   the inline end. On narrow screens everything stacks in DOM order
+   (GitHub, related case study, back), aligned to the start. */
 .project-footer-nav {
+  align-items: center;
   border-top: 1px solid var(--ark-color-border);
   display: flex;
   flex-wrap: wrap;
   gap: var(--ark-space-5);
   margin-top: 64px;
   padding-top: var(--ark-space-6);
+}
+
+.project-footer-back {
+  margin-inline-end: auto;
+  order: -1;
+}
+
+@media (max-width: 640px) {
+  .project-footer-nav {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .project-footer-back {
+    margin-inline-end: 0;
+    order: 0;
+  }
 }
