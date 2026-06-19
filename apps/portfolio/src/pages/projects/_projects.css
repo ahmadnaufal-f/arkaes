@@ -77,6 +77,35 @@
   margin-top: var(--ark-space-2);
 }
 
+.project-github {
+  align-items: center;
+  color: var(--ark-color-accent-strong);
+  display: inline-flex;
+  font-family: var(--ark-font-mono);
+  font-size: var(--ark-font-size-sm);
+  gap: var(--ark-space-2);
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  width: fit-content;
+}
+
+.project-github:hover {
+  text-decoration: underline;
+}
+
+.project-gallery {
+  display: grid;
+  gap: var(--ark-space-4);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+}
+
+.project-gallery img {
+  border: 1px solid var(--ark-color-border);
+  border-radius: var(--ark-radius-md, 8px);
+  height: auto;
+  width: 100%;
+}
+
 @media (max-width: 900px) {
   .page-section {
     padding: 140px 24px 86px;

@@ -1,0 +1,17 @@
+{
+  "slug": "air-care",
+  "title": "SmartThings Air Care",
+  "projectName": "SmartThings Air Care",
+  "shippedDate": "2024-12-30",
+  "body": "SmartThings Air Care is a SmartThings experience that helps users monitor indoor and outdoor air quality and control air related smart devices from one place. Through this experience, users can check the air condition around them and manage devices such as air conditioners, air purifiers, and dehumidifiers more easily.\n\nI worked as the project lead and helped guide the team through both product development and technical modernization. When we received this project, it was a legacy codebase from another team. The app was built with plain JavaScript and handled state management with its own custom approach. As the project grew, this made the code harder to maintain, harder to reason about, and more difficult for the team to improve safely.\n\nOne of the main technical decisions was to migrate the codebase to TypeScript and introduce Zustand for state management. The goal was to make the project more predictable, easier to debug, and safer to extend. By moving away from loosely structured JavaScript and custom state handling, the team gained a clearer foundation for building new features and maintaining existing behavior.\n\nIn the earlier phase of the project, I also built a caching mechanism to improve the loading experience. Since air quality and device information can involve multiple data sources, reducing unnecessary loading time was an important part of making the app feel smoother for users. This helped the experience become faster and more responsive, especially when users returned to previously loaded data.\n\nThis project also became the first major playground for my team to experiment with a more modern frontend setup. We explored building components with Lit, using Zustand in a production project, migrating from Webpack to Vite for faster build time, and gradually improving the maintainability of a legacy app. Because of that, SmartThings Air Care was more than just a product delivery project. It became an important learning ground that helped shape the technical direction of our later frontend projects.",
+  "featured": true,
+  "role": "Project Lead",
+  "challenges": "Modernized a legacy JavaScript codebase by migrating it to TypeScript, introducing Zustand for state management, and building a caching mechanism for faster loading.",
+  "stack": [
+    "Lit",
+    "Vite",
+    "Zustand",
+    "TypeScript"
+  ],
+  "category": "professional-work"
+}

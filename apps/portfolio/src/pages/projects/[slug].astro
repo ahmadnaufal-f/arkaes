@@ -1,5 +1,5 @@
 ---
-import { getCollection, render } from "astro:content";
+import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { categoryLabel } from "../../data/expertise";
 import "./_projects.css";
@@ -13,15 +13,18 @@ export async function getStaticPaths() {
 }
 
 const { project } = Astro.props;
-const { title, summary, role, impact, stack, category } = project.data;
-const { Content } = await render(project);
+const { title, body, role, challenges, stack, category, screenshots } =
+  project.data;
+const githubUrl = project.data["github-url"];
+
+// Body is plain prose with blank-line-separated paragraphs.
+const paragraphs = body.split("\n\n").map((p) => p.trim()).filter(Boolean);
 ---
 
-<BaseLayout title={`${title} | Arkaes`} description={summary}>
+<BaseLayout title={`${title} | Arkaes`} description={challenges}>
   <article class="page-section narrow project-detail">
     <ark-badge>{categoryLabel(category)}</ark-badge>
     <h1>{title}</h1>
-    <p class="lead">{summary}</p>
 
     <dl class="project-meta">
       <div>
@@ -29,8 +32,8 @@ const { Content } = await render(project);
         <dd>{role}</dd>
       </div>
       <div>
-        <dt>Main signal</dt>
-        <dd>{impact}</dd>
+        <dt>Challenges</dt>
+        <dd>{challenges}</dd>
       </div>
       <div>
         <dt>Stack</dt>
@@ -39,7 +42,25 @@ const { Content } = await render(project);
     </dl>
 
     <section>
-      <Content />
+      {paragraphs.map((paragraph) => <p>{paragraph}</p>)}
     </section>
+
+    {
+      githubUrl && (
+        <a class="project-github" href={githubUrl} target="_blank" rel="noopener noreferrer">
+          View on GitHub &nearr;
+        </a>
+      )
+    }
+
+    {
+      screenshots.length > 0 && (
+        <section class="project-gallery" aria-label="Screenshots">
+          {screenshots.map((src) => (
+            <img src={src} alt={`${title} screenshot`} loading="lazy" />
+          ))}
+        </section>
+      )
+    }
   </article>
 </BaseLayout>

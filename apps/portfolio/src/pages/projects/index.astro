@@ -11,12 +11,14 @@ const entries = (await getCollection("projects")).sort(
 );
 const items: ListingItem[] = entries.map((project) => ({
   title: project.data.title,
-  summary: project.data.summary,
+  // Body teaser; the card clamps it to three lines with an ellipsis.
+  summary: project.data.body,
   href: `/projects/${project.id}`,
   categorySlug: project.data.category,
   expertise: expertiseForProject(project.data.projectName),
   tags: project.data.stack.slice(0, 3),
-  visual: project.data.visual,
+  // Slug doubles as the visual registry key (falls back to the brand mark).
+  visual: project.id,
   transitionName: `proj-thumb-${project.id}`,
 }));
 ---

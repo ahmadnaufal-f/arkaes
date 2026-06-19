@@ -85,7 +85,7 @@ This approach allowed the team to keep delivering work while improving the codeb
 
 TypeScript made the code easier to understand because data structures became more explicit. It also helped the team catch mistakes earlier and work with more confidence when changing existing features.
 
-![Gradual migration from JavaScript to TypeScript](/case-studies/smartthings-air-care/migration-approach.svg)
+![Gradual migration from JavaScript to TypeScript](/case-studies/air-care/migration-approach.svg)
 
 ### Zustand for simpler state management
 
@@ -144,7 +144,7 @@ The modernization produced several improvements:
 • A cleaner foundation for future product development
 • Early team experience with Lit, Zustand, TypeScript, and Vite
 
-![Loading performance improvement — first load ~50% faster, second load ~80% faster](/case-studies/smartthings-air-care/loading-improvement.svg)
+![Loading performance improvement — first load ~50% faster, second load ~80% faster](/case-studies/air-care/loading-improvement.svg)
 
 The main result was not only a faster app, but also a healthier codebase. The team could understand the project more easily, debug issues with less friction, and build on top of a more reliable frontend foundation.
 

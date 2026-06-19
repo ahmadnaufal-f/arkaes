@@ -6,7 +6,7 @@ import { techGroups, currentlyLearning } from "../data/techstack";
 import { EXPERTISE } from "../data/expertise";
 import CaseStudyVisual from "../components/CaseStudyVisual.astro";
 
-const CARD_ORDER = ["virtual-home", "virtual-home-tv", "milk-pumping-tracker", "smartthings-air-care"];
+const CARD_ORDER = ["virtual-home", "virtual-home-tv", "milk-tracker", "air-care"];
 const getOrder = (id: string) => { const i = CARD_ORDER.indexOf(id); return i === -1 ? Infinity : i; };
 
 const allStudies = await getCollection("caseStudies");

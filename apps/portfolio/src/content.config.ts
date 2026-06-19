@@ -18,19 +18,23 @@ const caseStudies = defineCollection({
 });
 
 const projects = defineCollection({
-  loader: glob({ pattern: "**/*.md", base: "./src/content/projects" }),
+  loader: glob({ pattern: "**/*.json", base: "./src/content/projects" }),
   schema: z.object({
+    slug: z.string(),
     title: z.string(),
     projectName: z.string(),
-    summary: z.string(),
+    shippedDate: z.coerce.date(),
+    // Long-form prose, paragraphs separated by blank lines. Rendered as <p>s.
+    body: z.string(),
     featured: z.boolean().default(false),
-    impact: z.string(),
     role: z.string(),
+    challenges: z.string(),
     stack: z.array(z.string()).default([]),
     category: categorySchema,
-    shippedDate: z.coerce.date(),
-    // Optional thumbnail key; unset (or unknown) renders the fallback visual.
-    visual: z.string().optional(),
+    // Side-project-only fields. Professional work omits both; screenshots
+    // defaults to an empty array so the gallery simply renders nothing.
+    "github-url": z.string().url().optional(),
+    screenshots: z.array(z.string()).default([]),
   }),
 });
 

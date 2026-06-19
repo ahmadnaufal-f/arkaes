@@ -1,10 +1,10 @@
 ---
 title: "Building a milk pumping tracker with AI summaries"
 shortDesc: "Designed, built, and shipped a milk pumping tracker for busy mothers — a fast logging flow backed by Firebase, plus an OpenAI-powered review layer that summarizes sessions and suggests follow-up questions."
-projectName: "Milk Tracker App"
+projectName: "Milk Pumping Tracker"
 order: 3
 featured: true
-visual: "milk-pumping"
+visual: "milk-tracker"
 category: "side-project"
 tags:
   - React
@@ -52,8 +52,8 @@ The app needed to support two key moments:
 
 The core tracking flow focuses on three required pieces of data: pumping time, milk amount, and pumping duration. I kept the main form focused on these essentials so users can record sessions quickly, then start a live timer for the session itself.
 
-![Home screen with the daily greeting and today's pumping summary](/case-studies/milk-pumping-tracker/home-screen.png)
-![Active pumping session with an elapsed and remaining timer](/case-studies/milk-pumping-tracker/pumping-session.png)
+![Home screen with the daily greeting and today's pumping summary](/case-studies/milk-tracker/home-screen.png)
+![Active pumping session with an elapsed and remaining timer](/case-studies/milk-tracker/pumping-session.png)
 
 For users who want AI summaries, the app can also use optional context:
 
@@ -81,7 +81,7 @@ The AI feature uses the OpenAI API to summarize the user's pumping logs.
 
 It can summarize recent sessions, describe visible patterns, and generate follow-up questions. Users can select one of those questions, and the app answers it based on the recorded logs and optional context.
 
-![Weekly insights screen with an AI summary, suggestions, and selectable follow-up questions](/case-studies/milk-pumping-tracker/weekly-insights.png)
+![Weekly insights screen with an AI summary, suggestions, and selectable follow-up questions](/case-studies/milk-tracker/weekly-insights.png)
 
 The AI feature is designed as a review layer. It helps users understand their data, while the core tracker remains useful even without AI.
 
@@ -91,7 +91,7 @@ The app was built with React, Vite, Firebase, and the OpenAI API.
 
 Before sending data to the AI, the app prepares the relevant logs and optional context. This keeps the input focused and avoids passing unnecessary information to the model.
 
-![Data flow — session logs and optional context are prepared into focused input before reaching the OpenAI API, which returns the review layer](/case-studies/milk-pumping-tracker/ai-flow.svg)
+![Data flow — session logs and optional context are prepared into focused input before reaching the OpenAI API, which returns the review layer](/case-studies/milk-tracker/ai-flow.svg)
 
 ```txt
 Pumping session input

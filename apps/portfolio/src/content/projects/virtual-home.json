@@ -1,0 +1,17 @@
+{
+  "slug": "virtual-home",
+  "title": "SmartThings Virtual Home",
+  "projectName": "SmartThings Virtual Home",
+  "shippedDate": "2025-06-30",
+  "body": "SmartThings Virtual Home is a virtual experience that lets users explore SmartThings features without needing to own the actual devices. Instead of requiring physical hardware, the app provides simulated devices so users can understand how SmartThings works, interact with different device types, and experience the product flow more easily.\n\nI worked as the project leader and was responsible for guiding the frontend direction of the project. One of the biggest challenges was designing an architecture that could support two different app variants while still sharing a large amount of the same logic. Both variants had overlapping product flows, device simulation behavior, and state management patterns, but they also had platform specific needs that could not be ignored.\n\nTo keep the project maintainable, I helped structure the frontend around reusable logic and shared state patterns using Lit, Redux, TypeScript, and Webpack. The goal was to avoid duplicating business logic while still giving each app variant enough flexibility to handle its own requirements. This made the codebase easier to scale, easier to debug, and easier for other engineers to contribute to.\n\nI also presented this project in my company’s internal project presentation competition and won second place. That recognition made the project especially meaningful to me because it showed that the technical direction, product value, and presentation of the idea were strong enough to stand out internally.",
+  "featured": true,
+  "role": "Project Leader",
+  "challenges": "Designed a scalable frontend architecture for two app variants that shared many product flows and device simulation logic.",
+  "stack": [
+    "Lit",
+    "Webpack",
+    "Redux",
+    "TypeScript"
+  ],
+  "category": "professional-work"
+}

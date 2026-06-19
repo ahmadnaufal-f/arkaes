@@ -1,0 +1,23 @@
+{
+  "slug": "treely-app",
+  "title": "Treely - Family Tree App",
+  "projectName": "Treely - Family Tree App",
+  "shippedDate": "2026-05-31",
+  "body": "Treely is a family tree app that allows users to build and visualize their family relationships in a calm and approachable interface. The app is designed to make family mapping feel less intimidating by using a softer visual theme and a mobile first experience.\n\nI worked as the project leader and helped guide both the product direction and the technical direction. The project uses React Native with Expo for the mobile app, Gluestack UI for the interface foundation, React Native Reanimated for smoother interactions, Firebase Auth for authentication, and a NestJS backend with PostgreSQL for the data layer.\n\nThe main challenge was designing a family tree structure that stays consistent as users add more relatives. A family tree is not just a simple list of people. Each person can have parents, spouses, children, siblings, and extended relationships that need to stay connected without creating broken branches, disconnected nodes, or visual collisions in the tree layout.\n\nTreely is also planned to support Muslim specific family features, such as showing mahram relationships and inheritance calculation. These features are not finished yet, but they shaped the long term direction of the product. The goal is to make Treely more than a generic family tree builder by eventually supporting family relationship use cases that are especially relevant for Muslim users.\n\nThis project is meaningful to me because it combines product design, mobile development, backend architecture, and a complex relationship based data model. It also challenged me to think carefully about how data consistency, visual layout, and cultural context should work together in one product.",
+  "featured": false,
+  "role": "Project Leader",
+  "challenges": "Designed a consistent family tree structure that avoids broken relationships, visual collisions, and disconnected nodes while preparing the product for future Muslim specific features.",
+  "stack": [
+    "React Native",
+    "Expo",
+    "React Native Reanimated",
+    "Gluestack UI",
+    "NestJS",
+    "PostgreSQL",
+    "Firebase Auth",
+    "TypeScript"
+  ],
+  "category": "side-project",
+  "github-url": "https://github.com/Treehouse-Devs/FamilyTreeApp",
+  "screenshots": []
+}
