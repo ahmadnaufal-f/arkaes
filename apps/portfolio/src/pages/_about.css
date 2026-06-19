@@ -23,6 +23,38 @@
   max-width: 680px;
 }
 
+.about-accordion {
+  margin-top: var(--ark-space-16);
+}
+
+.about-body {
+  color: var(--ark-color-text-muted);
+  font-size: var(--ark-text-md);
+  line-height: var(--ark-leading-relaxed);
+  max-width: var(--ark-measure-md);
+}
+
+.about-body p {
+  margin: 0 0 1em;
+}
+
+.about-body p:last-child {
+  margin-bottom: 0;
+}
+
+.about-body h3 {
+  color: var(--ark-color-text);
+  font-family: var(--ark-font-sans);
+  font-size: var(--ark-text-md);
+  font-weight: var(--ark-weight-semibold);
+  letter-spacing: var(--ark-tracking-wide);
+  margin: 0 0 var(--ark-space-2);
+}
+
+.about-body h3:not(:first-child) {
+  margin-top: var(--ark-space-8);
+}
+
 @media (max-width: 900px) {
   .page-section {
     padding: 140px 24px 86px;
