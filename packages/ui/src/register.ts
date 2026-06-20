@@ -2,6 +2,7 @@ import {
   defineArkBadge,
   defineArkBrandLogo,
   defineArkButton,
+  defineArkChip,
   defineArkCheckbox,
   defineArkDropdown,
   defineArkEmpty,
@@ -26,6 +27,7 @@ export const registerArkPrimitives = () => {
   defineArkBadge();
   defineArkBrandLogo();
   defineArkButton();
+  defineArkChip();
   defineArkCheckbox();
   defineArkDropdown();
   defineArkEmpty();

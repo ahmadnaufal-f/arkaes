@@ -293,56 +293,6 @@
   gap: 7px;
 }
 
-.techstack-pill,
-.techstack-learning-pill {
-  border-radius: var(--ark-radius-full);
-  font-family: var(--ark-font-mono);
-  font-size: 0.7rem;
-  letter-spacing: var(--ark-letter-spacing-wide);
-  padding: var(--ark-space-1) var(--ark-space-3);
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.techstack-pill {
-  border: 1px solid var(--ark-color-neutral-300);
-  color: var(--ark-color-ink-muted);
-  background: var(--ark-color-neutral-50);
-  transition:
-    background var(--ark-duration-fast) var(--ark-ease-out),
-    border-color var(--ark-duration-fast) var(--ark-ease-out),
-    color var(--ark-duration-fast) var(--ark-ease-out);
-}
-
-.techstack-card:hover .techstack-pill {
-  background: var(--ark-color-neutral-100);
-  border-color: var(--ark-color-neutral-400);
-}
-
-.techstack-pill--primary {
-  background: var(--ark-color-blush-50);
-  border-color: var(--ark-color-blush);
-  color: var(--ark-color-blush-deep);
-}
-
-.techstack-card:hover .techstack-pill--primary {
-  background: var(--ark-color-blush-100);
-  border-color: var(--ark-color-blush-400);
-  color: var(--ark-color-ink);
-}
-
-.techstack-card--emerging .techstack-pill--primary {
-  background: var(--ark-color-sage-50);
-  border-color: var(--ark-color-sage-300);
-  color: var(--ark-color-sage);
-}
-
-.techstack-card--emerging:hover .techstack-pill--primary {
-  background: var(--ark-color-sage-100);
-  border-color: var(--ark-color-400);
-  color: var(--ark-color-ink);
-}
-
 .techstack-footer {
   align-items: center;
   border-top: 1px solid var(--ark-color-parchment-deep);
@@ -379,11 +329,6 @@
 .techstack-learning-pills {
   display: flex;
   gap: 6px;
-}
-
-.techstack-learning-pill {
-  border: 1px dashed var(--ark-color-sage-light);
-  color: var(--ark-color-sage);
 }
 
 .about-strip {
@@ -612,24 +557,6 @@
   gap: 8px;
   max-width: 46ch;
   margin-inline-start: calc(var(--ark-space-3) * -1);
-}
-
-.service-tag {
-  border: 1px solid var(--ark-color-border);
-  border-radius: var(--ark-radius-full);
-  color: var(--ark-color-text-soft);
-  font-family: var(--ark-font-mono);
-  font-size: 0.68rem;
-  letter-spacing: var(--ark-letter-spacing-wide);
-  padding: var(--ark-space-1) var(--ark-space-3);
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.service-tag--work {
-  background: var(--ark-color-accent-soft);
-  border-color: transparent;
-  color: var(--ark-color-accent-strong);
 }
 
 .contact-section {
