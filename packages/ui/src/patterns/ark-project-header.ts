@@ -194,6 +194,7 @@ export class ArkProjectHeader extends LitElement {
 
   override disconnectedCallback() {
     window.removeEventListener("scroll", this._onScroll);
+    this._restoreScrollAnchoring();
     this._sentinel = null;
     this._hero = null;
     super.disconnectedCallback();
@@ -204,9 +205,30 @@ export class ArkProjectHeader extends LitElement {
     this._hero = this.renderRoot.querySelector<HTMLElement>(".hero");
     if (!this._sentinel || !this._hero) return;
 
+    this._disableScrollAnchoring();
     window.removeEventListener("scroll", this._onScroll);
     window.addEventListener("scroll", this._onScroll, { passive: true });
     this._update();
+  }
+
+  // Collapsing the pinned hero shrinks its in-flow box above the viewport. With
+  // native scroll anchoring on (the default), the browser would compensate by
+  // shifting the scroll position to keep visible content stable — and that shift
+  // moves the sentinel back across the stuck threshold, creating a feedback loop
+  // that flips the stuck state on and off. Disabling anchoring while the header
+  // is mounted lets the content follow the collapse smoothly instead.
+  private _anchoredRoot: HTMLElement | null = null;
+
+  private _disableScrollAnchoring() {
+    if (this._anchoredRoot) return;
+    const root = document.documentElement;
+    root.style.setProperty("overflow-anchor", "none");
+    this._anchoredRoot = root;
+  }
+
+  private _restoreScrollAnchoring() {
+    this._anchoredRoot?.style.removeProperty("overflow-anchor");
+    this._anchoredRoot = null;
   }
 
   // Coalesce scroll events into one read per frame.
