@@ -251,7 +251,10 @@ export class ArkDialogOverlay extends LitElement {
 
   static override styles = css`
     :host {
-      background: rgba(28, 25, 23, 0.55);
+      background: var(
+        --ark-dialog-overlay-bg,
+        color-mix(in srgb, var(--ark-color-neutral-900) 55%, transparent)
+      );
       inset: 0;
       opacity: 0;
       pointer-events: none;
