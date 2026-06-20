@@ -33,10 +33,8 @@ const services = EXPERTISE.map((area) => ({
     title="Frontend engineering"
     title-emphasis="with clarity."
     subtitle="Building scalable interfaces, design systems, and cross-platform products where technical structure and visual refinement work as one."
-    primary-href="#case-studies"
-    primary-label="View Case Studies"
-    ghost-href="#expertise"
-    ghost-label="Explore engineering approach"
+    primary-href="#contact"
+    primary-label="Contact me"
     comp-label="Ahmad Naufal - mmxxvi"
     scroll-label="Explore the work"
   ></ark-hero>
@@ -135,8 +133,8 @@ const services = EXPERTISE.map((area) => ({
     </div>
 
     <div class="section-cta reveal">
-      <ark-button href="/case-studies" variant="secondary">View all case studies</ark-button>
-      <ark-button href="/projects" variant="ghost">Browse all projects</ark-button>
+      <ark-button class="section-cta-accent" href="/case-studies" variant="primary">View all case studies &rarr;</ark-button>
+      <ark-button href="/projects" variant="ghost">Browse all projects &rarr;</ark-button>
     </div>
   </section>
 
@@ -311,26 +309,13 @@ const services = EXPERTISE.map((area) => ({
     </div>
     <div class="about-content reveal reveal-delay-2">
       <div class="section-eyebrow">About</div>
-      <h2 class="about-title">Engineering <em>structure</em><br />for product clarity</h2>
+      <h2 class="about-title">Engineering <em>intentional</em> interfaces<br />for product clarity</h2>
       <p class="about-body">
-        A frontend engineer focused on the intersection of system quality and interface craft. I
-        build product experiences with clear architecture, thoughtful interaction, and enough visual
-        sensitivity to make complexity feel calm.
+        I build frontend systems that help products feel clearer, calmer, and easier to maintain. My
+        strength is not only in writing UI code, but also in shaping structure, improving team
+        workflows, and mentoring others so the product can grow without becoming harder to work on.
       </p>
-      <div class="about-stats">
-        <div>
-          <div class="stat-number">6<span>+</span></div>
-          <div class="stat-label">Years building</div>
-        </div>
-        <div>
-          <div class="stat-number">40<span>+</span></div>
-          <div class="stat-label">Projects shipped</div>
-        </div>
-        <div>
-          <div class="stat-number">3</div>
-          <div class="stat-label">Core stacks</div>
-        </div>
-      </div>
+      <ark-button class="about-cta" href="/about" variant="secondary">More about me &rarr;</ark-button>
     </div>
   </section>
 

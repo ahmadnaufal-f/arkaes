@@ -54,7 +54,7 @@ export class ArkButton extends LitElement {
     }
 
     .primary {
-      background: var(--ark-color-text);
+      background: var(--ark-button-primary-bg, var(--ark-color-text));
       color: var(--ark-color-background);
       font-size: var(--ark-font-size-sm);
       letter-spacing: var(--ark-letter-spacing-mono);
@@ -82,7 +82,7 @@ export class ArkButton extends LitElement {
     }
 
     .primary:not(:disabled):not([aria-disabled="true"]):hover {
-      background: #2d2724;
+      background: var(--ark-button-primary-bg-hover, #2d2724);
     }
 
     .primary:not(:disabled):not([aria-disabled="true"]):hover::after {

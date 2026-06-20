@@ -124,12 +124,19 @@
 }
 
 .section-cta {
+  align-items: center;
   border-top: 1px solid var(--ark-color-border);
   display: flex;
   flex-wrap: wrap;
   gap: 16px 24px;
   margin-top: 48px;
   padding-top: 40px;
+}
+
+/* Primary CTA with a slightly warmer tone than the default near-black. */
+.section-cta-accent {
+  --ark-button-primary-bg: var(--ark-color-accent-strong);
+  --ark-button-primary-bg-hover: var(--ark-color-accent);
 }
 
 /* Visual heights derived from grid rows:
@@ -416,30 +423,8 @@
   max-width: 480px;
 }
 
-.about-stats {
-  display: flex;
-  gap: 48px;
-}
-
-.stat-number {
-  color: var(--ark-color-text);
-  font-family: var(--ark-font-display);
-  font-size: 2.8rem;
-  font-weight: var(--ark-weight-thin);
-  line-height: 1;
-  margin-bottom: 6px;
-}
-
-.stat-number span {
-  color: var(--ark-color-accent-strong);
-}
-
-.stat-label {
-  color: var(--ark-color-text-ghost);
-  font-family: var(--ark-font-mono);
-  font-size: 0.58rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
+.about-cta {
+  margin-top: 8px;
 }
 
 .services-list {
@@ -832,11 +817,6 @@
     max-width: 260px;
   }
 
-  .about-stats {
-    flex-wrap: wrap;
-    gap: 28px;
-  }
-
   .service-item {
     --accordion-trigger-padding: 30px 0;
   }
@@ -862,6 +842,16 @@
 @media (max-width: 520px) {
   ark-button {
     width: 100%;
+  }
+
+  .section-cta {
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .section-cta ark-button {
+    justify-content: center;
   }
 
   .contact-title {
