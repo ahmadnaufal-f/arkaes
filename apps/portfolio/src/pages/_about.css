@@ -13,6 +13,19 @@
   margin-top: var(--ark-space-16);
 }
 
+/* Portrait at the top of the Summary section — centered, framed, and the
+   morph target for the homepage About portrait (shared view-transition-name). */
+.about-summary-portrait {
+  border: 1px solid var(--ark-color-border);
+  border-radius: var(--ark-radius-md);
+  display: block;
+  height: auto;
+  margin: 0 auto var(--ark-space-8);
+  max-width: 240px;
+  object-fit: cover;
+  width: 100%;
+}
+
 .about-body {
   color: var(--ark-color-text-muted);
   font-size: var(--ark-text-md);
@@ -39,6 +52,13 @@
 
 .about-body .cs-subheading:not(:first-child) {
   margin-top: var(--ark-space-8);
+}
+
+/* Closing navigation: a single ghost link back to the homepage. */
+.about-footer-nav {
+  border-top: 1px solid var(--ark-color-border);
+  margin-top: var(--ark-space-16);
+  padding-top: var(--ark-space-8);
 }
 
 @media (max-width: 900px) {

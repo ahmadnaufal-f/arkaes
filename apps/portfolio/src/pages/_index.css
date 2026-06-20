@@ -349,20 +349,6 @@
   position: relative;
 }
 
-.about-strip::before {
-  bottom: -4vw;
-  color: rgba(212, 168, 152, 0.06);
-  content: "ARKAES";
-  font-family: var(--ark-font-display);
-  font-size: 17vw;
-  font-weight: var(--ark-weight-thin);
-  letter-spacing: 0;
-  line-height: 1;
-  pointer-events: none;
-  position: absolute;
-  right: -2vw;
-}
-
 .about-portrait {
   aspect-ratio: 3 / 4;
   background: var(--ark-color-border);
@@ -370,24 +356,14 @@
   max-width: 320px;
   overflow: hidden;
   position: relative;
+  justify-self: center;
 }
 
-.portrait-placeholder {
-  align-items: center;
-  background: linear-gradient(150deg, var(--ark-color-border) 0%, #ccc0b8 100%);
-  display: flex;
+.portrait-img {
+  display: block;
   height: 100%;
-  justify-content: center;
+  object-fit: cover;
   width: 100%;
-}
-
-.portrait-monogram {
-  color: var(--ark-color-text);
-  font-family: var(--ark-font-display);
-  font-size: 6rem;
-  font-style: italic;
-  font-weight: var(--ark-weight-thin);
-  opacity: 0.15;
 }
 
 .portrait-rule {
@@ -419,7 +395,7 @@
   font-size: var(--ark-font-size-lg);
   font-weight: var(--ark-font-weight-light);
   line-height: var(--ark-line-height-loose);
-  margin-bottom: 48px;
+  margin-bottom: 20px;
   max-width: 480px;
 }
 
@@ -633,21 +609,35 @@
 }
 
 .contact-email {
-  border-bottom: 1px solid rgba(212, 168, 152, 0.25);
-  color: rgba(250, 247, 245, 0.4);
+  border-bottom: 1px solid rgba(212, 168, 152, 0.5);
+  color: rgba(250, 247, 245, 0.88);
   display: inline-block;
   font-size: var(--ark-font-size-2xl);
-  font-weight: var(--ark-font-weight-light);
+  font-weight: var(--ark-font-weight-regular);
   margin-bottom: 64px;
-  padding-bottom: 4px;
+  padding-bottom: 6px;
   transition:
     border-color var(--ark-duration-normal),
-    color var(--ark-duration-normal);
+    color var(--ark-duration-normal),
+    transform var(--ark-duration-normal) var(--ark-ease-out);
 }
 
 .contact-email:hover {
   border-color: var(--ark-color-accent);
   color: var(--ark-color-blush-light);
+  transform: translateY(-2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-email {
+    transition:
+      border-color var(--ark-duration-normal),
+      color var(--ark-duration-normal);
+  }
+
+  .contact-email:hover {
+    transform: none;
+  }
 }
 
 .contact-socials {
@@ -656,21 +646,66 @@
 }
 
 .contact-social-link {
-  border-bottom: 1px solid rgba(125, 145, 128, 0.2);
-  color: rgba(125, 145, 128, 0.6);
+  color: var(--ark-color-sage-light);
   font-family: var(--ark-font-mono);
-  font-size: 0.6rem;
-  letter-spacing: 0.2em;
-  padding-bottom: 2px;
+  font-size: 0.78rem;
+  letter-spacing: 0.16em;
+  padding-bottom: 4px;
+  position: relative;
   text-transform: uppercase;
-  transition:
-    border-color var(--ark-duration-normal),
-    color var(--ark-duration-normal);
+  transition: color var(--ark-duration-normal) var(--ark-ease-out);
 }
 
-.contact-social-link:hover {
-  border-color: var(--ark-color-counterpoint);
-  color: var(--ark-color-sage-light);
+/* Faint resting baseline so the links still read as links at rest. */
+.contact-social-link::before {
+  background: color-mix(in srgb, var(--ark-color-sage-light) 32%, transparent);
+  bottom: 0;
+  content: "";
+  height: 1px;
+  inset-inline: 0;
+  position: absolute;
+}
+
+/* Accent underline that wipes in from the left on hover/focus. */
+.contact-social-link::after {
+  background: var(--ark-color-counterpoint);
+  bottom: 0;
+  content: "";
+  height: 1px;
+  inset-inline: 0;
+  position: absolute;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--ark-duration-normal) var(--ark-ease-out);
+}
+
+/* The label sits in its own span so it can lift independently of the
+   underline that stays pinned to the baseline. */
+.contact-social-label {
+  display: inline-block;
+  transition: transform var(--ark-duration-normal) var(--ark-ease-out);
+}
+
+.contact-social-link:hover,
+.contact-social-link:focus-visible {
+  color: var(--ark-color-sage-200);
+}
+
+.contact-social-link:hover::after,
+.contact-social-link:focus-visible::after {
+  transform: scaleX(1);
+}
+
+.contact-social-link:hover .contact-social-label,
+.contact-social-link:focus-visible .contact-social-label {
+  transform: translateY(-2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-social-link::after,
+  .contact-social-label {
+    transition: none;
+  }
 }
 
 @keyframes marquee {

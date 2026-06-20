@@ -127,27 +127,6 @@ The new repository was organized around shared foundation code and product speci
 
 ![Monorepo architecture — shared foundation with product-specific variant layers](/case-studies/virtual-home/architecture.svg)
 
-```txt
-Virtual Home monorepo
-
-Shared foundation
-  Shared UI components
-  Shared assets
-  Shared translations
-  Shared utilities
-  Shared device logic
-  Shared state management
-
-Product variants
-  Mobile variant
-  Larger screen variant
-
-Product specific layer
-  Product specific behavior
-  Layout adaptation
-  Integration details
-```
-
 This structure allowed the team to reuse most of the foundation while keeping each product variant flexible.
 
 ## Implementation approach

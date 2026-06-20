@@ -134,7 +134,7 @@ const services = EXPERTISE.map((area) => ({
 
     <div class="section-cta reveal">
       <ark-button class="section-cta-accent" href="/case-studies" variant="primary">View all case studies &rarr;</ark-button>
-      <ark-button href="/projects" variant="ghost">Browse all projects &rarr;</ark-button>
+      <ark-button href="/projects" variant="secondary">Browse all projects &rarr;</ark-button>
     </div>
   </section>
 
@@ -302,9 +302,15 @@ const services = EXPERTISE.map((area) => ({
 
   <section class="about-strip" id="about">
     <div class="about-portrait reveal">
-      <div class="portrait-placeholder">
-        <div class="portrait-monogram">A</div>
-      </div>
+      <img
+        class="portrait-img"
+        src="/about-me.png"
+        alt="Ahmad Naufal"
+        width="320"
+        height="427"
+        loading="lazy"
+        transition:name="about-me"
+      />
       <div class="portrait-rule"></div>
     </div>
     <div class="about-content reveal reveal-delay-2">
@@ -315,7 +321,7 @@ const services = EXPERTISE.map((area) => ({
         strength is not only in writing UI code, but also in shaping structure, improving team
         workflows, and mentoring others so the product can grow without becoming harder to work on.
       </p>
-      <ark-button class="about-cta" href="/about" variant="secondary">More about me &rarr;</ark-button>
+      <ark-button class="about-cta" href="/about" variant="primary">More about me &rarr;</ark-button>
     </div>
   </section>
 
@@ -332,9 +338,22 @@ const services = EXPERTISE.map((area) => ({
         ahmadnaufal611@gmail.com
       </a>
       <div class="contact-socials reveal reveal-delay-3">
-        <a href="#" class="contact-social-link">GitHub</a>
-        <a href="#" class="contact-social-link">LinkedIn</a>
-        <a href="#case-studies" class="contact-social-link">Case Studies</a>
+        <a
+          href="https://github.com/ahmadnaufal-f"
+          class="contact-social-link"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <span class="contact-social-label">GitHub</span>
+        </a>
+        <a
+          href="https://www.linkedin.com/in/ahmad-naufal-f/"
+          class="contact-social-link"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <span class="contact-social-label">LinkedIn</span>
+        </a>
       </div>
     </div>
 

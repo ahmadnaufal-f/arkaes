@@ -4,6 +4,7 @@ import VirtualHomeTvThumbnail from "./case-studies-thumbnail/virtual-home-tv/thu
 import MilkPumpingThumbnail from "./case-studies-thumbnail/milk-pumping-tracker/thumbnail.astro";
 import AirCareThumbnail from "./case-studies-thumbnail/air-care/thumbnail.astro";
 import TreelyThumbnail from "./case-studies-thumbnail/treely-app/thumbnail.astro";
+import ArkaesDesignSystemThumbnail from "./case-studies-thumbnail/arkaes-design-system/thumbnail.astro";
 import FallbackThumbnail from "./case-studies-thumbnail/fallback/thumbnail.astro";
 
 interface Props {
@@ -22,6 +23,7 @@ const REGISTRY = {
   "milk-tracker": MilkPumpingThumbnail,
   "air-care": AirCareThumbnail,
   "treely-app": TreelyThumbnail,
+  "arkaes-design-system": ArkaesDesignSystemThumbnail,
 } as const;
 
 const Thumbnail =
