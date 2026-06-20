@@ -41,7 +41,7 @@ const meta = {
       >
         <ark-card interactive>
           <div style="display: grid; gap: 1rem; padding: 1.5rem;">
-            <ark-badge variant="pill">Button</ark-badge>
+            <ark-chip>Button</ark-chip>
             <ark-button>View Project</ark-button>
             <ark-button variant="secondary" size="sm">Read Notes</ark-button>
           </div>
@@ -55,7 +55,7 @@ const meta = {
         </ark-card>
         <ark-card interactive>
           <div style="display: grid; gap: 1rem; padding: 1.5rem;">
-            <ark-badge variant="pill">Card</ark-badge>
+            <ark-chip>Card</ark-chip>
             <h2 style="font: var(--ark-font-heading-sm); margin: 0;">Surface container</h2>
             <p style="color: var(--ark-color-text-muted); line-height: 1.7; margin: 0;">
               Slots accept real content, including other custom elements.

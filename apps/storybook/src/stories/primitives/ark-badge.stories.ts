@@ -36,7 +36,7 @@ const meta = {
         component: `
 \`ark-badge\` labels content with small, visually distinct tags. Use it to categorize, highlight, or mark items with contextual metadata.
 
-Three variants provide different visual weights: \`eyebrow\` for subtle labels, \`soft\` for muted backgrounds, and \`pill\` for rounded pill-shaped badges. Choose the size that matches your layout context.
+Two variants provide different visual weights: \`eyebrow\` for subtle labels and \`soft\` for muted backgrounds. Choose the size that matches your layout context. For rounded pill-shaped tags, use \`ark-chip\` instead.
         `,
       },
     },
@@ -54,13 +54,6 @@ export const Soft = {
   args: {
     label: "Interface System",
     variant: BadgeVariant.Soft,
-  },
-} satisfies Story;
-
-export const Pill = {
-  args: {
-    label: "Available",
-    variant: BadgeVariant.Pill,
   },
 } satisfies Story;
 

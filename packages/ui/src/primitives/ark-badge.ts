@@ -4,7 +4,6 @@ import { defineElement } from "../define-element";
 export enum BadgeVariant {
   Eyebrow = "eyebrow",
   Soft = "soft",
-  Pill = "pill",
 }
 
 export type BadgeSize = "sm" | "md" | "lg";
@@ -30,9 +29,6 @@ export class ArkBadge extends LitElement {
       --badge-font-size: calc(var(--ark-font-size-xs) * 0.83);
       --badge-gap: var(--ark-space-4);
       --badge-line-width: 28px;
-      --badge-pill-font-size: var(--ark-font-size-xs);
-      --badge-pill-padding-block: calc(var(--ark-space-1) * 0.8);
-      --badge-pill-padding-inline: 0.65rem;
 
       display: inline-flex;
     }
@@ -41,18 +37,12 @@ export class ArkBadge extends LitElement {
       --badge-font-size: calc(var(--ark-font-size-xs) * 0.73);
       --badge-gap: var(--ark-space-3);
       --badge-line-width: 20px;
-      --badge-pill-font-size: var(--badge-font-size);
-      --badge-pill-padding-block: calc(var(--ark-space-1) * 0.6);
-      --badge-pill-padding-inline: var(--ark-space-2);
     }
 
     :host([size="lg"]) {
       --badge-font-size: var(--ark-font-size-xs);
       --badge-gap: var(--ark-space-5);
       --badge-line-width: 36px;
-      --badge-pill-font-size: var(--badge-font-size);
-      --badge-pill-padding-block: var(--ark-space-1);
-      --badge-pill-padding-inline: 0.8rem;
     }
 
     .badge {
@@ -79,15 +69,6 @@ export class ArkBadge extends LitElement {
     :host([variant="soft"]) .badge {
       color: var(--ark-color-text-ghost);
       letter-spacing: var(--ark-letter-spacing-mono);
-    }
-
-    :host([variant="pill"]) .badge {
-      border: 1px solid var(--ark-color-border);
-      border-radius: var(--ark-radius-full);
-      color: var(--ark-color-text-ghost);
-      font-size: var(--badge-pill-font-size);
-      letter-spacing: 0.14em;
-      padding: var(--badge-pill-padding-block) var(--badge-pill-padding-inline);
     }
   `;
 

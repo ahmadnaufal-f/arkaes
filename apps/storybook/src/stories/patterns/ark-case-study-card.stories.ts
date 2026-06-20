@@ -40,8 +40,8 @@ const renderCard = ({
     >
       &AElig;
     </div>
-    <ark-badge slot="tag" variant="pill">Performance</ark-badge>
-    <ark-badge slot="tag" variant="pill">UI Architecture</ark-badge>
+    <ark-chip slot="tag">Performance</ark-chip>
+    <ark-chip slot="tag">UI Architecture</ark-chip>
   </ark-case-study-card>
 `;
 

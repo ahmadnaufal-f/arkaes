@@ -3,6 +3,8 @@ import type { BadgeSize, BadgeVariantValue } from "./ark-badge";
 import { ArkBrandLogo, defineArkBrandLogo } from "./ark-brand-logo";
 import { ArkButton, ButtonVariant, defineArkButton } from "./ark-button";
 import { ArkCheckbox, defineArkCheckbox } from "./ark-checkbox";
+import { ArkChip, ChipVariant, defineArkChip } from "./ark-chip";
+import type { ChipSize, ChipVariantValue } from "./ark-chip";
 import { ArkDropdown, ArkDropdownOption, defineArkDropdown } from "./ark-dropdown";
 import { ArkEmpty, defineArkEmpty } from "./ark-empty";
 import { ArkInput, InputType, defineArkInput } from "./ark-input";
@@ -17,6 +19,8 @@ export {
   ArkBrandLogo,
   ArkButton,
   ButtonVariant,
+  ArkChip,
+  ChipVariant,
   ArkCheckbox,
   ArkDropdown,
   ArkDropdownOption,
@@ -31,6 +35,7 @@ export {
   defineArkBadge,
   defineArkBrandLogo,
   defineArkButton,
+  defineArkChip,
   defineArkCheckbox,
   defineArkDropdown,
   defineArkEmpty,
@@ -42,3 +47,4 @@ export {
 };
 
 export type { BadgeSize, BadgeVariantValue };
+export type { ChipSize, ChipVariantValue };

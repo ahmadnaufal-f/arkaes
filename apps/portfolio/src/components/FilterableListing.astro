@@ -1,4 +1,5 @@
 ---
+import "@arkaes/ui/register/ark-chip";
 import "@arkaes/ui/register/ark-dropdown";
 import "@arkaes/ui/register/ark-empty";
 import { CATEGORIES, EXPERTISE, categoryLabel } from "../data/expertise";
@@ -86,9 +87,9 @@ const { eyebrow, title, description, items } = Astro.props;
               transitionName={item.transitionName}
             />
             {(item.tags ?? []).map((tag) => (
-              <ark-badge slot="tag" variant="pill">
+              <ark-chip slot="tag">
                 {tag}
-              </ark-badge>
+              </ark-chip>
             ))}
           </ark-case-study-card>
         </div>

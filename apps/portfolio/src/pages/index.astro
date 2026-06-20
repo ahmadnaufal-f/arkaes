@@ -119,7 +119,7 @@ const services = EXPERTISE.map((area) => ({
             transitionName={`cs-thumb-${study.id}`}
           />
           {study.data.tags.map((tag) => (
-            <ark-badge slot="tag" variant="pill">{tag}</ark-badge>
+            <ark-chip slot="tag">{tag}</ark-chip>
           ))}
         </ark-case-study-card>
       ))}
@@ -213,7 +213,7 @@ const services = EXPERTISE.map((area) => ({
                 <div class="service-meta-label">Tech stack</div>
                 <div class="service-tags">
                   {service.techStack.map((tech) => (
-                    <span class="service-tag">{tech}</span>
+                    <ark-chip size="sm">{tech}</ark-chip>
                   ))}
                 </div>
               </div>
@@ -221,7 +221,7 @@ const services = EXPERTISE.map((area) => ({
                 <div class="service-meta-label">Related work</div>
                 <div class="service-tags">
                   {service.relatedWork.map((work) => (
-                    <span class="service-tag service-tag--work">{work}</span>
+                    <ark-chip size="sm" variant="accent">{work}</ark-chip>
                   ))}
                 </div>
               </div>
@@ -257,9 +257,9 @@ const services = EXPERTISE.map((area) => ({
             <div class="techstack-rule"></div>
             <div class="techstack-pills">
               {group.items.map((item) => (
-                <span class={`techstack-pill${item.primary ? " techstack-pill--primary" : ""}`}>
+                <ark-chip variant={group.emerging ? (item.primary ? "emerging" : "default") : (item.primary ? "primary" : "default")}>
                   {item.name}
-                </span>
+                </ark-chip>
               ))}
             </div>
           </article>
@@ -276,12 +276,31 @@ const services = EXPERTISE.map((area) => ({
         <div class="techstack-learning-label">Currently learning</div>
         <div class="techstack-learning-pills">
           {currentlyLearning.map((item) => (
-            <span class="techstack-learning-pill">{item}</span>
+            <ark-chip variant="learning">{item}</ark-chip>
           ))}
         </div>
       </div>
     </div>
   </section>
+
+  <script>
+    // Light up every chip in a tech-stack card when the card is hovered.
+    // ark-chip lives in shadow DOM, so this drives its isHovered API rather
+    // than relying on a CSS descendant selector.
+    (function () {
+      const cards = document.querySelectorAll<HTMLElement>(".techstack-card");
+      cards.forEach((card) => {
+        const chips = card.querySelectorAll<HTMLElement & { isHovered: boolean }>("ark-chip");
+        const setHovered = (value: boolean) => {
+          chips.forEach((chip) => {
+            chip.isHovered = value;
+          });
+        };
+        card.addEventListener("mouseenter", () => setHovered(true));
+        card.addEventListener("mouseleave", () => setHovered(false));
+      });
+    })();
+  </script>
 
   <section class="about-strip" id="about">
     <div class="about-portrait reveal">
