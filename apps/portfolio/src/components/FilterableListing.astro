@@ -1,4 +1,5 @@
 ---
+import "@arkaes/ui/register/ark-button";
 import "@arkaes/ui/register/ark-chip";
 import "@arkaes/ui/register/ark-dropdown";
 import "@arkaes/ui/register/ark-empty";
@@ -103,6 +104,10 @@ const { eyebrow, title, description, items } = Astro.props;
     description="No work fits this combination of filters. Try widening your selection."
     hidden
   ></ark-empty>
+
+  <div class="listing-footer">
+    <ark-button href="/" variant="ghost">&larr; Back to home page</ark-button>
+  </div>
 </section>
 
 <script>

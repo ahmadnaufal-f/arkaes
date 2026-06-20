@@ -32,6 +32,12 @@
   display: none;
 }
 
+.listing-footer {
+  border-top: 1px solid var(--ark-color-border);
+  margin-top: 64px;
+  padding-top: var(--ark-space-6);
+}
+
 @media (max-width: 900px) {
   .listing.page-section {
     padding: 140px 24px 86px;
