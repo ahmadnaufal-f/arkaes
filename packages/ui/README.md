@@ -181,6 +181,41 @@ The wrappers carry the `"use client"` directive, so they work in React Server Co
 (e.g. the Next.js app router). Single-family subpaths like `@arkaes/ui/react/ark-dialog` are
 also available.
 
+### Slots
+
+Named slots work exactly as in HTML — children are projected into the element's light DOM, so
+you target a slot with the standard `slot="…"` attribute on a child. The `slot` prop is
+forwarded even to nested wrappers (e.g. `<ArkButton slot="actions">`).
+
+```tsx
+import { ArkHero, ArkButton } from "@arkaes/ui/react";
+
+<ArkHero>
+  <span slot="eyebrow">Featured</span>
+  <h1 slot="title">Architecture meets aesthetics</h1>
+  <p slot="subtitle">Frontend engineering for polished interfaces.</p>
+  <ArkButton slot="actions" variant="primary">Get in touch</ArkButton>
+  <img slot="visual" src="/hero.png" alt="" />
+</ArkHero>;
+```
+
+| Component | Named slots (unslotted children fall into the default slot) |
+| --- | --- |
+| `ArkHero` | `eyebrow`, `title`, `subtitle`, `actions`, `visual` |
+| `ArkPageHeader` | `eyebrow`, `title`, `lead` |
+| `ArkProjectHeader` | `visual`, `title`, `tag` |
+| `ArkCaseStudyCard` | `media`, `tag` |
+| `ArkAccordionItem` | `trigger` (rich trigger content; default children = panel body) |
+
+Notes:
+
+- Put `slot="…"` on a real element — React fragments (`<>…</>`) and bare text strings cannot
+  carry it. Wrap text in a `<span slot="…">`.
+- `ArkPageHeader` and `ArkProjectHeader` read their slotted content once on mount. If you need to
+  toggle a slotted `title`/`lead` at runtime, remount with a `key` rather than conditionally
+  rendering the slotted child in place. (`ArkCaseStudyCard` listens for `slotchange`, so its
+  `media` slot updates dynamically.)
+
 ## Entrypoints
 
 | Import | Side effects | Use for |
