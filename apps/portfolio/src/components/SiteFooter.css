@@ -8,19 +8,19 @@
 }
 
 .footer-logo {
-  color: rgba(250, 247, 245, 0.3);
+  color: rgba(250, 247, 245, 0.6);
   font-family: var(--ark-font-display);
-  font-size: 0.95rem;
+  font-size: 1.05rem;
   font-weight: var(--ark-weight-thin);
   letter-spacing: 0.1em;
 }
 
 .footer-copy,
 .footer-links a {
-  color: rgba(250, 247, 245, 0.24);
+  color: rgba(250, 247, 245, 0.62);
   font-family: var(--ark-font-mono);
-  font-size: 0.56rem;
-  letter-spacing: 0.15em;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
 }
 
 .footer-links {

@@ -44,7 +44,9 @@ export class ArkButton extends LitElement {
       transition:
         background var(--ark-duration-normal) var(--ark-ease-out),
         border-color var(--ark-duration-normal) var(--ark-ease-out),
-        color var(--ark-duration-normal) var(--ark-ease-out);
+        box-shadow var(--ark-duration-normal) var(--ark-ease-out),
+        color var(--ark-duration-normal) var(--ark-ease-out),
+        transform var(--ark-duration-normal) var(--ark-ease-out);
     }
 
     a:focus-visible,
@@ -72,7 +74,7 @@ export class ArkButton extends LitElement {
       position: absolute;
       transform: scaleX(0);
       transform-origin: left;
-      transition: transform 350ms var(--ark-ease-out);
+      transition: transform var(--ark-duration-slow) var(--ark-ease-out);
       width: 100%;
     }
 
@@ -83,10 +85,18 @@ export class ArkButton extends LitElement {
 
     .primary:not(:disabled):not([aria-disabled="true"]):hover {
       background: var(--ark-button-primary-bg-hover, #2d2724);
+      box-shadow: var(--ark-shadow-md);
+      transform: translateY(-2px);
     }
 
     .primary:not(:disabled):not([aria-disabled="true"]):hover::after {
       transform: scaleX(1);
+    }
+
+    /* Press settles the button back down for a tactile click. */
+    .primary:not(:disabled):not([aria-disabled="true"]):active {
+      box-shadow: var(--ark-shadow-sm);
+      transform: translateY(0);
     }
 
     .secondary {
@@ -100,7 +110,19 @@ export class ArkButton extends LitElement {
     }
 
     .secondary:not(:disabled):not([aria-disabled="true"]):hover {
+      background: color-mix(
+        in srgb,
+        var(--ark-color-accent) 14%,
+        var(--ark-color-accent-soft)
+      );
       border-color: var(--ark-color-accent);
+      box-shadow: var(--ark-shadow-sm);
+      transform: translateY(-2px);
+    }
+
+    .secondary:not(:disabled):not([aria-disabled="true"]):active {
+      box-shadow: none;
+      transform: translateY(0);
     }
 
     .ghost {
@@ -113,8 +135,27 @@ export class ArkButton extends LitElement {
       padding: 0 0 0.2rem;
     }
 
+    /* An accent underline wipes in from the left, echoing the primary variant
+       so the text-style ghost button still gets a clear hover affordance. */
+    .ghost::after {
+      background: var(--ark-color-accent-strong);
+      bottom: 0;
+      content: "";
+      height: 1px;
+      left: 0;
+      position: absolute;
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform var(--ark-duration-slow) var(--ark-ease-out);
+      width: 100%;
+    }
+
     .ghost:not(:disabled):not([aria-disabled="true"]):hover {
       color: var(--ark-color-accent-strong);
+    }
+
+    .ghost:not(:disabled):not([aria-disabled="true"]):hover::after {
+      transform: scaleX(1);
     }
 
     a[aria-disabled="true"],

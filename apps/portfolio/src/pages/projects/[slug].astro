@@ -62,8 +62,20 @@ const paragraphs = body.split("\n\n").map((p) => p.trim()).filter(Boolean);
         {
           screenshots.length > 0 && (
             <div class="proj-gallery" role="group" aria-label="Screenshots">
-              {screenshots.map((src) => (
-                <img src={src} alt={`${title} screenshot`} loading="lazy" />
+              {screenshots.map((src, i) => (
+                <button
+                  type="button"
+                  class="proj-gallery-item"
+                  data-lightbox-trigger
+                  data-lightbox-index={i}
+                  aria-label={`View screenshot ${i + 1} of ${screenshots.length} full screen`}
+                >
+                  <img
+                    src={src}
+                    alt={`${title} screenshot ${i + 1}`}
+                    loading="lazy"
+                  />
+                </button>
               ))}
             </div>
           )
@@ -90,5 +102,193 @@ const paragraphs = body.split("\n\n").map((p) => p.trim()).filter(Boolean);
         </div>
       </div>
     </section>
+
+    {
+      screenshots.length > 0 && (
+        <div
+          class="proj-lightbox"
+          data-lightbox
+          hidden
+          aria-hidden="true"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Screenshot viewer"
+        >
+          <div class="proj-lightbox-underlay" data-lightbox-dismiss />
+
+          <button
+            type="button"
+            class="proj-lightbox-btn proj-lightbox-close"
+            data-lightbox-close
+            aria-label="Close"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M5 5L19 19M19 5L5 19"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+              />
+            </svg>
+          </button>
+
+          <button
+            type="button"
+            class="proj-lightbox-btn proj-lightbox-prev"
+            data-lightbox-prev
+            aria-label="Previous screenshot"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M15 5L8 12L15 19"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </button>
+
+          <figure class="proj-lightbox-figure">
+            <img class="proj-lightbox-img" data-lightbox-img src="" alt="" />
+          </figure>
+
+          <button
+            type="button"
+            class="proj-lightbox-btn proj-lightbox-next"
+            data-lightbox-next
+            aria-label="Next screenshot"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M9 5L16 12L9 19"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </button>
+        </div>
+      )
+    }
   </article>
 </BaseLayout>
+
+<script>
+  function initProjectLightbox() {
+    const lightbox = document.querySelector<HTMLElement>("[data-lightbox]");
+    if (!lightbox) return;
+
+    const imgEl = lightbox.querySelector<HTMLImageElement>("[data-lightbox-img]");
+    const prevBtn = lightbox.querySelector<HTMLButtonElement>("[data-lightbox-prev]");
+    const nextBtn = lightbox.querySelector<HTMLButtonElement>("[data-lightbox-next]");
+    const closeBtn = lightbox.querySelector<HTMLButtonElement>("[data-lightbox-close]");
+    const triggers = Array.from(
+      document.querySelectorAll<HTMLButtonElement>("[data-lightbox-trigger]"),
+    );
+    if (!imgEl || !prevBtn || !nextBtn || !closeBtn || triggers.length === 0) return;
+
+    // Portal the viewer to <body> so it escapes the <main> stacking context
+    // (created by the page transition) and can layer above the fixed
+    // ark-navigation header.
+    if (lightbox.parentElement !== document.body) {
+      document.body.appendChild(lightbox);
+    }
+
+    // Source the slides straight from the gallery thumbnails so there's a
+    // single source of truth for the screenshot list.
+    const slides = triggers.map((trigger) => {
+      const thumb = trigger.querySelector("img");
+      return { src: thumb?.currentSrc || thumb?.src || "", alt: thumb?.alt ?? "" };
+    });
+    const multiple = slides.length > 1;
+    prevBtn.hidden = !multiple;
+    nextBtn.hidden = !multiple;
+
+    let index = 0;
+    let lastFocused: HTMLElement | null = null;
+    let closeTimer: ReturnType<typeof setTimeout> | null = null;
+
+    const show = (i: number) => {
+      index = (i + slides.length) % slides.length;
+      const slide = slides[index];
+      imgEl.src = slide.src;
+      imgEl.alt = slide.alt;
+    };
+
+    // Total exit time: image/controls fade (220ms) then the underlay clears
+    // (300ms), matching the CSS in _projects.css.
+    const EXIT_MS = 560;
+
+    const open = (i: number) => {
+      // Cancel a close that may still be animating so reopening is instant.
+      if (closeTimer !== null) {
+        clearTimeout(closeTimer);
+        closeTimer = null;
+      }
+      lightbox.classList.remove("is-closing");
+      lastFocused = document.activeElement as HTMLElement | null;
+      show(i);
+      lightbox.hidden = false;
+      lightbox.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+      // Flip to the open state on the next frame so the underlay fades in from
+      // 0; the image and controls follow once that 300ms fade completes (CSS).
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => lightbox.classList.add("is-open"));
+      });
+      closeBtn.focus();
+    };
+
+    const close = () => {
+      if (lightbox.hidden || closeTimer !== null) return;
+      // Play the exit (reverse of the entrance), then hide once it finishes.
+      lightbox.classList.remove("is-open");
+      lightbox.classList.add("is-closing");
+      lightbox.setAttribute("aria-hidden", "true");
+      lastFocused?.focus();
+      closeTimer = setTimeout(() => {
+        closeTimer = null;
+        lightbox.classList.remove("is-closing");
+        lightbox.hidden = true;
+        document.body.style.overflow = "";
+        imgEl.src = "";
+      }, EXIT_MS);
+    };
+
+    triggers.forEach((trigger, i) => {
+      trigger.addEventListener("click", () => open(i));
+    });
+    prevBtn.addEventListener("click", () => show(index - 1));
+    nextBtn.addEventListener("click", () => show(index + 1));
+    closeBtn.addEventListener("click", close);
+    lightbox
+      .querySelector("[data-lightbox-dismiss]")
+      ?.addEventListener("click", close);
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (lightbox.hidden) return;
+      if (event.key === "Escape") close();
+      else if (event.key === "ArrowLeft" && multiple) show(index - 1);
+      else if (event.key === "ArrowRight" && multiple) show(index + 1);
+    };
+    document.addEventListener("keydown", onKeyDown);
+
+    // The viewer was portaled onto <body>, so it outlives the page's <main>
+    // during a View Transition. Tear it (and the document-level listener) down
+    // before the swap so nothing leaks across navigations.
+    document.addEventListener(
+      "astro:before-swap",
+      () => {
+        if (closeTimer !== null) clearTimeout(closeTimer);
+        document.removeEventListener("keydown", onKeyDown);
+        document.body.style.overflow = "";
+        lightbox.remove();
+      },
+      { once: true },
+    );
+  }
+
+  document.addEventListener("astro:page-load", initProjectLightbox);
+</script>

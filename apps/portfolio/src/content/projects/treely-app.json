@@ -10,7 +10,8 @@
   "stack": [
     "React Native",
     "Expo",
-    "React Native Reanimated",
+    "RN Skia",
+    "RN Reanimated",
     "Gluestack UI",
     "NestJS",
     "PostgreSQL",
@@ -19,5 +20,11 @@
   ],
   "category": "side-project",
   "github-url": "https://github.com/Treehouse-Devs/FamilyTreeApp",
-  "screenshots": []
+  "screenshots": [
+    "/projects/treely-app/1.jpeg",
+    "/projects/treely-app/2.jpeg",
+    "/projects/treely-app/3.jpeg",
+    "/projects/treely-app/4.jpeg",
+    "/projects/treely-app/5.jpeg"
+  ]
 }

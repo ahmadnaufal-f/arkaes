@@ -1,0 +1,195 @@
+---
+interface Props {
+  transitionName: string;
+  asSlot?: string;
+}
+const { transitionName, asSlot } = Astro.props;
+
+// A miniature "component library" canvas: a token swatch palette up top, two
+// primitive previews (a filled button + an outlined chip) in the middle, and a
+// couple of documentation spec lines below. Together they read as the layers a
+// design system is built from — tokens, components, and docs.
+const swatches = ["accent", "strong", "soft", "neutral"] as const;
+---
+
+<div
+  class="thumb-ds"
+  slot={asSlot}
+  style={`view-transition-name: ${transitionName};`}
+>
+  <div class="thumb-ds-card">
+    <!-- Design tokens: a small palette of color swatches -->
+    <div class="thumb-ds-palette" aria-hidden="true">
+      {swatches.map((name) => (
+        <span class={`thumb-ds-swatch thumb-ds-swatch--${name}`}></span>
+      ))}
+      <span class="thumb-ds-token-bar"></span>
+    </div>
+
+    <!-- Components: a filled button primitive and an outlined chip -->
+    <div class="thumb-ds-components" aria-hidden="true">
+      <span class="thumb-ds-button">
+        <span class="thumb-ds-button-label"></span>
+      </span>
+      <span class="thumb-ds-chip">
+        <span class="thumb-ds-chip-dot"></span>
+        <span class="thumb-ds-chip-label"></span>
+      </span>
+    </div>
+
+    <!-- Documentation: spec lines, like a component's usage notes -->
+    <div class="thumb-ds-specs" aria-hidden="true">
+      <span class="thumb-ds-spec-line thumb-ds-spec-line--lg"></span>
+      <span class="thumb-ds-spec-line"></span>
+    </div>
+  </div>
+</div>
+
+<style>
+  .thumb-ds {
+    align-items: center;
+    background: var(--thumbnail-background, var(--ark-color-accent-soft));
+    display: flex;
+    height: var(--thumbnail-height, auto);
+    justify-content: center;
+    position: relative;
+  }
+
+  /* The card sits smaller than the container and centered, so its drop shadow
+     always has room to breathe and is never clipped. */
+  .thumb-ds-card {
+    background: var(--ark-color-surface);
+    border: 1px solid var(--ark-color-border);
+    border-radius: 20px;
+    box-shadow: var(--ark-shadow-md);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 18px 16px;
+    width: 200px;
+  }
+
+  /* ── Token palette ─────────────────────────────────────────────────── */
+  .thumb-ds-palette {
+    align-items: center;
+    display: flex;
+    gap: 8px;
+  }
+
+  .thumb-ds-swatch {
+    border-radius: 7px;
+    height: 22px;
+    width: 22px;
+  }
+
+  .thumb-ds-swatch--accent {
+    background: var(--ark-color-accent);
+  }
+
+  .thumb-ds-swatch--strong {
+    background: var(--ark-color-accent-strong);
+  }
+
+  .thumb-ds-swatch--soft {
+    background: var(--ark-color-accent-soft);
+    border: 1.5px solid var(--ark-color-accent);
+  }
+
+  .thumb-ds-swatch--neutral {
+    background: var(--ark-color-neutral-200);
+  }
+
+  .thumb-ds-token-bar {
+    background: var(--ark-color-neutral-200);
+    border-radius: 3px;
+    flex: 1;
+    height: 6px;
+  }
+
+  /* ── Component previews ────────────────────────────────────────────── */
+  .thumb-ds-components {
+    align-items: center;
+    display: flex;
+    gap: 10px;
+  }
+
+  .thumb-ds-button {
+    align-items: center;
+    background: var(--ark-color-accent);
+    border-radius: 999px;
+    display: flex;
+    justify-content: center;
+    padding: 9px 0;
+    width: 86px;
+  }
+
+  .thumb-ds-button-label {
+    background: var(--ark-color-neutral-0);
+    border-radius: 3px;
+    height: 6px;
+    width: 44px;
+  }
+
+  .thumb-ds-chip {
+    align-items: center;
+    background: var(--ark-color-accent-soft);
+    border: 1.5px solid var(--ark-color-accent);
+    border-radius: 999px;
+    display: flex;
+    gap: 6px;
+    padding: 7px 12px;
+  }
+
+  .thumb-ds-chip-dot {
+    background: var(--ark-color-accent);
+    border-radius: 50%;
+    height: 7px;
+    width: 7px;
+  }
+
+  .thumb-ds-chip-label {
+    background: color-mix(in srgb, var(--ark-color-accent) 55%, transparent);
+    border-radius: 3px;
+    height: 6px;
+    width: 26px;
+  }
+
+  /* ── Documentation spec lines ──────────────────────────────────────── */
+  .thumb-ds-specs {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .thumb-ds-spec-line {
+    background: var(--ark-color-neutral-200);
+    border-radius: 3px;
+    height: 6px;
+    width: 60%;
+  }
+
+  .thumb-ds-spec-line--lg {
+    background: color-mix(in srgb, var(--ark-color-accent) 28%, transparent);
+    width: 82%;
+  }
+
+  /* The chip dot quietly pulses to hint that these are live, stateful
+     components rather than a static mockup. */
+  @media (prefers-reduced-motion: no-preference) {
+    .thumb-ds-chip-dot {
+      animation: thumb-ds-pulse 2.8s ease-in-out infinite;
+    }
+  }
+
+  @keyframes thumb-ds-pulse {
+    0%,
+    100% {
+      opacity: 0.55;
+      transform: scale(0.85);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+</style>

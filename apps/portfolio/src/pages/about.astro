@@ -102,12 +102,26 @@ I use these projects as a way to *learn by shipping*. They help me stay close to
 
     <ark-accordion class="about-accordion">
       {
-        sections.map(({ heading, open, content }) => (
+        sections.map(({ heading, open, content }, index) => (
           <ark-accordion-item heading={heading} open={open ? "" : undefined}>
+            {index === 0 && (
+              <img
+                class="about-summary-portrait"
+                src="/about-me.png"
+                alt="Ahmad Naufal"
+                width="320"
+                height="427"
+                transition:name="about-me"
+              />
+            )}
             <div class="about-body" set:html={renderSectionHtml(content)} />
           </ark-accordion-item>
         ))
       }
     </ark-accordion>
+
+    <div class="about-footer-nav">
+      <ark-button href="/" variant="ghost">&larr; Back to home page</ark-button>
+    </div>
   </section>
 </BaseLayout>

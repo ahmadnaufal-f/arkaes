@@ -34,13 +34,177 @@
   margin: 2em 0 0;
 }
 
-.proj-gallery img {
+/* Each thumbnail is a button so it can open the full-screen viewer. */
+.proj-gallery-item {
+  background: none;
+  border: 0;
+  cursor: pointer;
+  display: block;
+  flex: 0 1 200px;
+  max-width: 220px;
+  padding: 0;
+  transition: transform var(--ark-duration-fast) var(--ark-ease-standard);
+}
+
+.proj-gallery-item:hover {
+  transform: translateY(-2px);
+}
+
+.proj-gallery-item:focus-visible {
+  border-radius: 20px;
+  outline: 2px solid var(--ark-color-focus);
+  outline-offset: 3px;
+}
+
+.proj-gallery-item img {
   border: 1px solid color-mix(in srgb, var(--ark-color-accent) 24%, transparent);
   border-radius: 20px;
   box-shadow: 0 16px 36px rgba(78, 52, 120, 0.16);
-  flex: 0 1 200px;
+  display: block;
   height: auto;
-  max-width: 220px;
+  width: 100%;
+}
+
+/* Full-screen screenshot viewer (lightbox). Mounted at the end of the
+   article and toggled via the [hidden] attribute from a small client script. */
+.proj-lightbox {
+  align-items: center;
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: clamp(16px, 5vw, 56px);
+  position: fixed;
+  z-index: 1000;
+}
+
+.proj-lightbox[hidden] {
+  display: none;
+}
+
+.proj-lightbox-underlay {
+  background: rgba(16, 7, 6, 0.78);
+  cursor: pointer;
+  inset: 0;
+  opacity: 0;
+  position: absolute;
+  transition: opacity 300ms var(--ark-ease-standard);
+}
+
+.proj-lightbox.is-open .proj-lightbox-underlay {
+  opacity: 1;
+}
+
+/* Exit mirrors the entrance: the image/controls fade out first (220ms), then
+   the underlay clears once they're gone. */
+.proj-lightbox.is-closing .proj-lightbox-underlay {
+  opacity: 0;
+  transition-delay: var(--ark-duration-normal);
+}
+
+.proj-lightbox-figure {
+  margin: 0;
+  position: relative;
+  z-index: 1;
+}
+
+/* The image and controls fade in only after the underlay has finished its
+   300ms fade, so the dark screen settles first and then reveals the shot.
+   (The buttons fold opacity into their own transition further down so their
+   hover background/transform stay snappy.) */
+.proj-lightbox-figure {
+  opacity: 0;
+  transition: opacity var(--ark-duration-normal) var(--ark-ease-standard);
+}
+
+.proj-lightbox.is-open .proj-lightbox-figure {
+  opacity: 1;
+  transition-delay: 300ms;
+}
+
+.proj-lightbox-img {
+  border-radius: 16px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+  display: block;
+  max-height: 80vh;
+  max-width: 82vw;
+  object-fit: contain;
+}
+
+.proj-lightbox-btn {
+  align-items: center;
+  background: color-mix(in srgb, var(--ark-color-surface) 70%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ark-color-accent) 24%, transparent);
+  border-radius: 999px;
+  color: var(--ark-color-text);
+  cursor: pointer;
+  display: flex;
+  height: 44px;
+  justify-content: center;
+  opacity: 0;
+  padding: 0;
+  position: absolute;
+  transition:
+    opacity var(--ark-duration-normal) var(--ark-ease-standard),
+    background var(--ark-duration-fast) var(--ark-ease-standard),
+    transform var(--ark-duration-fast) var(--ark-ease-standard);
+  width: 44px;
+  z-index: 2;
+}
+
+/* Reveal the controls in step with the figure — delay only the opacity track
+   so hover background/transform remain immediate. */
+.proj-lightbox.is-open .proj-lightbox-btn {
+  opacity: 1;
+  transition:
+    opacity var(--ark-duration-normal) var(--ark-ease-standard) 300ms,
+    background var(--ark-duration-fast) var(--ark-ease-standard),
+    transform var(--ark-duration-fast) var(--ark-ease-standard);
+}
+
+.proj-lightbox-btn:hover {
+  background: var(--ark-color-surface);
+  transform: scale(1.06);
+}
+
+.proj-lightbox-btn:focus-visible {
+  outline: 2px solid var(--ark-color-focus);
+  outline-offset: 2px;
+}
+
+.proj-lightbox-btn[hidden] {
+  display: none;
+}
+
+.proj-lightbox-btn svg {
+  display: block;
+  fill: none;
+  height: 22px;
+  width: 22px;
+}
+
+.proj-lightbox-close {
+  right: clamp(16px, 4vw, 40px);
+  top: clamp(16px, 4vw, 40px);
+}
+
+.proj-lightbox-prev {
+  left: clamp(12px, 3vw, 32px);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.proj-lightbox-prev:hover {
+  transform: translateY(-50%) scale(1.06);
+}
+
+.proj-lightbox-next {
+  right: clamp(12px, 3vw, 32px);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.proj-lightbox-next:hover {
+  transform: translateY(-50%) scale(1.06);
 }
 
 /* Footer navigation links. On wide screens "Back to projects" sits at the

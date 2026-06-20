@@ -54,7 +54,7 @@ export class ArkProjectHeader extends LitElement {
       gap: 80px;
       min-height: 240px;
       overflow: hidden;
-      padding-block: 100px;
+      padding-block: 36px;
       padding-inline: var(--site-content-padding);
       position: sticky;
       top: var(--_stick-top);
@@ -148,8 +148,8 @@ export class ArkProjectHeader extends LitElement {
     /* ── Responsive ─────────────────────────────────────────────────── */
     @media (max-width: 860px) {
       .hero {
-        min-height: 320px;
-        padding-block: 72px 56px;
+        min-height: 200px;
+        padding-block: 24px 20px;
       }
 
       .hero.is-stuck {
@@ -163,7 +163,7 @@ export class ArkProjectHeader extends LitElement {
 
     @media (max-width: 520px) {
       .meta {
-        padding: 32px 20px;
+        padding: 12px;
       }
     }
 
