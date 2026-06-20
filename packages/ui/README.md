@@ -144,6 +144,43 @@ Then use the tags in markup:
 <ark-button variant="primary">Get in touch</ark-button>
 ```
 
+## React
+
+First-class React bindings (built with [`@lit/react`](https://www.npmjs.com/package/@lit/react))
+are available from `@arkaes/ui/react`. React **18+** is required (it's an optional peer
+dependency). Each wrapper registers its own element, so you do **not** need any
+`@arkaes/ui/register/*` import — but you still load the token CSS once.
+
+```tsx
+import { ArkButton, ArkInput } from "@arkaes/ui/react";
+import "@arkaes/tokens/css";
+
+export function Demo() {
+  return (
+    <form>
+      <ArkInput onChange={(e) => console.log((e.target as HTMLInputElement).value)} />
+      <ArkButton variant="primary">Submit</ArkButton>
+    </form>
+  );
+}
+```
+
+Reactive properties become typed props, and custom events are exposed as `on*` props:
+
+| Component | Event prop → DOM event |
+| --- | --- |
+| `ArkInput`, `ArkCheckbox`, `ArkToggle`, `ArkRadioGroup` | `onInput` → `input`, `onChange` → `change` |
+| `ArkRadio` | `onInput`, `onChange`, `onSelect` → `ark-radio-select` |
+| `ArkDropdown` | `onChange` → `change` |
+| `ArkAccordionItem` | `onToggle` → `ark-accordion:toggle` |
+| `ArkDialogRoot` | `onOpen` → `ark-dialog:open`, `onClose` → `ark-dialog:close` |
+| `ArkNavigationMobileToggle` | `onMenuToggle` → `ark-nav:menu-toggle` |
+| `ArkToast` | `onDismiss` → `ark-toast:dismiss` |
+
+The wrappers carry the `"use client"` directive, so they work in React Server Component setups
+(e.g. the Next.js app router). Single-family subpaths like `@arkaes/ui/react/ark-dialog` are
+also available.
+
 ## Entrypoints
 
 | Import | Side effects | Use for |
@@ -152,6 +189,7 @@ Then use the tags in markup:
 | `@arkaes/ui/register` | registers **all** elements | apps that want everything available |
 | `@arkaes/ui/register/<name>` | registers **one** element | selective, tree-shakeable registration |
 | `@arkaes/ui/primitives`, `/components`, `/patterns` (and `/*` subpaths) | none | direct, typed access to a single class |
+| `@arkaes/ui/react` (and `/react/*`) | self-registers | React components for every element |
 
 ## Elements
 

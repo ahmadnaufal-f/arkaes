@@ -69,6 +69,14 @@
     "./patterns/*": {
       "types": "./src/patterns/*.ts",
       "default": "./src/patterns/*.ts"
+    },
+    "./react": {
+      "types": "./src/react/index.ts",
+      "default": "./src/react/index.ts"
+    },
+    "./react/*": {
+      "types": "./src/react/*.ts",
+      "default": "./src/react/*.ts"
     }
   },
   "publishConfig": {
@@ -111,19 +119,44 @@
       "./patterns/*": {
         "types": "./dist/patterns/*.d.ts",
         "default": "./dist/patterns/*.js"
+      },
+      "./react": {
+        "types": "./dist/react/index.d.ts",
+        "default": "./dist/react/index.js"
+      },
+      "./react/*": {
+        "types": "./dist/react/*.d.ts",
+        "default": "./dist/react/*.js"
       }
     }
   },
   "scripts": {
-    "build": "tsdown",
+    "build": "tsdown && node ./scripts/postbuild-use-client.mjs",
     "check": "tsc -p tsconfig.json --noEmit",
     "lint": "eslint src --max-warnings=0"
   },
   "dependencies": {
     "@arkaes/tokens": "workspace:^",
+    "@lit/react": "^1.0.8",
     "lit": "^3.3.0"
   },
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    }
+  },
   "devDependencies": {
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
     "tsdown": "^0.22.3"
   }
 }
