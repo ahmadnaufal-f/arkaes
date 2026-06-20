@@ -1,11 +1,32 @@
 {
   "name": "@arkaes/tokens",
   "version": "0.1.0",
-  "private": true,
   "description": "Readability-first design tokens for the Arkaes portfolio and UI system.",
+  "license": "MIT",
+  "author": "Ahmad Naufal",
+  "homepage": "https://github.com/ahmadnaufal-f/arkaes/tree/main/packages/tokens#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ahmadnaufal-f/arkaes.git",
+    "directory": "packages/tokens"
+  },
+  "bugs": {
+    "url": "https://github.com/ahmadnaufal-f/arkaes/issues"
+  },
+  "keywords": [
+    "design-tokens",
+    "css-custom-properties",
+    "design-system",
+    "theme",
+    "arkaes"
+  ],
   "type": "module",
   "sideEffects": [
-    "src/**/*.css"
+    "**/*.css"
+  ],
+  "files": [
+    "dist",
+    "README.md"
   ],
   "exports": {
     ".": {
@@ -22,9 +43,32 @@
     "./styles/reset.css": "./src/styles/reset.css",
     "./styles/typography.css": "./src/styles/typography.css"
   },
+  "publishConfig": {
+    "access": "public",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "./css": "./dist/styles/index.css",
+      "./tokens.css": "./dist/styles/tokens.css",
+      "./theme.css": "./dist/styles/theme.css",
+      "./reset.css": "./dist/styles/reset.css",
+      "./typography.css": "./dist/styles/typography.css",
+      "./styles/tokens.css": "./dist/styles/tokens.css",
+      "./styles/theme.css": "./dist/styles/theme.css",
+      "./styles/reset.css": "./dist/styles/reset.css",
+      "./styles/typography.css": "./dist/styles/typography.css"
+    }
+  },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "tsdown",
     "check": "tsc -p tsconfig.json --noEmit",
     "lint": "eslint src --max-warnings=0"
+  },
+  "devDependencies": {
+    "tsdown": "^0.22.3"
   }
 }
