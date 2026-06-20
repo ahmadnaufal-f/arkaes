@@ -2,6 +2,7 @@
 import "@arkaes/ui/register/ark-chip";
 import "@arkaes/ui/register/ark-dropdown";
 import "@arkaes/ui/register/ark-empty";
+import "@arkaes/ui/register/ark-page-header";
 import { CATEGORIES, EXPERTISE, categoryLabel } from "../data/expertise";
 import CaseStudyVisual from "./CaseStudyVisual.astro";
 import "./_filterable-listing.css";
@@ -28,11 +29,7 @@ const { eyebrow, title, description, items } = Astro.props;
 ---
 
 <section class="page-section listing">
-  <div class="section-heading">
-    <ark-badge>{eyebrow}</ark-badge>
-    <h1>{title}</h1>
-    {description && <p class="lead">{description}</p>}
-  </div>
+  <ark-page-header eyebrow={eyebrow} heading={title} lead={description} />
 
   <div class="filter-bar" data-filter-bar>
     <ark-dropdown

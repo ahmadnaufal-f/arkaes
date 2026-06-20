@@ -53,24 +53,14 @@ const accordionSections = allSections.filter((s) => s.heading !== "Overview");
 
 <BaseLayout title={`${title} — Arkaes`} description={shortDesc}>
   <article class="cs-page">
-    <span class="cs-hero-sentinel" aria-hidden="true"></span>
-    <header class="cs-hero">
-      <div class="cs-hero-visual">
-        <CaseStudyVisual visual={visual} transitionName={`cs-thumb-${study.id}`} />
-      </div>
-
-      <div class="cs-hero-meta">
-        <div class="cs-hero-eyebrow">Case Study</div>
-        <div class="cs-hero-tags">
-          {
-            tags.map((tag: string) => (
-              <ark-chip>{tag}</ark-chip>
-            ))
-          }
-        </div>
-        <h1 class="cs-hero-title">{title}</h1>
-      </div>
-    </header>
+    <ark-project-header eyebrow="Case Study" heading={title}>
+      <CaseStudyVisual
+        visual={visual}
+        asSlot="visual"
+        transitionName={`proj-thumb-${study.id}`}
+      />
+      {tags.map((tag: string) => <ark-chip slot="tag">{tag}</ark-chip>)}
+    </ark-project-header>
 
     {
       overviewSection && (
@@ -110,34 +100,3 @@ const accordionSections = allSections.filter((s) => s.heading !== "Overview");
     </div>
   </article>
 </BaseLayout>
-
-<script>
-  // Toggle a `.is-stuck` class on the hero once it pins to the top, so it can
-  // collapse its padding. A zero-cost IntersectionObserver watches a sentinel
-  // sitting at the hero's top edge instead of listening to every scroll frame.
-  function initHeroStick() {
-    const hero = document.querySelector<HTMLElement>(".cs-hero");
-    const sentinel = document.querySelector<HTMLElement>(".cs-hero-sentinel");
-    if (!hero || !sentinel) return;
-
-    // The spacer sits at the very top of the page and is as tall as the stick
-    // offset, so it's fully visible at rest (not stuck) and only scrolls past
-    // the viewport top once the hero is pinned (stuck).
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        hero.classList.toggle("is-stuck", !entry.isIntersecting);
-      },
-      { threshold: 0 },
-    );
-    observer.observe(sentinel);
-
-    // Tear down before a View Transition swaps the page out.
-    document.addEventListener(
-      "astro:before-swap",
-      () => observer.disconnect(),
-      { once: true },
-    );
-  }
-
-  document.addEventListener("astro:page-load", initHeroStick);
-</script>

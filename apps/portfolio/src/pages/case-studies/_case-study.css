@@ -1,97 +1,5 @@
 .cs-page {
-  /* Offset that sits above the hero; also the gap the sentinel measures. */
-  --cs-hero-stick-top: 60px;
   padding-bottom: 120px;
-}
-
-/* ── Hero ─────────────────────────────────────────────────── */
-
-/* Spacer in normal flow above the hero that the IntersectionObserver watches.
-   Its height matches the stick offset so (a) the hero pins with no jump and
-   (b) once this spacer scrolls fully past the top of the viewport, the hero
-   is pinned and we mark it "stuck". */
-.cs-hero-sentinel {
-  display: block;
-  height: var(--cs-hero-stick-top);
-}
-
-.cs-hero {
-  align-items: center;
-  background: var(--ark-color-background);
-  display: flex;
-  flex-direction: row-reverse;
-  min-height: 460px;
-  overflow: hidden;
-  padding-block: 100px;
-  padding-inline: var(--site-content-padding);
-  position: sticky;
-  top: var(--cs-hero-stick-top);
-  z-index: 10;
-  gap: 80px;
-  transition:
-    padding-block var(--ark-duration-slow) var(--ark-ease-standard),
-    min-height var(--ark-duration-slow) var(--ark-ease-standard);
-}
-
-/* Stuck: collapse the vertical padding (and the min-height so the shrink is
-   actually visible) for a compact, pinned header. */
-.cs-hero.is-stuck {
-  min-height: 0;
-  padding-block: 20px;
-  box-shadow: var(--ark-shadow-md);
-}
-
-/* Visual illustration: a faint, background-less watermark fixed to the
-   right edge of the viewport — stays in place as the user scrolls. */
-.cs-hero-visual {
-  --thumbnail-background: none;
-  --thumbnail-height: 100%;
-  pointer-events: none;
-  z-index: 0;
-  flex: 1;
-}
-
-/* The faded opacity must live on the thumbnail itself — the element that
-   carries `view-transition-name` — not on this wrapper. A named element is
-   snapshotted without its ancestors' effects, so wrapper opacity is dropped
-   during the transition (causing a hard jump at the end). Applied to the named
-   element it is baked into the snapshot and the cross-fade animates smoothly. */
-.cs-hero-visual > * {
-  opacity: 0.5;
-}
-
-.cs-hero-meta {
-  display: flex;
-  flex-direction: column;
-  max-width: 920px;
-  position: relative;
-  width: 100%;
-  z-index: 1;
-}
-
-.cs-hero-eyebrow {
-  color: var(--ark-color-accent-strong);
-  font-family: var(--ark-font-mono);
-  font-size: 0.6rem;
-  letter-spacing: 0.16em;
-  margin-bottom: 20px;
-  text-transform: uppercase;
-}
-
-.cs-hero-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 24px;
-}
-
-.cs-hero-title {
-  color: var(--ark-color-text);
-  font-family: var(--ark-font-display);
-  font-size: clamp(1.8rem, 3vw, 2.8rem);
-  font-weight: var(--ark-weight-thin);
-  line-height: 1.12;
-  margin: 0;
 }
 
 /* ── Overview ─────────────────────────────────────────────── */
@@ -257,19 +165,6 @@
 /* ── Responsive ───────────────────────────────────────────── */
 
 @media (max-width: 860px) {
-  .cs-hero {
-    min-height: 320px;
-    padding-block: 72px 56px;
-  }
-
-  .cs-hero.cs-hero.is-stuck {
-    padding-block: 10px;
-  }
-
-  .cs-hero-visual {
-    display: none;
-  }
-
   .cs-overview-inner {
     grid-template-columns: 1fr;
     gap: 16px;
@@ -285,10 +180,6 @@
 }
 
 @media (max-width: 520px) {
-  .cs-hero-meta {
-    padding: 32px 20px;
-  }
-
   .cs-overview-section {
     padding: 48px 20px;
   }
