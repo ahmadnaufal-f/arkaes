@@ -35,12 +35,14 @@ export class ArkChip extends LitElement {
   static override styles = css`
     :host {
       --chip-font-size: 0.7rem;
+      --chip-padding: var(--ark-space-1) var(--ark-space-3);
 
       display: inline-flex;
     }
 
     :host([size="sm"]) {
-      --chip-font-size: 0.68rem;
+      --chip-font-size: 0.6rem;
+      --chip-padding: calc(var(--ark-space-1) * 0.6) var(--ark-space-2);
     }
 
     .chip {
@@ -53,7 +55,7 @@ export class ArkChip extends LitElement {
       font-family: var(--ark-font-mono);
       font-size: var(--chip-font-size);
       letter-spacing: var(--ark-letter-spacing-wide);
-      padding: var(--ark-space-1) var(--ark-space-3);
+      padding: var(--chip-padding);
       text-transform: uppercase;
       transition:
         background var(--ark-duration-fast) var(--ark-ease-out),
