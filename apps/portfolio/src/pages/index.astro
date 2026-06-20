@@ -116,7 +116,7 @@ const services = EXPERTISE.map((area) => ({
           <CaseStudyVisual
             visual={study.data.visual}
             asSlot="media"
-            transitionName={`cs-thumb-${study.id}`}
+            transitionName={`proj-thumb-${study.id}`}
           />
           {study.data.tags.map((tag) => (
             <ark-chip slot="tag">{tag}</ark-chip>
@@ -213,7 +213,7 @@ const services = EXPERTISE.map((area) => ({
                 <div class="service-meta-label">Tech stack</div>
                 <div class="service-tags">
                   {service.techStack.map((tech) => (
-                    <ark-chip size="sm">{tech}</ark-chip>
+                    <ark-chip>{tech}</ark-chip>
                   ))}
                 </div>
               </div>
@@ -221,7 +221,7 @@ const services = EXPERTISE.map((area) => ({
                 <div class="service-meta-label">Related work</div>
                 <div class="service-tags">
                   {service.relatedWork.map((work) => (
-                    <ark-chip size="sm" variant="accent">{work}</ark-chip>
+                    <ark-chip variant="accent">{work}</ark-chip>
                   ))}
                 </div>
               </div>
