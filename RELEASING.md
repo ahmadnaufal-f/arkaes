@@ -11,6 +11,16 @@ The publishable packages are `@arkaes/tokens` and `@arkaes/ui`. Releases are man
 2. Create an npm **automation access token** with publish rights.
 3. Add it to the GitHub repository as a secret named **`NPM_TOKEN`**
    (Settings → Secrets and variables → Actions).
+4. Install the GitHub workflows. They live in `docs/github-workflows/` because this session
+   could not push to `.github/workflows/` (missing `workflow` OAuth scope). Move them into
+   place once:
+
+   ```sh
+   mkdir -p .github/workflows
+   git mv docs/github-workflows/ci.yml .github/workflows/ci.yml
+   git mv docs/github-workflows/release.yml .github/workflows/release.yml
+   git commit -m "ci: add CI and release workflows" && git push
+   ```
 
 ## Day-to-day flow
 
