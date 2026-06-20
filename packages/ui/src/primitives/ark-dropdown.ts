@@ -136,7 +136,9 @@ export class ArkDropdown extends LitElement {
         var(--ark-dropdown-max-visible, 6) * var(--ark-dropdown-option-height) +
           2 * var(--ark-space-1)
       );
-      overflow-y: auto;
+      /* hidden on the x-axis keeps the scrollbar clipped inside the
+         listbox's rounded corners; auto on the y-axis still scrolls. */
+      overflow: hidden auto;
       padding: var(--ark-space-1);
       position: absolute;
       right: 0;
