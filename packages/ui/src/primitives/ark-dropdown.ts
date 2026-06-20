@@ -105,7 +105,8 @@ export class ArkDropdown extends LitElement {
     .chevron {
       color: var(--ark-color-text-subtle);
       flex: none;
-      font-size: 0.7em;
+      height: 1.15rem;
+      width: 1.15rem;
       transition: transform var(--ark-duration-fast) var(--ark-ease-standard);
     }
 
@@ -310,7 +311,18 @@ export class ArkDropdown extends LitElement {
           @click=${this._toggle}
         >
           <span class="trigger-label">${triggerLabel}</span>
-          <span class="chevron" aria-hidden="true">&#9662;</span>
+          <svg
+            class="chevron"
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="m6 9 6 6 6-6" />
+          </svg>
         </button>
 
         ${when(
