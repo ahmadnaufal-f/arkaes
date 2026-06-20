@@ -14,6 +14,20 @@ interface DropdownOption {
 }
 
 /**
+ * How the listbox popover is sized horizontally.
+ * - `fit-trigger` (default): exactly the trigger width.
+ * - `fit-content` / `max-content`: sized to the options, but never narrower
+ *   than the trigger.
+ * - `min-content`: fully content-driven (can be narrower than the trigger).
+ */
+export enum DropdownListboxWidth {
+  FitTrigger = "fit-trigger",
+  FitContent = "fit-content",
+  MinContent = "min-content",
+  MaxContent = "max-content",
+}
+
+/**
  * ArkDropdownOption is a lightweight, non-rendered data source for ArkDropdown.
  * It carries a `value` attribute and exposes its text content as the label. The
  * parent dropdown reads these from its default slot and renders the interactive
@@ -52,6 +66,7 @@ export class ArkDropdown extends LitElement {
     open: { type: Boolean, reflect: true },
     disabled: { type: Boolean, reflect: true },
     maxVisible: { type: Number, attribute: "max-visible", reflect: true },
+    listboxWidth: { type: String, attribute: "listbox-width", reflect: true },
   };
 
   static override styles = css`
@@ -121,13 +136,46 @@ export class ArkDropdown extends LitElement {
       transform: rotate(180deg);
     }
 
-    .listbox {
+    /* Positioned wrapper that owns the border, radius and shadow. The
+       overflow:hidden here is what clips the inner scrollbar to the rounded
+       corners — a scroll container's own border-radius does NOT clip its
+       scrollbar on Chromium/Android (the bug seen in Brave on Android), so
+       the clipping has to happen on a non-scrolling ancestor. */
+    .popover {
       background: var(--ark-color-surface);
       border: 1px solid var(--ark-color-border);
       border-radius: var(--ark-radius-md);
       box-shadow: var(--ark-shadow-lg);
       box-sizing: border-box;
       left: 0;
+      /* Default width strategy: match the trigger ("fit-trigger"). The guard
+         keeps content-sized variants from spilling past the viewport. */
+      max-width: max(100%, calc(100vw - 2 * var(--ark-space-4)));
+      overflow: hidden;
+      position: absolute;
+      top: calc(100% + var(--ark-space-1));
+      width: 100%;
+      z-index: 50;
+    }
+
+    /* Width strategies (see the listbox-width attribute). fit-content and
+       max-content are floored at the trigger width so the popover is never
+       narrower than its trigger; min-content is left fully content-driven. */
+    :host([listbox-width="fit-content"]) .popover {
+      min-width: 100%;
+      width: fit-content;
+    }
+
+    :host([listbox-width="max-content"]) .popover {
+      min-width: 100%;
+      width: max-content;
+    }
+
+    :host([listbox-width="min-content"]) .popover {
+      width: min-content;
+    }
+
+    .listbox {
       list-style: none;
       margin: 0;
       /* Show at most --ark-dropdown-max-visible rows; scroll past that. The
@@ -136,15 +184,10 @@ export class ArkDropdown extends LitElement {
         var(--ark-dropdown-max-visible, 6) * var(--ark-dropdown-option-height) +
           2 * var(--ark-space-1)
       );
-      /* hidden on the x-axis keeps the scrollbar clipped inside the
-         listbox's rounded corners; auto on the y-axis still scrolls. */
+      /* hidden on the x-axis avoids a horizontal scrollbar; the wrapper clips
+         the vertical one to the rounded corners. */
       overflow: hidden auto;
       padding: var(--ark-space-1);
-      position: absolute;
-      right: 0;
-      top: calc(100% + var(--ark-space-1));
-      width: 100%;
-      z-index: 50;
 
       /* Elegant, unobtrusive scrollbar for the overflow case. */
       scrollbar-color: var(--ark-color-border-strong) transparent;
@@ -202,6 +245,8 @@ export class ArkDropdown extends LitElement {
   disabled = false;
   /** Maximum number of options shown before the listbox scrolls. */
   maxVisible = 6;
+  /** How the listbox popover is sized horizontally. */
+  listboxWidth: DropdownListboxWidth | string = DropdownListboxWidth.FitTrigger;
 
   private readonly _listboxId = `ark-dropdown-listbox-${Math.random().toString(36).substring(2, 9)}`;
   private _options: DropdownOption[] = [];
@@ -373,28 +418,32 @@ export class ArkDropdown extends LitElement {
         ${when(
           this.open,
           () => html`
-            <ul
-              class="listbox"
-              id=${this._listboxId}
-              role="listbox"
-              aria-label=${ifDefined(this.label || undefined)}
+            <div
+              class="popover"
               style=${styleMap({
                 "--ark-dropdown-max-visible": String(Math.max(1, this.maxVisible)),
               })}
             >
-              ${this._options.map((opt, index) => html`
-                <li
-                  id=${this._optionId(index)}
-                  class=${classMap({ option: true, active: index === this._activeIndex })}
-                  role="option"
-                  aria-selected=${opt.value === this.value ? "true" : "false"}
-                  @click=${() => this._select(opt.value)}
-                  @mousemove=${() => this._setActive(index)}
-                >
-                  ${opt.label}
-                </li>
-              `)}
-            </ul>
+              <ul
+                class="listbox"
+                id=${this._listboxId}
+                role="listbox"
+                aria-label=${ifDefined(this.label || undefined)}
+              >
+                ${this._options.map((opt, index) => html`
+                  <li
+                    id=${this._optionId(index)}
+                    class=${classMap({ option: true, active: index === this._activeIndex })}
+                    role="option"
+                    aria-selected=${opt.value === this.value ? "true" : "false"}
+                    @click=${() => this._select(opt.value)}
+                    @mousemove=${() => this._setActive(index)}
+                  >
+                    ${opt.label}
+                  </li>
+                `)}
+              </ul>
+            </div>
           `,
         )}
 

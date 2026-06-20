@@ -1,12 +1,15 @@
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
 
+type ListboxWidth = "fit-trigger" | "fit-content" | "min-content" | "max-content";
+
 interface DropdownArgs {
   label: string;
   placeholder: string;
   value: string;
   disabled: boolean;
   maxVisible: number;
+  listboxWidth: ListboxWidth;
 }
 
 const meta = {
@@ -18,6 +21,10 @@ const meta = {
     value: { control: "text" },
     disabled: { control: "boolean" },
     maxVisible: { control: { type: "number", min: 1 } },
+    listboxWidth: {
+      control: "inline-radio",
+      options: ["fit-trigger", "fit-content", "min-content", "max-content"],
+    },
   },
   args: {
     label: "Filter by category",
@@ -25,6 +32,7 @@ const meta = {
     value: "",
     disabled: false,
     maxVisible: 6,
+    listboxWidth: "fit-trigger",
   },
   parameters: {
     docs: {
@@ -34,18 +42,19 @@ const meta = {
 
 Add \`ark-dropdown-option\` elements as children to define choices. Provide a \`label\` for the field and \`placeholder\` text for the initial selection prompt. Use \`disabled\` to prevent interaction.
 
-The listbox always matches the trigger width, and \`max-visible\` caps how many options are shown before the list scrolls (defaults to 6).
+\`max-visible\` caps how many options are shown before the list scrolls (defaults to 6). \`listbox-width\` controls how the popover is sized: \`fit-trigger\` (default) matches the trigger, while \`fit-content\`, \`min-content\`, and \`max-content\` size to the options.
         `,
       },
     },
   },
-  render: ({ label, placeholder, value, disabled, maxVisible }) => html`
+  render: ({ label, placeholder, value, disabled, maxVisible, listboxWidth }) => html`
     <ark-dropdown
       label=${label}
       placeholder=${placeholder}
       value=${value}
       ?disabled=${disabled}
       max-visible=${maxVisible}
+      listbox-width=${listboxWidth}
     >
       <ark-dropdown-option value="">All work</ark-dropdown-option>
       <ark-dropdown-option value="professional-work">Professional Work</ark-dropdown-option>
@@ -80,13 +89,14 @@ export const ManyOptions: Story = {
       },
     },
   },
-  render: ({ label, placeholder, value, disabled, maxVisible }) => html`
+  render: ({ label, placeholder, value, disabled, maxVisible, listboxWidth }) => html`
     <ark-dropdown
       label=${label}
       placeholder=${placeholder}
       value=${value}
       ?disabled=${disabled}
       max-visible=${maxVisible}
+      listbox-width=${listboxWidth}
     >
       <ark-dropdown-option value="">All expertise</ark-dropdown-option>
       <ark-dropdown-option value="frontend-architecture">
