@@ -138,17 +138,11 @@ export class ArkProjectHeader extends LitElement {
     .title,
     ::slotted([slot="title"]) {
       color: var(--ark-color-text);
-      display: -webkit-box;
       font-family: var(--ark-font-display);
       font-size: clamp(1.8rem, 3vw, 2.8rem);
       font-weight: var(--ark-weight-thin);
       line-height: 1.12;
       margin: 0;
-      overflow: hidden;
-      /* Cap the title at three lines so an unexpectedly long heading can't push
-         the hero out of proportion on narrow screens. */
-      -webkit-box-orient: vertical;
-      -webkit-line-clamp: 3;
     }
 
     /* ── Responsive ─────────────────────────────────────────────────── */
