@@ -32,11 +32,13 @@ body::before {
 @keyframes ark-fade-out {
   to {
     opacity: 0;
+    transform: translateY(-10px);
   }
 }
 
 @keyframes ark-fade-in {
   from {
+    transform: translateY(0);
     opacity: 0;
   }
 }

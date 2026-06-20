@@ -34,20 +34,14 @@ const paragraphs = body.split("\n\n").map((p) => p.trim()).filter(Boolean);
 
 <BaseLayout title={`${title} | Arkaes`} description={challenges}>
   <article class="cs-page">
-    <span class="cs-hero-sentinel" aria-hidden="true"></span>
-    <header class="cs-hero">
-      <div class="cs-hero-visual">
-        <CaseStudyVisual visual={project.id} transitionName={`proj-thumb-${project.id}`} />
-      </div>
-
-      <div class="cs-hero-meta">
-        <div class="cs-hero-eyebrow">{categoryLabel(category)}</div>
-        <div class="cs-hero-tags">
-          {stack.map((tech) => <ark-chip>{tech}</ark-chip>)}
-        </div>
-        <h1 class="cs-hero-title">{title}</h1>
-      </div>
-    </header>
+    <ark-project-header eyebrow={categoryLabel(category)} heading={title}>
+      <CaseStudyVisual
+        visual={project.id}
+        asSlot="visual"
+        transitionName={`proj-thumb-${project.id}`}
+      />
+      {stack.map((tech) => <ark-chip slot="tag">{tech}</ark-chip>)}
+    </ark-project-header>
 
     <section class="cs-overview-section">
       <div class="cs-overview-inner">
@@ -98,29 +92,3 @@ const paragraphs = body.split("\n\n").map((p) => p.trim()).filter(Boolean);
     </section>
   </article>
 </BaseLayout>
-
-<script>
-  // Mirror the case study hero: pin it to the top and collapse its padding
-  // once a sentinel above it scrolls out of view. See _case-study.css.
-  function initHeroStick() {
-    const hero = document.querySelector<HTMLElement>(".cs-hero");
-    const sentinel = document.querySelector<HTMLElement>(".cs-hero-sentinel");
-    if (!hero || !sentinel) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        hero.classList.toggle("is-stuck", !entry.isIntersecting);
-      },
-      { threshold: 0 },
-    );
-    observer.observe(sentinel);
-
-    document.addEventListener(
-      "astro:before-swap",
-      () => observer.disconnect(),
-      { once: true },
-    );
-  }
-
-  document.addEventListener("astro:page-load", initHeroStick);
-</script>

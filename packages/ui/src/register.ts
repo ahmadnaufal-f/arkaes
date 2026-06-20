@@ -21,7 +21,11 @@ import {
   defineArkNavigation,
   defineArkToast,
 } from "./components";
-import { defineArkCaseStudyCard } from "./patterns";
+import {
+  defineArkCaseStudyCard,
+  defineArkPageHeader,
+  defineArkProjectHeader,
+} from "./patterns";
 
 export const registerArkPrimitives = () => {
   defineArkBadge();
@@ -50,6 +54,8 @@ export const registerArkComponents = () => {
 
 export const registerArkPatterns = () => {
   defineArkCaseStudyCard();
+  defineArkPageHeader();
+  defineArkProjectHeader();
 };
 
 export const registerArkUi = () => {

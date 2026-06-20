@@ -13,20 +13,17 @@ import type {
 // styles/global.css (view-transition pseudo-elements live on the document
 // root, so the keyframes must not be scoped).
 
-// Duration of each half (out, then in). Total transition ≈ 2× this.
-const HALF = 540;
-
 const animation: TransitionAnimationPair = {
   old: {
     name: "ark-fade-out",
-    duration: `${HALF}ms`,
+    duration: "200ms",
     easing: "cubic-bezier(0.4, 0, 1, 1)", // ease-in: accelerate to blank
     fillMode: "forwards", // hold at opacity 0 while the new page fades in
   },
   new: {
     name: "ark-fade-in",
-    delay: `${HALF}ms`, // wait for the old page to clear before appearing
-    duration: `${HALF}ms`,
+    delay: "200ms", // wait for the old page to clear before appearing
+    duration: "300ms",
     easing: "cubic-bezier(0, 0, 0.2, 1)", // ease-out: settle in from blank
     fillMode: "backwards", // stay at opacity 0 during the delay
   },
