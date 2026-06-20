@@ -16,9 +16,13 @@
     "dev:storybook": "pnpm --filter storybook dev",
     "dev:portfolio": "pnpm --filter portfolio dev",
     "format": "eslint . --fix",
-    "lint": "turbo lint"
+    "lint": "turbo lint",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "turbo build --filter=@arkaes/tokens --filter=@arkaes/ui && changeset publish"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.31.0",
     "@eslint/js": "^9.25.1",
     "@stylistic/eslint-plugin": "^4.2.0",
     "eslint": "^9.25.1",
