@@ -2,6 +2,7 @@ import { css, html, LitElement, nothing } from "lit";
 import type { PropertyValues } from "lit";
 import { classMap } from "lit/directives/class-map.js";
 import { ifDefined } from "lit/directives/if-defined.js";
+import { styleMap } from "lit/directives/style-map.js";
 import { when } from "lit/directives/when.js";
 import { defineElement } from "../define-element";
 
@@ -50,13 +51,18 @@ export class ArkDropdown extends LitElement {
     name: { type: String, reflect: true },
     open: { type: Boolean, reflect: true },
     disabled: { type: Boolean, reflect: true },
+    maxVisible: { type: Number, attribute: "max-visible", reflect: true },
   };
 
   static override styles = css`
     :host {
       display: inline-block;
       font-family: var(--ark-font-sans);
+      max-width: 100%;
       position: relative;
+      /* Row height that drives both the option height and the listbox
+         max-height (max-visible-options * this). Overridable per instance. */
+      --ark-dropdown-option-height: 2.5rem;
     }
 
     :host([disabled]) {
@@ -69,14 +75,15 @@ export class ArkDropdown extends LitElement {
       background: var(--ark-color-surface);
       border: 1px solid var(--ark-color-border);
       border-radius: var(--ark-radius-sm);
+      box-sizing: border-box;
       color: var(--ark-color-text);
       cursor: var(--ark-cursor-interactive, pointer);
-      display: inline-flex;
+      display: flex;
       font: inherit;
       font-size: var(--ark-text-sm);
       gap: var(--ark-space-3);
       justify-content: space-between;
-      min-width: 12rem;
+      min-width: min(12rem, 100%);
       padding: var(--ark-space-2) var(--ark-space-3);
       transition: border-color var(--ark-duration-fast) var(--ark-ease-standard);
       width: 100%;
@@ -119,16 +126,45 @@ export class ArkDropdown extends LitElement {
       border: 1px solid var(--ark-color-border);
       border-radius: var(--ark-radius-md);
       box-shadow: var(--ark-shadow-lg);
+      box-sizing: border-box;
       left: 0;
       list-style: none;
       margin: 0;
-      max-height: 16rem;
-      min-width: 100%;
+      /* Show at most --ark-dropdown-max-visible rows; scroll past that. The
+         two extra space-1 units account for the listbox's own padding. */
+      max-height: calc(
+        var(--ark-dropdown-max-visible, 6) * var(--ark-dropdown-option-height) +
+          2 * var(--ark-space-1)
+      );
       overflow-y: auto;
       padding: var(--ark-space-1);
       position: absolute;
+      right: 0;
       top: calc(100% + var(--ark-space-1));
+      width: 100%;
       z-index: 50;
+
+      /* Elegant, unobtrusive scrollbar for the overflow case. */
+      scrollbar-color: var(--ark-color-border-strong) transparent;
+      scrollbar-width: thin;
+
+      &::-webkit-scrollbar {
+        width: 0.6rem;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background-color: var(--ark-color-border-strong);
+        border: 0.18rem solid var(--ark-color-surface);
+        border-radius: var(--ark-radius-full);
+      }
+
+      &::-webkit-scrollbar-thumb:hover {
+        background-color: var(--ark-color-accent);
+      }
     }
 
     .option {
@@ -136,8 +172,13 @@ export class ArkDropdown extends LitElement {
       color: var(--ark-color-text);
       cursor: var(--ark-cursor-interactive, pointer);
       font-size: var(--ark-text-sm);
-      line-height: var(--ark-leading-normal);
-      padding: var(--ark-space-2) var(--ark-space-3);
+      /* line-height sets the row height so option count maps to a known
+         max-height; overflow + ellipsis keeps long labels inside the
+         trigger's width instead of widening the popover. */
+      line-height: var(--ark-dropdown-option-height);
+      overflow: hidden;
+      padding: 0 var(--ark-space-3);
+      text-overflow: ellipsis;
       white-space: nowrap;
     }
 
@@ -157,6 +198,8 @@ export class ArkDropdown extends LitElement {
   name = "";
   open = false;
   disabled = false;
+  /** Maximum number of options shown before the listbox scrolls. */
+  maxVisible = 6;
 
   private readonly _listboxId = `ark-dropdown-listbox-${Math.random().toString(36).substring(2, 9)}`;
   private _options: DropdownOption[] = [];
@@ -333,6 +376,9 @@ export class ArkDropdown extends LitElement {
               id=${this._listboxId}
               role="listbox"
               aria-label=${ifDefined(this.label || undefined)}
+              style=${styleMap({
+                "--ark-dropdown-max-visible": String(Math.max(1, this.maxVisible)),
+              })}
             >
               ${this._options.map((opt, index) => html`
                 <li
