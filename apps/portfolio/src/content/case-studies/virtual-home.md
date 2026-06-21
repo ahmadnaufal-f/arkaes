@@ -15,7 +15,7 @@ tags:
 
 ## Overview
 
-Virtual Home is a smart home simulation platform used across different product environments. It helps teams develop, test, and validate smart home experiences without depending on every physical device setup.
+Virtual Home is a smart home simulation platform used across different product environments. It lets new Smartthings users and Samsung Retail Store visitors explore SmartThings features without needing to own the actual devices.
 
 The original application had been developed several years earlier. As the product grew, the codebase accumulated different implementation styles, which made changes harder to reason about. When another product variant was introduced, the team needed a more scalable foundation that could support both variants without duplicating too much work.
 
