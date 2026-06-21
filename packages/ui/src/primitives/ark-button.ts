@@ -84,7 +84,7 @@ export class ArkButton extends LitElement {
     }
 
     .primary:not(:disabled):not([aria-disabled="true"]):hover {
-      background: var(--ark-button-primary-bg-hover, #2d2724);
+      background: var(--ark-button-primary-bg-hover, var(--ark-color-neutral-800));
       box-shadow: var(--ark-shadow-md);
       transform: translateY(-2px);
     }

@@ -51,7 +51,11 @@ export class ArkNavigationRoot extends LitElement {
     :host {
       align-items: center;
       backdrop-filter: blur(2px);
-      background: linear-gradient(to bottom, rgba(251, 248, 243, 0.96) 60%, transparent);
+      background: linear-gradient(
+        to bottom,
+        color-mix(in srgb, var(--ark-navigation-bg, var(--ark-color-bg)) 96%, transparent) 60%,
+        transparent
+      );
       display: flex;
       inset-inline: 0;
       width: 100vw;
@@ -69,7 +73,11 @@ export class ArkNavigationRoot extends LitElement {
 
     :host([scrolled]) {
       backdrop-filter: blur(8px);
-      background: rgba(251, 248, 243, 0.97);
+      background: color-mix(
+        in srgb,
+        var(--ark-navigation-bg, var(--ark-color-bg)) 97%,
+        transparent
+      );
       box-shadow: var(--ark-shadow-sm);
       padding-block: 16px;
       --ark-nav-header-height: 60px;
