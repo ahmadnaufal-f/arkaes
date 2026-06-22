@@ -5,7 +5,13 @@
   "packageManager": "pnpm@9.15.4",
   "pnpm": {
     "overrides": {
-      "yaml-language-server@1.20.0>yaml": "2.9.0"
+      "yaml-language-server@1.20.0>yaml": "2.9.0",
+      "astro>vite": "^7.3.5",
+      "esbuild": "^0.28.1",
+      "@changesets/parse>js-yaml": "^4.2.0",
+      "read-yaml-file>js-yaml": "^4.2.0",
+      "@eslint/eslintrc>js-yaml": "^4.2.0",
+      "@astrojs/internal-helpers>js-yaml": "^4.2.0"
     }
   },
   "type": "module",
