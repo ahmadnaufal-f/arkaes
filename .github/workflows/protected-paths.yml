@@ -1,0 +1,50 @@
+name: Protected Paths Guard
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  check:
+    if: github.event.pull_request.user.login != 'ahmadnaufal-f'
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+
+    steps:
+      - name: Check for protected path changes
+        id: guard
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const files = await github.paginate(
+              github.rest.pulls.listFiles,
+              {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: context.issue.number,
+              }
+            );
+            const touched = files.some(f =>
+              f.filename.startsWith('apps/portfolio/') ||
+              f.filename.startsWith('apps/brand-guideline/')
+            );
+            core.setOutput('touched', touched ? 'true' : 'false');
+
+      - name: Request changes when protected paths are touched
+        if: steps.guard.outputs.touched == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.pulls.createReview({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+              event: 'REQUEST_CHANGES',
+              body: [
+                '> [!WARNING]',
+                '> @ahmadnaufal-f This PR modifies files inside `apps/portfolio` or',
+                '> `apps/brand-guideline`, which are owner-only directories.',
+                '> Please review the changes before approving or merging.',
+              ].join('\n'),
+            });
