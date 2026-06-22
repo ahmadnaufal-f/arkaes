@@ -61,7 +61,7 @@ export class ArkProjectHeader extends LitElement {
       top: var(--_stick-top);
       z-index: 10;
       transition:
-        padding-block var(--ark-duration-slow) var(--ark-ease-standard),
+        padding var(--ark-duration-slow) var(--ark-ease-standard),
         min-height var(--ark-duration-slow) var(--ark-ease-standard);
     }
 
