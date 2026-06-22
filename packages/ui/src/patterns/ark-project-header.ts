@@ -92,7 +92,7 @@ export class ArkProjectHeader extends LitElement {
     ::slotted([slot="visual"]) {
       opacity: 0.5;
       transform: scale(var(--_visual-scale, 1));
-      transform-origin: top right;
+      transform-origin: center;
       transition: transform var(--ark-duration-slow) var(--ark-ease-standard);
     }
 
