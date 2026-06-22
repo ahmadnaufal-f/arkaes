@@ -1,5 +1,11 @@
 # @arkaes/ui
 
+## 1.0.1
+
+### Patch Changes
+
+- 83168f9: Add Vitest unit tests for React wrapper components (`ArkDialogPortal`, `ArkNavigationRoot`), covering portal teleportation, StrictMode remount, scroll-lock behaviour, and event-map callbacks.
+
 ## 1.0.0
 
 ### Major Changes
