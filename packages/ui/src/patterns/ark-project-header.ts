@@ -28,6 +28,7 @@ export class ArkProjectHeader extends LitElement {
 
   private _sentinel: HTMLElement | null = null;
   private _hero: HTMLElement | null = null;
+  private _visualEl: HTMLElement | null = null;
   private _stuck = false;
   private _ticking = false;
 
@@ -68,7 +69,7 @@ export class ArkProjectHeader extends LitElement {
        actually visible) for a compact, pinned header. */
     .hero.is-stuck {
       min-height: 0;
-      padding-block: 20px;
+      padding-block: 40px 20px;
       box-shadow: var(--ark-shadow-md);
     }
 
@@ -78,6 +79,8 @@ export class ArkProjectHeader extends LitElement {
       --thumbnail-height: 100%;
       flex: 1;
       pointer-events: none;
+      height: var(--_visual-collapsed-h, auto);
+      transition: height var(--ark-duration-slow) var(--ark-ease-standard);
     }
 
     /* The faded opacity must live on the thumbnail itself — the element that
@@ -88,6 +91,9 @@ export class ArkProjectHeader extends LitElement {
        smoothly. */
     ::slotted([slot="visual"]) {
       opacity: 0.5;
+      transform: scale(var(--_visual-scale, 1));
+      transform-origin: top right;
+      transition: transform var(--ark-duration-slow) var(--ark-ease-standard);
     }
 
     .meta {
@@ -203,6 +209,7 @@ export class ArkProjectHeader extends LitElement {
   private _setupStick() {
     this._sentinel = this.renderRoot.querySelector<HTMLElement>(".sentinel");
     this._hero = this.renderRoot.querySelector<HTMLElement>(".hero");
+    this._visualEl = this.renderRoot.querySelector<HTMLElement>(".visual");
     if (!this._sentinel || !this._hero) return;
 
     this._disableScrollAnchoring();
@@ -245,9 +252,20 @@ export class ArkProjectHeader extends LitElement {
     const bottom = this._sentinel.getBoundingClientRect().bottom;
     if (!this._stuck && bottom <= 0) {
       this._stuck = true;
+
+      const thumbnail = this.querySelector('[slot="visual"]');
+      if (thumbnail && this._visualEl) {
+        const naturalH = thumbnail.getBoundingClientRect().height;
+        const scale = naturalH > 0 ? 160 / naturalH : 1;
+        this._visualEl.style.setProperty("--_visual-scale", String(scale));
+        this._visualEl.style.setProperty("--_visual-collapsed-h", "160px");
+      }
+
       this._hero.classList.add("is-stuck");
     } else if (this._stuck && bottom > ArkProjectHeader._UNSTICK_BAND) {
       this._stuck = false;
+      this._visualEl?.style.removeProperty("--_visual-scale");
+      this._visualEl?.style.removeProperty("--_visual-collapsed-h");
       this._hero.classList.remove("is-stuck");
     }
   };
