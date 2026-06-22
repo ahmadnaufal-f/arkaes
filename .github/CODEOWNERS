@@ -1,0 +1,4 @@
+# Require owner review for any PR touching the private app directories.
+# Branch protection must have "Require review from Code Owners" enabled.
+/apps/portfolio/ @ahmadnaufal-f
+/apps/brand-guideline/ @ahmadnaufal-f
