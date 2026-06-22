@@ -256,7 +256,7 @@ export class ArkProjectHeader extends LitElement {
       const thumbnail = this.querySelector('[slot="visual"]');
       if (thumbnail && this._visualEl) {
         const naturalH = thumbnail.getBoundingClientRect().height;
-        const scale = naturalH > 0 ? 160 / naturalH : 1;
+        const scale = naturalH > 0 && naturalH > 160 ? 160 / naturalH : 1;
         this._visualEl.style.setProperty("--_visual-scale", String(scale));
         this._visualEl.style.setProperty("--_visual-collapsed-h", "160px");
       }
