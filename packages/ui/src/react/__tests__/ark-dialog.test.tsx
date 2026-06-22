@@ -97,37 +97,58 @@ describe("ArkDialogPortal", () => {
     expect(document.querySelector("[data-ark-dialog-portal]")).toBeNull();
   });
 
-  // KNOWN BUG: ArkDialogPortal.connectedCallback() physically moves React-managed
-  // DOM nodes from ark-dialog-portal into a container on document.body. React's
-  // fiber tree still models those nodes as children of ark-dialog-portal. When
-  // React later removes a conditional child it calls
-  // ark-dialog-portal.removeChild(child), but the child has moved — this throws
-  // DOMException: "The node to be removed is not a child of this node."
-  // The fix requires ArkDialogPortal to observe React's DOM mutations and keep
-  // the portal container in sync, or to use a different teleportation strategy.
-  it.fails(
-    "does not throw when React reconciles away a conditional child inside the portal",
-    () => {
-      function TestDialog({ showContent }: { showContent: boolean }) {
-        return (
-          <ArkDialogRoot>
-            <ArkDialogPortal>
-              <ArkDialogOverlay />
-              {showContent && <ArkDialogContent />}
-            </ArkDialogPortal>
-          </ArkDialogRoot>
-        );
-      }
+  // REGRESSION: ArkDialogPortal.connectedCallback() physically moves
+  // React-managed DOM nodes from ark-dialog-portal into a container on
+  // document.body. React's fiber tree still models those nodes as children of
+  // ark-dialog-portal, so when React reconciles a conditional child away it
+  // calls ark-dialog-portal.removeChild(child) on a node that has moved. The
+  // portal's overridden insertBefore/appendChild/removeChild redirect those
+  // light-DOM mutations to the container, so React stays in sync and no
+  // DOMException is thrown.
+  it("does not throw when React reconciles away a conditional child inside the portal", () => {
+    function TestDialog({ showContent }: { showContent: boolean }) {
+      return (
+        <ArkDialogRoot>
+          <ArkDialogPortal>
+            <ArkDialogOverlay />
+            {showContent && <ArkDialogContent />}
+          </ArkDialogPortal>
+        </ArkDialogRoot>
+      );
+    }
 
-      const { rerender } = render(<TestDialog showContent={true} />);
+    const { rerender } = render(<TestDialog showContent={true} />);
 
-      expect(() => rerender(<TestDialog showContent={false} />)).not.toThrow();
+    expect(() => rerender(<TestDialog showContent={false} />)).not.toThrow();
 
-      expect(
-        document.querySelector("[data-ark-dialog-portal] ark-dialog-content"),
-      ).toBeNull();
-    },
-  );
+    expect(
+      document.querySelector("[data-ark-dialog-portal] ark-dialog-content"),
+    ).toBeNull();
+  });
+
+  it("re-adds a conditional child into the portal container when React reconciles it back", () => {
+    function TestDialog({ showContent }: { showContent: boolean }) {
+      return (
+        <ArkDialogRoot>
+          <ArkDialogPortal>
+            <ArkDialogOverlay />
+            {showContent && <ArkDialogContent />}
+          </ArkDialogPortal>
+        </ArkDialogRoot>
+      );
+    }
+
+    const { rerender } = render(<TestDialog showContent={false} />);
+    expect(
+      document.querySelector("[data-ark-dialog-portal] ark-dialog-content"),
+    ).toBeNull();
+
+    expect(() => rerender(<TestDialog showContent={true} />)).not.toThrow();
+
+    const container = document.querySelector("[data-ark-dialog-portal]")!;
+    expect(container.querySelector("ark-dialog-overlay")).not.toBeNull();
+    expect(container.querySelector("ark-dialog-content")).not.toBeNull();
+  });
 });
 
 describe("ArkDialogRoot event mapping", () => {
