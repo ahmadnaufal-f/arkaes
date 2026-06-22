@@ -27,6 +27,9 @@ jobs:
       - name: Type check
         run: pnpm check
 
+      - name: Unit tests
+        run: pnpm test
+
       - name: Lint
         # Storybook's build output is not in ESLint's ignore list; remove it so
         # lint does not scan the minified bundle (see CLAUDE.md).

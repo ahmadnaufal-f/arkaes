@@ -17,6 +17,7 @@
     "dev:portfolio": "pnpm --filter portfolio dev",
     "format": "eslint . --fix",
     "lint": "turbo lint",
+    "test": "turbo test",
     "changeset": "changeset",
     "version-packages": "changeset version",
     "release": "turbo build --filter=@arkaes/tokens --filter=@arkaes/ui && changeset publish"

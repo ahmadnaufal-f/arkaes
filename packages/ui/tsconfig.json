@@ -4,6 +4,8 @@
     "declaration": true,
     "declarationMap": true,
     "emitDeclarationOnly": false,
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
     "outDir": "dist",
     "rootDir": "src"
   },

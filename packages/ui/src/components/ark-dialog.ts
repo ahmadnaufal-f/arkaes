@@ -191,6 +191,42 @@ export class ArkDialogPortal extends LitElement {
     return this;
   }
 
+  /**
+   * React (via @lit/react) keeps modelling the teleported nodes as light-DOM
+   * children of this <ark-dialog-portal>, even though connectedCallback() has
+   * physically moved them into the body-mounted container. When React later
+   * reconciles a conditional child away it calls portal.removeChild(node) — or
+   * portal.insertBefore(node, ref) to add one back — with a node that now lives
+   * in the container, which would throw "node is not a child of this node".
+   *
+   * These overrides transparently redirect React's light-DOM mutations to the
+   * container so the reconciler stays in sync with where the nodes really live.
+   * Lit's own render markers (comment nodes) are left on this element so the
+   * element's render lifecycle is unaffected.
+   */
+  override insertBefore<T extends Node>(node: T, child: Node | null): T {
+    if (this._container && node.nodeType !== Node.COMMENT_NODE) {
+      const reference =
+        child && child.parentNode === this._container ? child : null;
+      return this._container.insertBefore(node, reference);
+    }
+    return super.insertBefore(node, child);
+  }
+
+  override appendChild<T extends Node>(node: T): T {
+    if (this._container && node.nodeType !== Node.COMMENT_NODE) {
+      return this._container.appendChild(node);
+    }
+    return super.appendChild(node);
+  }
+
+  override removeChild<T extends Node>(child: T): T {
+    if (this._container && child.parentNode === this._container) {
+      return this._container.removeChild(child);
+    }
+    return super.removeChild(child);
+  }
+
   override connectedCallback() {
     super.connectedCallback();
 
@@ -218,16 +254,20 @@ export class ArkDialogPortal extends LitElement {
   }
 
   override disconnectedCallback() {
-    if (this._container) {
-      this._container.removeEventListener("ark-dialog:close", this._forwardClose);
+    const container = this._container;
+    if (container) {
+      container.removeEventListener("ark-dialog:close", this._forwardClose);
       if (this._dialogRoot) {
-        this._dialogRoot.unregisterPortalContainer(this._container);
+        this._dialogRoot.unregisterPortalContainer(container);
       }
-      while (this._container.firstChild) {
-        this.appendChild(this._container.firstChild);
-      }
-      this._container.remove();
+      // Clear the container reference first so the DOM-mutation overrides stop
+      // redirecting; otherwise this.appendChild() would loop the children
+      // straight back into the container instead of restoring them here.
       this._container = null;
+      while (container.firstChild) {
+        this.appendChild(container.firstChild);
+      }
+      container.remove();
     }
     this._dialogRoot = null;
     super.disconnectedCallback();
