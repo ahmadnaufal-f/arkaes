@@ -13,6 +13,7 @@
   "dependencies": {
     "@arkaes/tokens": "workspace:*",
     "@arkaes/ui": "workspace:*",
+    "@vercel/analytics": "^1.5.0",
     "astro": "^6.4.6"
   },
   "devDependencies": {

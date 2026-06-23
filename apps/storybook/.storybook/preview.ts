@@ -1,7 +1,10 @@
 import "@arkaes/tokens/css";
 import "@arkaes/ui/register";
+import { inject } from "@vercel/analytics";
 
 import type { Preview } from "@storybook/web-components-vite";
+
+inject();
 
 const preview: Preview = {
   parameters: {
