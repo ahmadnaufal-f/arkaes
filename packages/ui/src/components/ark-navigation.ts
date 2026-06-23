@@ -223,11 +223,13 @@ export class ArkNavLink extends LitElement {
     href: { type: String },
     active: { type: Boolean, reflect: true },
     autoActive: { type: Boolean, attribute: "auto-active" },
+    navigating: { type: Boolean, reflect: true },
   };
 
   href = "";
   active = false;
   autoActive = false;
+  navigating = false;
 
   static override styles = css`
     :host {
@@ -275,6 +277,19 @@ export class ArkNavLink extends LitElement {
     .nav-link:hover .underline,
     .nav-link[aria-current="page"] .underline {
       transform: scaleX(1);
+    }
+
+    :host([navigating]) .nav-link {
+      cursor: progress;
+      opacity: 0.6;
+    }
+
+    :host([navigating]) .nav-link:hover {
+      color: var(--ark-color-text-ghost);
+    }
+
+    :host([navigating]) .nav-link:hover .underline {
+      transform: scaleX(0);
     }
   `;
 
@@ -345,9 +360,11 @@ export class ArkNavLink extends LitElement {
 export class ArkNavigationCta extends LitElement {
   static override properties = {
     href: { type: String },
+    navigating: { type: Boolean, reflect: true },
   };
 
   href = "";
+  navigating = false;
 
   static override styles = css`
     :host {
@@ -402,6 +419,22 @@ export class ArkNavigationCta extends LitElement {
     .cta:focus-visible {
       box-shadow: var(--ark-shadow-focus);
       outline: none;
+    }
+
+    :host([navigating]) .cta {
+      cursor: progress;
+      opacity: 0.6;
+    }
+
+    :host([navigating]) .cta:hover {
+      background: transparent;
+      border-color: var(--ark-color-border);
+      color: var(--ark-color-text);
+      transform: none;
+    }
+
+    :host([navigating]) .cta:hover::after {
+      transform: scaleX(0);
     }
 
     @media (max-width: 520px) {
