@@ -8,6 +8,7 @@ type ButtonArgs = {
   fullWidth: boolean;
   href: string;
   label: string;
+  loading: boolean;
   rel: string;
   size: "sm" | "md" | "lg";
   target: "" | "_blank" | "_self" | "_parent" | "_top";
@@ -20,6 +21,7 @@ const renderButton = ({
   fullWidth,
   href,
   label,
+  loading,
   rel,
   size,
   target,
@@ -35,6 +37,7 @@ const renderButton = ({
         target=${ifDefined(target || undefined)}
         rel=${ifDefined(rel || undefined)}
         ?disabled=${disabled}
+        ?loading=${loading}
         ?full-width=${fullWidth}
       >
         ${label}
@@ -48,6 +51,7 @@ const renderButton = ({
       type=${type}
       variant=${variant}
       ?disabled=${disabled}
+      ?loading=${loading}
       ?full-width=${fullWidth}
     >
       ${label}
@@ -61,6 +65,7 @@ const meta = {
     fullWidth: { control: "boolean", name: "full-width" },
     href: { control: "text" },
     label: { control: "text" },
+    loading: { control: "boolean" },
     rel: { control: "text" },
     size: {
       control: "inline-radio",
@@ -84,6 +89,7 @@ const meta = {
     fullWidth: false,
     href: "",
     label: "View Project",
+    loading: false,
     rel: "",
     size: "md",
     target: "",
@@ -137,5 +143,38 @@ export const Disabled = {
   args: {
     disabled: true,
     label: "Unavailable",
+  },
+} satisfies Story;
+
+export const LoadingPrimary = {
+  args: {
+    label: "Submitting",
+    loading: true,
+    variant: ButtonVariant.Primary,
+  },
+} satisfies Story;
+
+export const LoadingSecondary = {
+  args: {
+    label: "Saving",
+    loading: true,
+    variant: ButtonVariant.Secondary,
+  },
+} satisfies Story;
+
+export const LoadingGhost = {
+  args: {
+    label: "Sending",
+    loading: true,
+    variant: ButtonVariant.Ghost,
+  },
+} satisfies Story;
+
+export const LoadingLink = {
+  args: {
+    href: "https://example.com",
+    label: "Opening",
+    loading: true,
+    target: "_blank",
   },
 } satisfies Story;

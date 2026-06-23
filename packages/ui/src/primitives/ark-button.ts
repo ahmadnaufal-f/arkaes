@@ -1,4 +1,4 @@
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { ifDefined } from "lit/directives/if-defined.js";
 import { defineElement } from "../define-element";
 
@@ -13,6 +13,7 @@ export class ArkButton extends LitElement {
     disabled: { reflect: true, type: Boolean },
     fullWidth: { attribute: "full-width", reflect: true, type: Boolean },
     href: { type: String },
+    loading: { reflect: true, type: Boolean },
     rel: { type: String },
     size: { reflect: true, type: String },
     target: { type: String },
@@ -29,6 +30,34 @@ export class ArkButton extends LitElement {
       width: 100%;
     }
 
+    @keyframes btn-spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .spinner {
+      animation: btn-spin 0.9s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+      border-color: transparent;
+      border-radius: 50%;
+      border-right-color: color-mix(in srgb, currentColor 33%, transparent);
+      border-style: solid;
+      border-top-color: currentColor;
+      border-width: 2px;
+      display: inline-block;
+      flex-shrink: 0;
+      height: 1em;
+      width: 1em;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .spinner {
+        animation: none;
+        border-bottom-color: transparent;
+        border-left-color: transparent;
+        border-right-color: currentColor;
+        border-top-color: currentColor;
+      }
+    }
+
     a,
     button {
       align-items: center;
@@ -36,6 +65,7 @@ export class ArkButton extends LitElement {
       cursor: var(--ark-cursor-interactive, pointer);
       display: inline-flex;
       font-family: var(--ark-font-mono);
+      gap: 0.5rem;
       justify-content: center;
       min-height: 3rem;
       position: relative;
@@ -176,6 +206,16 @@ export class ArkButton extends LitElement {
       padding: 1rem 2.5rem;
     }
 
+    /* Loading state: keep full opacity and swap cursor; native disabled handles interaction blocking */
+    :host([loading]) button:disabled {
+      cursor: progress;
+      opacity: 1;
+    }
+
+    :host([loading]) a[aria-disabled="true"] {
+      cursor: progress;
+    }
+
     @media (max-width: 520px) {
       .primary {
         width: 100%;
@@ -186,6 +226,7 @@ export class ArkButton extends LitElement {
   href = "";
   disabled = false;
   fullWidth = false;
+  loading = false;
   rel = "";
   size = "md";
   target = "";
@@ -208,33 +249,43 @@ export class ArkButton extends LitElement {
   }
 
   private _handleDisabledClick(event: Event) {
-    if (!this.disabled) return;
+    if (!this.disabled && !this.loading) return;
     event.preventDefault();
     event.stopImmediatePropagation();
   }
 
   override render() {
     const className = this._variantClass;
+    const spinner = this.loading
+      ? html`<span class="spinner" aria-hidden="true"></span>`
+      : nothing;
 
     if (this.href) {
+      const inactive = this.disabled || this.loading;
       return html`
         <a
           class=${className}
-          href=${ifDefined(this.disabled ? undefined : this.href)}
+          href=${ifDefined(inactive ? undefined : this.href)}
           target=${ifDefined(this.target || undefined)}
           rel=${ifDefined(this._linkRel)}
-          aria-disabled=${ifDefined(this.disabled ? "true" : undefined)}
-          tabindex=${ifDefined(this.disabled ? "-1" : undefined)}
+          aria-disabled=${ifDefined(inactive ? "true" : undefined)}
+          aria-busy=${ifDefined(this.loading ? "true" : undefined)}
+          tabindex=${ifDefined(inactive ? "-1" : undefined)}
           @click=${this._handleDisabledClick}
         >
-          <slot></slot>
+          ${spinner}<slot></slot>
         </a>
       `;
     }
 
     return html`
-      <button class=${className} type=${this._buttonType} ?disabled=${this.disabled}>
-        <slot></slot>
+      <button
+        class=${className}
+        type=${this._buttonType}
+        ?disabled=${this.disabled || this.loading}
+        aria-busy=${ifDefined(this.loading ? "true" : undefined)}
+      >
+        ${spinner}<slot></slot>
       </button>
     `;
   }
