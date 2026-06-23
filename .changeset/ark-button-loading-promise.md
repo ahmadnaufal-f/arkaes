@@ -1,5 +1,5 @@
 ---
-"@arkaes/ui": minor
+"@arkaes/ui": patch
 ---
 
 Add `loadingPromise` property to `ark-button`

@@ -1,6 +1,7 @@
-import { css, html, LitElement, nothing } from "lit";
+import { css, html, LitElement } from "lit";
 import { ifDefined } from "lit/directives/if-defined.js";
 import { until } from "lit/directives/until.js";
+import { when } from "lit/directives/when.js";
 import { defineElement } from "../define-element";
 
 export enum ButtonVariant {
@@ -288,9 +289,7 @@ export class ArkButton extends LitElement {
 
   private _renderInner(isLoading: boolean) {
     const className = this._variantClass;
-    const spinner = isLoading
-      ? html`<span class="spinner" aria-hidden="true"></span>`
-      : nothing;
+    const spinner = when(isLoading, () => html`<span class="spinner" aria-hidden="true"></span>`);
 
     if (this.href) {
       const inactive = this.disabled || isLoading;
