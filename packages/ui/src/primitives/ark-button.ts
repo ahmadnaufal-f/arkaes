@@ -1,5 +1,6 @@
 import { css, html, LitElement, nothing } from "lit";
 import { ifDefined } from "lit/directives/if-defined.js";
+import { until } from "lit/directives/until.js";
 import { defineElement } from "../define-element";
 
 export enum ButtonVariant {
@@ -14,6 +15,7 @@ export class ArkButton extends LitElement {
     fullWidth: { attribute: "full-width", reflect: true, type: Boolean },
     href: { type: String },
     loading: { reflect: true, type: Boolean },
+    loadingPromise: { attribute: false },
     rel: { type: String },
     size: { reflect: true, type: String },
     target: { type: String },
@@ -206,13 +208,13 @@ export class ArkButton extends LitElement {
       padding: 1rem 2.5rem;
     }
 
-    /* Loading state: keep full opacity and swap cursor; native disabled handles interaction blocking */
-    :host([loading]) button:disabled {
+    /* Loading state: keep full opacity and swap cursor; works for both loading and loadingPromise */
+    button:disabled[aria-busy="true"] {
       cursor: progress;
       opacity: 1;
     }
 
-    :host([loading]) a[aria-disabled="true"] {
+    a[aria-disabled="true"][aria-busy="true"] {
       cursor: progress;
     }
 
@@ -233,6 +235,36 @@ export class ArkButton extends LitElement {
   type: "button" | "submit" | "reset" = "button";
   variant: ButtonVariant | string = ButtonVariant.Primary;
 
+  private _loadingPromiseValue: Promise<unknown> | undefined;
+  private _promisePending = false;
+
+  get loadingPromise(): Promise<unknown> | undefined {
+    return this._loadingPromiseValue;
+  }
+
+  set loadingPromise(p: Promise<unknown> | undefined) {
+    const old = this._loadingPromiseValue;
+    this._loadingPromiseValue = p;
+
+    if (p) {
+      this._promisePending = true;
+      p.finally(() => {
+        if (this._loadingPromiseValue === p) {
+          this._promisePending = false;
+          this.requestUpdate();
+        }
+      });
+    } else {
+      this._promisePending = false;
+    }
+
+    this.requestUpdate("loadingPromise", old);
+  }
+
+  private get _isEffectivelyLoading() {
+    return this.loading || this._promisePending;
+  }
+
   private get _buttonType() {
     return this.type === "submit" || this.type === "reset" ? this.type : "button";
   }
@@ -249,19 +281,19 @@ export class ArkButton extends LitElement {
   }
 
   private _handleDisabledClick(event: Event) {
-    if (!this.disabled && !this.loading) return;
+    if (!this.disabled && !this._isEffectivelyLoading) return;
     event.preventDefault();
     event.stopImmediatePropagation();
   }
 
-  override render() {
+  private _renderInner(isLoading: boolean) {
     const className = this._variantClass;
-    const spinner = this.loading
+    const spinner = isLoading
       ? html`<span class="spinner" aria-hidden="true"></span>`
       : nothing;
 
     if (this.href) {
-      const inactive = this.disabled || this.loading;
+      const inactive = this.disabled || isLoading;
       return html`
         <a
           class=${className}
@@ -269,7 +301,7 @@ export class ArkButton extends LitElement {
           target=${ifDefined(this.target || undefined)}
           rel=${ifDefined(this._linkRel)}
           aria-disabled=${ifDefined(inactive ? "true" : undefined)}
-          aria-busy=${ifDefined(this.loading ? "true" : undefined)}
+          aria-busy=${ifDefined(isLoading ? "true" : undefined)}
           tabindex=${ifDefined(inactive ? "-1" : undefined)}
           @click=${this._handleDisabledClick}
         >
@@ -282,12 +314,22 @@ export class ArkButton extends LitElement {
       <button
         class=${className}
         type=${this._buttonType}
-        ?disabled=${this.disabled || this.loading}
-        aria-busy=${ifDefined(this.loading ? "true" : undefined)}
+        ?disabled=${this.disabled || isLoading}
+        aria-busy=${ifDefined(isLoading ? "true" : undefined)}
       >
         ${spinner}<slot></slot>
       </button>
     `;
+  }
+
+  override render(): unknown {
+    if (this.loadingPromise) {
+      const settled = this.loadingPromise
+        .then(() => this._renderInner(this.loading))
+        .catch(() => this._renderInner(this.loading));
+      return until(settled, this._renderInner(true));
+    }
+    return this._renderInner(this._isEffectivelyLoading);
   }
 }
 

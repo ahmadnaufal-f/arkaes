@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
 import { ifDefined } from "lit/directives/if-defined.js";
-import { ButtonVariant } from "@arkaes/ui";
+import { ArkButton, ButtonVariant } from "@arkaes/ui";
 
 type ButtonArgs = {
   disabled: boolean;
@@ -178,3 +178,24 @@ export const LoadingLink = {
     target: "_blank",
   },
 } satisfies Story;
+
+export const LoadingWithPromise: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: `
+Pass a \`Promise\` to \`loadingPromise\` to automatically enter and exit loading state.
+The button disables itself while the promise is pending and recovers when it settles (resolve or reject).
+Click the button below to simulate a 2-second async operation.
+        `,
+      },
+    },
+  },
+  render: () => {
+    const handleClick = (e: Event) => {
+      const host = (e.currentTarget as ArkButton);
+      host.loadingPromise = new Promise<void>((resolve) => setTimeout(resolve, 2000));
+    };
+    return html`<ark-button @click=${handleClick}>Click to load</ark-button>`;
+  },
+};
