@@ -3,6 +3,7 @@ import { ifDefined } from "lit/directives/if-defined.js";
 import { until } from "lit/directives/until.js";
 import { when } from "lit/directives/when.js";
 import { defineElement } from "../define-element";
+import { defineArkSpinner } from "./ark-spinner";
 
 export enum ButtonVariant {
   Primary = "primary",
@@ -33,32 +34,8 @@ export class ArkButton extends LitElement {
       width: 100%;
     }
 
-    @keyframes btn-spin {
-      to { transform: rotate(360deg); }
-    }
-
-    .spinner {
-      animation: btn-spin 0.9s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-      border-color: transparent;
-      border-radius: 50%;
-      border-right-color: color-mix(in srgb, currentColor 33%, transparent);
-      border-style: solid;
-      border-top-color: currentColor;
-      border-width: 2px;
-      display: inline-block;
-      flex-shrink: 0;
-      height: 1em;
-      width: 1em;
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .spinner {
-        animation: none;
-        border-bottom-color: transparent;
-        border-left-color: transparent;
-        border-right-color: currentColor;
-        border-top-color: currentColor;
-      }
+    ark-spinner {
+      --spinner-color: currentColor;
     }
 
     a,
@@ -289,7 +266,7 @@ export class ArkButton extends LitElement {
 
   private _renderInner(isLoading: boolean) {
     const className = this._variantClass;
-    const spinner = when(isLoading, () => html`<span class="spinner" aria-hidden="true"></span>`);
+    const spinner = when(isLoading, () => html`<ark-spinner size="sm" decorative></ark-spinner>`);
 
     if (this.href) {
       const inactive = this.disabled || isLoading;
@@ -333,6 +310,7 @@ export class ArkButton extends LitElement {
 }
 
 export const defineArkButton = () => {
+  defineArkSpinner();
   defineElement("ark-button", ArkButton);
 };
 

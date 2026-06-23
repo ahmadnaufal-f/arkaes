@@ -2,6 +2,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { when } from "lit/directives/when.js";
 import { defineElement } from "../define-element";
 import { defineArkBrandLogo } from "../primitives/ark-brand-logo";
+import { defineArkSpinner } from "../primitives/ark-spinner";
 import {
   lockBodyScroll,
   unlockBodyScroll,
@@ -281,32 +282,8 @@ export class ArkNavLink extends LitElement {
       transform: scaleX(1);
     }
 
-    @keyframes nav-spin {
-      to { transform: rotate(360deg); }
-    }
-
-    .spinner {
-      animation: nav-spin 0.9s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-      border-color: transparent;
-      border-radius: 50%;
-      border-right-color: color-mix(in srgb, currentColor 33%, transparent);
-      border-style: solid;
-      border-top-color: currentColor;
-      border-width: 2px;
-      display: inline-block;
-      flex-shrink: 0;
-      height: 1em;
-      width: 1em;
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .spinner {
-        animation: none;
-        border-bottom-color: transparent;
-        border-left-color: transparent;
-        border-right-color: currentColor;
-        border-top-color: currentColor;
-      }
+    ark-spinner {
+      --spinner-color: currentColor;
     }
 
     :host([navigating]) .nav-link {
@@ -377,7 +354,7 @@ export class ArkNavLink extends LitElement {
         href=${this.href}
         aria-current=${this.active ? "page" : nothing}
       >
-        ${when(this.navigating, () => html`<span class="spinner" aria-hidden="true"></span>`)}
+        ${when(this.navigating, () => html`<ark-spinner size="sm" decorative></ark-spinner>`)}
         <slot></slot>
         <span class="underline"></span>
       </a>
@@ -455,32 +432,8 @@ export class ArkNavigationCta extends LitElement {
       outline: none;
     }
 
-    @keyframes nav-spin {
-      to { transform: rotate(360deg); }
-    }
-
-    .spinner {
-      animation: nav-spin 0.9s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-      border-color: transparent;
-      border-radius: 50%;
-      border-right-color: color-mix(in srgb, currentColor 33%, transparent);
-      border-style: solid;
-      border-top-color: currentColor;
-      border-width: 2px;
-      display: inline-block;
-      flex-shrink: 0;
-      height: 1em;
-      width: 1em;
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .spinner {
-        animation: none;
-        border-bottom-color: transparent;
-        border-left-color: transparent;
-        border-right-color: currentColor;
-        border-top-color: currentColor;
-      }
+    ark-spinner {
+      --spinner-color: currentColor;
     }
 
     :host([navigating]) .cta {
@@ -509,7 +462,7 @@ export class ArkNavigationCta extends LitElement {
   override render() {
     return html`
       <a class="cta" href=${this.href}>
-        ${when(this.navigating, () => html`<span class="spinner" aria-hidden="true"></span>`)}
+        ${when(this.navigating, () => html`<ark-spinner size="sm" decorative></ark-spinner>`)}
         <slot></slot>
       </a>
     `;
@@ -710,10 +663,12 @@ export const defineArkNavigationLinks = () => {
 };
 
 export const defineArkNavLink = () => {
+  defineArkSpinner();
   defineElement("ark-nav-link", ArkNavLink);
 };
 
 export const defineArkNavigationCta = () => {
+  defineArkSpinner();
   defineElement("ark-navigation-cta", ArkNavigationCta);
 };
 
