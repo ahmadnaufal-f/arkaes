@@ -2,6 +2,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { when } from "lit/directives/when.js";
 import { defineElement } from "../define-element";
 import { defineArkBrandLogo } from "../primitives/ark-brand-logo";
+import { defineArkSpinner } from "../primitives/ark-spinner";
 import {
   lockBodyScroll,
   unlockBodyScroll,
@@ -223,11 +224,13 @@ export class ArkNavLink extends LitElement {
     href: { type: String },
     active: { type: Boolean, reflect: true },
     autoActive: { type: Boolean, attribute: "auto-active" },
+    navigating: { type: Boolean, reflect: true },
   };
 
   href = "";
   active = false;
   autoActive = false;
+  navigating = false;
 
   static override styles = css`
     :host {
@@ -238,7 +241,9 @@ export class ArkNavLink extends LitElement {
       color: var(--ark-color-text-ghost);
       cursor: var(--ark-cursor-interactive, pointer);
       display: inline-flex;
-      flex-direction: column;
+      align-items: center;
+      flex-direction: row;
+      gap: 0.5rem;
       font-family: var(--ark-font-mono);
       font-size: var(--ark-font-size-sm);
       letter-spacing: var(--ark-letter-spacing-mono);
@@ -275,6 +280,23 @@ export class ArkNavLink extends LitElement {
     .nav-link:hover .underline,
     .nav-link[aria-current="page"] .underline {
       transform: scaleX(1);
+    }
+
+    ark-spinner {
+      --spinner-color: currentColor;
+    }
+
+    :host([navigating]) .nav-link {
+      cursor: progress;
+      opacity: 0.6;
+    }
+
+    :host([navigating]) .nav-link:hover {
+      color: var(--ark-color-text-ghost);
+    }
+
+    :host([navigating]) .nav-link:hover .underline {
+      transform: scaleX(0);
     }
   `;
 
@@ -332,6 +354,7 @@ export class ArkNavLink extends LitElement {
         href=${this.href}
         aria-current=${this.active ? "page" : nothing}
       >
+        ${when(this.navigating, () => html`<ark-spinner size="sm" decorative></ark-spinner>`)}
         <slot></slot>
         <span class="underline"></span>
       </a>
@@ -345,9 +368,11 @@ export class ArkNavLink extends LitElement {
 export class ArkNavigationCta extends LitElement {
   static override properties = {
     href: { type: String },
+    navigating: { type: Boolean, reflect: true },
   };
 
   href = "";
+  navigating = false;
 
   static override styles = css`
     :host {
@@ -355,12 +380,15 @@ export class ArkNavigationCta extends LitElement {
     }
 
     .cta {
+      align-items: center;
       border: 1px solid var(--ark-color-border);
       border-radius: var(--ark-radius-xs);
       color: var(--ark-color-text);
       cursor: var(--ark-cursor-interactive, pointer);
+      display: inline-flex;
       font-family: var(--ark-font-mono);
       font-size: var(--ark-font-size-sm);
+      gap: 0.5rem;
       letter-spacing: var(--ark-letter-spacing-mono);
       overflow: hidden;
       padding: 10px 22px;
@@ -404,6 +432,26 @@ export class ArkNavigationCta extends LitElement {
       outline: none;
     }
 
+    ark-spinner {
+      --spinner-color: currentColor;
+    }
+
+    :host([navigating]) .cta {
+      cursor: progress;
+      opacity: 0.6;
+    }
+
+    :host([navigating]) .cta:hover {
+      background: transparent;
+      border-color: var(--ark-color-border);
+      color: var(--ark-color-text);
+      transform: none;
+    }
+
+    :host([navigating]) .cta:hover::after {
+      transform: scaleX(0);
+    }
+
     @media (max-width: 520px) {
       :host {
         display: none;
@@ -414,6 +462,7 @@ export class ArkNavigationCta extends LitElement {
   override render() {
     return html`
       <a class="cta" href=${this.href}>
+        ${when(this.navigating, () => html`<ark-spinner size="sm" decorative></ark-spinner>`)}
         <slot></slot>
       </a>
     `;
@@ -614,10 +663,12 @@ export const defineArkNavigationLinks = () => {
 };
 
 export const defineArkNavLink = () => {
+  defineArkSpinner();
   defineElement("ark-nav-link", ArkNavLink);
 };
 
 export const defineArkNavigationCta = () => {
+  defineArkSpinner();
   defineElement("ark-navigation-cta", ArkNavigationCta);
 };
 

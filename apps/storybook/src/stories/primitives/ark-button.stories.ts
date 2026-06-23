@@ -1,13 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
 import { ifDefined } from "lit/directives/if-defined.js";
-import { ButtonVariant } from "@arkaes/ui";
+import { ArkButton, ButtonVariant } from "@arkaes/ui";
 
 type ButtonArgs = {
   disabled: boolean;
   fullWidth: boolean;
   href: string;
   label: string;
+  loading: boolean;
   rel: string;
   size: "sm" | "md" | "lg";
   target: "" | "_blank" | "_self" | "_parent" | "_top";
@@ -20,6 +21,7 @@ const renderButton = ({
   fullWidth,
   href,
   label,
+  loading,
   rel,
   size,
   target,
@@ -35,6 +37,7 @@ const renderButton = ({
         target=${ifDefined(target || undefined)}
         rel=${ifDefined(rel || undefined)}
         ?disabled=${disabled}
+        ?loading=${loading}
         ?full-width=${fullWidth}
       >
         ${label}
@@ -48,6 +51,7 @@ const renderButton = ({
       type=${type}
       variant=${variant}
       ?disabled=${disabled}
+      ?loading=${loading}
       ?full-width=${fullWidth}
     >
       ${label}
@@ -61,6 +65,7 @@ const meta = {
     fullWidth: { control: "boolean", name: "full-width" },
     href: { control: "text" },
     label: { control: "text" },
+    loading: { control: "boolean" },
     rel: { control: "text" },
     size: {
       control: "inline-radio",
@@ -84,6 +89,7 @@ const meta = {
     fullWidth: false,
     href: "",
     label: "View Project",
+    loading: false,
     rel: "",
     size: "md",
     target: "",
@@ -139,3 +145,57 @@ export const Disabled = {
     label: "Unavailable",
   },
 } satisfies Story;
+
+export const LoadingPrimary = {
+  args: {
+    label: "Submitting",
+    loading: true,
+    variant: ButtonVariant.Primary,
+  },
+} satisfies Story;
+
+export const LoadingSecondary = {
+  args: {
+    label: "Saving",
+    loading: true,
+    variant: ButtonVariant.Secondary,
+  },
+} satisfies Story;
+
+export const LoadingGhost = {
+  args: {
+    label: "Sending",
+    loading: true,
+    variant: ButtonVariant.Ghost,
+  },
+} satisfies Story;
+
+export const LoadingLink = {
+  args: {
+    href: "https://example.com",
+    label: "Opening",
+    loading: true,
+    target: "_blank",
+  },
+} satisfies Story;
+
+export const LoadingWithPromise: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: `
+Pass a \`Promise\` to \`loadingPromise\` to automatically enter and exit loading state.
+The button disables itself while the promise is pending and recovers when it settles (resolve or reject).
+Click the button below to simulate a 2-second async operation.
+        `,
+      },
+    },
+  },
+  render: () => {
+    const handleClick = (e: Event) => {
+      const host = (e.currentTarget as ArkButton);
+      host.loadingPromise = new Promise<void>((resolve) => setTimeout(resolve, 2000));
+    };
+    return html`<ark-button @click=${handleClick}>Click to load</ark-button>`;
+  },
+};

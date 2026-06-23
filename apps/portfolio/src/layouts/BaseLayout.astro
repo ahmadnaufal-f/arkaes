@@ -99,6 +99,8 @@ const {
       // elements stay defined across client-side View Transitions navigations.
       import "@arkaes/ui/register";
       import { enableArkCursor } from "@arkaes/ui/components/ark-cursor";
+      import type { ArkButton } from "@arkaes/ui";
+      import type { ArkNavLink, ArkNavigationCta } from "@arkaes/ui";
 
       // ── Persistent setup (runs once for the document lifetime) ──────────
       const reduceMotion = window.matchMedia(
@@ -120,6 +122,55 @@ const {
           .forEach((root) => {
             root.open = false;
           });
+      });
+
+      // Activate the loading/navigating state on the clicked link element as
+      // soon as the user clicks, so there is immediate feedback while
+      // Astro's ClientRouter fetches the next page in the background.
+      const NAV_TAGS = new Set(["ARK-BUTTON", "ARK-NAV-LINK", "ARK-NAVIGATION-CTA"]);
+      let pendingNavEls: Element[] = [];
+
+      document.addEventListener("click", (e) => {
+        if (e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+
+        const path = e.composedPath();
+
+        const anchor = path.find((el): el is HTMLAnchorElement => el instanceof HTMLAnchorElement);
+        if (!anchor?.href || (anchor.target && anchor.target !== "_self")) return;
+
+        let url: URL;
+        try {
+          url = new URL(anchor.href);
+        } catch {
+          return;
+        }
+
+        // Only same-origin navigations that actually load a different page.
+        // Hash-only changes (same pathname) are instant scroll — no loading needed.
+        if (url.origin !== location.origin || url.pathname === location.pathname) return;
+
+        const host = path.find((el): el is Element => el instanceof Element && NAV_TAGS.has(el.tagName));
+        if (!host) return;
+
+        if (host.tagName === "ARK-BUTTON") {
+          (host as ArkButton).loading = true;
+        } else {
+          (host as ArkNavLink | ArkNavigationCta).navigating = true;
+        }
+        pendingNavEls.push(host);
+      });
+
+      // Clear all loading/navigating states just before the DOM swap —
+      // the transition animation takes over as visual feedback from here.
+      document.addEventListener("astro:before-swap", () => {
+        pendingNavEls.forEach((el) => {
+          if (el.tagName === "ARK-BUTTON") {
+            (el as ArkButton).loading = false;
+          } else {
+            (el as ArkNavLink | ArkNavigationCta).navigating = false;
+          }
+        });
+        pendingNavEls = [];
       });
 
       const scrollToTop = () => {

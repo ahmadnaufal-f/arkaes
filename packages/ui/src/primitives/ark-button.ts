@@ -1,6 +1,9 @@
 import { css, html, LitElement } from "lit";
 import { ifDefined } from "lit/directives/if-defined.js";
+import { until } from "lit/directives/until.js";
+import { when } from "lit/directives/when.js";
 import { defineElement } from "../define-element";
+import { defineArkSpinner } from "./ark-spinner";
 
 export enum ButtonVariant {
   Primary = "primary",
@@ -13,6 +16,8 @@ export class ArkButton extends LitElement {
     disabled: { reflect: true, type: Boolean },
     fullWidth: { attribute: "full-width", reflect: true, type: Boolean },
     href: { type: String },
+    loading: { reflect: true, type: Boolean },
+    loadingPromise: { attribute: false },
     rel: { type: String },
     size: { reflect: true, type: String },
     target: { type: String },
@@ -29,6 +34,10 @@ export class ArkButton extends LitElement {
       width: 100%;
     }
 
+    ark-spinner {
+      --spinner-color: currentColor;
+    }
+
     a,
     button {
       align-items: center;
@@ -36,6 +45,7 @@ export class ArkButton extends LitElement {
       cursor: var(--ark-cursor-interactive, pointer);
       display: inline-flex;
       font-family: var(--ark-font-mono);
+      gap: 0.5rem;
       justify-content: center;
       min-height: 3rem;
       position: relative;
@@ -176,6 +186,16 @@ export class ArkButton extends LitElement {
       padding: 1rem 2.5rem;
     }
 
+    /* Loading state: keep full opacity and swap cursor; works for both loading and loadingPromise */
+    button:disabled[aria-busy="true"] {
+      cursor: progress;
+      opacity: 1;
+    }
+
+    a[aria-disabled="true"][aria-busy="true"] {
+      cursor: progress;
+    }
+
     @media (max-width: 520px) {
       .primary {
         width: 100%;
@@ -186,11 +206,42 @@ export class ArkButton extends LitElement {
   href = "";
   disabled = false;
   fullWidth = false;
+  loading = false;
   rel = "";
   size = "md";
   target = "";
   type: "button" | "submit" | "reset" = "button";
   variant: ButtonVariant | string = ButtonVariant.Primary;
+
+  private _loadingPromiseValue: Promise<unknown> | undefined;
+  private _promisePending = false;
+
+  get loadingPromise(): Promise<unknown> | undefined {
+    return this._loadingPromiseValue;
+  }
+
+  set loadingPromise(p: Promise<unknown> | undefined) {
+    const old = this._loadingPromiseValue;
+    this._loadingPromiseValue = p;
+
+    if (p) {
+      this._promisePending = true;
+      p.finally(() => {
+        if (this._loadingPromiseValue === p) {
+          this._promisePending = false;
+          this.requestUpdate();
+        }
+      });
+    } else {
+      this._promisePending = false;
+    }
+
+    this.requestUpdate("loadingPromise", old);
+  }
+
+  private get _isEffectivelyLoading() {
+    return this.loading || this._promisePending;
+  }
 
   private get _buttonType() {
     return this.type === "submit" || this.type === "reset" ? this.type : "button";
@@ -208,39 +259,58 @@ export class ArkButton extends LitElement {
   }
 
   private _handleDisabledClick(event: Event) {
-    if (!this.disabled) return;
+    if (!this.disabled && !this._isEffectivelyLoading) return;
     event.preventDefault();
     event.stopImmediatePropagation();
   }
 
-  override render() {
+  private _renderInner(isLoading: boolean) {
     const className = this._variantClass;
+    const spinner = when(isLoading, () => html`<ark-spinner size="sm" decorative></ark-spinner>`);
 
     if (this.href) {
+      const inactive = this.disabled || isLoading;
       return html`
         <a
           class=${className}
-          href=${ifDefined(this.disabled ? undefined : this.href)}
+          href=${ifDefined(inactive ? undefined : this.href)}
           target=${ifDefined(this.target || undefined)}
           rel=${ifDefined(this._linkRel)}
-          aria-disabled=${ifDefined(this.disabled ? "true" : undefined)}
-          tabindex=${ifDefined(this.disabled ? "-1" : undefined)}
+          aria-disabled=${ifDefined(inactive ? "true" : undefined)}
+          aria-busy=${ifDefined(isLoading ? "true" : undefined)}
+          tabindex=${ifDefined(inactive ? "-1" : undefined)}
           @click=${this._handleDisabledClick}
         >
-          <slot></slot>
+          ${spinner}<slot></slot>
         </a>
       `;
     }
 
     return html`
-      <button class=${className} type=${this._buttonType} ?disabled=${this.disabled}>
-        <slot></slot>
+      <button
+        class=${className}
+        type=${this._buttonType}
+        ?disabled=${this.disabled || isLoading}
+        aria-busy=${ifDefined(isLoading ? "true" : undefined)}
+      >
+        ${spinner}<slot></slot>
       </button>
     `;
+  }
+
+  override render(): unknown {
+    if (this.loadingPromise) {
+      const settled = this.loadingPromise
+        .then(() => this._renderInner(this.loading))
+        .catch(() => this._renderInner(this.loading));
+      return until(settled, this._renderInner(true));
+    }
+    return this._renderInner(this._isEffectivelyLoading);
   }
 }
 
 export const defineArkButton = () => {
+  defineArkSpinner();
   defineElement("ark-button", ArkButton);
 };
 
