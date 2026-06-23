@@ -240,7 +240,9 @@ export class ArkNavLink extends LitElement {
       color: var(--ark-color-text-ghost);
       cursor: var(--ark-cursor-interactive, pointer);
       display: inline-flex;
-      flex-direction: column;
+      align-items: center;
+      flex-direction: row;
+      gap: 0.5rem;
       font-family: var(--ark-font-mono);
       font-size: var(--ark-font-size-sm);
       letter-spacing: var(--ark-letter-spacing-mono);
@@ -277,6 +279,34 @@ export class ArkNavLink extends LitElement {
     .nav-link:hover .underline,
     .nav-link[aria-current="page"] .underline {
       transform: scaleX(1);
+    }
+
+    @keyframes nav-spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .spinner {
+      animation: nav-spin 0.9s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+      border-color: transparent;
+      border-radius: 50%;
+      border-right-color: color-mix(in srgb, currentColor 33%, transparent);
+      border-style: solid;
+      border-top-color: currentColor;
+      border-width: 2px;
+      display: inline-block;
+      flex-shrink: 0;
+      height: 1em;
+      width: 1em;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .spinner {
+        animation: none;
+        border-bottom-color: transparent;
+        border-left-color: transparent;
+        border-right-color: currentColor;
+        border-top-color: currentColor;
+      }
     }
 
     :host([navigating]) .nav-link {
@@ -347,6 +377,7 @@ export class ArkNavLink extends LitElement {
         href=${this.href}
         aria-current=${this.active ? "page" : nothing}
       >
+        ${when(this.navigating, () => html`<span class="spinner" aria-hidden="true"></span>`)}
         <slot></slot>
         <span class="underline"></span>
       </a>
@@ -372,12 +403,15 @@ export class ArkNavigationCta extends LitElement {
     }
 
     .cta {
+      align-items: center;
       border: 1px solid var(--ark-color-border);
       border-radius: var(--ark-radius-xs);
       color: var(--ark-color-text);
       cursor: var(--ark-cursor-interactive, pointer);
+      display: inline-flex;
       font-family: var(--ark-font-mono);
       font-size: var(--ark-font-size-sm);
+      gap: 0.5rem;
       letter-spacing: var(--ark-letter-spacing-mono);
       overflow: hidden;
       padding: 10px 22px;
@@ -421,6 +455,34 @@ export class ArkNavigationCta extends LitElement {
       outline: none;
     }
 
+    @keyframes nav-spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .spinner {
+      animation: nav-spin 0.9s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+      border-color: transparent;
+      border-radius: 50%;
+      border-right-color: color-mix(in srgb, currentColor 33%, transparent);
+      border-style: solid;
+      border-top-color: currentColor;
+      border-width: 2px;
+      display: inline-block;
+      flex-shrink: 0;
+      height: 1em;
+      width: 1em;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .spinner {
+        animation: none;
+        border-bottom-color: transparent;
+        border-left-color: transparent;
+        border-right-color: currentColor;
+        border-top-color: currentColor;
+      }
+    }
+
     :host([navigating]) .cta {
       cursor: progress;
       opacity: 0.6;
@@ -447,6 +509,7 @@ export class ArkNavigationCta extends LitElement {
   override render() {
     return html`
       <a class="cta" href=${this.href}>
+        ${when(this.navigating, () => html`<span class="spinner" aria-hidden="true"></span>`)}
         <slot></slot>
       </a>
     `;
