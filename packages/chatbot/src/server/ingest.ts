@@ -18,6 +18,11 @@ export interface IngestResult {
   chunks: number;
 }
 
+export interface SourceCount {
+  source: string | null;
+  chunks: number;
+}
+
 export interface SupabaseIngestorOptions {
   supabaseUrl: string;
   supabaseKey: string;
@@ -40,6 +45,8 @@ export interface Ingestor {
   clearAll(): Promise<number>;
   /** Delete rows for one source (for idempotent re-ingest). */
   clearSource(source: string): Promise<number>;
+  /** List distinct sources with their chunk counts. */
+  listSources(): Promise<SourceCount[]>;
 }
 
 interface PendingChunk {
@@ -130,6 +137,18 @@ export const createSupabaseIngestor = (
         .eq("source", source);
       if (error) throw new Error(`Clear failed: ${error.message}`);
       return count ?? 0;
+    },
+
+    async listSources() {
+      const { data, error } = await client.from(table).select("source");
+      if (error) throw new Error(`List failed: ${error.message}`);
+      const counts = new Map<string | null, number>();
+      for (const row of (data ?? []) as { source: string | null }[]) {
+        counts.set(row.source, (counts.get(row.source) ?? 0) + 1);
+      }
+      return [...counts.entries()]
+        .map(([source, chunks]) => ({ source, chunks }))
+        .sort((a, b) => (a.source ?? "").localeCompare(b.source ?? ""));
     },
   };
 };
