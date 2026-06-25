@@ -65,10 +65,22 @@ const buildKnowledge = async (): Promise<PortfolioKnowledge> => {
   };
 };
 
+// Optional origin allowlist (comma-separated), e.g.
+// CHAT_ALLOWED_ORIGINS="https://arkaes.dev,https://www.arkaes.dev". Leave unset
+// to rely on the built-in cross-site rejection (which also allows previews and
+// local dev).
+const allowedOrigins = (process.env.CHAT_ALLOWED_ORIGINS ?? "")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
 const handler = createChatHandler({
   apiKey: process.env.OPENAI_API_KEY ?? "",
   model: process.env.OPENAI_MODEL ?? "gpt-4o-mini",
   knowledge: buildKnowledge,
+  allowedOrigins: allowedOrigins.length > 0 ? allowedOrigins : undefined,
+  // 15 requests / minute / client (in-memory, best-effort per instance).
+  rateLimit: { windowMs: 60_000, max: 15 },
 });
 
 export const POST: APIRoute = ({ request }) => handler(request);

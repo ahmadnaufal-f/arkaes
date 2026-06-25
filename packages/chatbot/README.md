@@ -59,3 +59,33 @@ with the per-request knowledge appended by `buildSystemPrompt`. Edit
 
 > Set `OPENAI_API_KEY` as a server-only environment variable. It must never be
 > exposed to the client.
+
+## Abuse protection
+
+`createChatHandler` applies these guards before calling the model:
+
+- **Rate limiting** — 15 requests/minute/client by default (`rateLimit`),
+  counted by forwarded IP. Returns `429` with `Retry-After` and
+  `X-RateLimit-*` headers. Pass `rateLimit: false` to disable, or tune
+  `{ windowMs, max }`.
+- **Origin checks** — browser-tagged `Sec-Fetch-Site: cross-site` requests are
+  rejected (`403`). Set `allowedOrigins` to enforce a strict allowlist.
+- **Body limits** — bodies over `maxBodyBytes` (16 KB) get a `413`; messages
+  are capped at `maxMessages` (12) turns and `maxMessageLength` (4000) chars.
+- **Method check** — non-`POST` requests get a `405`.
+
+### Distributed rate limiting
+
+The default store is **in-memory**, so on serverless it limits per warm
+instance (best-effort). For a strict global limit, implement `RateLimitStore`
+against a shared backend and pass it in:
+
+```ts
+const store: RateLimitStore = {
+  async increment(key, windowMs) {
+    // e.g. Upstash/Vercel KV: INCR + PEXPIRE, return { count, resetAt }
+  },
+};
+
+createChatHandler({ /* … */, rateLimit: { store, windowMs: 60_000, max: 15 } });
+```
