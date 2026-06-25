@@ -7,6 +7,7 @@
     "build": "astro build",
     "check": "astro check",
     "dev": "astro dev",
+    "ingest": "tsx scripts/ingest-knowledge.ts",
     "lint": "eslint . --max-warnings=0",
     "preview": "astro preview"
   },
@@ -20,6 +21,8 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
-    "@types/node": "^26.0.0"
+    "@types/node": "^26.0.0",
+    "dotenv": "^17.4.2",
+    "tsx": "^4.22.4"
   }
 }

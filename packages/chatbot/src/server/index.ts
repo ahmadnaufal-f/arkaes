@@ -4,5 +4,10 @@
 export * from "./knowledge";
 export * from "./persona";
 export * from "./rate-limit";
+export * from "./chunk";
+export * from "./embeddings";
+export * from "./retrieval";
+export * from "./retriever";
+export * from "./ingest";
 export * from "./handler";
 export type { ChatMessage, ChatRequestBody, ChatRole } from "../shared/types";

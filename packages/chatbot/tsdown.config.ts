@@ -10,6 +10,6 @@ export default defineConfig({
   dts: true,
   clean: true,
   unbundle: true,
-  // lit, openai, and @arkaes/tokens stay external (declared dependencies).
-  external: ["lit", "openai", /^@arkaes\//],
+  // Declared dependencies stay external.
+  external: ["lit", "openai", "@supabase/supabase-js", /^@arkaes\//],
 });
