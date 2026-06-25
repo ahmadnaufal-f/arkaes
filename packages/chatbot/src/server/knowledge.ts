@@ -5,6 +5,7 @@
 // the static Arkhe persona (see ./persona).
 
 import { ARKHE_SYSTEM_PROMPT } from "./persona";
+import { formatRetrievedKnowledge, type RetrievedChunk } from "./retrieval";
 
 export interface KnowledgeLink {
   label: string;
@@ -60,6 +61,8 @@ const renderProjects = (projects: KnowledgeProject[]): string =>
 export interface BuildSystemPromptOptions {
   /** Override the static persona. Defaults to the Arkhe persona. */
   persona?: string;
+  /** RAG chunks retrieved for the current turn; ranked above static knowledge. */
+  retrieved?: RetrievedChunk[];
 }
 
 /** Serialise the knowledge base into the "Retrieved portfolio knowledge" block. */
@@ -106,6 +109,17 @@ export const buildSystemPrompt = (
   options: BuildSystemPromptOptions = {},
 ): string => {
   const persona = options.persona ?? ARKHE_SYSTEM_PROMPT;
+  const retrieved = options.retrieved ?? [];
+
+  const blocks: string[] = [];
+  if (retrieved.length > 0) {
+    blocks.push(
+      `## Most relevant excerpts\n\nRanked by relevance to the current \
+question. Prefer these when answering.\n\n${formatRetrievedKnowledge(retrieved)}`,
+    );
+  }
+  blocks.push(`## Portfolio profile\n\n${renderKnowledge(knowledge)}`);
+
   return `${persona}
 
 ---
@@ -115,5 +129,5 @@ export const buildSystemPrompt = (
 This is the retrieved knowledge for the current conversation. Treat it as the \
 highest-priority source per the Knowledge Usage rules above.
 
-${renderKnowledge(knowledge)}`;
+${blocks.join("\n\n")}`;
 };
