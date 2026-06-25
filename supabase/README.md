@@ -38,5 +38,10 @@ pnpm --filter @arkaes/portfolio ingest --clear    # wipe, then re-ingest
 pnpm --filter @arkaes/portfolio ingest --dry-run  # preview, no writes
 ```
 
+Or use the admin UI at **`/admin/knowledge`** to paste documents, see what's
+loaded, and clear sources. It's gated by HTTP Basic Auth — set `ADMIN_PASSWORD`
+(and optionally `ADMIN_USER`, default `admin`) to enable it. Without
+`ADMIN_PASSWORD` the admin routes return `503`.
+
 > Embedding model and vector size must match between the SQL (`vector(1536)`)
 > and `packages/chatbot/src/server/embeddings.ts` (`EMBEDDING_DIMENSIONS`).
