@@ -5,7 +5,11 @@
       "@/*": ["./src/*"],
       "@arkaes/ui": ["../../packages/ui/src/index.ts"],
       "@arkaes/ui/register": ["../../packages/ui/src/register.ts"],
-      "@arkaes/ui/register/*": ["../../packages/ui/src/register/*.ts"]
+      "@arkaes/ui/register/*": ["../../packages/ui/src/register/*.ts"],
+      "@arkaes/chatbot": ["../../packages/chatbot/src/index.ts"],
+      "@arkaes/chatbot/register": ["../../packages/chatbot/src/register.ts"],
+      "@arkaes/chatbot/register/*": ["../../packages/chatbot/src/register/*.ts"],
+      "@arkaes/chatbot/server": ["../../packages/chatbot/src/server/index.ts"]
     }
   },
   "include": [".astro/types.d.ts", "**/*"],
