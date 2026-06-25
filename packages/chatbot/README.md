@@ -74,6 +74,37 @@ with the per-request knowledge appended by `buildSystemPrompt`. Edit
   are capped at `maxMessages` (12) turns and `maxMessageLength` (4000) chars.
 - **Method check** — non-`POST` requests get a `405`.
 
+## RAG (Supabase pgvector)
+
+Retrieval is optional and **degrades gracefully** — if no retriever is passed,
+or a lookup fails, the handler falls back to the static `knowledge` base.
+
+Server primitives (all from `@arkaes/chatbot/server`):
+
+- `createEmbedder` — OpenAI embeddings (`text-embedding-3-small`, 1536 dims).
+- `chunkText` — paragraph-aware chunking for ingestion.
+- `createSupabaseIngestor` — chunk + embed + insert (`ingest`, `clearAll`,
+  `clearSource`).
+- `createSupabaseRetriever` — embed the query and call the `match_documents`
+  RPC for nearest-neighbour chunks.
+
+```ts
+import { createChatHandler, createSupabaseRetriever } from "@arkaes/chatbot/server";
+
+const retriever = createSupabaseRetriever({
+  supabaseUrl: process.env.SUPABASE_URL!,
+  supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  openaiApiKey: process.env.OPENAI_API_KEY!,
+});
+
+createChatHandler({ apiKey, knowledge, retriever });
+```
+
+The handler retrieves on the latest user message and injects the chunks into
+the prompt's "Retrieved portfolio knowledge" block, ranked above the static
+profile. SQL schema + setup live in `supabase/` at the repo root; ingest with
+`pnpm --filter @arkaes/portfolio ingest`.
+
 ### Distributed rate limiting
 
 The default store is **in-memory**, so on serverless it limits per warm

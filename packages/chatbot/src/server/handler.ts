@@ -1,6 +1,8 @@
 import OpenAI from "openai";
 import type { ChatMessage, ChatRequestBody } from "../shared/types";
 import { buildSystemPrompt, type PortfolioKnowledge } from "./knowledge";
+import type { RetrievedChunk } from "./retrieval";
+import type { Retriever } from "./retriever";
 import {
   checkRateLimit,
   createMemoryRateLimitStore,
@@ -17,8 +19,14 @@ export type KnowledgeSource =
 export interface ChatHandlerOptions {
   /** OpenAI API key. Read this from a server-only env var. */
   apiKey: string;
-  /** Facts the assistant is allowed to talk about. */
+  /** Baseline facts the assistant always has, even with no retrieval hits. */
   knowledge: KnowledgeSource;
+  /**
+   * Optional RAG retriever. When set, the latest user message is used to fetch
+   * relevant chunks that are injected into the prompt. Failures fall back to
+   * `knowledge` alone, so chat keeps working if the vector store is down.
+   */
+  retriever?: Retriever;
   /** Chat model. Defaults to "gpt-4o-mini". */
   model?: string;
   /** Sampling temperature. Defaults to 0.4 for grounded answers. */
@@ -203,7 +211,20 @@ export const createChatHandler = (
 
     const resolved =
       typeof knowledge === "function" ? await knowledge() : knowledge;
-    const systemPrompt = buildSystemPrompt(resolved);
+
+    // RAG: retrieve on the latest user turn. Never let a retrieval failure
+    // break the chat — fall back to the static knowledge base.
+    let retrieved: RetrievedChunk[] = [];
+    const lastUser = [...messages].reverse().find((m) => m.role === "user");
+    if (options.retriever && lastUser) {
+      try {
+        retrieved = await options.retriever.retrieve(lastUser.content);
+      } catch {
+        retrieved = [];
+      }
+    }
+
+    const systemPrompt = buildSystemPrompt(resolved, { retrieved });
 
     try {
       const completion = await client.chat.completions.create({

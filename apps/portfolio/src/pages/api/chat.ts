@@ -2,7 +2,9 @@ import type { APIRoute } from "astro";
 import { getCollection } from "astro:content";
 import {
   createChatHandler,
+  createSupabaseRetriever,
   type PortfolioKnowledge,
+  type Retriever,
 } from "@arkaes/chatbot/server";
 import { EXPERTISE, categoryLabel } from "@/data/expertise";
 import { techGroups } from "@/data/techstack";
@@ -74,10 +76,22 @@ const allowedOrigins = (process.env.CHAT_ALLOWED_ORIGINS ?? "")
   .map((origin) => origin.trim())
   .filter(Boolean);
 
+const openaiApiKey = process.env.OPENAI_API_KEY ?? "";
+
+// RAG retriever — only when Supabase is configured. Without it the handler
+// falls back to the static knowledge base built above.
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const retriever: Retriever | undefined =
+  supabaseUrl && supabaseKey && openaiApiKey
+    ? createSupabaseRetriever({ supabaseUrl, supabaseKey, openaiApiKey })
+    : undefined;
+
 const handler = createChatHandler({
-  apiKey: process.env.OPENAI_API_KEY ?? "",
+  apiKey: openaiApiKey,
   model: process.env.OPENAI_MODEL ?? "gpt-4o-mini",
   knowledge: buildKnowledge,
+  retriever,
   allowedOrigins: allowedOrigins.length > 0 ? allowedOrigins : undefined,
   // 15 requests / minute / client (in-memory, best-effort per instance).
   rateLimit: { windowMs: 60_000, max: 15 },
