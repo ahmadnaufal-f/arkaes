@@ -62,9 +62,12 @@ const installGlobalCursorStyles = () => {
  *
  * Chip text resolves per hovered element: a `data-cursor-label` attribute
  * wins (empty string suppresses the chip), otherwise the first match in the
- * `labels` selector map. Apps should mount it via {@link enableArkCursor}
- * rather than by hand. Visuals are themeable through the `--ark-cursor-*`
- * custom properties.
+ * `labels` selector map. The chip sits to the bottom-right of the pointer and
+ * automatically flips to the opposite side near the right/bottom viewport
+ * edges so it never clips offscreen. Apps should mount it via
+ * {@link enableArkCursor} rather than by hand. Visuals are themeable through
+ * the `--ark-cursor-*` custom properties, including the chip's distance from
+ * the pointer via `--ark-cursor-label-offset-x`/`-y`.
  */
 export class ArkCursor extends LitElement {
   static override properties = {
@@ -73,6 +76,8 @@ export class ArkCursor extends LitElement {
     active: { type: Boolean, reflect: true },
     hovering: { type: Boolean, reflect: true },
     label: { attribute: false },
+    _flipX: { state: true },
+    _flipY: { state: true },
   };
 
   /** Selector for elements that tint the arrow on hover. */
@@ -86,13 +91,28 @@ export class ArkCursor extends LitElement {
   /** Chip text for the hovered element; "" hides the chip. */
   label = "";
 
+  /** Chip flipped to the left of the pointer (would overflow the right edge). */
+  private _flipX = false;
+  /** Chip flipped above the pointer (would overflow the bottom edge). */
+  private _flipY = false;
+
   private _pointerMedia: MediaQueryList | null = null;
   private _mover: HTMLElement | null = null;
+  private _chip: HTMLElement | null = null;
+  private _mouseX = 0;
+  private _mouseY = 0;
+  private _chipOffsetX = 0;
+  private _chipOffsetY = 0;
+  private _chipWidth = 0;
+  private _chipHeight = 0;
 
   private _onPointerMove = (event: PointerEvent) => {
+    this._mouseX = event.clientX;
+    this._mouseY = event.clientY;
     if (this._mover) {
-      this._mover.style.transform = `translate3d(${event.clientX}px, ${event.clientY}px, 0)`;
+      this._mover.style.transform = `translate3d(${this._mouseX}px, ${this._mouseY}px, 0)`;
     }
+    this._updatePlacement();
   };
 
   private _onPointerOver = (event: PointerEvent) => {
@@ -118,6 +138,22 @@ export class ArkCursor extends LitElement {
     this.hovering = path.some((node) => node.matches(this.interactive));
     this.label = label ?? "";
   };
+
+  /**
+   * Flip the chip to the opposite side of the pointer when its default
+   * bottom-right placement would overflow the viewport. Pure arithmetic on
+   * cached measurements — no layout reads on the pointermove path. Assigning
+   * unchanged values is a Lit no-op, so calling this per event is cheap.
+   */
+  private _updatePlacement() {
+    const margin = 8;
+    this._flipX =
+      this._mouseX + this._chipOffsetX + this._chipWidth >
+      window.innerWidth - margin;
+    this._flipY =
+      this._mouseY + this._chipOffsetY + this._chipHeight >
+      window.innerHeight - margin;
+  }
 
   private _evaluate = () => {
     if (this._pointerMedia?.matches) {
@@ -159,6 +195,22 @@ export class ArkCursor extends LitElement {
 
   protected override firstUpdated() {
     this._mover = this.renderRoot.querySelector<HTMLElement>(".mover");
+    this._chip = this.renderRoot.querySelector<HTMLElement>(".chip");
+    // The chip starts unflipped and is laid out even while opacity-hidden, so
+    // offsetLeft/Top are the resolved --ark-cursor-label-offset-* values.
+    this._chipOffsetX = this._chip?.offsetLeft ?? 0;
+    this._chipOffsetY = this._chip?.offsetTop ?? 0;
+  }
+
+  protected override updated(changed: Map<PropertyKey, unknown>) {
+    if (changed.has("label") && this._chip) {
+      // The label text changes the chip's size; re-measure and re-evaluate the
+      // flips so a chip appearing near an edge flips even with the pointer
+      // stationary. May flip reactive state post-update; Lit converges.
+      this._chipWidth = this._chip.offsetWidth;
+      this._chipHeight = this._chip.offsetHeight;
+      this._updatePlacement();
+    }
   }
 
   override disconnectedCallback() {
@@ -166,6 +218,7 @@ export class ArkCursor extends LitElement {
     this._pointerMedia?.removeEventListener("change", this._evaluate);
     this._pointerMedia = null;
     this._mover = null;
+    this._chip = null;
     super.disconnectedCallback();
   }
 
@@ -220,24 +273,44 @@ export class ArkCursor extends LitElement {
       color: var(--ark-cursor-label-color, var(--ark-color-ink));
       font-family: var(--ark-font-sans);
       font-size: var(--ark-text-xs);
-      left: var(--ark-cursor-size, 20px);
+      left: var(
+        --ark-cursor-label-offset-x,
+        calc(var(--ark-cursor-size, 20px) * 0.6)
+      );
       letter-spacing: var(--ark-tracking-label);
       line-height: 1;
       opacity: 0;
       padding: 0.375em 0.875em;
       position: absolute;
       text-transform: uppercase;
-      top: var(--ark-cursor-size, 20px);
+      top: var(
+        --ark-cursor-label-offset-y,
+        calc(var(--ark-cursor-size, 20px) * 0.8)
+      );
       transform: translateY(4px);
       transition:
         opacity var(--ark-duration-normal) var(--ark-ease-standard),
         transform var(--ark-duration-normal) var(--ark-ease-standard);
       white-space: nowrap;
-    }
 
-    .chip[data-visible] {
-      opacity: 1;
-      transform: translateY(0);
+      /* Near the right/bottom viewport edge the chip flips to the opposite
+         side of the pointer, anchored to the .mover box (whose size equals
+         --ark-cursor-size, the SVG being its only in-flow child). */
+      &[data-flip-x] {
+        left: auto;
+        right: 100%;
+      }
+
+      &[data-flip-y] {
+        bottom: 100%;
+        top: auto;
+        transform: translateY(-4px);
+      }
+
+      &[data-visible] {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -254,7 +327,12 @@ export class ArkCursor extends LitElement {
         <svg class="arrow" viewBox="0 0 24 24">
           <path d="M3 2l7.07 16.97 2.51-7.39 7.39-2.51L3 2z" />
         </svg>
-        <div class="chip" ?data-visible=${this.label !== ""}>${this.label}</div>
+        <div
+          class="chip"
+          ?data-visible=${this.label !== ""}
+          ?data-flip-x=${this._flipX}
+          ?data-flip-y=${this._flipY}
+        >${this.label}</div>
       </div>
     `;
   }
