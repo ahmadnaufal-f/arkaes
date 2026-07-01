@@ -1,5 +1,5 @@
 ---
-"@arkaes/ui": major
+"@arkaes/ui": minor
 ---
 
 Redesign `ark-cursor` from the dot + trailing ring into an arrow pointer with a contextual label chip.
