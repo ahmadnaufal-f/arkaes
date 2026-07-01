@@ -16,8 +16,8 @@ const PROFILE = {
   headline:
     "Frontend engineer at Samsung R&D Institute Indonesia, creator of ARKÆS.",
   bio:
-    "Ahmad Naufal is a frontend engineer based in Indonesia with around 5 years " +
-    "of professional experience. His work sits between product, design, and " +
+    "Ahmad Naufal is a frontend engineer based in Indonesia who has worked " +
+    "professionally since 2021. His work sits between product, design, and " +
     "engineering: turning complex requirements into clear user flows, reusable " +
     "UI systems, and frontend architectures other engineers can build on. At " +
     "Samsung Research Indonesia he has worked on web-based product experiences " +
