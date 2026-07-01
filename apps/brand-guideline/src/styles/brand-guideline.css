@@ -37,8 +37,8 @@ body::before {
 }
 
 /* Custom cursor is provided by <ark-cursor> (see @arkaes/ui), mounted via
-   enableArkCursor() in BrandGuidelineLayout — it owns the dot/ring, native-
-   cursor hiding, and hover state, so no app-level cursor CSS is needed here.
+   enableArkCursor() in BrandGuidelineLayout — it owns the arrow/label chip,
+   native-cursor hiding, and hover state, so no app-level cursor CSS is needed here.
    To match this site's palette it can be themed via the --ark-cursor-* custom
    properties. */
 

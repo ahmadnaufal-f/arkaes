@@ -2,17 +2,27 @@ import { css, html, LitElement } from "lit";
 import { defineElement } from "../define-element";
 
 const POINTER_QUERY = "(hover: hover) and (pointer: fine)";
-const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
 const CURSOR_ATTR = "data-custom-cursor";
+const LABEL_ATTR = "data-cursor-label";
 
 /**
- * Elements that enlarge the cursor on hover. The set is matched against the
+ * Elements that tint the arrow on hover. The set is matched against the
  * full composed path of each pointer event, so it also catches interactive
  * elements rendered inside component shadow roots (e.g. the <button> in
  * <ark-button> or the <a> links in <ark-navigation>).
  */
 const DEFAULT_INTERACTIVE_SELECTOR =
   'a[href], button, [role="button"], ark-button, ark-card, ark-case-study-card';
+
+/**
+ * Default chip wording per selector. Elements can override with a
+ * `data-cursor-label` attribute; apps can override via the `labels` option of
+ * {@link enableArkCursor}. Buttons get no default — they describe themselves.
+ */
+const DEFAULT_LABELS: Record<string, string> = {
+  "ark-case-study-card": "View",
+  "a[href]": "Open",
+};
 
 /**
  * Document-level rule that hides the native cursor everywhere while the custom
@@ -39,71 +49,74 @@ const installGlobalCursorStyles = () => {
 };
 
 /**
- * ArkCursor renders a custom cursor (a dot that tracks the pointer and a ring
- * that trails it) and owns all of its behavior: capability gating, native
- * cursor hiding, and hover-state detection across shadow boundaries.
+ * ArkCursor renders a custom cursor — a high-contrast arrow pointer that
+ * tracks the pointer 1:1, plus a contextual label chip ("View", "Open", …)
+ * that unfolds beside it over labeled interactive elements — and owns all of
+ * its behavior: capability gating, native cursor hiding, and hover-state
+ * detection across shadow boundaries.
  *
  * It activates only on devices with a hover-capable, fine pointer. While
- * active it sets `data-custom-cursor` on <html>, which both reveals the dot/
- * ring and flips `--ark-cursor-interactive` to `none` inside every @arkaes/ui
- * component (see @arkaes/tokens).
+ * active it sets `data-custom-cursor` on <html>, which both reveals the
+ * cursor and flips `--ark-cursor-interactive` to `none` inside every
+ * @arkaes/ui component (see @arkaes/tokens).
  *
- * Apps should mount it via {@link enableArkCursor} rather than by hand. Visuals
- * are themeable through the `--ark-cursor-*` custom properties.
+ * Chip text resolves per hovered element: a `data-cursor-label` attribute
+ * wins (empty string suppresses the chip), otherwise the first match in the
+ * `labels` selector map. Apps should mount it via {@link enableArkCursor}
+ * rather than by hand. Visuals are themeable through the `--ark-cursor-*`
+ * custom properties.
  */
 export class ArkCursor extends LitElement {
   static override properties = {
     interactive: { type: String },
+    labels: { attribute: false },
     active: { type: Boolean, reflect: true },
     hovering: { type: Boolean, reflect: true },
+    label: { attribute: false },
   };
 
-  /** Selector for elements that enlarge the cursor on hover. */
+  /** Selector for elements that tint the arrow on hover. */
   interactive = DEFAULT_INTERACTIVE_SELECTOR;
+  /** Map of CSS selector → chip text; entry order sets match priority. */
+  labels: Record<string, string> = DEFAULT_LABELS;
   /** Whether the custom cursor is currently running (reflected for styling). */
   active = false;
   /** Whether the pointer is over an interactive element (reflected). */
   hovering = false;
+  /** Chip text for the hovered element; "" hides the chip. */
+  label = "";
 
   private _pointerMedia: MediaQueryList | null = null;
-  private _motionMedia: MediaQueryList | null = null;
-  private _dot: HTMLElement | null = null;
-  private _ring: HTMLElement | null = null;
-  private _mouseX = 0;
-  private _mouseY = 0;
-  private _ringX = 0;
-  private _ringY = 0;
-  private _rafId = 0;
+  private _mover: HTMLElement | null = null;
 
   private _onPointerMove = (event: PointerEvent) => {
-    this._mouseX = event.clientX;
-    this._mouseY = event.clientY;
-    if (this._dot) {
-      this._dot.style.left = `${this._mouseX}px`;
-      this._dot.style.top = `${this._mouseY}px`;
+    if (this._mover) {
+      this._mover.style.transform = `translate3d(${event.clientX}px, ${event.clientY}px, 0)`;
     }
   };
 
   private _onPointerOver = (event: PointerEvent) => {
-    const next = event
+    const path = event
       .composedPath()
-      .some(
-        (node) => node instanceof Element && node.matches(this.interactive),
-      );
-    // Lit no-ops when the value is unchanged, so frequent events are cheap.
-    this.hovering = next;
-  };
-
-  private _animateRing = () => {
-    // Ring trails the dot; reduced-motion users get an instant follow.
-    const lerp = this._motionMedia?.matches ? 1 : 0.12;
-    this._ringX += (this._mouseX - this._ringX) * lerp;
-    this._ringY += (this._mouseY - this._ringY) * lerp;
-    if (this._ring) {
-      this._ring.style.left = `${this._ringX}px`;
-      this._ring.style.top = `${this._ringY}px`;
+      .filter((node): node is Element => node instanceof Element);
+    // A data-cursor-label attribute wins, innermost element first. Otherwise
+    // the label map applies in entry order against the whole path, so earlier
+    // entries take priority — e.g. ark-case-study-card ("View") beats the
+    // a[href] ("Open") inside its shadow DOM.
+    let label = path
+      .find((node) => node.hasAttribute(LABEL_ATTR))
+      ?.getAttribute(LABEL_ATTR);
+    if (label == null) {
+      for (const [selector, text] of Object.entries(this.labels)) {
+        if (path.some((node) => node.matches(selector))) {
+          label = text;
+          break;
+        }
+      }
     }
-    this._rafId = requestAnimationFrame(this._animateRing);
+    // Lit no-ops when the values are unchanged, so frequent events are cheap.
+    this.hovering = path.some((node) => node.matches(this.interactive));
+    this.label = label ?? "";
   };
 
   private _evaluate = () => {
@@ -125,39 +138,34 @@ export class ArkCursor extends LitElement {
     document.addEventListener("pointerover", this._onPointerOver, {
       passive: true,
     });
-    this._rafId = requestAnimationFrame(this._animateRing);
   }
 
   private _deactivate() {
     if (!this.active) return;
     this.active = false;
     this.hovering = false;
+    this.label = "";
     document.documentElement.removeAttribute(CURSOR_ATTR);
     document.removeEventListener("pointermove", this._onPointerMove);
     document.removeEventListener("pointerover", this._onPointerOver);
-    cancelAnimationFrame(this._rafId);
   }
 
   override connectedCallback() {
     super.connectedCallback();
     this._pointerMedia = window.matchMedia(POINTER_QUERY);
-    this._motionMedia = window.matchMedia(REDUCED_MOTION_QUERY);
     this._pointerMedia.addEventListener("change", this._evaluate);
     this._evaluate();
   }
 
   protected override firstUpdated() {
-    this._dot = this.renderRoot.querySelector<HTMLElement>(".dot");
-    this._ring = this.renderRoot.querySelector<HTMLElement>(".ring");
+    this._mover = this.renderRoot.querySelector<HTMLElement>(".mover");
   }
 
   override disconnectedCallback() {
     this._deactivate();
     this._pointerMedia?.removeEventListener("change", this._evaluate);
     this._pointerMedia = null;
-    this._motionMedia = null;
-    this._dot = null;
-    this._ring = null;
+    this._mover = null;
     super.disconnectedCallback();
   }
 
@@ -171,57 +179,70 @@ export class ArkCursor extends LitElement {
       display: block;
     }
 
-    .dot,
-    .ring {
-      border-radius: 50%;
+    .mover {
       left: 0;
       pointer-events: none;
       position: fixed;
       top: 0;
-      transform: translate(-50%, -50%);
+      z-index: var(--ark-cursor-z, 9999);
     }
 
-    .dot {
-      background: var(--ark-cursor-color, var(--ark-color-accent));
-      height: var(--ark-cursor-size, 8px);
+    /* The path's tip sits at (3,2) of the 24-unit viewBox; the individual
+       \`translate\` property shifts it onto the pointer without fighting the
+       hover \`transform: scale()\`. \`paint-order\` keeps the outline behind
+       the fill so it reads as a halo on dark surfaces. */
+    .arrow {
+      display: block;
+      fill: var(--ark-cursor-color, var(--ark-color-ink));
+      height: var(--ark-cursor-size, 20px);
+      paint-order: stroke;
+      stroke: var(--ark-cursor-outline-color, var(--ark-color-neutral-0));
+      stroke-linejoin: round;
+      stroke-width: 2;
+      transform-origin: 12.5% 8.4%;
       transition:
-        background var(--ark-duration-normal),
-        height var(--ark-duration-normal),
-        width var(--ark-duration-normal);
-      width: var(--ark-cursor-size, 8px);
-      z-index: var(--ark-cursor-dot-z, 9999);
+        fill var(--ark-duration-normal) var(--ark-ease-standard),
+        transform var(--ark-duration-normal) var(--ark-ease-spring);
+      translate: -12.5% -8.4%;
+      width: var(--ark-cursor-size, 20px);
     }
 
-    .ring {
-      border: 1px solid
-        var(--ark-cursor-ring-color, var(--ark-color-blush-light));
-      height: var(--ark-cursor-ring-size, 32px);
+    :host([hovering]) .arrow {
+      fill: var(--ark-cursor-hover-color, var(--ark-color-accent));
+      transform: scale(1.12);
+    }
+
+    .chip {
+      background: var(--ark-cursor-label-bg, var(--ark-color-surface));
+      border: 1px solid var(--ark-cursor-label-border, var(--ark-color-border));
+      border-radius: var(--ark-radius-full);
+      box-shadow: var(--ark-shadow-sm);
+      color: var(--ark-cursor-label-color, var(--ark-color-ink));
+      font-family: var(--ark-font-sans);
+      font-size: var(--ark-text-xs);
+      left: var(--ark-cursor-size, 20px);
+      letter-spacing: var(--ark-tracking-label);
+      line-height: 1;
+      opacity: 0;
+      padding: 0.375em 0.875em;
+      position: absolute;
+      text-transform: uppercase;
+      top: var(--ark-cursor-size, 20px);
+      transform: translateY(4px);
       transition:
-        border-color 400ms,
-        height 400ms,
-        width 400ms;
-      width: var(--ark-cursor-ring-size, 32px);
-      z-index: var(--ark-cursor-ring-z, 9998);
+        opacity var(--ark-duration-normal) var(--ark-ease-standard),
+        transform var(--ark-duration-normal) var(--ark-ease-standard);
+      white-space: nowrap;
     }
 
-    :host([hovering]) .dot {
-      background: var(--ark-cursor-hover-color, var(--ark-color-counterpoint));
-      height: var(--ark-cursor-hover-size, 12px);
-      width: var(--ark-cursor-hover-size, 12px);
-    }
-
-    :host([hovering]) .ring {
-      border-color: var(
-        --ark-cursor-ring-hover-color,
-        var(--ark-color-sage-light)
-      );
-      height: var(--ark-cursor-ring-hover-size, 48px);
-      width: var(--ark-cursor-ring-hover-size, 48px);
+    .chip[data-visible] {
+      opacity: 1;
+      transform: translateY(0);
     }
 
     @media (prefers-reduced-motion: reduce) {
-      .dot,
-      .ring {
+      .arrow,
+      .chip {
         transition: none;
       }
     }
@@ -229,8 +250,12 @@ export class ArkCursor extends LitElement {
 
   override render() {
     return html`
-      <div class="ring" aria-hidden="true"></div>
-      <div class="dot" aria-hidden="true"></div>
+      <div class="mover" aria-hidden="true">
+        <svg class="arrow" viewBox="0 0 24 24">
+          <path d="M3 2l7.07 16.97 2.51-7.39 7.39-2.51L3 2z" />
+        </svg>
+        <div class="chip" ?data-visible=${this.label !== ""}>${this.label}</div>
+      </div>
     `;
   }
 }
@@ -241,10 +266,17 @@ export const defineArkCursor = () => {
 
 export interface EnableArkCursorOptions {
   /**
-   * Extra selectors (beyond the built-in interactive set) that should enlarge
-   * the cursor on hover — e.g. decorative cards: `['.swatch', '.pillar']`.
+   * Extra selectors (beyond the built-in interactive set) that should tint
+   * the arrow on hover — e.g. decorative cards: `['.swatch', '.pillar']`.
    */
   interactiveSelectors?: string[];
+  /**
+   * Chip wording per CSS selector, spread over the built-in defaults
+   * (`ark-case-study-card` → "View", `a[href]` → "Open"), so app entries win
+   * on conflict; map a selector to `""` to suppress its default chip. Entry
+   * order sets match priority; new selectors are checked after the built-ins.
+   */
+  labels?: Record<string, string>;
 }
 
 /**
@@ -268,6 +300,7 @@ export const enableArkCursor = (options: EnableArkCursorOptions = {}) => {
     DEFAULT_INTERACTIVE_SELECTOR,
     ...(options.interactiveSelectors ?? []),
   ].join(", ");
+  const labels = { ...DEFAULT_LABELS, ...options.labels };
 
   const ensure = () => {
     let element = document.querySelector<ArkCursor>("ark-cursor");
@@ -276,6 +309,7 @@ export const enableArkCursor = (options: EnableArkCursorOptions = {}) => {
       document.body.appendChild(element);
     }
     element.interactive = selector;
+    element.labels = labels;
   };
 
   ensure();

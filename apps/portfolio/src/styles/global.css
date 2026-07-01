@@ -67,8 +67,8 @@ button:focus-visible {
 }
 
 /* Custom cursor is provided by <ark-cursor> (see @arkaes/ui), mounted via
-   enableArkCursor() in BaseLayout — it owns the dot/ring, native-cursor
-   hiding, and hover state, so no app-level cursor CSS is needed here. */
+   enableArkCursor() in BaseLayout — it owns the arrow/label chip, native-
+   cursor hiding, and hover state, so no app-level cursor CSS is needed here. */
 
 /* ── Scroll reveal (site-wide, IntersectionObserver-driven) ──────────── */
 .reveal {
