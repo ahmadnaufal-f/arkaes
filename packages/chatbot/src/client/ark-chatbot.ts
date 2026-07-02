@@ -595,9 +595,12 @@ export class ArkChatbot extends LitElement {
       font: inherit;
       font-size: var(--ark-text-sm);
       line-height: var(--ark-leading-normal);
-      /* Auto-grows with content (see _resizeInput) up to 3 lines — 3 line
-         boxes plus vertical padding and border — then scrolls. */
-      max-height: calc(3lh + (var(--ark-space-2) * 2) + 2px);
+      /* Auto-grows with content (see _resizeInput) up to 3 lines, then scrolls.
+         _resizeInput is the authoritative clamp; this is a CSS fallback: 3 line
+         boxes (3 × leading × 1em) plus vertical padding and border. */
+      max-height: calc(
+        3 * var(--ark-leading-normal) * 1em + (var(--ark-space-2) * 2) + 2px
+      );
       min-height: 2.5rem;
       overflow-y: auto;
       padding: var(--ark-space-2) var(--ark-space-3);
@@ -686,16 +689,28 @@ export class ArkChatbot extends LitElement {
   }
 
   /**
-   * Grow the composer to fit its content. The visible height is capped at 3
-   * lines by the CSS `max-height`, past which it scrolls. Adding the border
-   * width keeps the border-box height exact so no scrollbar shows early.
+   * Grow the composer to fit its content, capped at 3 lines (then it scrolls).
+   * This JS clamp is authoritative — it doesn't rely on the CSS `max-height`
+   * resolving. Heights are computed for the border-box so the scrollbar only
+   * appears past 3 lines, never a line early.
    */
   private _resizeInput(el: HTMLTextAreaElement) {
-    el.style.height = "auto";
     const style = getComputedStyle(el);
-    const border =
+    const borderV =
       parseFloat(style.borderTopWidth) + parseFloat(style.borderBottomWidth);
-    el.style.height = `${el.scrollHeight + border}px`;
+    const paddingV =
+      parseFloat(style.paddingTop) + parseFloat(style.paddingBottom);
+    const fontSize = parseFloat(style.fontSize);
+    // getComputedStyle usually returns line-height in px; fall back to the
+    // leading ratio if it reports "normal" (NaN) or a raw multiplier.
+    let lineHeight = parseFloat(style.lineHeight);
+    if (!lineHeight || lineHeight < fontSize) lineHeight = fontSize * 1.62;
+
+    const maxHeight = lineHeight * 3 + paddingV + borderV;
+    el.style.height = "auto";
+    const contentHeight = el.scrollHeight + borderV;
+    el.style.height = `${Math.min(contentHeight, maxHeight)}px`;
+    el.style.overflowY = contentHeight > maxHeight ? "auto" : "hidden";
   }
 
   private _onKeydown(event: KeyboardEvent) {
