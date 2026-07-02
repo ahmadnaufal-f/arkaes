@@ -1,6 +1,8 @@
 import { css, html, LitElement, nothing } from "lit";
 import { repeat } from "lit/directives/repeat.js";
+import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import { defineElement } from "../define-element";
+import { renderMarkdown } from "./markdown";
 import type { ChatMessage } from "../shared/types";
 
 interface DisplayMessage extends ChatMessage {
@@ -419,6 +421,71 @@ export class ArkChatbot extends LitElement {
       }
     }
 
+    /* ── Rendered Markdown (assistant replies) ─────────────────────────── */
+    .bubble--rich {
+      white-space: normal;
+
+      & > :first-child {
+        margin-top: 0;
+      }
+      & > :last-child {
+        margin-bottom: 0;
+      }
+      p,
+      ul,
+      ol,
+      pre,
+      blockquote {
+        margin: 0 0 var(--ark-space-2);
+      }
+      .md-h {
+        font-weight: var(--ark-weight-semibold);
+        margin-bottom: var(--ark-space-1);
+      }
+      ul,
+      ol {
+        padding-left: var(--ark-space-4);
+      }
+      li {
+        margin-bottom: var(--ark-space-1);
+      }
+      a {
+        color: var(--ark-color-accent-strong);
+        text-decoration: underline;
+        text-underline-offset: 2px;
+        word-break: break-word;
+      }
+      a:hover {
+        color: var(--ark-color-accent);
+      }
+      strong {
+        font-weight: var(--ark-weight-semibold);
+      }
+      code {
+        background: color-mix(in srgb, var(--ark-color-accent), transparent 88%);
+        border-radius: var(--ark-radius-xs);
+        font-family: var(--ark-font-mono, ui-monospace, monospace);
+        font-size: 0.9em;
+        padding: 0.1em 0.3em;
+      }
+      pre {
+        background: var(--ark-color-surface);
+        border: 1px solid color-mix(in srgb, var(--ark-color-border), transparent 40%);
+        border-radius: var(--ark-radius-sm);
+        overflow-x: auto;
+        padding: var(--ark-space-2) var(--ark-space-3);
+      }
+      pre code {
+        background: none;
+        padding: 0;
+      }
+      blockquote {
+        border-left: 2px solid var(--ark-color-border);
+        color: var(--ark-color-text-muted);
+        padding-left: var(--ark-space-3);
+      }
+    }
+
     /* Three-dot "thinking" indicator (before the first streamed token) */
     .typing {
       align-items: center;
@@ -715,9 +782,17 @@ export class ArkChatbot extends LitElement {
       (message, index) => {
         const thinking = Boolean(message.pending) && message.content === "";
         const firstOfRun = this._messages[index - 1]?.role !== "assistant";
+        // Assistant replies are Markdown; render them as rich HTML. User
+        // messages stay plain text (Lit escapes the binding).
+        const rich = message.role === "assistant" && !thinking;
         const bubbleClass = `bubble bubble--${message.role}${
           message.pending && !thinking ? " bubble--pending" : ""
-        }`;
+        }${rich ? " bubble--rich" : ""}`;
+        const body = thinking
+          ? typingDots
+          : rich
+            ? unsafeHTML(renderMarkdown(message.content))
+            : message.content;
         // Bubble content stays on one line: the bubble renders with
         // `white-space: pre-wrap`, so template whitespace would be visible.
         return html`
@@ -731,7 +806,7 @@ export class ArkChatbot extends LitElement {
                   >
                 `
               : nothing}
-            <div class=${bubbleClass}>${thinking ? typingDots : message.content}</div>
+            <div class=${bubbleClass}>${body}</div>
           </div>
         `;
       },
