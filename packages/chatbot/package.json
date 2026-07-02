@@ -1,6 +1,6 @@
 {
   "name": "@arkaes/chatbot",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Portfolio AI chatbot — the ark-chatbot Lit widget plus a framework-agnostic OpenAI chat handler.",
   "private": true,
   "license": "MIT",
