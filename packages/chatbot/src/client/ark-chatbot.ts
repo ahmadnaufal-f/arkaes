@@ -585,36 +585,47 @@ export class ArkChatbot extends LitElement {
       gap: var(--ark-space-2);
       padding: var(--ark-space-3);
     }
-    textarea {
+    /* The bordered box. Vertical padding lives HERE (outside the textarea's
+       scroll viewport) so overflowing text can never peek through it. */
+    .field {
       background: var(--ark-color-bg);
       border: 1px solid var(--ark-color-border);
       border-radius: var(--ark-radius-md);
-      color: var(--ark-color-text);
       cursor: var(--ark-cursor-text, text);
       flex: 1;
-      font: inherit;
-      font-size: var(--ark-text-sm);
-      line-height: var(--ark-leading-normal);
-      /* Auto-grows with content (see _resizeInput) up to 3 lines, then scrolls.
-         _resizeInput is the authoritative clamp; this is a CSS fallback: 3 line
-         boxes (3 × leading × 1em) plus vertical padding and border. */
-      max-height: calc(
-        3 * var(--ark-leading-normal) * 1em + (var(--ark-space-2) * 2) + 2px
-      );
-      min-height: 2.5rem;
-      overflow-y: auto;
+      min-width: 0;
       padding: var(--ark-space-2) var(--ark-space-3);
-      resize: none;
       transition:
         border-color var(--ark-duration-fast) var(--ark-ease-standard),
         box-shadow var(--ark-duration-fast) var(--ark-ease-standard);
+
+      &:focus-within {
+        border-color: color-mix(in srgb, var(--ark-color-accent), transparent 30%);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--ark-color-accent), transparent 82%);
+      }
+    }
+    textarea {
+      background: transparent;
+      border: none;
+      color: var(--ark-color-text);
+      cursor: inherit;
+      display: block;
+      font: inherit;
+      font-size: var(--ark-text-sm);
+      line-height: var(--ark-leading-normal);
+      /* No padding/border here, so the scroll viewport is an exact multiple of
+         the line height — _resizeInput clamps to whole lines (max 3) and no
+         partial line shows through. This em fallback matches that cap. */
+      max-height: calc(3 * var(--ark-leading-normal) * 1em);
+      overflow-y: auto;
+      padding: 0;
+      resize: none;
+      width: 100%;
 
       &::placeholder {
         color: var(--ark-color-text-subtle);
       }
       &:focus-visible {
-        border-color: color-mix(in srgb, var(--ark-color-accent), transparent 30%);
-        box-shadow: 0 0 0 3px color-mix(in srgb, var(--ark-color-accent), transparent 82%);
         outline: none;
       }
     }
@@ -690,27 +701,24 @@ export class ArkChatbot extends LitElement {
 
   /**
    * Grow the composer to fit its content, capped at 3 lines (then it scrolls).
-   * This JS clamp is authoritative — it doesn't rely on the CSS `max-height`
-   * resolving. Heights are computed for the border-box so the scrollbar only
-   * appears past 3 lines, never a line early.
+   * The textarea has no padding or border of its own (the .field wrapper holds
+   * those), so its height is a plain multiple of the line height. The 1px
+   * tolerance keeps sub-pixel line-height rounding from tripping the scrollbar
+   * exactly at 3 lines.
    */
   private _resizeInput(el: HTMLTextAreaElement) {
     const style = getComputedStyle(el);
-    const borderV =
-      parseFloat(style.borderTopWidth) + parseFloat(style.borderBottomWidth);
-    const paddingV =
-      parseFloat(style.paddingTop) + parseFloat(style.paddingBottom);
     const fontSize = parseFloat(style.fontSize);
     // getComputedStyle usually returns line-height in px; fall back to the
     // leading ratio if it reports "normal" (NaN) or a raw multiplier.
     let lineHeight = parseFloat(style.lineHeight);
     if (!lineHeight || lineHeight < fontSize) lineHeight = fontSize * 1.62;
 
-    const maxHeight = lineHeight * 3 + paddingV + borderV;
+    const maxHeight = lineHeight * 3;
     el.style.height = "auto";
-    const contentHeight = el.scrollHeight + borderV;
-    el.style.height = `${Math.min(contentHeight, maxHeight)}px`;
-    el.style.overflowY = contentHeight > maxHeight ? "auto" : "hidden";
+    const full = el.scrollHeight;
+    el.style.height = `${Math.min(full, maxHeight)}px`;
+    el.style.overflowY = full > maxHeight + 1 ? "auto" : "hidden";
   }
 
   private _onKeydown(event: KeyboardEvent) {
@@ -900,14 +908,16 @@ export class ArkChatbot extends LitElement {
             void this._send();
           }}
         >
-          <textarea
-            .value=${this._draft}
-            placeholder=${this.placeholder}
-            aria-label=${this.placeholder}
-            rows="1"
-            @input=${this._onInput}
-            @keydown=${this._onKeydown}
-          ></textarea>
+          <div class="field">
+            <textarea
+              .value=${this._draft}
+              placeholder=${this.placeholder}
+              aria-label=${this.placeholder}
+              rows="1"
+              @input=${this._onInput}
+              @keydown=${this._onKeydown}
+            ></textarea>
+          </div>
           <button
             class="send"
             type="submit"
