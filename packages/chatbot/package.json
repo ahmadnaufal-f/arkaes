@@ -1,0 +1,64 @@
+{
+  "name": "@arkaes/chatbot",
+  "version": "0.1.0",
+  "description": "Portfolio AI chatbot — the ark-chatbot Lit widget plus a framework-agnostic OpenAI chat handler.",
+  "private": true,
+  "license": "MIT",
+  "author": "Ahmad Naufal",
+  "type": "module",
+  "sideEffects": [
+    "**/*.css",
+    "**/register.ts",
+    "**/register/*.ts",
+    "**/register.js",
+    "**/register/*.js"
+  ],
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./register": {
+      "types": "./src/register.ts",
+      "default": "./src/register.ts"
+    },
+    "./register/*": {
+      "types": "./src/register/*.ts",
+      "default": "./src/register/*.ts"
+    },
+    "./client": {
+      "types": "./src/client/index.ts",
+      "default": "./src/client/index.ts"
+    },
+    "./client/*": {
+      "types": "./src/client/*.ts",
+      "default": "./src/client/*.ts"
+    },
+    "./server": {
+      "types": "./src/server/index.ts",
+      "default": "./src/server/index.ts"
+    },
+    "./server/*": {
+      "types": "./src/server/*.ts",
+      "default": "./src/server/*.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsdown",
+    "check": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src --max-warnings=0"
+  },
+  "dependencies": {
+    "@arkaes/tokens": "workspace:^",
+    "@supabase/supabase-js": "^2.108.2",
+    "lit": "^3.3.0",
+    "openai": "^6.45.0"
+  },
+  "devDependencies": {
+    "tsdown": "^0.22.3"
+  }
+}

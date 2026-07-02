@@ -162,6 +162,7 @@ export class ArkInput extends LitElement {
       background: transparent;
       border: none;
       color: var(--ark-color-text);
+      cursor: var(--ark-cursor-text, text);
       flex: 1;
       font-family: var(--ark-font-sans);
       font-size: var(--input-font);

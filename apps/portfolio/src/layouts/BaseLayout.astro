@@ -94,10 +94,20 @@ const {
     </main>
     <SiteFooter />
 
+    <!-- Arkhe — the portfolio AI assistant. Persisted across View Transitions
+         so an open conversation survives client-side navigation. -->
+    <ark-chatbot
+      heading="Arkhe"
+      tagline="Ask about Ahmad's work"
+      launcher-label="Chat with Arkhe"
+      transition:persist
+    ></ark-chatbot>
+
     <script>
       // Register the full custom-element set once for the document lifetime so
       // elements stay defined across client-side View Transitions navigations.
       import "@arkaes/ui/register";
+      import "@arkaes/chatbot/register";
       import { enableArkCursor } from "@arkaes/ui/components/ark-cursor";
       import type { ArkButton } from "@arkaes/ui";
       import type { ArkNavLink, ArkNavigationCta } from "@arkaes/ui";
