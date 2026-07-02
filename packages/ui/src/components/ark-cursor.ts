@@ -21,7 +21,7 @@ const DEFAULT_INTERACTIVE_SELECTOR =
  */
 const DEFAULT_LABELS: Record<string, string> = {
   "ark-case-study-card": "View",
-  "a[href]": "Open",
+  "a[href]": "Navigate",
 };
 
 /**
@@ -50,7 +50,7 @@ const installGlobalCursorStyles = () => {
 
 /**
  * ArkCursor renders a custom cursor — a high-contrast arrow pointer that
- * tracks the pointer 1:1, plus a contextual label chip ("View", "Open", …)
+ * tracks the pointer 1:1, plus a contextual label chip ("View", "Navigate", …)
  * that unfolds beside it over labeled interactive elements — and owns all of
  * its behavior: capability gating, native cursor hiding, and hover-state
  * detection across shadow boundaries.
@@ -96,6 +96,8 @@ export class ArkCursor extends LitElement {
   /** Chip flipped above the pointer (would overflow the bottom edge). */
   private _flipY = false;
 
+  /** Last non-empty label, kept so the chip retains its text while exiting. */
+  private _lastLabel = "";
   private _pointerMedia: MediaQueryList | null = null;
   private _mover: HTMLElement | null = null;
   private _chip: HTMLElement | null = null;
@@ -106,6 +108,14 @@ export class ArkCursor extends LitElement {
   private _chipWidth = 0;
   private _chipHeight = 0;
 
+  /**
+   * Hover/label detection lives on pointermove, not pointerover: pointerover
+   * events whose target and relatedTarget retarget to the same shadow host
+   * are never dispatched to document-level listeners, so movement *within* a
+   * component's shadow tree (e.g. from ark-hero's padding onto its CTA)
+   * would go undetected. pointermove has no relatedTarget and always arrives
+   * with a full composedPath().
+   */
   private _onPointerMove = (event: PointerEvent) => {
     this._mouseX = event.clientX;
     this._mouseY = event.clientY;
@@ -113,16 +123,14 @@ export class ArkCursor extends LitElement {
       this._mover.style.transform = `translate3d(${this._mouseX}px, ${this._mouseY}px, 0)`;
     }
     this._updatePlacement();
-  };
 
-  private _onPointerOver = (event: PointerEvent) => {
     const path = event
       .composedPath()
       .filter((node): node is Element => node instanceof Element);
     // A data-cursor-label attribute wins, innermost element first. Otherwise
     // the label map applies in entry order against the whole path, so earlier
     // entries take priority — e.g. ark-case-study-card ("View") beats the
-    // a[href] ("Open") inside its shadow DOM.
+    // a[href] ("Navigate") inside its shadow DOM.
     let label = path
       .find((node) => node.hasAttribute(LABEL_ATTR))
       ?.getAttribute(LABEL_ATTR);
@@ -137,6 +145,7 @@ export class ArkCursor extends LitElement {
     // Lit no-ops when the values are unchanged, so frequent events are cheap.
     this.hovering = path.some((node) => node.matches(this.interactive));
     this.label = label ?? "";
+    if (this.label) this._lastLabel = this.label;
   };
 
   /**
@@ -171,9 +180,6 @@ export class ArkCursor extends LitElement {
     document.addEventListener("pointermove", this._onPointerMove, {
       passive: true,
     });
-    document.addEventListener("pointerover", this._onPointerOver, {
-      passive: true,
-    });
   }
 
   private _deactivate() {
@@ -183,7 +189,6 @@ export class ArkCursor extends LitElement {
     this.label = "";
     document.documentElement.removeAttribute(CURSOR_ATTR);
     document.removeEventListener("pointermove", this._onPointerMove);
-    document.removeEventListener("pointerover", this._onPointerOver);
   }
 
   override connectedCallback() {
@@ -287,29 +292,38 @@ export class ArkCursor extends LitElement {
         --ark-cursor-label-offset-y,
         calc(var(--ark-cursor-size, 20px) * 0.8)
       );
-      transform: translateY(4px);
+      /* Enter/exit scale grows out of (and shrinks back into) the pointer:
+         the transform-origin tracks whichever chip corner faces the cursor,
+         mirrored per axis by the edge flips below. Exit here is fast and
+         quiet; enter (on [data-visible]) is slower with a springy pop. */
+      transform: scale(0.6);
+      transform-origin: var(--_origin-x, left) var(--_origin-y, top);
       transition:
-        opacity var(--ark-duration-normal) var(--ark-ease-standard),
-        transform var(--ark-duration-normal) var(--ark-ease-standard);
+        opacity var(--ark-duration-fast) var(--ark-ease-standard),
+        transform var(--ark-duration-fast) var(--ark-ease-standard);
       white-space: nowrap;
 
       /* Near the right/bottom viewport edge the chip flips to the opposite
          side of the pointer, anchored to the .mover box (whose size equals
          --ark-cursor-size, the SVG being its only in-flow child). */
       &[data-flip-x] {
+        --_origin-x: right;
         left: auto;
         right: 100%;
       }
 
       &[data-flip-y] {
+        --_origin-y: bottom;
         bottom: 100%;
         top: auto;
-        transform: translateY(-4px);
       }
 
       &[data-visible] {
         opacity: 1;
-        transform: translateY(0);
+        transform: scale(1);
+        transition:
+          opacity var(--ark-duration-normal) var(--ark-ease-standard),
+          transform var(--ark-duration-normal) var(--ark-ease-spring);
       }
     }
 
@@ -332,7 +346,7 @@ export class ArkCursor extends LitElement {
           ?data-visible=${this.label !== ""}
           ?data-flip-x=${this._flipX}
           ?data-flip-y=${this._flipY}
-        >${this.label}</div>
+        >${this.label || this._lastLabel}</div>
       </div>
     `;
   }
@@ -350,7 +364,7 @@ export interface EnableArkCursorOptions {
   interactiveSelectors?: string[];
   /**
    * Chip wording per CSS selector, spread over the built-in defaults
-   * (`ark-case-study-card` → "View", `a[href]` → "Open"), so app entries win
+   * (`ark-case-study-card` → "View", `a[href]` → "Navigate"), so app entries win
    * on conflict; map a selector to `""` to suppress its default chip. Entry
    * order sets match priority; new selectors are checked after the built-ins.
    */

@@ -7,6 +7,9 @@ import { defineElement } from "../define-element";
  * Attributes:
  *   heading (string)  — plain-text trigger label; override with slot="trigger" for rich content.
  *   open    (boolean) — reflects open state; toggled on trigger click.
+ *   expand-cursor-label / collapse-cursor-label (string) — wording for the
+ *     ark-cursor label chip while the trigger is hovered (defaults "Expand" /
+ *     "Collapse", picked by open state); inert when no cursor is mounted.
  *
  * Slots:
  *   trigger  — optional rich-text heading; falls back to the `heading` attribute.
@@ -25,12 +28,16 @@ export class ArkAccordionItem extends LitElement {
   static override properties = {
     heading: { type: String },
     open: { type: Boolean, reflect: true },
+    expandCursorLabel: { type: String, attribute: "expand-cursor-label" },
+    collapseCursorLabel: { type: String, attribute: "collapse-cursor-label" },
   };
 
   private _uid = `ark-acc-${Math.random().toString(36).slice(2, 9)}`;
 
   heading = "";
   open = false;
+  expandCursorLabel = "Expand";
+  collapseCursorLabel = "Collapse";
 
   static override styles = css`
     :host {
@@ -132,6 +139,9 @@ export class ArkAccordionItem extends LitElement {
         type="button"
         aria-expanded=${this.open ? "true" : "false"}
         aria-controls=${contentId}
+        data-cursor-label=${this.open
+          ? this.collapseCursorLabel
+          : this.expandCursorLabel}
         @click=${this._toggle}
       >
         <span class="heading-slot">
