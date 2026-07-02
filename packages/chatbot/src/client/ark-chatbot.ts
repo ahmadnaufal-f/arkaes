@@ -595,8 +595,11 @@ export class ArkChatbot extends LitElement {
       font: inherit;
       font-size: var(--ark-text-sm);
       line-height: var(--ark-leading-normal);
-      max-height: 7rem;
+      /* Auto-grows with content (see _resizeInput) up to 3 lines — 3 line
+         boxes plus vertical padding and border — then scrolls. */
+      max-height: calc(3lh + (var(--ark-space-2) * 2) + 2px);
       min-height: 2.5rem;
+      overflow-y: auto;
       padding: var(--ark-space-2) var(--ark-space-3);
       resize: none;
       transition:
@@ -677,7 +680,22 @@ export class ArkChatbot extends LitElement {
   }
 
   private _onInput(event: Event) {
-    this._draft = (event.target as HTMLTextAreaElement).value;
+    const el = event.target as HTMLTextAreaElement;
+    this._draft = el.value;
+    this._resizeInput(el);
+  }
+
+  /**
+   * Grow the composer to fit its content. The visible height is capped at 3
+   * lines by the CSS `max-height`, past which it scrolls. Adding the border
+   * width keeps the border-box height exact so no scrollbar shows early.
+   */
+  private _resizeInput(el: HTMLTextAreaElement) {
+    el.style.height = "auto";
+    const style = getComputedStyle(el);
+    const border =
+      parseFloat(style.borderTopWidth) + parseFloat(style.borderBottomWidth);
+    el.style.height = `${el.scrollHeight + border}px`;
   }
 
   private _onKeydown(event: KeyboardEvent) {
@@ -699,6 +717,11 @@ export class ArkChatbot extends LitElement {
 
     this._error = "";
     this._draft = "";
+    // Collapse the composer back to one line once the draft is cleared.
+    this.updateComplete.then(() => {
+      const input = this.renderRoot.querySelector<HTMLTextAreaElement>("textarea");
+      if (input) this._resizeInput(input);
+    });
     const userMessage: DisplayMessage = { id: nextId(), role: "user", content };
     const reply: DisplayMessage = {
       id: nextId(),
