@@ -1,93 +1,25 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { renderSectionHtml } from "../utils/sections";
+import { parseSections, renderSectionHtml } from "../utils/sections";
+import aboutContent from "../content/about.md?raw";
 import "./_about.css";
 
-const sections = [
-  {
-    heading: "Summary",
-    open: true,
-    content: `I'm **Ahmad Naufal**, a frontend engineer focused on building interfaces that are **scalable**, **maintainable**, and pleasant to use.
+// Eagerly import every about illustration SVG as a raw string so we can
+// inline it and let the page's loaded Google Fonts apply inside the markup.
+const svgModules = import.meta.glob<string>("../../public/about/*.svg", {
+  query: "?raw",
+  import: "default",
+  eager: true,
+});
 
-Most of my work sits between **product**, **design**, and **engineering**. I enjoy turning complex requirements into clear user flows, reusable UI systems, and frontend architectures that other engineers can confidently build on.
+const diagrams: Record<string, string> = {};
+for (const [path, source] of Object.entries(svgModules)) {
+  const fileName = path.split("/").pop()?.replace(".svg", "");
+  if (fileName) diagrams[fileName] = source;
+}
 
-At **Samsung Research Indonesia**, I've worked on web based product experiences across mobile, TV, and connected device interfaces. My work often involves modernizing legacy systems, improving performance, building reusable foundations, and helping teams ship with better consistency.
-
-Outside of work, I build side projects to explore ideas more freely, from family focused products to **AI assisted tools**. These projects help me stay close to the full product process, from identifying a real problem to designing, building, and shipping the solution.`,
-  },
-  {
-    heading: "What I value",
-    open: false,
-    content: `### Clarity before complexity
-
-I like solving problems by making things easier to understand first. A good interface, codebase, or architecture should reduce confusion, not add more layers without purpose.
-
-### Reusable foundations
-
-I care about building frontend systems that can grow with a product. Components, patterns, and architecture should help teams move faster without sacrificing consistency.
-
-### Product minded engineering
-
-I do not see frontend work as only implementing screens. I care about why a feature exists, how users experience it, and whether the implementation supports the product in the long run.
-
-### Growing with the team
-
-I enjoy helping junior engineers build confidence through clear feedback, practical guidance, and shared context. I try to explain not only what needs to be changed, but *why it matters*, so they can make better decisions on their own next time.
-
-### Continuous exploration
-
-I like learning through real projects. Recently, that means exploring **AI integration**, **cross platform development**, and **design systems** through side projects that solve practical problems.`,
-  },
-  {
-    heading: "About Arkaes",
-    open: false,
-    content: `**Arkaes** stands for **Architecture and Aesthetics**.
-
-I chose this name because it reflects the two sides of frontend work that I care about most: building solid technical foundations and creating interfaces that feel thoughtful, polished, and pleasant to use.
-
-Arkaes is my personal design system project where I explore how to build **reusable**, **accessible**, and **framework agnostic** UI components with Web Components.
-
-I started Arkaes as a way to practice design system engineering beyond product specific requirements. It gives me space to think more deeply about component APIs, design tokens, accessibility, documentation, and long term maintainability.
-
-The project is built with **Lit**, **Storybook**, and **Astro**. Through Arkaes, I am learning how to design UI primitives that are flexible enough for different products, while still keeping the developer experience simple and consistent.
-
-For me, Arkaes is not only a component library. It is a long term learning space where I can refine my taste in *frontend architecture*, *visual design*, and *UI system thinking*.`,
-  },
-  {
-    heading: "How I work",
-    open: false,
-    content: `### I start by understanding the problem
-
-Before jumping into implementation, I try to understand what the product needs, what users are trying to do, and what constraints the team is working with. I believe good frontend decisions come from understanding the context first.
-
-### I turn ambiguity into structure
-
-Many frontend problems start messy. Requirements are unclear, user flows are incomplete, or the existing codebase has grown without a clear pattern. I enjoy taking that ambiguity and turning it into clearer flows, reusable patterns, and implementation plans that the team can follow.
-
-### I care about the details users can feel
-
-Performance, accessibility, layout behavior, empty states, loading states, and interaction details all shape how a product feels. I like working on these details because they often decide whether an interface feels reliable or frustrating.
-
-### I build for the next engineer
-
-I try to write code, components, and documentation in a way that helps other engineers understand the system faster. A good solution should not only work today, but also make future changes easier.
-
-### I communicate through reasoning
-
-When discussing technical decisions, reviewing code, or mentoring junior engineers, I try to explain the reasoning behind my feedback. I want people to understand the tradeoffs, not only follow instructions.`,
-  },
-  {
-    heading: "Beyond work",
-    open: false,
-    content: `Outside of my professional work, I spend part of my weekends building side projects as a way to keep learning through real implementation.
-
-My education background is in **electrical engineering**, so I have had to grow into software engineering through practice, curiosity, and consistent self learning. Side projects help me narrow that knowledge gap by giving me space to explore areas that I do not always touch deeply at work, from product design and backend architecture to AI integration and cross platform development.
-
-Some of these projects come from personal needs, like tools for family life, while others are experiments in design systems, frontend architecture, or new technologies I want to understand better.
-
-I use these projects as a way to *learn by shipping*. They help me stay close to the full product process, from shaping the idea and designing the interface to building the system and improving it over time.`,
-  },
-];
+// Sections live in src/content/about.md, one `## Heading` per accordion item.
+const sections = parseSections(aboutContent);
 ---
 
 <BaseLayout
@@ -102,8 +34,8 @@ I use these projects as a way to *learn by shipping*. They help me stay close to
 
     <ark-accordion class="about-accordion">
       {
-        sections.map(({ heading, open, content }, index) => (
-          <ark-accordion-item heading={heading} open={open ? "" : undefined}>
+        sections.map(({ heading, content }, index) => (
+          <ark-accordion-item heading={heading} open={index === 0 ? "" : undefined}>
             {index === 0 && (
               <img
                 class="about-summary-portrait"
@@ -114,7 +46,10 @@ I use these projects as a way to *learn by shipping*. They help me stay close to
                 transition:name="about-me"
               />
             )}
-            <div class="about-body" set:html={renderSectionHtml(content)} />
+            <div
+              class="about-body"
+              set:html={renderSectionHtml(content, diagrams)}
+            />
           </ark-accordion-item>
         ))
       }

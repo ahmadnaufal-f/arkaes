@@ -54,6 +54,19 @@
   margin-top: var(--ark-space-8);
 }
 
+/* Inlined SVG illustrations rendered from image blocks in about.md */
+.about-body .cs-figure {
+  margin: 1.8em 0;
+}
+
+.about-body .cs-figure svg,
+.about-body .cs-diagram {
+  display: block;
+  height: auto;
+  max-width: 100%;
+  width: 100%;
+}
+
 /* Closing navigation: a single ghost link back to the homepage. */
 .about-footer-nav {
   border-top: 1px solid var(--ark-color-border);

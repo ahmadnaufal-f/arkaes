@@ -1,6 +1,6 @@
 {
   "name": "@arkaes/ui",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Framework-agnostic Lit custom elements for the Arkaes design system.",
   "license": "MIT",
   "author": "Ahmad Naufal",
