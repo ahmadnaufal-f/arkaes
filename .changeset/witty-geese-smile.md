@@ -11,4 +11,6 @@ Redesign the `ark-chatbot` widget with brand assets and motion.
 - Waiting for the first token now shows a three-dot typing indicator instead of a bare blinking caret; the caret remains while text streams.
 - New `suggestions` property (`string[]`, JSON attribute) renders starter-prompt chips in the empty state that submit on click; the greeting and chips stagger in each time the panel opens. Set it to `[]` to disable.
 - Micro-interactions on the send button (hover lift, paper-plane nudge), textarea focus ring, and header close button.
+- The halo is a first-visit cue: opening the panel once stores `ark-chatbot:opened` in `localStorage` and keeps the halo off on later visits.
+- ark-cursor integration: the launcher and close button carry `data-cursor-label` ("Open" / "Close") for the custom cursor's chip, and the composer textarea sets `cursor: var(--ark-cursor-text, text)` so the native I-beam hides while the custom cursor is active.
 - Defaults changed: `heading` is now "Arkhe" (it remains the dialog label), the greeting matches the Arkhe persona copy rules, and the launcher pill now displays `launcher-label` as its visible text.

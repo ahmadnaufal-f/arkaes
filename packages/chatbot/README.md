@@ -36,6 +36,10 @@ accessible label), and the boolean `open`. The `suggestions` property (a
 `string[]`, settable as a JSON attribute) drives the empty-state starter
 prompts; set it to `[]` to hide them.
 
+The launcher's breathing halo is a first-visit attention cue: once the panel
+has been opened, the widget stores `ark-chatbot:opened` in `localStorage` and
+the halo stays off on later visits. Clear that key to bring it back.
+
 ## Server usage
 
 Mount the handler in any web-standard route (here, an Astro endpoint):
