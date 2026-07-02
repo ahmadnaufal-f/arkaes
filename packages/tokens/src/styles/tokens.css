@@ -123,6 +123,11 @@
      on the root element below reaches every Lit component. */
   --ark-cursor-interactive: pointer;
 
+  /* Same contract for text-editable elements (textarea, text inputs): shadow
+     DOM components set `cursor: var(--ark-cursor-text, text)` so the native
+     I-beam disappears when the custom cursor takes over. */
+  --ark-cursor-text: text;
+
   --ark-container-sm: 48rem;
   --ark-container-md: 64rem;
   --ark-container-lg: 76rem;
@@ -193,4 +198,5 @@
    elements site-wide. This inherits into every component's shadow DOM. */
 :root[data-custom-cursor] {
   --ark-cursor-interactive: none;
+  --ark-cursor-text: none;
 }

@@ -12,6 +12,29 @@ let messageCounter = 0;
 const nextId = (): string => `msg-${Date.now()}-${++messageCounter}`;
 
 /**
+ * Set once the panel has been opened. While absent, the launcher's halo ring
+ * breathes as an attention cue; after the first open the cue has done its job
+ * and stays off across visits.
+ */
+const OPENED_STORAGE_KEY = "ark-chatbot:opened";
+
+const readHasOpened = (): boolean => {
+  try {
+    return localStorage.getItem(OPENED_STORAGE_KEY) !== null;
+  } catch {
+    return false; // Storage unavailable (privacy mode): keep the cue.
+  }
+};
+
+const persistHasOpened = () => {
+  try {
+    localStorage.setItem(OPENED_STORAGE_KEY, "1");
+  } catch {
+    // Storage unavailable: the cue simply returns next visit.
+  }
+};
+
+/**
  * ArkChatbot is a self-contained floating chat widget. It owns a launcher
  * button and a panel; on submit it POSTs the running transcript to `endpoint`
  * and renders the streamed plain-text reply token by token.
@@ -41,6 +64,7 @@ export class ArkChatbot extends LitElement {
     _draft: { state: true },
     _pending: { state: true },
     _error: { state: true },
+    _hasOpened: { state: true },
   };
 
   /** URL the transcript is POSTed to. */
@@ -69,6 +93,7 @@ export class ArkChatbot extends LitElement {
   private _draft = "";
   private _pending = false;
   private _error = "";
+  private _hasOpened = false;
 
   static override styles = css`
     :host {
@@ -187,8 +212,10 @@ export class ArkChatbot extends LitElement {
         width: 2.25rem;
       }
     }
+    /* The halo breathes only until the chat has been opened once (persisted
+       in localStorage) — it is an attention cue, not permanent decoration. */
     @media (prefers-reduced-motion: no-preference) {
-      .launcher::before {
+      .launcher--unseen::before {
         animation: chatbot-halo 3.2s var(--ark-ease-standard) infinite;
       }
     }
@@ -496,6 +523,7 @@ export class ArkChatbot extends LitElement {
       border: 1px solid var(--ark-color-border);
       border-radius: var(--ark-radius-md);
       color: var(--ark-color-text);
+      cursor: var(--ark-cursor-text, text);
       flex: 1;
       font: inherit;
       font-size: var(--ark-text-sm);
@@ -563,9 +591,18 @@ export class ArkChatbot extends LitElement {
     }
   `;
 
+  override connectedCallback() {
+    super.connectedCallback();
+    this._hasOpened = readHasOpened();
+  }
+
   private _toggle(open: boolean) {
     this.open = open;
     if (open) {
+      if (!this._hasOpened) {
+        this._hasOpened = true;
+        persistHasOpened();
+      }
       this.updateComplete.then(() => {
         this.renderRoot.querySelector<HTMLTextAreaElement>("textarea")?.focus();
       });
@@ -704,9 +741,10 @@ export class ArkChatbot extends LitElement {
   override render() {
     return html`
       <button
-        class="launcher"
+        class="launcher ${this._hasOpened ? "" : "launcher--unseen"}"
         type="button"
         aria-label=${this.launcherLabel}
+        data-cursor-label="Open"
         @click=${() => this._toggle(true)}
       >
         <span class="avatar" aria-hidden="true">Æ</span>
@@ -729,6 +767,7 @@ export class ArkChatbot extends LitElement {
             class="icon-button"
             type="button"
             aria-label="Close chat"
+            data-cursor-label="Close"
             @click=${() => this._toggle(false)}
           >
             ${closeIcon}

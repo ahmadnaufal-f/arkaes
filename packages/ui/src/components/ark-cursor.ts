@@ -25,6 +25,28 @@ const DEFAULT_LABELS: Record<string, string> = {
 };
 
 /**
+ * Elements that are text-editable by default (UA `cursor: text`): over these
+ * the arrow morphs into the text crosshair. Matched against the composed path
+ * like the interactive set, so shadow-DOM fields (e.g. the <textarea> inside
+ * <ark-chatbot>, the <input> inside <ark-input>) are caught too. A selector
+ * set rather than a computed-style check: while the custom cursor is active
+ * the global sheet already forces computed `cursor: none` in light DOM, and
+ * selectors keep the pointermove path free of style reads.
+ */
+const DEFAULT_TEXT_SELECTOR = [
+  "textarea",
+  "input:not([type])",
+  'input[type="text"]',
+  'input[type="search"]',
+  'input[type="email"]',
+  'input[type="url"]',
+  'input[type="tel"]',
+  'input[type="password"]',
+  'input[type="number"]',
+  '[contenteditable]:not([contenteditable="false"])',
+].join(", ");
+
+/**
  * Document-level rule that hides the native cursor everywhere while the custom
  * cursor is active. Shadow-DOM components hide their own pointer via the
  * --ark-cursor-interactive token (see @arkaes/tokens); this covers light DOM.
@@ -68,13 +90,21 @@ const installGlobalCursorStyles = () => {
  * {@link enableArkCursor} rather than by hand. Visuals are themeable through
  * the `--ark-cursor-*` custom properties, including the chip's distance from
  * the pointer via `--ark-cursor-label-offset-x`/`-y`.
+ *
+ * Over text-editable elements (see `textSelector`) the arrow gives way to a
+ * blush text crosshair (an I-beam centered on the pointer, tinted via
+ * `--ark-cursor-text-color`) and the chip is suppressed. The matching native
+ * I-beam is hidden by the global sheet in light DOM and by the
+ * `--ark-cursor-text` token inside shadow-DOM components (see @arkaes/tokens).
  */
 export class ArkCursor extends LitElement {
   static override properties = {
     interactive: { type: String },
+    textSelector: { attribute: false },
     labels: { attribute: false },
     active: { type: Boolean, reflect: true },
     hovering: { type: Boolean, reflect: true },
+    texting: { type: Boolean, reflect: true },
     label: { attribute: false },
     _flipX: { state: true },
     _flipY: { state: true },
@@ -82,12 +112,16 @@ export class ArkCursor extends LitElement {
 
   /** Selector for elements that tint the arrow on hover. */
   interactive = DEFAULT_INTERACTIVE_SELECTOR;
+  /** Selector for text-editable elements that swap in the text crosshair. */
+  textSelector = DEFAULT_TEXT_SELECTOR;
   /** Map of CSS selector → chip text; entry order sets match priority. */
   labels: Record<string, string> = DEFAULT_LABELS;
   /** Whether the custom cursor is currently running (reflected for styling). */
   active = false;
   /** Whether the pointer is over an interactive element (reflected). */
   hovering = false;
+  /** Whether the pointer is over a text-editable element (reflected). */
+  texting = false;
   /** Chip text for the hovered element; "" hides the chip. */
   label = "";
 
@@ -143,8 +177,10 @@ export class ArkCursor extends LitElement {
       }
     }
     // Lit no-ops when the values are unchanged, so frequent events are cheap.
+    this.texting = path.some((node) => node.matches(this.textSelector));
     this.hovering = path.some((node) => node.matches(this.interactive));
-    this.label = label ?? "";
+    // The crosshair replaces both the arrow and the chip; no label competes.
+    this.label = this.texting ? "" : (label ?? "");
     if (this.label) this._lastLabel = this.label;
   };
 
@@ -186,6 +222,7 @@ export class ArkCursor extends LitElement {
     if (!this.active) return;
     this.active = false;
     this.hovering = false;
+    this.texting = false;
     this.label = "";
     document.documentElement.removeAttribute(CURSOR_ATTR);
     document.removeEventListener("pointermove", this._onPointerMove);
@@ -260,6 +297,7 @@ export class ArkCursor extends LitElement {
       transform-origin: 12.5% 8.4%;
       transition:
         fill var(--ark-duration-normal) var(--ark-ease-standard),
+        opacity var(--ark-duration-fast) var(--ark-ease-standard),
         transform var(--ark-duration-normal) var(--ark-ease-spring);
       translate: -12.5% -8.4%;
       width: var(--ark-cursor-size, 20px);
@@ -268,6 +306,42 @@ export class ArkCursor extends LitElement {
     :host([hovering]) .arrow {
       fill: var(--ark-cursor-hover-color, var(--ark-color-accent));
       transform: scale(1.12);
+    }
+
+    /* Over text-editable elements the arrow yields to the text crosshair. */
+    :host([texting]) .arrow {
+      opacity: 0;
+      transform: scale(0.6);
+    }
+
+    /* Blush I-beam centered on the pointer via the individual \`translate\`
+       property (the arrow is tip-anchored), so it doesn't fight the
+       enter/exit \`transform: scale()\`. */
+    .ibeam {
+      display: block;
+      fill: none;
+      height: calc(var(--ark-cursor-size, 20px) * 1.2);
+      left: 0;
+      opacity: 0;
+      position: absolute;
+      stroke: var(--ark-cursor-text-color, var(--ark-color-blush));
+      stroke-linecap: round;
+      stroke-width: 2;
+      top: 0;
+      transform: scale(0.5);
+      transition:
+        opacity var(--ark-duration-fast) var(--ark-ease-standard),
+        transform var(--ark-duration-fast) var(--ark-ease-standard);
+      translate: -50% -50%;
+      width: calc(var(--ark-cursor-size, 20px) * 1.2);
+    }
+
+    :host([texting]) .ibeam {
+      opacity: 1;
+      transform: scale(1);
+      transition:
+        opacity var(--ark-duration-normal) var(--ark-ease-standard),
+        transform var(--ark-duration-normal) var(--ark-ease-spring);
     }
 
     .chip {
@@ -329,6 +403,7 @@ export class ArkCursor extends LitElement {
 
     @media (prefers-reduced-motion: reduce) {
       .arrow,
+      .ibeam,
       .chip {
         transition: none;
       }
@@ -340,6 +415,9 @@ export class ArkCursor extends LitElement {
       <div class="mover" aria-hidden="true">
         <svg class="arrow" viewBox="0 0 24 24">
           <path d="M3 2l7.07 16.97 2.51-7.39 7.39-2.51L3 2z" />
+        </svg>
+        <svg class="ibeam" viewBox="0 0 24 24">
+          <path d="M9 3h6M12 3v18M9 21h6" />
         </svg>
         <div
           class="chip"
@@ -369,6 +447,12 @@ export interface EnableArkCursorOptions {
    * order sets match priority; new selectors are checked after the built-ins.
    */
   labels?: Record<string, string>;
+  /**
+   * Extra selectors (beyond the built-in text-editable set: `textarea`,
+   * textual `<input>`s, `[contenteditable]`) that should swap the arrow for
+   * the blush text crosshair — e.g. a custom editor surface.
+   */
+  textSelectors?: string[];
 }
 
 /**
@@ -392,6 +476,10 @@ export const enableArkCursor = (options: EnableArkCursorOptions = {}) => {
     DEFAULT_INTERACTIVE_SELECTOR,
     ...(options.interactiveSelectors ?? []),
   ].join(", ");
+  const textSelector = [
+    DEFAULT_TEXT_SELECTOR,
+    ...(options.textSelectors ?? []),
+  ].join(", ");
   const labels = { ...DEFAULT_LABELS, ...options.labels };
 
   const ensure = () => {
@@ -401,6 +489,7 @@ export const enableArkCursor = (options: EnableArkCursorOptions = {}) => {
       document.body.appendChild(element);
     }
     element.interactive = selector;
+    element.textSelector = textSelector;
     element.labels = labels;
   };
 
