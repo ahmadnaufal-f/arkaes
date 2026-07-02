@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 430" width="100%" preserveAspectRatio="xMidYMid meet">
+
+  <!-- Outer boundary -->
+  <rect x="20" y="20" width="740" height="390" rx="8" fill="none" stroke="#d4cec8" stroke-width="1" stroke-dasharray="5,4"/>
+  <text x="40" y="46" font-family="'DM Mono', 'Courier New', monospace" font-size="9" fill="#9d9185" letter-spacing="0.18em">ARKAES · ARCHITECTURE AND AESTHETICS</text>
+
+  <!-- Consumer apps row -->
+  <rect x="40" y="60" width="222" height="58" rx="4" fill="#faf9f7" stroke="#ddd7cf" stroke-width="1"/>
+  <text x="151" y="86" text-anchor="middle" font-family="'DM Mono', 'Courier New', monospace" font-size="7.5" fill="#76695f" letter-spacing="0.12em">PORTFOLIO</text>
+  <text x="151" y="103" text-anchor="middle" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="9" font-weight="300" fill="#9d9185">Astro site</text>
+
+  <rect x="279" y="60" width="222" height="58" rx="4" fill="#faf9f7" stroke="#ddd7cf" stroke-width="1"/>
+  <text x="390" y="86" text-anchor="middle" font-family="'DM Mono', 'Courier New', monospace" font-size="7.5" fill="#76695f" letter-spacing="0.12em">BRAND GUIDELINE</text>
+  <text x="390" y="103" text-anchor="middle" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="9" font-weight="300" fill="#9d9185">Astro site</text>
+
+  <rect x="518" y="60" width="222" height="58" rx="4" fill="#faf9f7" stroke="#ddd7cf" stroke-width="1"/>
+  <text x="629" y="86" text-anchor="middle" font-family="'DM Mono', 'Courier New', monospace" font-size="7.5" fill="#76695f" letter-spacing="0.12em">STORYBOOK</text>
+  <text x="629" y="103" text-anchor="middle" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="9" font-weight="300" fill="#9d9185">Component docs</text>
+
+  <!-- Connector tree: apps to component library -->
+  <line x1="151" y1="118" x2="151" y2="134" stroke="#c8c2ba" stroke-width="0.75"/>
+  <line x1="390" y1="118" x2="390" y2="134" stroke="#c8c2ba" stroke-width="0.75"/>
+  <line x1="629" y1="118" x2="629" y2="134" stroke="#c8c2ba" stroke-width="0.75"/>
+  <line x1="151" y1="134" x2="629" y2="134" stroke="#c8c2ba" stroke-width="0.75"/>
+  <line x1="390" y1="134" x2="390" y2="148" stroke="#c8c2ba" stroke-width="0.75"/>
+
+  <!-- Component library block -->
+  <rect x="40" y="148" width="700" height="170" rx="6" fill="#fff8f6" stroke="#e9c8be" stroke-width="1"/>
+  <rect x="40" y="148" width="700" height="36" rx="6" fill="#f7e8e3" stroke="none"/>
+  <rect x="40" y="168" width="700" height="16" fill="#f7e8e3" stroke="none"/>
+  <text x="60" y="172" font-family="'Fraunces', Georgia, serif" font-size="14" font-style="italic" fill="#653a35">Component library</text>
+  <text x="726" y="172" text-anchor="end" font-family="'DM Mono', 'Courier New', monospace" font-size="8" fill="#8f554d" letter-spacing="0.1em">@ARKAES/UI</text>
+
+  <rect x="60" y="198" width="212" height="52" rx="4" fill="rgba(255,255,255,0.6)" stroke="#e9c8be" stroke-width="0.75"/>
+  <text x="166" y="220" text-anchor="middle" font-family="'DM Mono', 'Courier New', monospace" font-size="7.5" fill="#8f554d" letter-spacing="0.12em">PRIMITIVES</text>
+  <text x="166" y="238" text-anchor="middle" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="9" font-weight="300" fill="#5f534a">ark-button · ark-chip · ark-badge</text>
+
+  <rect x="286" y="198" width="212" height="52" rx="4" fill="rgba(255,255,255,0.6)" stroke="#e9c8be" stroke-width="0.75"/>
+  <text x="392" y="220" text-anchor="middle" font-family="'DM Mono', 'Courier New', monospace" font-size="7.5" fill="#8f554d" letter-spacing="0.12em">COMPONENTS</text>
+  <text x="392" y="238" text-anchor="middle" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="9" font-weight="300" fill="#5f534a">ark-card · ark-dialog · ark-hero</text>
+
+  <rect x="512" y="198" width="208" height="52" rx="4" fill="rgba(255,255,255,0.6)" stroke="#e9c8be" stroke-width="0.75"/>
+  <text x="616" y="220" text-anchor="middle" font-family="'DM Mono', 'Courier New', monospace" font-size="7.5" fill="#8f554d" letter-spacing="0.12em">PATTERNS</text>
+  <text x="616" y="238" text-anchor="middle" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="9" font-weight="300" fill="#5f534a">ark-case-study-card</text>
+
+  <text x="390" y="290" text-anchor="middle" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="9" font-weight="300" fill="#9d9185">Lit custom elements · self registering · framework agnostic</text>
+
+  <!-- Connector: component library to tokens -->
+  <line x1="390" y1="318" x2="390" y2="334" stroke="#c8c2ba" stroke-width="0.75"/>
+
+  <!-- Tokens foundation -->
+  <rect x="40" y="334" width="700" height="52" rx="4" fill="#f7e8e3" stroke="#e9c8be" stroke-width="1"/>
+  <text x="60" y="356" font-family="'DM Mono', 'Courier New', monospace" font-size="7.5" fill="#8f554d" letter-spacing="0.12em">@ARKAES/TOKENS</text>
+  <text x="60" y="374" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="9" font-weight="300" fill="#5f534a">CSS custom properties · color · typography · spacing · reset</text>
+  <text x="726" y="356" text-anchor="end" font-family="'DM Mono', 'Courier New', monospace" font-size="8" fill="#d7a79b" letter-spacing="0.1em">FOUNDATION</text>
+
+</svg>
