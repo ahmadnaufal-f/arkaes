@@ -26,11 +26,15 @@ import "@arkaes/chatbot/register"; // defines <ark-chatbot>
 ```
 
 ```html
-<ark-chatbot heading="Ask about me" endpoint="/api/chat"></ark-chatbot>
+<ark-chatbot heading="Arkhe" endpoint="/api/chat"></ark-chatbot>
 ```
 
-Attributes: `endpoint` (default `/api/chat`), `heading`, `placeholder`,
-`greeting`, `launcher-label`, and the boolean `open`.
+Attributes: `endpoint` (default `/api/chat`), `heading` (the assistant's
+name, shown in the panel header), `tagline` (small line under the name),
+`placeholder`, `greeting`, `launcher-label` (the launcher's visible text and
+accessible label), and the boolean `open`. The `suggestions` property (a
+`string[]`, settable as a JSON attribute) drives the empty-state starter
+prompts; set it to `[]` to hide them.
 
 ## Server usage
 

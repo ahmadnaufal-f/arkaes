@@ -64,7 +64,10 @@ export const createChatHandler = (
     maxMessages = 12,
   } = options;
 
-  const client = new OpenAI({ apiKey });
+  // Constructed lazily: the OpenAI client throws when given an empty key, and
+  // it must not take down the whole handler module before the guard below can
+  // answer with a clean 500.
+  let client: OpenAI | undefined;
 
   return async function handleChatRequest(request) {
     if (request.method !== "POST") {
@@ -73,6 +76,7 @@ export const createChatHandler = (
     if (!apiKey) {
       return json({ error: "Chat is not configured (missing API key)." }, 500);
     }
+    client ??= new OpenAI({ apiKey });
 
     let body: ChatRequestBody;
     try {
