@@ -1,6 +1,6 @@
 ---
-"@arkaes/ui": minor
-"@arkaes/tokens": minor
+"@arkaes/ui": patch
+"@arkaes/tokens": patch
 ---
 
 Teach `ark-cursor` a text mode: over text-editable elements (`textarea`, textual `<input>`s, `[contenteditable]`) the arrow morphs into a blush text crosshair (an I-beam centered on the pointer) and the label chip is suppressed.
