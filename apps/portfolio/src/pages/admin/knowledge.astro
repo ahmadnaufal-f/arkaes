@@ -40,6 +40,10 @@ export const prerender = false;
         border: 1px solid var(--ark-color-border);
         border-radius: var(--ark-radius-md);
         margin: 0 0 var(--ark-space-6);
+        /* Override the UA default `min-inline-size: min-content` so the fieldset
+           can shrink below its content — otherwise a long source id refuses to
+           truncate and overflows on narrow (mobile) viewports. */
+        min-width: 0;
         padding: var(--ark-space-4);
       }
       legend {
@@ -113,22 +117,114 @@ export const prerender = false;
         margin: 0;
         padding: 0;
       }
-      li {
-        align-items: center;
-        border-bottom: 1px solid var(--ark-color-border);
+      .source-list {
         display: flex;
+        flex-direction: column;
         gap: var(--ark-space-3);
-        justify-content: space-between;
-        padding: var(--ark-space-2) 0;
       }
-      li code {
-        font-family: var(--ark-font-mono, monospace);
+      .source-item {
+        align-items: center;
+        background: var(--ark-color-surface);
+        border: 1px solid var(--ark-color-border);
+        border-radius: var(--ark-radius-md);
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--ark-space-2) var(--ark-space-3);
+        padding: var(--ark-space-3) var(--ark-space-4);
+        transition:
+          border-color var(--ark-duration-fast) var(--ark-ease-standard),
+          box-shadow var(--ark-duration-fast) var(--ark-ease-standard),
+          transform var(--ark-duration-fast) var(--ark-ease-standard);
+      }
+      .source-item:hover {
+        border-color: var(--ark-color-border-strong);
+        box-shadow: var(--ark-shadow-sm);
+        transform: translateY(-1px);
+      }
+      .source-item__icon {
+        align-items: center;
+        background: var(--ark-color-accent-soft);
+        border-radius: var(--ark-radius-sm);
+        color: var(--ark-color-accent-strong);
+        display: flex;
+        flex: none;
+        height: 2.25rem;
+        justify-content: center;
+        width: 2.25rem;
+      }
+      .source-item__icon svg {
+        height: 1.1rem;
+        width: 1.1rem;
+      }
+      .source-item__main {
+        display: flex;
+        flex: 1 1 9rem;
+        flex-direction: column;
+        gap: var(--ark-space-1);
+        min-width: 0;
+        overflow: hidden;
+      }
+      .source-item__id {
+        color: var(--ark-color-text);
+        font-family: var(--ark-font-mono);
         font-size: var(--ark-text-sm);
+        max-width: 100%;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
-      li .count {
-        color: var(--ark-color-text-muted);
-        font-size: var(--ark-text-xs, 0.75rem);
+      .source-item__count {
+        align-self: flex-start;
+        background: var(--ark-color-secondary-soft);
+        border-radius: var(--ark-radius-full);
+        color: var(--ark-color-secondary);
+        font-size: var(--ark-text-xs);
+        font-weight: var(--ark-weight-medium);
+        letter-spacing: var(--ark-tracking-wide);
+        padding: 0.1rem var(--ark-space-2);
+      }
+      .source-item__actions {
+        display: flex;
+        flex: none;
+        gap: var(--ark-space-2);
         margin-left: auto;
+      }
+      .source-item__actions button {
+        border-radius: var(--ark-radius-sm);
+        font-size: var(--ark-text-sm);
+        font-weight: var(--ark-weight-medium);
+        padding: var(--ark-space-1) var(--ark-space-3);
+      }
+      .btn-edit {
+        background: var(--ark-color-accent-soft);
+        border: 1px solid transparent;
+        color: var(--ark-color-accent-strong);
+        transition:
+          background-color var(--ark-duration-fast) var(--ark-ease-standard),
+          color var(--ark-duration-fast) var(--ark-ease-standard);
+      }
+      .btn-edit:hover {
+        background: var(--ark-color-accent);
+        color: var(--ark-color-accent-contrast);
+      }
+      .btn-clear {
+        background: transparent;
+        border: 1px solid var(--ark-color-border);
+        color: var(--ark-color-text-muted);
+        transition:
+          border-color var(--ark-duration-fast) var(--ark-ease-standard),
+          color var(--ark-duration-fast) var(--ark-ease-standard);
+      }
+      .btn-clear:hover {
+        border-color: var(--ark-color-danger);
+        color: var(--ark-color-danger);
+      }
+      .source-empty {
+        color: var(--ark-color-text-muted);
+        font-size: var(--ark-text-sm);
+        padding: var(--ark-space-6) var(--ark-space-4);
+        text-align: center;
       }
       .disabled-note {
         background: color-mix(in srgb, var(--ark-color-danger) 12%, transparent);
@@ -195,8 +291,8 @@ export const prerender = false;
 
             <fieldset>
               <legend>Loaded sources</legend>
-              <ul id="sources">
-                <li>Loading…</li>
+              <ul id="sources" class="source-list">
+                <li class="source-empty">Loading…</li>
               </ul>
               <div style="margin-top: var(--ark-space-4)">
                 <button type="button" class="danger" id="clear-all">
@@ -215,7 +311,11 @@ export const prerender = false;
       interface SourceCount {
         source: string | null;
         chunks: number;
+        editable?: boolean;
       }
+
+      // Inline document glyph for each source row.
+      const DOC_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>`;
       interface ApiResult {
         ok?: boolean;
         error?: string;
@@ -255,48 +355,78 @@ export const prerender = false;
           return (await res.json()) as ApiResult;
         };
 
+        const showMessage = (message: string) => {
+          sourcesEl.innerHTML = "";
+          const li = document.createElement("li");
+          li.className = "source-empty";
+          li.textContent = message;
+          sourcesEl.append(li);
+        };
+
         const loadSources = async () => {
           try {
             const data = await api("GET");
             const sources = data.sources ?? [];
-            sourcesEl.innerHTML = "";
             if (sources.length === 0) {
-              sourcesEl.innerHTML = "<li>No documents yet.</li>";
+              showMessage("No documents yet.");
               return;
             }
+            sourcesEl.innerHTML = "";
             for (const item of sources) {
               const li = document.createElement("li");
+              li.className = "source-item";
+
+              const icon = document.createElement("span");
+              icon.className = "source-item__icon";
+              icon.innerHTML = DOC_ICON;
+
+              const main = document.createElement("div");
+              main.className = "source-item__main";
               const code = document.createElement("code");
+              code.className = "source-item__id";
               code.textContent = item.source ?? "(no source)";
               const count = document.createElement("span");
-              count.className = "count";
-              count.textContent = `${item.chunks} chunks`;
-              li.append(code, count);
+              count.className = "source-item__count";
+              count.textContent = `${item.chunks} ${
+                item.chunks === 1 ? "chunk" : "chunks"
+              }`;
+              main.append(code, count);
+
+              li.append(icon, main);
+
               if (item.source) {
                 const sourceId = item.source;
+                const actions = document.createElement("div");
+                actions.className = "source-item__actions";
 
-                const editBtn = document.createElement("button");
-                editBtn.type = "button";
-                editBtn.className = "ghost";
-                editBtn.textContent = "Edit";
-                editBtn.addEventListener("click", () => {
-                  void loadForEdit(sourceId);
-                });
+                // Only offer Edit when the original text is stored to load back.
+                if (item.editable) {
+                  const editBtn = document.createElement("button");
+                  editBtn.type = "button";
+                  editBtn.className = "btn-edit";
+                  editBtn.textContent = "Edit";
+                  editBtn.addEventListener("click", () => {
+                    void loadForEdit(sourceId);
+                  });
+                  actions.append(editBtn);
+                }
 
-                const btn = document.createElement("button");
-                btn.type = "button";
-                btn.className = "ghost";
-                btn.textContent = "Clear";
-                btn.addEventListener("click", () => {
+                const clearBtn = document.createElement("button");
+                clearBtn.type = "button";
+                clearBtn.className = "btn-clear";
+                clearBtn.textContent = "Clear";
+                clearBtn.addEventListener("click", () => {
                   void removeSource(sourceId);
                 });
+                actions.append(clearBtn);
 
-                li.append(editBtn, btn);
+                li.append(actions);
               }
+
               sourcesEl.append(li);
             }
           } catch {
-            sourcesEl.innerHTML = "<li>Failed to load sources.</li>";
+            showMessage("Failed to load sources.");
           }
         };
 

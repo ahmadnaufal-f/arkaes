@@ -21,6 +21,8 @@ export interface IngestResult {
 export interface SourceCount {
   source: string | null;
   chunks: number;
+  /** True when the exact pre-chunk text is stored and can be loaded to edit. */
+  editable: boolean;
 }
 
 /** The exact pre-chunk text stored for a source, for editing / re-ingest. */
@@ -186,8 +188,26 @@ export const createSupabaseIngestor = (
       for (const row of (data ?? []) as { source: string | null }[]) {
         counts.set(row.source, (counts.get(row.source) ?? 0) + 1);
       }
+
+      // A source is editable only if its exact pre-chunk text was preserved
+      // (documents ingested before raw-text storage existed have chunks but no
+      // stored original).
+      const { data: rawData, error: rawError } = await client
+        .from(sourceTable)
+        .select("source");
+      if (rawError) throw new Error(`List failed: ${rawError.message}`);
+      const editable = new Set(
+        ((rawData ?? []) as { source: string | null }[])
+          .map((row) => row.source)
+          .filter((source): source is string => source !== null),
+      );
+
       return [...counts.entries()]
-        .map(([source, chunks]) => ({ source, chunks }))
+        .map(([source, chunks]) => ({
+          source,
+          chunks,
+          editable: source !== null && editable.has(source),
+        }))
         .sort((a, b) => (a.source ?? "").localeCompare(b.source ?? ""));
     },
 
