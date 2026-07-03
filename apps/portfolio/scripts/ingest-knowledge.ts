@@ -21,40 +21,56 @@ loadEnv();
 
 const APP_ROOT = fileURLToPath(new URL("..", import.meta.url));
 const CONTENT_DIR = join(APP_ROOT, "src", "content");
+const PROJECTS_DIR = join(CONTENT_DIR, "projects");
 
 const args = process.argv.slice(2);
 const shouldClear = args.includes("--clear");
 const dryRun = args.includes("--dry-run");
 
-interface ProjectJson {
-  slug: string;
-  title: string;
-  projectName: string;
-  role?: string;
-  challenges?: string;
-  body?: string;
-  category?: string;
-  stack?: string[];
-}
+type FrontmatterValue = string | string[];
 
 interface Frontmatter {
-  data: Record<string, string>;
+  data: Record<string, FrontmatterValue>;
   body: string;
 }
 
+const unquote = (value: string): string => value.trim().replace(/^["']|["']$/g, "");
+
+// Minimal frontmatter reader: handles scalar `key: value` lines and
+// `key:` followed by indented `- item` lines as a string array. Sufficient
+// for this script's needs (title/role/category/stack/challenges) — it
+// doesn't need to understand nested list-of-maps fields like `links`.
 const parseFrontmatter = (raw: string): Frontmatter => {
   const match = /^---\n([\s\S]*?)\n---\n?/.exec(raw);
   if (!match) return { data: {}, body: raw };
-  const data: Record<string, string> = {};
-  for (const line of match[1]?.split("\n") ?? []) {
+  const data: Record<string, FrontmatterValue> = {};
+  const lines = match[1]?.split("\n") ?? [];
+  let currentListKey: string | null = null;
+
+  for (const line of lines) {
+    const listItem = /^\s*-\s+(.*)$/.exec(line);
+    if (listItem && currentListKey) {
+      const existing = data[currentListKey];
+      const list = Array.isArray(existing) ? existing : [];
+      list.push(unquote(listItem[1]));
+      data[currentListKey] = list;
+      continue;
+    }
+
     const idx = line.indexOf(":");
     if (idx === -1) continue;
     const key = line.slice(0, idx).trim();
-    const value = line
-      .slice(idx + 1)
-      .trim()
-      .replace(/^["']|["']$/g, "");
-    if (key) data[key] = value;
+    const value = unquote(line.slice(idx + 1));
+    if (!key) continue;
+
+    if (value === "") {
+      // Could start a list (`key:` followed by `- item` lines); track it
+      // and only keep it once list items actually show up.
+      currentListKey = key;
+      continue;
+    }
+    currentListKey = null;
+    data[key] = value;
   }
   return { data, body: raw.slice(match[0].length).trim() };
 };
@@ -70,25 +86,34 @@ const walk = async (dir: string): Promise<string[]> => {
   return files.flat();
 };
 
-const toProjectDocument = (raw: string): IngestDocument => {
-  const project = JSON.parse(raw) as ProjectJson;
+const asString = (value: FrontmatterValue | undefined): string | undefined =>
+  typeof value === "string" ? value : undefined;
+
+const asStringArray = (value: FrontmatterValue | undefined): string[] =>
+  Array.isArray(value) ? value : [];
+
+const toProjectDocument = (raw: string, file: string): IngestDocument => {
+  const { data, body } = parseFrontmatter(raw);
+  const id = basename(file, extname(file));
+  const category = asString(data.category);
+  const stack = asStringArray(data.stack);
   const content = [
-    `# ${project.title}`,
-    project.role ? `Role: ${project.role}` : "",
-    project.category ? `Category: ${project.category}` : "",
-    project.stack?.length ? `Stack: ${project.stack.join(", ")}` : "",
-    project.challenges ? `Challenges: ${project.challenges}` : "",
-    project.body ?? "",
+    data.title ? `# ${asString(data.title)}` : "",
+    data.role ? `Role: ${asString(data.role)}` : "",
+    category ? `Category: ${category}` : "",
+    stack.length ? `Stack: ${stack.join(", ")}` : "",
+    data.challenges ? `Challenges: ${asString(data.challenges)}` : "",
+    body,
   ]
     .filter(Boolean)
     .join("\n\n");
   return {
     content,
-    source: `project:${project.slug}`,
+    source: `project:${id}`,
     metadata: {
       type: "project",
-      projectName: project.projectName,
-      category: project.category ?? null,
+      projectName: asString(data.projectName) ?? null,
+      category: category ?? null,
     },
   };
 };
@@ -97,8 +122,8 @@ const toCaseStudyDocument = (raw: string, file: string): IngestDocument => {
   const { data, body } = parseFrontmatter(raw);
   const id = basename(file, extname(file));
   const content = [
-    data.title ? `# ${data.title}` : "",
-    data.shortDesc ?? "",
+    data.title ? `# ${asString(data.title)}` : "",
+    asString(data.shortDesc) ?? "",
     body,
   ]
     .filter(Boolean)
@@ -108,7 +133,7 @@ const toCaseStudyDocument = (raw: string, file: string): IngestDocument => {
     source: `case-study:${id}`,
     metadata: {
       type: "case-study",
-      projectName: data.projectName ?? null,
+      projectName: asString(data.projectName) ?? null,
     },
   };
 };
@@ -117,12 +142,11 @@ const collectDocuments = async (): Promise<IngestDocument[]> => {
   const files = await walk(CONTENT_DIR);
   const documents: IngestDocument[] = [];
   for (const file of files) {
-    const ext = extname(file);
-    if (ext !== ".json" && ext !== ".md") continue;
+    if (extname(file) !== ".md") continue;
     const raw = await readFile(file, "utf8");
     documents.push(
-      ext === ".json"
-        ? toProjectDocument(raw)
+      file.startsWith(PROJECTS_DIR)
+        ? toProjectDocument(raw, file)
         : toCaseStudyDocument(raw, file),
     );
   }

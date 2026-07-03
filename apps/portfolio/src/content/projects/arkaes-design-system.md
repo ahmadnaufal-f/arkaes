@@ -1,0 +1,33 @@
+---
+title: "Arkaes Design System"
+projectName: "Arkaes Design System"
+shippedDate: 2026-06-30
+featured: false
+role: "Project Owner"
+challenges: "Built a reusable Web Components based design system while balancing component flexibility, accessibility, design tokens, documentation, and realistic side project scope."
+stack:
+  - Lit
+  - Web Components
+  - TypeScript
+  - Storybook
+  - Design Tokens
+  - Astro
+  - Accessibility
+category: "side-project"
+links:
+  - label: "GitHub"
+    url: "https://github.com/ahmadnaufal-f/arkaes"
+  - label: "Storybook"
+    url: "https://ds.arkaes.dev"
+  - label: "Brand Guideline"
+    url: "https://brand.arkaes.dev"
+screenshots: []
+---
+
+Arkaes Design System is a personal design system project built to explore how reusable UI foundations can be designed, documented, and implemented with **Web Components**. The project focuses on creating accessible, reusable, and themeable components using **Lit**, supported by **design tokens** and documented through **Storybook**.
+
+I built this project as both a design and engineering playground. It allows me to practice the kind of frontend work that sits between product design, *component architecture*, accessibility, and *developer experience*. Instead of only building isolated UI components, I use Arkaes to think about how components should behave, how tokens should shape visual consistency, and how documentation can make a design system easier to understand.
+
+The main challenge is building a system that feels flexible without becoming overengineered. Since this is a side project, the scope needs to stay realistic, but the foundation still needs to be thoughtful enough to show how I approach *component APIs*, styling, states, accessibility, and documentation.
+
+This project is meaningful because it reflects the kind of frontend engineering I enjoy most: designing clear UI systems, translating visual decisions into maintainable code, and creating reusable foundations that can grow over time. It also supports my long term goal of becoming a frontend engineer who can contribute not only to application features, but also to the systems and standards behind them.

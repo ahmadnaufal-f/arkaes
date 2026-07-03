@@ -18,14 +18,11 @@ const caseStudies = defineCollection({
 });
 
 const projects = defineCollection({
-  loader: glob({ pattern: "**/*.json", base: "./src/content/projects" }),
+  loader: glob({ pattern: "**/*.md", base: "./src/content/projects" }),
   schema: z.object({
-    slug: z.string(),
     title: z.string(),
     projectName: z.string(),
     shippedDate: z.coerce.date(),
-    // Long-form prose, paragraphs separated by blank lines. Rendered as <p>s.
-    body: z.string(),
     featured: z.boolean().default(false),
     role: z.string(),
     challenges: z.string(),

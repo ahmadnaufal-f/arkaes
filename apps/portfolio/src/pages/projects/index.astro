@@ -4,6 +4,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import FilterableListing from "../../components/FilterableListing.astro";
 import type { ListingItem } from "../../components/FilterableListing.astro";
 import { expertiseForProject } from "../../data/expertise";
+import { toPlainText } from "../../utils/sections";
 
 // Order by shipped date, most recent first.
 const entries = (await getCollection("projects")).sort(
@@ -12,7 +13,7 @@ const entries = (await getCollection("projects")).sort(
 const items: ListingItem[] = entries.map((project) => ({
   title: project.data.title,
   // Body teaser; the card clamps it to three lines with an ellipsis.
-  summary: project.data.body,
+  summary: toPlainText(project.body ?? ""),
   href: `/projects/${project.id}`,
   categorySlug: project.data.category,
   expertise: expertiseForProject(project.data.projectName),

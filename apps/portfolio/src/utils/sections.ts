@@ -20,6 +20,14 @@ export function parseSections(body: string): Section[] {
     });
 }
 
+/** Strip inline markdown emphasis/links, for plain-text teasers (e.g. card summaries). */
+export function toPlainText(markdown: string): string {
+  return markdown
+    .replace(/\*\*(.+?)\*\*/g, "$1")
+    .replace(/\*(.+?)\*/g, "$1")
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, "$1");
+}
+
 function escapeHtml(str: string): string {
   return str
     .replace(/&/g, "&amp;")
