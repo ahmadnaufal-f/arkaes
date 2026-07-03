@@ -33,7 +33,7 @@ export interface KnowledgeProject {
   category?: string;
   stack?: string[];
   summary: string;
-  url?: string;
+  links?: KnowledgeLink[];
 }
 
 export interface PortfolioKnowledge {
@@ -52,9 +52,11 @@ const renderProjects = (projects: KnowledgeProject[]): string =>
       const stack = project.stack?.length
         ? `\n  Stack: ${project.stack.join(", ")}`
         : "";
-      const link = project.url ? `\n  Link: ${project.url}` : "";
+      const links = project.links?.length
+        ? `\n  ${project.links.map((link) => `${link.label}: ${link.url}`).join(" · ")}`
+        : "";
       const header = meta ? `${project.name} (${meta})` : project.name;
-      return `### ${header}\n  ${project.summary}${stack}${link}`;
+      return `### ${header}\n  ${project.summary}${stack}${links}`;
     })
     .join("\n\n");
 
