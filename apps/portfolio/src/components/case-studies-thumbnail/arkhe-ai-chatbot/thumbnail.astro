@@ -1,0 +1,186 @@
+---
+interface Props {
+  transitionName: string;
+  asSlot?: string;
+}
+const { transitionName, asSlot } = Astro.props;
+
+// A miniature chat panel, echoing the Arkhe widget itself: a header with the
+// assistant's avatar and name, an incoming assistant bubble on the left, a
+// user bubble on the right, and a typing indicator hinting that a reply is
+// streaming in. Together they read as a live, grounded conversation.
+---
+
+<div
+  class="thumb-chat"
+  slot={asSlot}
+  style={`view-transition-name: ${transitionName};`}
+>
+  <div class="thumb-chat-card">
+    <!-- Panel header: assistant avatar + name -->
+    <div class="thumb-chat-header" aria-hidden="true">
+      <span class="thumb-chat-avatar"></span>
+      <span class="thumb-chat-name"></span>
+    </div>
+
+    <!-- Conversation: an assistant reply, then a user message -->
+    <div class="thumb-chat-thread" aria-hidden="true">
+      <span class="thumb-chat-bubble thumb-chat-bubble--assistant">
+        <span class="thumb-chat-line thumb-chat-line--lg"></span>
+        <span class="thumb-chat-line"></span>
+      </span>
+      <span class="thumb-chat-bubble thumb-chat-bubble--user">
+        <span class="thumb-chat-line thumb-chat-line--on-accent"></span>
+      </span>
+    </div>
+
+    <!-- Streaming reply: a typing indicator -->
+    <div class="thumb-chat-typing" aria-hidden="true">
+      <span class="thumb-chat-dot"></span>
+      <span class="thumb-chat-dot"></span>
+      <span class="thumb-chat-dot"></span>
+    </div>
+  </div>
+</div>
+
+<style>
+  .thumb-chat {
+    align-items: center;
+    background: var(--thumbnail-background, var(--ark-color-accent-soft));
+    display: flex;
+    height: var(--thumbnail-height, auto);
+    justify-content: center;
+    position: relative;
+  }
+
+  /* The panel sits smaller than the container and centered, so its drop shadow
+     always has room to breathe and is never clipped. */
+  .thumb-chat-card {
+    background: var(--ark-color-surface);
+    border: 1px solid var(--ark-color-border);
+    border-radius: 20px;
+    box-shadow: var(--ark-shadow-md);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 16px;
+    width: 200px;
+  }
+
+  /* ── Header ────────────────────────────────────────────────────────── */
+  .thumb-chat-header {
+    align-items: center;
+    display: flex;
+    gap: 8px;
+  }
+
+  .thumb-chat-avatar {
+    background: var(--ark-color-accent);
+    border-radius: 50%;
+    flex-shrink: 0;
+    height: 20px;
+    width: 20px;
+  }
+
+  .thumb-chat-name {
+    background: var(--ark-color-neutral-200);
+    border-radius: 3px;
+    height: 7px;
+    width: 60px;
+  }
+
+  /* ── Conversation thread ───────────────────────────────────────────── */
+  .thumb-chat-thread {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .thumb-chat-bubble {
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 9px 10px;
+  }
+
+  .thumb-chat-bubble--assistant {
+    align-self: flex-start;
+    background: var(--ark-color-accent-soft);
+    border-bottom-left-radius: 4px;
+    width: 72%;
+  }
+
+  .thumb-chat-bubble--user {
+    align-self: flex-end;
+    background: var(--ark-color-accent);
+    border-bottom-right-radius: 4px;
+    width: 50%;
+  }
+
+  .thumb-chat-line {
+    background: color-mix(in srgb, var(--ark-color-accent) 45%, transparent);
+    border-radius: 3px;
+    height: 6px;
+    width: 100%;
+  }
+
+  .thumb-chat-line--lg {
+    width: 90%;
+  }
+
+  .thumb-chat-line--on-accent {
+    background: var(--ark-color-neutral-0);
+    width: 80%;
+  }
+
+  /* ── Typing indicator ──────────────────────────────────────────────── */
+  .thumb-chat-typing {
+    align-items: center;
+    background: var(--ark-color-accent-soft);
+    align-self: flex-start;
+    border-radius: 12px;
+    border-bottom-left-radius: 4px;
+    display: flex;
+    gap: 5px;
+    padding: 8px 10px;
+    width: fit-content;
+  }
+
+  .thumb-chat-dot {
+    background: var(--ark-color-accent);
+    border-radius: 50%;
+    height: 7px;
+    opacity: 0.55;
+    width: 7px;
+  }
+
+  /* The dots ripple in sequence to hint that Arkhe is streaming a reply
+     rather than showing a static mockup. */
+  @media (prefers-reduced-motion: no-preference) {
+    .thumb-chat-dot {
+      animation: thumb-chat-typing 1.4s ease-in-out infinite;
+    }
+
+    .thumb-chat-dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .thumb-chat-dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+  }
+
+  @keyframes thumb-chat-typing {
+    0%,
+    60%,
+    100% {
+      opacity: 0.55;
+      transform: translateY(0);
+    }
+    30% {
+      opacity: 1;
+      transform: translateY(-3px);
+    }
+  }
+</style>

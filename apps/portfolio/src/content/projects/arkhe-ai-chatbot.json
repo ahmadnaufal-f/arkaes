@@ -17,8 +17,7 @@
     "RAG",
     "Supabase",
     "pgvector",
-    "Embeddings",
-    "Markdown"
+    "Embeddings"
   ],
   "category": "side-project",
   "github-url": "https://github.com/ahmadnaufal-f/arkaes",
