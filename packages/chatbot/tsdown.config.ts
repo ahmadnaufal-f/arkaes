@@ -4,7 +4,9 @@ export default defineConfig({
   // Preserve the source module structure 1:1 so the deep subpath exports
   // (./register/*, ./client/*, ./server/*) keep resolving and the
   // side-effect register files stay individually importable.
-  entry: ["src/**/*.ts"],
+  // Exclude test files — they pull in dev-only deps (vitest) and must not be
+  // emitted into dist/.
+  entry: ["src/**/*.ts", "!src/**/*.test.ts", "!src/**/__tests__/**"],
   format: "esm",
   platform: "neutral",
   dts: true,
