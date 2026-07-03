@@ -19,7 +19,8 @@
   "category": "side-project",
   "links": [
     { "label": "GitHub", "url": "https://github.com/ahmadnaufal-f/arkaes" },
-    { "label": "Storybook", "url": "https://ds.arkaes.dev" }
+    { "label": "Storybook", "url": "https://ds.arkaes.dev" },
+    { "label": "Brand Guideline", "url": "https://brand.arkaes.dev" }
   ],
   "screenshots": []
 }
