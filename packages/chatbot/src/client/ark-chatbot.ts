@@ -37,6 +37,52 @@ const persistHasOpened = () => {
 };
 
 /**
+ * The running conversation is mirrored to sessionStorage so it survives
+ * client-side navigation between pages on the same origin. The widget lives in
+ * the shared layout, but each navigation can hand it a fresh element instance
+ * (View Transition persistence does not reliably carry a Lit element's internal
+ * reactive state), which would otherwise reset the transcript. sessionStorage
+ * keeps the conversation for the life of the browser tab and is cleared when
+ * the tab closes — matching "this session's conversation" semantics.
+ */
+const STATE_STORAGE_KEY = "ark-chatbot:conversation";
+
+interface StoredMessage {
+  id: string;
+  role: ChatMessage["role"];
+  content: string;
+}
+
+interface StoredConversation {
+  messages: StoredMessage[];
+  draft: string;
+  open: boolean;
+}
+
+const readConversation = (): StoredConversation | null => {
+  try {
+    const raw = sessionStorage.getItem(STATE_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as Partial<StoredConversation>;
+    if (!parsed || !Array.isArray(parsed.messages)) return null;
+    const messages = parsed.messages.filter(
+      (message): message is StoredMessage =>
+        Boolean(message) &&
+        typeof message.id === "string" &&
+        (message.role === "user" || message.role === "assistant") &&
+        typeof message.content === "string",
+    );
+    return {
+      messages,
+      draft: typeof parsed.draft === "string" ? parsed.draft : "",
+      open: Boolean(parsed.open),
+    };
+  } catch {
+    return null; // Storage unavailable or corrupt: start fresh.
+  }
+};
+
+/**
  * ArkChatbot is a self-contained floating chat widget. It owns a launcher
  * button and a panel; on submit it POSTs the running transcript to `endpoint`
  * and renders the streamed plain-text reply token by token.
@@ -678,6 +724,48 @@ export class ArkChatbot extends LitElement {
   override connectedCallback() {
     super.connectedCallback();
     this._hasOpened = readHasOpened();
+    this._restoreConversation();
+  }
+
+  /**
+   * Rehydrate the transcript, draft, and open state from sessionStorage. Only a
+   * fresh instance is hydrated: if this element already holds messages (e.g. it
+   * survived a navigation with its state intact, or a reply is mid-stream) we
+   * leave the live state untouched so nothing is clobbered.
+   */
+  private _restoreConversation() {
+    if (this._messages.length > 0 || this._pending) return;
+    const saved = readConversation();
+    if (!saved) return;
+    this._messages = saved.messages.map((message) => ({ ...message }));
+    this._draft = saved.draft;
+    this.open = saved.open;
+  }
+
+  /**
+   * Mirror the current conversation to sessionStorage. Pending placeholders are
+   * dropped and the streaming flag is not stored, so a transcript restored on
+   * the next page is always settled — a reply interrupted by navigation simply
+   * keeps whatever text had streamed in so far.
+   */
+  private _persistConversation() {
+    try {
+      const messages: StoredMessage[] = this._messages
+        .filter((message) => !(message.pending && message.content === ""))
+        .map((message) => ({
+          id: message.id,
+          role: message.role,
+          content: message.content,
+        }));
+      const snapshot: StoredConversation = {
+        messages,
+        draft: this._draft,
+        open: this.open,
+      };
+      sessionStorage.setItem(STATE_STORAGE_KEY, JSON.stringify(snapshot));
+    } catch {
+      // Storage unavailable (privacy mode / quota): persistence is best-effort.
+    }
   }
 
   private _toggle(open: boolean) {
@@ -793,6 +881,7 @@ export class ArkChatbot extends LitElement {
   override updated() {
     const log = this.renderRoot.querySelector<HTMLElement>(".log");
     if (log) log.scrollTop = log.scrollHeight;
+    this._persistConversation();
   }
 
   private _renderLog() {
