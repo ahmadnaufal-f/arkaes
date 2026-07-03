@@ -49,9 +49,94 @@ const renderInline = (escaped: string): string => {
 
 const UNORDERED = /^\s*[-*+]\s+/;
 const ORDERED = /^\s*\d+\.\s+/;
+// A single list item: leading indent, marker (bullet or `N.`), then content.
+const LIST_ITEM = /^(\s*)([-*+]|\d+\.)\s+(.*)$/;
 const HEADING = /^(#{1,6})\s+(.*)$/;
 const QUOTE = /^&gt;\s?/; // '>' is escaped to &gt; before block parsing
 const FENCE = /^```/;
+
+/**
+ * Visual indent width of a line's leading whitespace. Tabs count as two spaces
+ * so tab- and space-indented nesting compare consistently (the model may emit
+ * either).
+ */
+const indentOf = (line: string): number => {
+  let width = 0;
+  for (const ch of line) {
+    if (ch === " ") width += 1;
+    else if (ch === "\t") width += 2;
+    else break;
+  }
+  return width;
+};
+
+/**
+ * Render one list level from `region` starting at `start`. Consumes every
+ * sibling item whose indent matches the first item's; deeper-indented items
+ * recurse into a nested list attached to the current item, and shallower items
+ * (or a marker-type switch) end this list. Returns the list HTML and the index
+ * one past the last consumed line.
+ */
+const parseListLevel = (region: string[], start: number): [string, number] => {
+  const first = LIST_ITEM.exec(region[start] ?? "");
+  // Callers only enter here on a list item, so `first` is always present.
+  const baseIndent = indentOf(region[start] ?? "");
+  const ordered = /^\d+\./.test(first?.[2] ?? "");
+  const startNum = ordered ? parseInt(first?.[2] ?? "1", 10) : 1;
+  const items: string[] = [];
+  let pos = start;
+
+  while (pos < region.length) {
+    const line = region[pos] ?? "";
+    const match = LIST_ITEM.exec(line);
+
+    if (!match) {
+      // A wrapped continuation line for the current item (e.g. text that
+      // spilled onto the next line). Join it onto the item so the run isn't
+      // broken. If it dedents past this level it belongs to an outer list.
+      if (indentOf(line) < baseIndent || items.length === 0) break;
+      items[items.length - 1] += ` ${renderInline(line.trim())}`;
+      pos += 1;
+      continue;
+    }
+
+    const indent = indentOf(line);
+    if (indent < baseIndent) break; // belongs to an enclosing list
+    if (indent > baseIndent) {
+      // Deeper indent: a nested list under the previous item.
+      const [nested, next] = parseListLevel(region, pos);
+      if (items.length > 0) items[items.length - 1] += nested;
+      pos = next;
+      continue;
+    }
+
+    // Same level: a marker-type switch starts a separate sibling list.
+    if (/^\d+\./.test(match[2] ?? "") !== ordered) break;
+    items.push(renderInline(match[3] ?? ""));
+    pos += 1;
+  }
+
+  const tag = ordered ? "ol" : "ul";
+  const startAttr = ordered && startNum !== 1 ? ` start="${startNum}"` : "";
+  const lis = items.map((inner) => `<li>${inner}</li>`).join("");
+  return [`<${tag}${startAttr}>${lis}</${tag}>`, pos];
+};
+
+/** Render a collected list region (possibly several sibling lists) to HTML. */
+const renderListRegion = (region: string[]): string => {
+  const out: string[] = [];
+  let pos = 0;
+  while (pos < region.length) {
+    if (!LIST_ITEM.test(region[pos] ?? "")) {
+      pos += 1;
+      continue;
+    }
+    const [html, next] = parseListLevel(region, pos);
+    out.push(html);
+    pos = next;
+  }
+  return out.join("");
+};
 
 /** Render a Markdown string to a safe HTML string. */
 export const renderMarkdown = (source: string): string => {
@@ -104,23 +189,36 @@ export const renderMarkdown = (source: string): string => {
       continue;
     }
 
-    if (UNORDERED.test(line)) {
-      const items: string[] = [];
-      while (i < lines.length && UNORDERED.test(at(i))) {
-        items.push(`<li>${renderInline(at(i).replace(UNORDERED, ""))}</li>`);
-        i += 1;
+    if (LIST_ITEM.test(line)) {
+      // Collect the whole list region — items at any indent (for nesting) plus
+      // wrapped continuation lines, and blank lines only when another item
+      // follows (a "loose" list). Then parse indentation into nested lists.
+      const region: string[] = [];
+      while (i < lines.length) {
+        const current = at(i);
+        if (LIST_ITEM.test(current)) {
+          region.push(current);
+          i += 1;
+          continue;
+        }
+        // Indented, non-blank line: a wrapped continuation of the current item.
+        if (!isBlank(current) && /^\s/.test(current) && region.length > 0) {
+          region.push(current);
+          i += 1;
+          continue;
+        }
+        // Blank line: stay in the list only if a further item follows.
+        if (isBlank(current)) {
+          let j = i + 1;
+          while (j < lines.length && isBlank(at(j))) j += 1;
+          if (j < lines.length && LIST_ITEM.test(at(j))) {
+            i = j;
+            continue;
+          }
+        }
+        break;
       }
-      blocks.push(`<ul>${items.join("")}</ul>`);
-      continue;
-    }
-
-    if (ORDERED.test(line)) {
-      const items: string[] = [];
-      while (i < lines.length && ORDERED.test(at(i))) {
-        items.push(`<li>${renderInline(at(i).replace(ORDERED, ""))}</li>`);
-        i += 1;
-      }
-      blocks.push(`<ol>${items.join("")}</ol>`);
+      blocks.push(renderListRegion(region));
       continue;
     }
 

@@ -495,6 +495,12 @@ export class ArkChatbot extends LitElement {
       li {
         margin-bottom: var(--ark-space-1);
       }
+      /* Nested lists hug their parent item instead of carrying the block gap. */
+      li > ul,
+      li > ol {
+        margin-top: var(--ark-space-1);
+        margin-bottom: 0;
+      }
       a {
         color: var(--ark-color-accent-strong);
         text-decoration: underline;
