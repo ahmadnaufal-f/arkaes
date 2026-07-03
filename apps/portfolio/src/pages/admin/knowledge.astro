@@ -112,120 +112,9 @@ export const prerender = false;
       #status.err {
         background: color-mix(in srgb, var(--ark-color-danger) 16%, transparent);
       }
-      ul {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-      }
-      .source-list {
-        display: flex;
-        flex-direction: column;
-        gap: var(--ark-space-3);
-      }
-      .source-item {
-        align-items: center;
-        background: var(--ark-color-surface);
-        border: 1px solid var(--ark-color-border);
-        border-radius: var(--ark-radius-md);
-        display: flex;
-        flex-wrap: wrap;
-        gap: var(--ark-space-2) var(--ark-space-3);
-        padding: var(--ark-space-3) var(--ark-space-4);
-        transition:
-          border-color var(--ark-duration-fast) var(--ark-ease-standard),
-          box-shadow var(--ark-duration-fast) var(--ark-ease-standard),
-          transform var(--ark-duration-fast) var(--ark-ease-standard);
-      }
-      .source-item:hover {
-        border-color: var(--ark-color-border-strong);
-        box-shadow: var(--ark-shadow-sm);
-        transform: translateY(-1px);
-      }
-      .source-item__icon {
-        align-items: center;
-        background: var(--ark-color-accent-soft);
-        border-radius: var(--ark-radius-sm);
-        color: var(--ark-color-accent-strong);
-        display: flex;
-        flex: none;
-        height: 2.25rem;
-        justify-content: center;
-        width: 2.25rem;
-      }
-      .source-item__icon svg {
-        height: 1.1rem;
-        width: 1.1rem;
-      }
-      .source-item__main {
-        display: flex;
-        flex: 1 1 9rem;
-        flex-direction: column;
-        gap: var(--ark-space-1);
-        min-width: 0;
-        overflow: hidden;
-      }
-      .source-item__id {
-        color: var(--ark-color-text);
-        font-family: var(--ark-font-mono);
-        font-size: var(--ark-text-sm);
-        max-width: 100%;
-        min-width: 0;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-      .source-item__count {
-        align-self: flex-start;
-        background: var(--ark-color-secondary-soft);
-        border-radius: var(--ark-radius-full);
-        color: var(--ark-color-secondary);
-        font-size: var(--ark-text-xs);
-        font-weight: var(--ark-weight-medium);
-        letter-spacing: var(--ark-tracking-wide);
-        padding: 0.1rem var(--ark-space-2);
-      }
-      .source-item__actions {
-        display: flex;
-        flex: none;
-        gap: var(--ark-space-2);
-        margin-left: auto;
-      }
-      .source-item__actions button {
-        border-radius: var(--ark-radius-sm);
-        font-size: var(--ark-text-sm);
-        font-weight: var(--ark-weight-medium);
-        padding: var(--ark-space-1) var(--ark-space-3);
-      }
-      .btn-edit {
-        background: var(--ark-color-accent-soft);
-        border: 1px solid transparent;
-        color: var(--ark-color-accent-strong);
-        transition:
-          background-color var(--ark-duration-fast) var(--ark-ease-standard),
-          color var(--ark-duration-fast) var(--ark-ease-standard);
-      }
-      .btn-edit:hover {
-        background: var(--ark-color-accent);
-        color: var(--ark-color-accent-contrast);
-      }
-      .btn-clear {
-        background: transparent;
-        border: 1px solid var(--ark-color-border);
-        color: var(--ark-color-text-muted);
-        transition:
-          border-color var(--ark-duration-fast) var(--ark-ease-standard),
-          color var(--ark-duration-fast) var(--ark-ease-standard);
-      }
-      .btn-clear:hover {
-        border-color: var(--ark-color-danger);
-        color: var(--ark-color-danger);
-      }
-      .source-empty {
-        color: var(--ark-color-text-muted);
-        font-size: var(--ark-text-sm);
-        padding: var(--ark-space-6) var(--ark-space-4);
-        text-align: center;
-      }
+      /* The "Loaded sources" table is styled in _knowledge.css (global) because
+         its rows are built at runtime by client JS, which Astro's scoped-style
+         attributes never reach. */
       .disabled-note {
         background: color-mix(in srgb, var(--ark-color-danger) 12%, transparent);
         border-radius: var(--ark-radius-md);
@@ -291,9 +180,20 @@ export const prerender = false;
 
             <fieldset>
               <legend>Loaded sources</legend>
-              <ul id="sources" class="source-list">
-                <li class="source-empty">Loading…</li>
-              </ul>
+              <table class="sources-table">
+                <thead>
+                  <tr>
+                    <th>Source</th>
+                    <th class="col-chunks">Chunks</th>
+                    <th class="col-actions">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="sources">
+                  <tr>
+                    <td colspan="3" class="sources-empty">Loading…</td>
+                  </tr>
+                </tbody>
+              </table>
               <div style="margin-top: var(--ark-space-4)">
                 <button type="button" class="danger" id="clear-all">
                   Clear everything
@@ -314,8 +214,6 @@ export const prerender = false;
         editable?: boolean;
       }
 
-      // Inline document glyph for each source row.
-      const DOC_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>`;
       interface ApiResult {
         ok?: boolean;
         error?: string;
@@ -335,7 +233,7 @@ export const prerender = false;
       // The form only renders when RAG is configured.
       if (form) {
         const statusEl = $<HTMLDivElement>("status");
-        const sourcesEl = $<HTMLUListElement>("sources");
+        const sourcesEl = $<HTMLTableSectionElement>("sources");
 
         const setStatus = (message: string, ok: boolean) => {
           statusEl.hidden = false;
@@ -357,10 +255,13 @@ export const prerender = false;
 
         const showMessage = (message: string) => {
           sourcesEl.innerHTML = "";
-          const li = document.createElement("li");
-          li.className = "source-empty";
-          li.textContent = message;
-          sourcesEl.append(li);
+          const tr = document.createElement("tr");
+          const td = document.createElement("td");
+          td.colSpan = 3;
+          td.className = "sources-empty";
+          td.textContent = message;
+          tr.append(td);
+          sourcesEl.append(tr);
         };
 
         const loadSources = async () => {
@@ -373,31 +274,28 @@ export const prerender = false;
             }
             sourcesEl.innerHTML = "";
             for (const item of sources) {
-              const li = document.createElement("li");
-              li.className = "source-item";
+              const tr = document.createElement("tr");
 
-              const icon = document.createElement("span");
-              icon.className = "source-item__icon";
-              icon.innerHTML = DOC_ICON;
+              const sourceCell = document.createElement("td");
+              sourceCell.className = "source-cell";
+              sourceCell.textContent = item.source ?? "(no source)";
+              // Show the full id on hover since the cell truncates.
+              sourceCell.title = item.source ?? "(no source)";
 
-              const main = document.createElement("div");
-              main.className = "source-item__main";
-              const code = document.createElement("code");
-              code.className = "source-item__id";
-              code.textContent = item.source ?? "(no source)";
-              const count = document.createElement("span");
-              count.className = "source-item__count";
-              count.textContent = `${item.chunks} ${
+              const chunkCell = document.createElement("td");
+              chunkCell.className = "chunk-cell";
+              const pill = document.createElement("span");
+              pill.className = "chunk-pill";
+              pill.textContent = String(item.chunks);
+              pill.title = `${item.chunks} ${
                 item.chunks === 1 ? "chunk" : "chunks"
               }`;
-              main.append(code, count);
+              chunkCell.append(pill);
 
-              li.append(icon, main);
-
+              const actionCell = document.createElement("td");
+              actionCell.className = "action-cell";
               if (item.source) {
                 const sourceId = item.source;
-                const actions = document.createElement("div");
-                actions.className = "source-item__actions";
 
                 // Only offer Edit when the original text is stored to load back.
                 if (item.editable) {
@@ -408,7 +306,7 @@ export const prerender = false;
                   editBtn.addEventListener("click", () => {
                     void loadForEdit(sourceId);
                   });
-                  actions.append(editBtn);
+                  actionCell.append(editBtn);
                 }
 
                 const clearBtn = document.createElement("button");
@@ -418,12 +316,11 @@ export const prerender = false;
                 clearBtn.addEventListener("click", () => {
                   void removeSource(sourceId);
                 });
-                actions.append(clearBtn);
-
-                li.append(actions);
+                actionCell.append(clearBtn);
               }
 
-              sourcesEl.append(li);
+              tr.append(sourceCell, chunkCell, actionCell);
+              sourcesEl.append(tr);
             }
           } catch {
             showMessage("Failed to load sources.");
