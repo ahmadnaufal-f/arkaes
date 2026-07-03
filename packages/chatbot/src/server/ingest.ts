@@ -21,6 +21,14 @@ export interface IngestResult {
 export interface SourceCount {
   source: string | null;
   chunks: number;
+  /** True when the exact pre-chunk text is stored and can be loaded to edit. */
+  editable: boolean;
+}
+
+/** The exact pre-chunk text stored for a source, for editing / re-ingest. */
+export interface RawDocument {
+  content: string;
+  metadata: Record<string, unknown>;
 }
 
 export interface SupabaseIngestorOptions {
@@ -30,8 +38,10 @@ export interface SupabaseIngestorOptions {
   embedder?: Embedder;
   embeddingModel?: string;
   client?: SupabaseClient;
-  /** Table name. Default "documents". */
+  /** Chunk table name. Default "documents". */
   table?: string;
+  /** Raw pre-chunk text table name. Default "document_sources". */
+  sourceTable?: string;
   /** Chunking options applied to every document. */
   chunk?: ChunkOptions;
   /** Embeddings + inserts are batched at this size. Default 96. */
@@ -47,6 +57,8 @@ export interface Ingestor {
   clearSource(source: string): Promise<number>;
   /** List distinct sources with their chunk counts. */
   listSources(): Promise<SourceCount[]>;
+  /** Fetch the exact pre-chunk text for a source, or null if none is stored. */
+  getSource(source: string): Promise<RawDocument | null>;
 }
 
 interface PendingChunk {
@@ -69,6 +81,7 @@ export const createSupabaseIngestor = (
   options: SupabaseIngestorOptions,
 ): Ingestor => {
   const table = options.table ?? "documents";
+  const sourceTable = options.sourceTable ?? "document_sources";
   const batchSize = options.batchSize ?? 96;
 
   const client =
@@ -118,6 +131,25 @@ export const createSupabaseIngestor = (
         const { error } = await client.from(table).insert(rows);
         if (error) throw new Error(`Insert failed: ${error.message}`);
       }
+
+      // Preserve the exact pre-chunk text for every sourced document so it can
+      // be loaded back for editing. Source-less documents aren't keyable, so
+      // they're chunk-only (and stay uneditable, as before).
+      const rawRows = documents
+        .filter((document) => document.source)
+        .map((document) => ({
+          source: document.source,
+          content: document.content,
+          metadata: document.metadata ?? {},
+          updated_at: new Date().toISOString(),
+        }));
+      if (rawRows.length > 0) {
+        const { error } = await client
+          .from(sourceTable)
+          .upsert(rawRows, { onConflict: "source" });
+        if (error) throw new Error(`Source upsert failed: ${error.message}`);
+      }
+
       return { documents: documents.length, chunks: pending.length };
     },
 
@@ -127,6 +159,11 @@ export const createSupabaseIngestor = (
         .delete({ count: "exact" })
         .not("id", "is", null);
       if (error) throw new Error(`Clear failed: ${error.message}`);
+      const { error: rawError } = await client
+        .from(sourceTable)
+        .delete()
+        .not("source", "is", null);
+      if (rawError) throw new Error(`Clear failed: ${rawError.message}`);
       return count ?? 0;
     },
 
@@ -136,6 +173,11 @@ export const createSupabaseIngestor = (
         .delete({ count: "exact" })
         .eq("source", source);
       if (error) throw new Error(`Clear failed: ${error.message}`);
+      const { error: rawError } = await client
+        .from(sourceTable)
+        .delete()
+        .eq("source", source);
+      if (rawError) throw new Error(`Clear failed: ${rawError.message}`);
       return count ?? 0;
     },
 
@@ -146,9 +188,45 @@ export const createSupabaseIngestor = (
       for (const row of (data ?? []) as { source: string | null }[]) {
         counts.set(row.source, (counts.get(row.source) ?? 0) + 1);
       }
+
+      // A source is editable only if its exact pre-chunk text was preserved
+      // (documents ingested before raw-text storage existed have chunks but no
+      // stored original).
+      const { data: rawData, error: rawError } = await client
+        .from(sourceTable)
+        .select("source");
+      if (rawError) throw new Error(`List failed: ${rawError.message}`);
+      const editable = new Set(
+        ((rawData ?? []) as { source: string | null }[])
+          .map((row) => row.source)
+          .filter((source): source is string => source !== null),
+      );
+
       return [...counts.entries()]
-        .map(([source, chunks]) => ({ source, chunks }))
+        .map(([source, chunks]) => ({
+          source,
+          chunks,
+          editable: source !== null && editable.has(source),
+        }))
         .sort((a, b) => (a.source ?? "").localeCompare(b.source ?? ""));
+    },
+
+    async getSource(source) {
+      const { data, error } = await client
+        .from(sourceTable)
+        .select("content, metadata")
+        .eq("source", source)
+        .maybeSingle();
+      if (error) throw new Error(`Get source failed: ${error.message}`);
+      if (!data) return null;
+      const row = data as { content: string; metadata: unknown };
+      return {
+        content: row.content,
+        metadata:
+          typeof row.metadata === "object" && row.metadata !== null
+            ? (row.metadata as Record<string, unknown>)
+            : {},
+      };
     },
   };
 };

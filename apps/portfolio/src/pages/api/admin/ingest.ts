@@ -26,10 +26,21 @@ const readBody = async (
 const asTrimmed = (value: unknown): string =>
   typeof value === "string" ? value.trim() : "";
 
-// List loaded sources with their chunk counts.
-export const GET: APIRoute = async () => {
+// List loaded sources with their chunk counts, or — with ?source=<id> — return
+// the exact pre-chunk text for one source so the admin UI can edit it.
+export const GET: APIRoute = async ({ url }) => {
   const ingestor = getIngestor();
   if (!ingestor) return json({ error: "RAG is not configured." }, 503);
+
+  const source = asTrimmed(url.searchParams.get("source"));
+  if (source) {
+    const document = await ingestor.getSource(source);
+    if (!document) {
+      return json({ error: "No stored original for this source." }, 404);
+    }
+    return json({ source, ...document });
+  }
+
   const sources = await ingestor.listSources();
   return json({ sources });
 };

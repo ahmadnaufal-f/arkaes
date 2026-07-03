@@ -1,2 +1,110 @@
 /* Token variables for the standalone admin page (it doesn't use BaseLayout). */
 @import "@arkaes/tokens/css";
+
+/* "Loaded sources" table. These rules live here (global) rather than in the
+   page's scoped <style> because the rows are built at runtime by client JS,
+   which Astro's scoped-style attributes never reach. */
+.sources-table {
+  border-collapse: collapse;
+  table-layout: fixed;
+  width: 100%;
+}
+.sources-table th {
+  color: var(--ark-color-text-muted);
+  font-size: var(--ark-text-xs);
+  font-weight: var(--ark-weight-semibold);
+  letter-spacing: var(--ark-tracking-label);
+  padding: var(--ark-space-2) var(--ark-space-3);
+  text-align: left;
+  text-transform: uppercase;
+}
+.sources-table th.col-chunks {
+  text-align: center;
+  width: 3.5rem;
+}
+.sources-table th.col-actions {
+  text-align: right;
+  width: 8rem;
+}
+.sources-table td {
+  border-top: 1px solid var(--ark-color-border);
+  padding: var(--ark-space-3);
+  vertical-align: middle;
+}
+.sources-table tbody tr {
+  transition: background-color var(--ark-duration-fast) var(--ark-ease-standard);
+}
+.sources-table tbody tr:hover {
+  background: var(--ark-color-surface-soft);
+}
+
+/* Source id: monospace, truncated with an ellipsis (max-width:0 + fixed layout
+   lets the cell shrink to its column and clip long ids on narrow viewports). */
+.sources-table .source-cell {
+  color: var(--ark-color-text);
+  font-family: var(--ark-font-mono);
+  font-size: var(--ark-text-sm);
+  max-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sources-table .chunk-cell {
+  text-align: center;
+}
+.sources-table .chunk-pill {
+  background: var(--ark-color-secondary-soft);
+  border-radius: var(--ark-radius-full);
+  color: var(--ark-color-secondary);
+  display: inline-block;
+  font-size: var(--ark-text-xs);
+  font-weight: var(--ark-weight-medium);
+  min-width: 1.5rem;
+  padding: 0.1rem var(--ark-space-2);
+}
+
+.sources-table .action-cell {
+  text-align: right;
+  white-space: nowrap;
+}
+.sources-table .action-cell button {
+  border-radius: var(--ark-radius-sm);
+  cursor: pointer;
+  font: inherit;
+  font-size: var(--ark-text-sm);
+  font-weight: var(--ark-weight-medium);
+  padding: var(--ark-space-1) var(--ark-space-2);
+  transition:
+    background-color var(--ark-duration-fast) var(--ark-ease-standard),
+    border-color var(--ark-duration-fast) var(--ark-ease-standard),
+    color var(--ark-duration-fast) var(--ark-ease-standard);
+}
+.sources-table .action-cell button + button {
+  margin-left: var(--ark-space-2);
+}
+.sources-table .btn-edit {
+  background: var(--ark-color-accent-soft);
+  border: 1px solid transparent;
+  color: var(--ark-color-accent-strong);
+}
+.sources-table .btn-edit:hover {
+  background: var(--ark-color-accent);
+  color: var(--ark-color-accent-contrast);
+}
+.sources-table .btn-clear {
+  background: transparent;
+  border: 1px solid var(--ark-color-border);
+  color: var(--ark-color-text-muted);
+}
+.sources-table .btn-clear:hover {
+  border-color: var(--ark-color-danger);
+  color: var(--ark-color-danger);
+}
+
+.sources-table .sources-empty {
+  color: var(--ark-color-text-muted);
+  font-size: var(--ark-text-sm);
+  padding: var(--ark-space-6) var(--ark-space-3);
+  text-align: center;
+}
