@@ -19,7 +19,9 @@
     "TypeScript"
   ],
   "category": "side-project",
-  "github-url": "https://github.com/Treehouse-Devs/FamilyTreeApp",
+  "links": [
+    { "label": "GitHub", "url": "https://github.com/Treehouse-Devs/FamilyTreeApp" }
+  ],
   "screenshots": [
     "/projects/treely-app/1.jpeg",
     "/projects/treely-app/2.jpeg",

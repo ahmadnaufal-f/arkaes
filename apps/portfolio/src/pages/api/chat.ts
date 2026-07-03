@@ -54,7 +54,7 @@ const buildKnowledge = async (): Promise<PortfolioKnowledge> => {
         category: categoryLabel(entry.data.category),
         stack: entry.data.stack,
         summary: entry.data.challenges,
-        url: entry.data["github-url"],
+        links: entry.data.links,
       })),
       ...caseStudies.map((entry) => ({
         name: entry.data.projectName,

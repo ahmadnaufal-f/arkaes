@@ -31,9 +31,11 @@ const projects = defineCollection({
     challenges: z.string(),
     stack: z.array(z.string()).default([]),
     category: categorySchema,
-    // Side-project-only fields. Professional work omits both; screenshots
-    // defaults to an empty array so the gallery simply renders nothing.
-    "github-url": z.string().url().optional(),
+    // Side-project-only fields. Professional work omits both; links and
+    // screenshots default to empty arrays so their sections simply don't render.
+    links: z
+      .array(z.object({ label: z.string(), url: z.string().url() }))
+      .default([]),
     screenshots: z.array(z.string()).default([]),
   }),
 });

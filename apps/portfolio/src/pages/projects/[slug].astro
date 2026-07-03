@@ -24,9 +24,8 @@ export async function getStaticPaths() {
 }
 
 const { project, relatedCaseStudyId } = Astro.props;
-const { title, body, role, challenges, stack, category, screenshots } =
+const { title, body, role, challenges, stack, category, screenshots, links } =
   project.data;
-const githubUrl = project.data["github-url"];
 
 // Body is plain prose with blank-line-separated paragraphs.
 const paragraphs = body.split("\n\n").map((p) => p.trim()).filter(Boolean);
@@ -83,11 +82,11 @@ const paragraphs = body.split("\n\n").map((p) => p.trim()).filter(Boolean);
 
         <div class="project-footer-nav">
           {
-            githubUrl && (
-              <ark-button href={githubUrl} target="_blank" variant="ghost">
-                View on GitHub &rarr;
+            links.map((link) => (
+              <ark-button href={link.url} target="_blank" variant="ghost">
+                View {link.label} &rarr;
               </ark-button>
-            )
+            ))
           }
           {
             relatedCaseStudyId && (

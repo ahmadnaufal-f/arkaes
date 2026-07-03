@@ -20,6 +20,8 @@
     "Embeddings"
   ],
   "category": "side-project",
-  "github-url": "https://github.com/ahmadnaufal-f/arkaes",
+  "links": [
+    { "label": "GitHub", "url": "https://github.com/ahmadnaufal-f/arkaes" }
+  ],
   "screenshots": []
 }
