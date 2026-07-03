@@ -142,7 +142,8 @@ export const prerender = false;
       <h1>Knowledge admin</h1>
       <p class="lede">
         Add documents to the Arkhe RAG store. Content is chunked, embedded, and
-        saved to Supabase pgvector.
+        saved to Supabase pgvector. Use <strong>Edit</strong> on a loaded source
+        to pull its original text back into the form and replace it.
       </p>
 
       {
@@ -222,6 +223,9 @@ export const prerender = false;
         chunks?: number;
         removed?: number;
         sources?: SourceCount[];
+        source?: string;
+        content?: string;
+        metadata?: Record<string, unknown>;
       }
 
       const $ = <T extends HTMLElement>(id: string): T =>
@@ -269,15 +273,25 @@ export const prerender = false;
               count.textContent = `${item.chunks} chunks`;
               li.append(code, count);
               if (item.source) {
+                const sourceId = item.source;
+
+                const editBtn = document.createElement("button");
+                editBtn.type = "button";
+                editBtn.className = "ghost";
+                editBtn.textContent = "Edit";
+                editBtn.addEventListener("click", () => {
+                  void loadForEdit(sourceId);
+                });
+
                 const btn = document.createElement("button");
                 btn.type = "button";
                 btn.className = "ghost";
                 btn.textContent = "Clear";
-                const sourceId = item.source;
                 btn.addEventListener("click", () => {
                   void removeSource(sourceId);
                 });
-                li.append(btn);
+
+                li.append(editBtn, btn);
               }
               sourcesEl.append(li);
             }
@@ -290,6 +304,44 @@ export const prerender = false;
           const data = await api("DELETE", { source });
           setStatus(`Removed ${data.removed ?? 0} chunks from ${source}.`, true);
           await loadSources();
+        };
+
+        // Load a source's stored original into the form for editing. Re-submitting
+        // with "Replace" checked overwrites the existing chunks. Documents ingested
+        // before raw-text storage existed have no original to load — fall back to a
+        // blank form keyed to the source so fresh content can replace it.
+        const loadForEdit = async (source: string) => {
+          const sourceInput = $<HTMLInputElement>("source");
+          const contentInput = $<HTMLTextAreaElement>("content");
+          const metadataInput = $<HTMLTextAreaElement>("metadata");
+          const replaceInput = $<HTMLInputElement>("replace");
+
+          sourceInput.value = source;
+          replaceInput.checked = true;
+
+          const res = await fetch(
+            `/api/admin/ingest?source=${encodeURIComponent(source)}`,
+          );
+          const data = (await res.json()) as ApiResult;
+
+          if (res.ok && typeof data.content === "string") {
+            contentInput.value = data.content;
+            metadataInput.value =
+              data.metadata && Object.keys(data.metadata).length > 0
+                ? JSON.stringify(data.metadata, null, 2)
+                : "";
+            setStatus(`Loaded "${source}" for editing.`, true);
+          } else {
+            contentInput.value = "";
+            metadataInput.value = "";
+            setStatus(
+              `No stored original for "${source}" (ingested before edit support). Paste fresh content to replace it.`,
+              false,
+            );
+          }
+
+          form.scrollIntoView({ behavior: "smooth", block: "start" });
+          contentInput.focus();
         };
 
         form.addEventListener("submit", (event) => {
