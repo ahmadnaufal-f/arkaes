@@ -42,6 +42,30 @@ describe("renderMarkdown — links and safety", () => {
   });
 });
 
+describe("renderMarkdown — citation markers", () => {
+  it("renders a single [n] marker as a circular badge", () => {
+    expect(renderMarkdown("Ahmad uses Lit [1].")).toBe(
+      '<p>Ahmad uses Lit <span class="md-cites"><span class="md-cite">1</span></span>.</p>',
+    );
+  });
+
+  it("splits a combined [3, 5] marker into one badge per number", () => {
+    expect(renderMarkdown("Both apply [3, 5].")).toBe(
+      '<p>Both apply <span class="md-cites"><span class="md-cite">3</span><span class="md-cite">5</span></span>.</p>',
+    );
+  });
+
+  it("leaves bracketed digits inside code spans alone", () => {
+    expect(renderMarkdown("`arr[3]`")).toBe(
+      "<p><code>arr[3]</code></p>",
+    );
+  });
+
+  it("ignores non-numeric bracketed text", () => {
+    expect(renderMarkdown("see [note] here")).toBe("<p>see [note] here</p>");
+  });
+});
+
 describe("renderMarkdown — block elements", () => {
   it("renders headings as styled paragraphs", () => {
     expect(renderMarkdown("## Title")).toBe('<p class="md-h">Title</p>');

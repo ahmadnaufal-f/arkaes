@@ -49,7 +49,7 @@ import { createChatHandler, type PortfolioKnowledge } from "@arkaes/chatbot/serv
 
 const handler = createChatHandler({
   apiKey: process.env.OPENAI_API_KEY ?? "",
-  model: "gpt-4o-mini",
+  model: "gpt-5.4-nano",
   knowledge: async (): Promise<PortfolioKnowledge> => ({
     profile: { name: "Ahmad Naufal", headline: "...", bio: "..." },
     expertise: [],
@@ -112,6 +112,39 @@ The handler retrieves on the latest user message and injects the chunks into
 the prompt's "Retrieved portfolio knowledge" block, ranked above the static
 profile. SQL schema + setup live in `supabase/` at the repo root; ingest with
 `pnpm --filter @arkaes/portfolio ingest`.
+
+### Source citations
+
+When retrieval is on, each distinct retrieved source is numbered and the model
+is asked to cite the excerpts it uses inline as `[1]`, `[2]`, … The handler then
+appends the sources the model actually cited to the end of the stream (after a
+private delimiter), and the widget renders them as a **Sources** footer under
+the reply — each entry linking to the source's page when it has one. Sources
+that were retrieved but never cited are dropped, so the footer only lists what
+informed the answer.
+
+Because sources follow a `type:slug` convention that only the host app
+understands, pass `resolveCitation` to map a retrieved chunk to its display
+label and (optional) URL:
+
+```ts
+createChatHandler({
+  apiKey,
+  knowledge,
+  retriever,
+  resolveCitation: (chunk) => {
+    const [type, slug] = (chunk.source ?? "").split(/:(.*)/);
+    if (type === "project") return { label: slug, url: `/projects/${slug}` };
+    if (type === "case-study") return { label: slug, url: `/case-studies/${slug}` };
+    return { label: chunk.source ?? "source" }; // no page → shown without a link
+  },
+});
+```
+
+Without `resolveCitation`, sources fall back to their raw id and render without
+links. Links are restricted to `http(s):`, `mailto:`, or root-relative (`/path`)
+hrefs; root-relative links open in the same tab so the conversation (kept in
+`sessionStorage`) survives the navigation.
 
 ### Distributed rate limiting
 

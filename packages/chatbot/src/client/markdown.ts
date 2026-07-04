@@ -40,6 +40,20 @@ const renderInline = (escaped: string): string => {
     },
   );
 
+  // Citation markers — [3] or [3, 5] — become circular number badges. Runs
+  // after code/link stashing so bracketed digits inside code spans or link
+  // labels are left untouched, and the result is stashed so it survives the
+  // emphasis passes below.
+  out = out.replace(/\[(\d+(?:\s*,\s*\d+)*)\]/g, (_m, group: string) => {
+    const badges = group
+      .split(",")
+      .map((part) => part.trim())
+      .filter(Boolean)
+      .map((num) => `<span class="md-cite">${num}</span>`)
+      .join("");
+    return keep(`<span class="md-cites">${badges}</span>`);
+  });
+
   out = out.replace(/\*\*([^*]+?)\*\*/g, "<strong>$1</strong>");
   out = out.replace(/\*([^*\n]+?)\*/g, "<em>$1</em>");
   out = out.replace(/(^|[^\w])_([^_\n]+?)_(?=[^\w]|$)/g, "$1<em>$2</em>");

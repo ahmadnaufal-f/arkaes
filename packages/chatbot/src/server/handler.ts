@@ -1,7 +1,16 @@
 import OpenAI from "openai";
-import type { ChatMessage, ChatRequestBody } from "../shared/types";
+import {
+  SOURCES_DELIMITER,
+  type ChatMessage,
+  type ChatRequestBody,
+} from "../shared/types";
 import { buildSystemPrompt, type PortfolioKnowledge } from "./knowledge";
-import type { RetrievedChunk } from "./retrieval";
+import {
+  buildCitations,
+  selectCitedSources,
+  type ResolveCitation,
+  type RetrievedChunk,
+} from "./retrieval";
 import type { Retriever } from "./retriever";
 import {
   checkRateLimit,
@@ -27,7 +36,13 @@ export interface ChatHandlerOptions {
    * `knowledge` alone, so chat keeps working if the vector store is down.
    */
   retriever?: Retriever;
-  /** Chat model. Defaults to "gpt-4o-mini". */
+  /**
+   * Map a retrieved chunk to how it should be cited (display label + optional
+   * URL). Sources the model cites as `[n]` are streamed to the widget using
+   * this. Defaults to echoing the raw source id with no link.
+   */
+  resolveCitation?: ResolveCitation;
+  /** Chat model. Defaults to "gpt-5.4-nano". */
   model?: string;
   /** Sampling temperature. Defaults to 0.4 for grounded answers. */
   temperature?: number;
@@ -124,7 +139,7 @@ export const createChatHandler = (
   const {
     apiKey,
     knowledge,
-    model = "gpt-4o-mini",
+    model = "gpt-5.4-nano",
     temperature = 0.4,
     maxMessages = 12,
     maxMessageLength = 4000,
@@ -229,7 +244,15 @@ export const createChatHandler = (
       }
     }
 
-    const systemPrompt = buildSystemPrompt(resolved, { retrieved });
+    const { citations, numbers } = buildCitations(
+      retrieved,
+      options.resolveCitation,
+    );
+    const systemPrompt = buildSystemPrompt(resolved, {
+      retrieved,
+      citations,
+      numbers,
+    });
 
     try {
       const completion = await client.chat.completions.create({
@@ -248,10 +271,23 @@ export const createChatHandler = (
       const encoder = new TextEncoder();
       const stream = new ReadableStream<Uint8Array>({
         async start(controller) {
+          let reply = "";
           try {
             for await (const chunk of completion) {
               const text = chunk.choices[0]?.delta?.content;
-              if (text) controller.enqueue(encoder.encode(text));
+              if (text) {
+                reply += text;
+                controller.enqueue(encoder.encode(text));
+              }
+            }
+            // After the reply lands, append the sources the model cited as
+            // `[n]`. The widget splits on SOURCES_DELIMITER, renders the answer,
+            // and shows the parsed sources as a "Sources" block.
+            const cited = selectCitedSources(reply, citations);
+            if (cited.length > 0) {
+              controller.enqueue(
+                encoder.encode(SOURCES_DELIMITER + JSON.stringify(cited)),
+              );
             }
           } catch {
             controller.enqueue(

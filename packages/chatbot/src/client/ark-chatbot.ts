@@ -3,7 +3,8 @@ import { repeat } from "lit/directives/repeat.js";
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import { defineElement } from "../define-element";
 import { renderMarkdown } from "./markdown";
-import type { ChatMessage } from "../shared/types";
+import { splitReply } from "./sources";
+import type { ChatMessage, SourceCitation } from "../shared/types";
 
 interface DisplayMessage extends ChatMessage {
   id: string;
@@ -513,6 +514,29 @@ export class ArkChatbot extends LitElement {
       strong {
         font-weight: var(--ark-weight-semibold);
       }
+      /* Inline citation markers ([3] / [3, 5]) render as circular badges whose
+         numbers match the "Sources" footer below the reply. */
+      .md-cites {
+        display: inline-flex;
+        gap: 0.25em;
+        margin-left: 0.2em;
+        vertical-align: 0.12em;
+      }
+      .md-cite {
+        align-items: center;
+        background: var(--ark-color-accent-soft);
+        border: 1px solid color-mix(in srgb, var(--ark-color-accent), transparent 65%);
+        border-radius: var(--ark-radius-full);
+        color: var(--ark-color-accent-strong);
+        display: inline-flex;
+        font-size: 0.68rem;
+        font-weight: var(--ark-weight-semibold);
+        height: 1.4em;
+        justify-content: center;
+        line-height: var(--ark-leading-none);
+        min-width: 1.4em;
+        padding: 0 0.28em;
+      }
       code {
         background: color-mix(in srgb, var(--ark-color-accent), transparent 88%);
         border-radius: var(--ark-radius-xs);
@@ -535,6 +559,74 @@ export class ArkChatbot extends LitElement {
         border-left: 2px solid var(--ark-color-border);
         color: var(--ark-color-text-muted);
         padding-left: var(--ark-space-3);
+      }
+    }
+
+    /* ── Cited sources footer (appended under an assistant reply) ───────── */
+    .sources {
+      border-top: 1px solid color-mix(in srgb, var(--ark-color-border), transparent 40%);
+      display: flex;
+      flex-direction: column;
+      gap: var(--ark-space-2);
+      margin-top: var(--ark-space-3);
+      padding-top: var(--ark-space-2);
+    }
+    .sources__label {
+      color: var(--ark-color-text-subtle);
+      font-size: var(--ark-text-xs);
+      font-weight: var(--ark-weight-semibold);
+      letter-spacing: var(--ark-tracking-wide);
+      text-transform: uppercase;
+    }
+    .sources__list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--ark-space-1);
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .sources__item {
+      align-items: baseline;
+      display: flex;
+      gap: var(--ark-space-2);
+    }
+    /* The number matches the inline [n] marker in the reply text. */
+    .sources__marker {
+      align-items: center;
+      background: var(--ark-color-accent-soft);
+      border-radius: var(--ark-radius-full);
+      color: var(--ark-color-accent-strong);
+      display: inline-flex;
+      flex: none;
+      font-size: 0.7rem;
+      font-weight: var(--ark-weight-semibold);
+      height: 1.15rem;
+      justify-content: center;
+      line-height: var(--ark-leading-none);
+      min-width: 1.15rem;
+      padding: 0 0.3em;
+    }
+    .sources__link,
+    .sources__name {
+      color: var(--ark-color-text-muted);
+      font-size: var(--ark-text-xs);
+      line-height: var(--ark-leading-snug);
+    }
+    .sources__link {
+      color: var(--ark-color-accent-strong);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      transition: color var(--ark-duration-fast) var(--ark-ease-standard);
+      word-break: break-word;
+
+      &:hover {
+        color: var(--ark-color-accent);
+      }
+      &:focus-visible {
+        border-radius: var(--ark-radius-xs);
+        outline: 2px solid var(--ark-color-focus);
+        outline-offset: 2px;
       }
     }
 
@@ -929,10 +1021,15 @@ export class ArkChatbot extends LitElement {
         const bubbleClass = `bubble bubble--${message.role}${
           message.pending && !thinking ? " bubble--pending" : ""
         }${rich ? " bubble--rich" : ""}`;
+        // Rich replies may carry an appended sources payload; split it off so
+        // the answer renders as Markdown and the sources render as a footer.
+        const split = rich ? splitReply(message.content) : null;
         const body = thinking
           ? typingDots
-          : rich
-            ? unsafeHTML(renderMarkdown(message.content))
+          : split
+            ? html`${unsafeHTML(renderMarkdown(split.body))}${this._renderSources(
+              split.sources,
+            )}`
             : message.content;
         // Bubble content stays on one line: the bubble renders with
         // `white-space: pre-wrap`, so template whitespace would be visible.
@@ -952,6 +1049,43 @@ export class ArkChatbot extends LitElement {
         `;
       },
     );
+  }
+
+  /**
+   * Render the "Sources" footer for a reply. Each entry shows its citation
+   * number (matching the inline `[n]` markers) and links to the source's page
+   * when it has one. Root-relative links stay in-tab so the conversation, kept
+   * in sessionStorage, survives the navigation.
+   */
+  private _renderSources(sources: SourceCitation[]) {
+    if (sources.length === 0) return nothing;
+    return html`
+      <div class="sources" role="group" aria-label="Sources">
+        <span class="sources__label">Sources</span>
+        <ul class="sources__list">
+          ${sources.map((source) => {
+            const href = safeHref(source.url);
+            const external = href ? /^https?:/i.test(href) : false;
+            return html`
+              <li class="sources__item">
+                <span class="sources__marker" aria-hidden="true"
+                  >${source.n}</span
+                >
+                ${href
+                  ? html`<a
+                      class="sources__link"
+                      href=${href}
+                      target=${external ? "_blank" : nothing}
+                      rel=${external ? "noopener noreferrer" : nothing}
+                      >${source.label}</a
+                    >`
+                  : html`<span class="sources__name">${source.label}</span>`}
+              </li>
+            `;
+          })}
+        </ul>
+      </div>
+    `;
   }
 
   override render() {
@@ -1026,6 +1160,12 @@ export class ArkChatbot extends LitElement {
     `;
   }
 }
+
+// Only allow http(s), mailto, or root-relative (`/path`, not `//host`) hrefs on
+// source links, mirroring the markdown renderer's URL guard.
+const SAFE_HREF = /^(https?:|mailto:|\/(?!\/))/i;
+const safeHref = (url: string | undefined): string | undefined =>
+  url && SAFE_HREF.test(url) ? url : undefined;
 
 // Kept whitespace-free: it renders inside a `pre-wrap` bubble.
 // prettier-ignore
