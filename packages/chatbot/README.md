@@ -49,7 +49,7 @@ import { createChatHandler, type PortfolioKnowledge } from "@arkaes/chatbot/serv
 
 const handler = createChatHandler({
   apiKey: process.env.OPENAI_API_KEY ?? "",
-  model: "gpt-4o-mini",
+  model: "gpt-5.4-nano",
   knowledge: async (): Promise<PortfolioKnowledge> => ({
     profile: { name: "Ahmad Naufal", headline: "...", bio: "..." },
     expertise: [],

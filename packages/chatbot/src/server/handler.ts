@@ -42,7 +42,7 @@ export interface ChatHandlerOptions {
    * this. Defaults to echoing the raw source id with no link.
    */
   resolveCitation?: ResolveCitation;
-  /** Chat model. Defaults to "gpt-4o-mini". */
+  /** Chat model. Defaults to "gpt-5.4-nano". */
   model?: string;
   /** Sampling temperature. Defaults to 0.4 for grounded answers. */
   temperature?: number;
@@ -139,7 +139,7 @@ export const createChatHandler = (
   const {
     apiKey,
     knowledge,
-    model = "gpt-4o-mini",
+    model = "gpt-5.4-nano",
     temperature = 0.4,
     maxMessages = 12,
     maxMessageLength = 4000,
