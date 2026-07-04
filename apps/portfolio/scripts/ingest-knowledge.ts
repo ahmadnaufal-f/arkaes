@@ -22,6 +22,7 @@ loadEnv();
 const APP_ROOT = fileURLToPath(new URL("..", import.meta.url));
 const CONTENT_DIR = join(APP_ROOT, "src", "content");
 const PROJECTS_DIR = join(CONTENT_DIR, "projects");
+const CASE_STUDIES_DIR = join(CONTENT_DIR, "case-studies");
 
 const args = process.argv.slice(2);
 const shouldClear = args.includes("--clear");
@@ -138,17 +139,34 @@ const toCaseStudyDocument = (raw: string, file: string): IngestDocument => {
   };
 };
 
+// Root-level content files (e.g. about.md) are standalone pages served at
+// `/<id>`, not case studies. They get a `page:` source so citations link to the
+// right route instead of a non-existent `/case-studies/<id>`.
+const toPageDocument = (raw: string, file: string): IngestDocument => {
+  const { data, body } = parseFrontmatter(raw);
+  const id = basename(file, extname(file));
+  const title = asString(data.title);
+  const content = [title ? `# ${title}` : "", body].filter(Boolean).join("\n\n");
+  return {
+    content,
+    source: `page:${id}`,
+    metadata: { type: "page", pageName: title ?? null },
+  };
+};
+
+const toDocument = (raw: string, file: string): IngestDocument => {
+  if (file.startsWith(PROJECTS_DIR)) return toProjectDocument(raw, file);
+  if (file.startsWith(CASE_STUDIES_DIR)) return toCaseStudyDocument(raw, file);
+  return toPageDocument(raw, file);
+};
+
 const collectDocuments = async (): Promise<IngestDocument[]> => {
   const files = await walk(CONTENT_DIR);
   const documents: IngestDocument[] = [];
   for (const file of files) {
     if (extname(file) !== ".md") continue;
     const raw = await readFile(file, "utf8");
-    documents.push(
-      file.startsWith(PROJECTS_DIR)
-        ? toProjectDocument(raw, file)
-        : toCaseStudyDocument(raw, file),
-    );
+    documents.push(toDocument(raw, file));
   }
   return documents;
 };

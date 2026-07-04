@@ -514,6 +514,29 @@ export class ArkChatbot extends LitElement {
       strong {
         font-weight: var(--ark-weight-semibold);
       }
+      /* Inline citation markers ([3] / [3, 5]) render as circular badges whose
+         numbers match the "Sources" footer below the reply. */
+      .md-cites {
+        display: inline-flex;
+        gap: 0.25em;
+        margin-left: 0.2em;
+        vertical-align: 0.12em;
+      }
+      .md-cite {
+        align-items: center;
+        background: var(--ark-color-accent-soft);
+        border: 1px solid color-mix(in srgb, var(--ark-color-accent), transparent 65%);
+        border-radius: var(--ark-radius-full);
+        color: var(--ark-color-accent-strong);
+        display: inline-flex;
+        font-size: 0.68rem;
+        font-weight: var(--ark-weight-semibold);
+        height: 1.4em;
+        justify-content: center;
+        line-height: var(--ark-leading-none);
+        min-width: 1.4em;
+        padding: 0 0.28em;
+      }
       code {
         background: color-mix(in srgb, var(--ark-color-accent), transparent 88%);
         border-radius: var(--ark-radius-xs);

@@ -76,19 +76,21 @@ const titleize = (slug: string): string => {
 
 /**
  * Map an ingested source to how it should be cited. Sources follow a
- * `type:slug` convention (see scripts/ingest-knowledge.ts): `project:*` and
- * `case-study:*` link to their pages; anything else (e.g. `note:*` documents
- * added via the knowledge admin) shows a label with no link.
+ * `type:slug` convention (see scripts/ingest-knowledge.ts): `project:*`,
+ * `case-study:*`, and `page:*` (top-level pages like about) link to their
+ * routes; anything else (e.g. `note:*` documents added via the knowledge
+ * admin) shows a label with no link.
  */
 const resolveCitation = (chunk: RetrievedChunk): CitationInfo => {
   const source = chunk.source ?? "";
   const separator = source.indexOf(":");
   const type = separator === -1 ? "" : source.slice(0, separator);
   const slug = separator === -1 ? source : source.slice(separator + 1);
-  const projectName =
-    typeof chunk.metadata?.projectName === "string"
-      ? chunk.metadata.projectName
+  const metaName = (key: string): string | undefined =>
+    typeof chunk.metadata?.[key] === "string"
+      ? (chunk.metadata[key] as string)
       : undefined;
+  const projectName = metaName("projectName");
 
   switch (type) {
     case "project":
@@ -98,6 +100,9 @@ const resolveCitation = (chunk: RetrievedChunk): CitationInfo => {
         label: projectName ?? `${titleize(slug)} case study`,
         url: `/case-studies/${slug}`,
       };
+    case "page":
+      // Top-level page served at /<slug> (e.g. page:about -> /about).
+      return { label: metaName("pageName") ?? titleize(slug), url: `/${slug}` };
     default:
       return { label: projectName ?? titleize(slug || source) };
   }
