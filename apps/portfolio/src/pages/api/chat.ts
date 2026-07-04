@@ -35,10 +35,20 @@ const PROFILE = {
   ],
 };
 
+// Live page slugs, populated by buildKnowledge (which the handler awaits before
+// resolving citations). A source only becomes a link when its slug maps to a
+// real page here — so a stale or synthetic source like `case-study:about`,
+// which has no `/case-studies/about` page, renders as a plain label.
+let projectSlugs = new Set<string>();
+let caseStudySlugs = new Set<string>();
+
 /** Build the knowledge base from the site's own content collections + data. */
 const buildKnowledge = async (): Promise<PortfolioKnowledge> => {
   const projects = await getCollection("projects");
   const caseStudies = await getCollection("caseStudies");
+
+  projectSlugs = new Set(projects.map((entry) => entry.id));
+  caseStudySlugs = new Set(caseStudies.map((entry) => entry.id));
 
   return {
     profile: PROFILE,
@@ -76,10 +86,10 @@ const titleize = (slug: string): string => {
 
 /**
  * Map an ingested source to how it should be cited. Sources follow a
- * `type:slug` convention (see scripts/ingest-knowledge.ts): `project:*`,
- * `case-study:*`, and `page:*` (top-level pages like about) link to their
- * routes; anything else (e.g. `note:*` documents added via the knowledge
- * admin) shows a label with no link.
+ * `type:slug` convention (see scripts/ingest-knowledge.ts). Only sources whose
+ * slug resolves to a real project or case-study page get a link; everything
+ * else — notes, the about page, or a slug with no live page — renders as a
+ * plain label so we never emit a broken link.
  */
 const resolveCitation = (chunk: RetrievedChunk): CitationInfo => {
   const source = chunk.source ?? "";
@@ -92,20 +102,18 @@ const resolveCitation = (chunk: RetrievedChunk): CitationInfo => {
       : undefined;
   const projectName = metaName("projectName");
 
-  switch (type) {
-    case "project":
-      return { label: projectName ?? titleize(slug), url: `/projects/${slug}` };
-    case "case-study":
-      return {
-        label: projectName ?? `${titleize(slug)} case study`,
-        url: `/case-studies/${slug}`,
-      };
-    case "page":
-      // Top-level page served at /<slug> (e.g. page:about -> /about).
-      return { label: metaName("pageName") ?? titleize(slug), url: `/${slug}` };
-    default:
-      return { label: projectName ?? titleize(slug || source) };
+  if (type === "project" && projectSlugs.has(slug)) {
+    return { label: projectName ?? titleize(slug), url: `/projects/${slug}` };
   }
+  if (type === "case-study" && caseStudySlugs.has(slug)) {
+    return {
+      label: projectName ?? `${titleize(slug)} case study`,
+      url: `/case-studies/${slug}`,
+    };
+  }
+  return {
+    label: projectName ?? metaName("pageName") ?? titleize(slug || source),
+  };
 };
 
 // Optional origin allowlist (comma-separated), e.g.
