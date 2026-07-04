@@ -1,10 +1,10 @@
 // The "knowledge base" the assistant is grounded in. The portfolio builds this
 // object from its own content collections and data files at request time and
 // hands it to `createChatHandler`, keeping this package free of any portfolio
-// specific imports. `buildSystemPrompt` appends a serialised version of it to
-// the static Arkhe persona (see ./persona).
+// specific imports. `buildDeveloperPrompt` appends a serialised version of it
+// to the static Arkhe behaviour guide (see ./persona).
 
-import { ARKHE_SYSTEM_PROMPT } from "./persona";
+import { ARKHE_DEVELOPER_PROMPT, ARKHE_SYSTEM_PROMPT } from "./persona";
 import {
   formatRetrievedKnowledge,
   type Citation,
@@ -65,8 +65,13 @@ const renderProjects = (projects: KnowledgeProject[]): string =>
     .join("\n\n");
 
 export interface BuildSystemPromptOptions {
-  /** Override the static persona. Defaults to the Arkhe persona. */
+  /** Override the static persona/identity. Defaults to the Arkhe system prompt. */
   persona?: string;
+}
+
+export interface BuildDeveloperPromptOptions {
+  /** Override the static behaviour prompt. Defaults to the Arkhe developer prompt. */
+  behaviour?: string;
   /** RAG chunks retrieved for the current turn; ranked above static knowledge. */
   retrieved?: RetrievedChunk[];
   /** Citations for `retrieved`, so excerpts render with their `[n]` tags. */
@@ -111,14 +116,24 @@ const renderKnowledge = (knowledge: PortfolioKnowledge): string => {
 };
 
 /**
- * Compose the full system prompt: the static Arkhe persona followed by the
- * per-request "Retrieved portfolio knowledge" block built from `knowledge`.
+ * The Arkhe system prompt: stable identity, voice, and immutable policy. This
+ * carries no per-request state, so it stays byte-for-byte identical across
+ * turns — ideal for prompt caching.
  */
 export const buildSystemPrompt = (
-  knowledge: PortfolioKnowledge,
   options: BuildSystemPromptOptions = {},
+): string => options.persona ?? ARKHE_SYSTEM_PROMPT;
+
+/**
+ * Compose the developer prompt: the static Arkhe behaviour guide followed by
+ * the per-request knowledge — the RAG excerpts (when any) ranked above the
+ * baseline portfolio profile built from `knowledge`.
+ */
+export const buildDeveloperPrompt = (
+  knowledge: PortfolioKnowledge,
+  options: BuildDeveloperPromptOptions = {},
 ): string => {
-  const persona = options.persona ?? ARKHE_SYSTEM_PROMPT;
+  const behaviour = options.behaviour ?? ARKHE_DEVELOPER_PROMPT;
   const retrieved = options.retrieved ?? [];
   const citations = options.citations ?? [];
   const numbers = options.numbers ?? [];
@@ -126,22 +141,23 @@ export const buildSystemPrompt = (
   const blocks: string[] = [];
   if (retrieved.length > 0) {
     blocks.push(
-      `## Most relevant excerpts\n\nRanked by relevance to the current \
-question. Prefer these when answering. Each excerpt is tagged with a citation \
-number in brackets — when you use one, cite it inline as [n] (see the citation \
-rules in the persona).\n\n${formatRetrievedKnowledge(retrieved, numbers, citations)}`,
+      `## Retrieved excerpts\n\nPulled for the current question, ranked by \
+relevance. Ground your answer in these and cite them inline as [n]. Synthesize \
+across them in your own words — explain and connect, don't copy them \
+verbatim.\n\n${formatRetrievedKnowledge(retrieved, numbers, citations)}`,
     );
   }
-  blocks.push(`## Portfolio profile\n\n${renderKnowledge(knowledge)}`);
+  blocks.push(
+    `## Portfolio profile\n\nBaseline facts about Ahmad. Draw on these when the \
+retrieved excerpts don't cover the question, or to round out context. These are \
+not citable.\n\n${renderKnowledge(knowledge)}`,
+  );
 
-  return `${persona}
+  return `${behaviour}
 
 ---
 
-# Retrieved portfolio knowledge
-
-This is the retrieved knowledge for the current conversation. Treat it as the \
-highest-priority source per the Knowledge Usage rules above.
+# Portfolio knowledge for this conversation
 
 ${blocks.join("\n\n")}`;
 };

@@ -4,7 +4,11 @@ import {
   type ChatMessage,
   type ChatRequestBody,
 } from "../shared/types";
-import { buildSystemPrompt, type PortfolioKnowledge } from "./knowledge";
+import {
+  buildDeveloperPrompt,
+  buildSystemPrompt,
+  type PortfolioKnowledge,
+} from "./knowledge";
 import {
   buildCitations,
   selectCitedSources,
@@ -44,8 +48,31 @@ export interface ChatHandlerOptions {
   resolveCitation?: ResolveCitation;
   /** Chat model. Defaults to "gpt-5.4-nano". */
   model?: string;
-  /** Sampling temperature. Defaults to 0.4 for grounded answers. */
+  /**
+   * Sampling temperature. Left unset by default: gpt-5.4-nano is a reasoning
+   * model that expects the fixed default (1), and the earlier low value (0.4)
+   * was a big contributor to the stiff, clipped replies. Only set this on a
+   * model that honours arbitrary temperatures.
+   */
   temperature?: number;
+  /**
+   * Reasoning budget for GPT-5-class models. Defaults to "low" — enough to
+   * plan a grounded, well-shaped answer without the latency (or over-thinking)
+   * of higher tiers for what is fundamentally a lookup-and-explain task.
+   */
+  reasoningEffort?: "minimal" | "low" | "medium" | "high";
+  /**
+   * Output length target for GPT-5-class models. Defaults to "medium": the
+   * direct lever for the length/expressiveness of replies. "low" reproduces
+   * the terse, robotic feel; "medium" restores warm, elaborated prose.
+   */
+  verbosity?: "low" | "medium" | "high";
+  /**
+   * Hard ceiling on generated tokens (the modern replacement for the
+   * deprecated `max_tokens`). Defaults to 800 — generous enough to elaborate,
+   * capped so a reply can't run away.
+   */
+  maxOutputTokens?: number;
   /** Cap on how many trailing user/assistant turns are forwarded. Default 12. */
   maxMessages?: number;
   /** Max characters kept per message. Default 4000. */
@@ -129,7 +156,7 @@ const isOriginAllowed = (
 
 /**
  * Build a web-standard chat handler backed by OpenAI. It rate-limits and
- * validates the request, grounds the model with `buildSystemPrompt`, and
+ * validates the request, grounds the model with the system + developer
  * streams the reply back as a plain-text body the ark-chatbot widget reads
  * chunk by chunk.
  */
@@ -140,7 +167,10 @@ export const createChatHandler = (
     apiKey,
     knowledge,
     model = "gpt-5.4-nano",
-    temperature = 0.4,
+    temperature,
+    reasoningEffort = "low",
+    verbosity = "medium",
+    maxOutputTokens = 800,
     maxMessages = 12,
     maxMessageLength = 4000,
     maxBodyBytes = 16_000,
@@ -248,7 +278,11 @@ export const createChatHandler = (
       retrieved,
       options.resolveCitation,
     );
-    const systemPrompt = buildSystemPrompt(resolved, {
+    // Split the prompt across the model's instruction hierarchy: stable
+    // identity/policy in `system`, per-request behaviour + knowledge in
+    // `developer`. The system half is byte-identical across turns, so it caches.
+    const systemPrompt = buildSystemPrompt();
+    const developerPrompt = buildDeveloperPrompt(resolved, {
       retrieved,
       citations,
       numbers,
@@ -257,10 +291,16 @@ export const createChatHandler = (
     try {
       const completion = await client.chat.completions.create({
         model,
-        temperature,
+        // Reasoning + length controls are the right levers for gpt-5.4-nano;
+        // `temperature` is only sent when explicitly configured.
+        reasoning_effort: reasoningEffort,
+        verbosity,
+        max_completion_tokens: maxOutputTokens,
+        ...(temperature === undefined ? {} : { temperature }),
         stream: true,
         messages: [
           { role: "system", content: systemPrompt },
+          { role: "developer", content: developerPrompt },
           ...messages.map((message) => ({
             role: message.role,
             content: message.content,
