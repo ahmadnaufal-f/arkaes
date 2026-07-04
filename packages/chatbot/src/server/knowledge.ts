@@ -5,7 +5,11 @@
 // the static Arkhe persona (see ./persona).
 
 import { ARKHE_SYSTEM_PROMPT } from "./persona";
-import { formatRetrievedKnowledge, type RetrievedChunk } from "./retrieval";
+import {
+  formatRetrievedKnowledge,
+  type Citation,
+  type RetrievedChunk,
+} from "./retrieval";
 
 export interface KnowledgeLink {
   label: string;
@@ -65,6 +69,10 @@ export interface BuildSystemPromptOptions {
   persona?: string;
   /** RAG chunks retrieved for the current turn; ranked above static knowledge. */
   retrieved?: RetrievedChunk[];
+  /** Citations for `retrieved`, so excerpts render with their `[n]` tags. */
+  citations?: Citation[];
+  /** Citation number per retrieved chunk, aligned by index. */
+  numbers?: (number | undefined)[];
 }
 
 /** Serialise the knowledge base into the "Retrieved portfolio knowledge" block. */
@@ -112,12 +120,16 @@ export const buildSystemPrompt = (
 ): string => {
   const persona = options.persona ?? ARKHE_SYSTEM_PROMPT;
   const retrieved = options.retrieved ?? [];
+  const citations = options.citations ?? [];
+  const numbers = options.numbers ?? [];
 
   const blocks: string[] = [];
   if (retrieved.length > 0) {
     blocks.push(
       `## Most relevant excerpts\n\nRanked by relevance to the current \
-question. Prefer these when answering.\n\n${formatRetrievedKnowledge(retrieved)}`,
+question. Prefer these when answering. Each excerpt is tagged with a citation \
+number in brackets — when you use one, cite it inline as [n] (see the citation \
+rules in the persona).\n\n${formatRetrievedKnowledge(retrieved, numbers, citations)}`,
     );
   }
   blocks.push(`## Portfolio profile\n\n${renderKnowledge(knowledge)}`);

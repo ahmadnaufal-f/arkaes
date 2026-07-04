@@ -2,7 +2,9 @@ import type { APIRoute } from "astro";
 import { getCollection } from "astro:content";
 import {
   createChatHandler,
+  type CitationInfo,
   type PortfolioKnowledge,
+  type RetrievedChunk,
 } from "@arkaes/chatbot/server";
 import { EXPERTISE, categoryLabel } from "@/data/expertise";
 import { techGroups } from "@/data/techstack";
@@ -66,6 +68,41 @@ const buildKnowledge = async (): Promise<PortfolioKnowledge> => {
   };
 };
 
+/** Title-case a source slug, e.g. "milk-tracker" → "Milk tracker". */
+const titleize = (slug: string): string => {
+  const words = slug.replace(/[-_]+/g, " ").trim();
+  return words ? words.charAt(0).toUpperCase() + words.slice(1) : slug;
+};
+
+/**
+ * Map an ingested source to how it should be cited. Sources follow a
+ * `type:slug` convention (see scripts/ingest-knowledge.ts): `project:*` and
+ * `case-study:*` link to their pages; anything else (e.g. `note:*` documents
+ * added via the knowledge admin) shows a label with no link.
+ */
+const resolveCitation = (chunk: RetrievedChunk): CitationInfo => {
+  const source = chunk.source ?? "";
+  const separator = source.indexOf(":");
+  const type = separator === -1 ? "" : source.slice(0, separator);
+  const slug = separator === -1 ? source : source.slice(separator + 1);
+  const projectName =
+    typeof chunk.metadata?.projectName === "string"
+      ? chunk.metadata.projectName
+      : undefined;
+
+  switch (type) {
+    case "project":
+      return { label: projectName ?? titleize(slug), url: `/projects/${slug}` };
+    case "case-study":
+      return {
+        label: projectName ?? `${titleize(slug)} case study`,
+        url: `/case-studies/${slug}`,
+      };
+    default:
+      return { label: projectName ?? titleize(slug || source) };
+  }
+};
+
 // Optional origin allowlist (comma-separated), e.g.
 // CHAT_ALLOWED_ORIGINS="https://arkaes.dev,https://www.arkaes.dev". Leave unset
 // to rely on the built-in cross-site rejection (which also allows previews and
@@ -82,6 +119,7 @@ const handler = createChatHandler({
   model: process.env.OPENAI_MODEL ?? "gpt-4o-mini",
   knowledge: buildKnowledge,
   retriever: getRetriever() ?? undefined,
+  resolveCitation,
   allowedOrigins: allowedOrigins.length > 0 ? allowedOrigins : undefined,
   // 15 requests / minute / client (in-memory, best-effort per instance).
   rateLimit: { windowMs: 60_000, max: 15 },
