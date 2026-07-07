@@ -9,5 +9,6 @@ export * from "./embeddings";
 export * from "./retrieval";
 export * from "./retriever";
 export * from "./ingest";
+export * from "./topic-gate";
 export * from "./handler";
 export type { ChatMessage, ChatRequestBody, ChatRole } from "../shared/types";

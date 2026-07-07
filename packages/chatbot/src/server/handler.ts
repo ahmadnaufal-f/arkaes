@@ -23,6 +23,11 @@ import {
   type RateLimitOptions,
   type RateLimitStore,
 } from "./rate-limit";
+import {
+  isOnTopicByRetrieval,
+  pickOffTopicReply,
+  type TopicGateOptions,
+} from "./topic-gate";
 
 /** A knowledge base, or a (possibly async) factory that produces one. */
 export type KnowledgeSource =
@@ -84,6 +89,15 @@ export interface ChatHandlerOptions {
    * minute per client, counted in an in-memory store.
    */
   rateLimit?: RateLimitOptions | false;
+  /**
+   * Pre-generation topic gate, backed by the RAG retrieval that already runs on
+   * each turn (no extra model call). When enabled, a message whose top retrieved
+   * chunk falls below `minTopSimilarity` is judged off-topic and gets a fixed
+   * warm decline instead of a generation. Requires a `retriever`; fails open
+   * (answers normally) when retrieval is unavailable or errors. Disabled by
+   * default — the persona's scope rules still apply. See ./topic-gate.
+   */
+  topicGate?: TopicGateOptions;
   /**
    * Allowed request origins. When set and the request carries an `Origin`
    * header, it must match one of these. Requests the browser marks as
@@ -192,6 +206,13 @@ export const createChatHandler = (
         max: options.rateLimit?.max ?? 15,
       };
 
+  const topicGate = options.topicGate?.enabled
+    ? {
+      minTopSimilarity: options.topicGate.minTopSimilarity ?? 0.35,
+      declineReplies: options.topicGate.declineReplies,
+    }
+    : null;
+
   return async function handleChatRequest(request) {
     if (request.method !== "POST") {
       return json({ error: "Method not allowed" }, 405);
@@ -265,13 +286,34 @@ export const createChatHandler = (
     // RAG: retrieve on the latest user turn. Never let a retrieval failure
     // break the chat — fall back to the static knowledge base.
     let retrieved: RetrievedChunk[] = [];
+    let retrievalSucceeded = false;
     const lastUser = [...messages].reverse().find((m) => m.role === "user");
     if (options.retriever && lastUser) {
       try {
         retrieved = await options.retriever.retrieve(lastUser.content);
+        retrievalSucceeded = true;
       } catch {
         retrieved = [];
       }
+    }
+
+    // Topic gate: an off-topic question retrieves nothing resembling the
+    // portfolio, so decline it before spending a generation. Only fires when
+    // retrieval actually succeeded — a retrieval error leaves retrieved empty,
+    // which must fall through to a normal answer from static knowledge rather
+    // than block every message.
+    if (
+      topicGate &&
+      retrievalSucceeded &&
+      !isOnTopicByRetrieval(retrieved, topicGate.minTopSimilarity)
+    ) {
+      return new Response(pickOffTopicReply(topicGate.declineReplies), {
+        headers: {
+          "content-type": "text/plain; charset=utf-8",
+          "cache-control": "no-store",
+          ...successHeaders,
+        },
+      });
     }
 
     const { citations, numbers } = buildCitations(

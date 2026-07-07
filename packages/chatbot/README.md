@@ -78,6 +78,16 @@ with the per-request knowledge appended by `buildSystemPrompt`. Edit
   `{ windowMs, max }`.
 - **Origin checks** — browser-tagged `Sec-Fetch-Site: cross-site` requests are
   rejected (`403`). Set `allowedOrigins` to enforce a strict allowlist.
+- **Topic gate** — opt-in via `topicGate: { enabled: true }`. Reuses the RAG
+  retrieval that already runs each turn (no extra model call): a message whose
+  top retrieved chunk falls below `minTopSimilarity` (default `0.35`) resembles
+  nothing in the portfolio, so it gets a fixed warm decline instead of a
+  generation. Requires a `retriever`; fails **open** (answers normally) when
+  retrieval is unavailable or errors, so the persona's scope rules stay the
+  backstop. Tune `minTopSimilarity` (higher = stricter) or `declineReplies`.
+  Known trade-offs: it can miss off-topic asks that borrow portfolio vocabulary,
+  and over-decline on-topic messages that retrieve weakly (terse follow-ups,
+  greetings) — worth tuning the threshold against real traffic.
 - **Body limits** — bodies over `maxBodyBytes` (16 KB) get a `413`; messages
   are capped at `maxMessages` (12) turns and `maxMessageLength` (4000) chars.
 - **Method check** — non-`POST` requests get a `405`.

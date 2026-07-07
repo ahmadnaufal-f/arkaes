@@ -125,6 +125,15 @@ const allowedOrigins = (process.env.CHAT_ALLOWED_ORIGINS ?? "")
   .map((origin) => origin.trim())
   .filter(Boolean);
 
+// Topic-gate threshold: the minimum top retrieval similarity for a message to
+// count as on-topic. Overridable at runtime so it can be tuned against real
+// traffic without a redeploy; falls back to the handler default when unset or
+// not a finite number.
+const parsedMinSimilarity = Number(process.env.CHAT_TOPIC_MIN_SIMILARITY);
+const topicMinSimilarity = Number.isFinite(parsedMinSimilarity)
+  ? parsedMinSimilarity
+  : undefined;
+
 // RAG retriever — only when Supabase is configured. Without it the handler
 // falls back to the static knowledge base built above.
 const handler = createChatHandler({
@@ -136,6 +145,13 @@ const handler = createChatHandler({
   allowedOrigins: allowedOrigins.length > 0 ? allowedOrigins : undefined,
   // 15 requests / minute / client (in-memory, best-effort per instance).
   rateLimit: { windowMs: 60_000, max: 15 },
+  // Reject off-topic messages (math, translation, trivia, recipes) before
+  // spending a generation, using the RAG retrieval that already runs — no extra
+  // model call. A message that resembles nothing in the portfolio retrieves
+  // weakly and is declined. Tune the threshold via CHAT_TOPIC_MIN_SIMILARITY
+  // (default 0.35) without a redeploy; higher = stricter. Fails open when
+  // retrieval is unavailable, so the persona's scope rules stay the backstop.
+  topicGate: { enabled: true, minTopSimilarity: topicMinSimilarity },
 });
 
 export const POST: APIRoute = ({ request }) => handler(request);
