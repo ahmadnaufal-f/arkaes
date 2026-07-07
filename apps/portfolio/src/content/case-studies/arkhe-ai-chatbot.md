@@ -33,15 +33,15 @@ I wanted to provide a more natural experience while ensuring every answer remain
 
 I independently designed and implemented the complete system, including:
 
-- Overall AI architecture
-- RAG pipeline
-- Document ingestion workflow
-- Supabase pgvector integration
-- Prompt engineering strategy
-- Streaming response pipeline
-- Citation generation
-- Client and server package architecture
-- Frontend chatbot integration
+• Overall AI architecture
+• RAG pipeline
+• Document ingestion workflow
+• Supabase pgvector integration
+• Prompt engineering strategy
+• Streaming response pipeline
+• Citation generation
+• Client and server package architecture
+• Frontend chatbot integration
 
 ## The problem
 
@@ -53,14 +53,14 @@ The challenge was building an architecture that retrieves only the most relevant
 
 ## Goals
 
-- Build an AI powered portfolio assistant.
-- Keep responses grounded in my own knowledge base.
-- Support low latency streaming.
-- Design reusable architecture.
-- Separate browser and server responsibilities.
-- Allow the knowledge base to evolve independently.
-- Provide transparent source citations.
-- Fail gracefully when retrieval becomes unavailable.
+• Build an AI powered portfolio assistant.
+• Keep responses grounded in my own knowledge base.
+• Support low latency streaming.
+• Design reusable architecture.
+• Separate browser and server responsibilities.
+• Allow the knowledge base to evolve independently.
+• Provide transparent source citations.
+• Fail gracefully when retrieval becomes unavailable.
 
 ## Architecture
 
@@ -110,14 +110,14 @@ At runtime, the latest user message is embedded, matched against the vector data
 
 ## Results
 
-- Interactive conversational portfolio
-- RAG grounded responses
-- Streaming AI responses
-- Framework agnostic server architecture
-- Reusable chatbot package
-- Automatic citations
-- Graceful fallback strategy
-- Clear separation between frontend and backend AI responsibilities
+• Interactive conversational portfolio
+• RAG grounded responses
+• Streaming AI responses
+• Framework agnostic server architecture
+• Reusable chatbot package
+• Automatic citations
+• Graceful fallback strategy
+• Clear separation between frontend and backend AI responsibilities
 
 ## What I learned
 
