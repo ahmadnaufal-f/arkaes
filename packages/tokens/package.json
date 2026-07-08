@@ -34,6 +34,7 @@
       "default": "./src/index.ts"
     },
     "./css": "./src/styles/index.css",
+    "./fonts.css": "./src/styles/fonts.css",
     "./tokens.css": "./src/styles/tokens.css",
     "./theme.css": "./src/styles/theme.css",
     "./reset.css": "./src/styles/reset.css",
@@ -53,6 +54,7 @@
         "default": "./dist/index.js"
       },
       "./css": "./dist/styles/index.css",
+      "./fonts.css": "./dist/styles/fonts.css",
       "./tokens.css": "./dist/styles/tokens.css",
       "./theme.css": "./dist/styles/theme.css",
       "./reset.css": "./dist/styles/reset.css",

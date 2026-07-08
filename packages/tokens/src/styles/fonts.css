@@ -1,0 +1,6 @@
+/* Remote Google Fonts for the type stack (DM Mono, Fraunces, Plus Jakarta Sans).
+   Split out of `index.css` so consumers can opt in explicitly. Apps that want to
+   self-host these fonts (e.g. the portfolio, via Astro's Fonts API) simply omit
+   this import; Storybook and the brand-guideline site import it to keep loading
+   the fonts remotely as before. */
+@import url("https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400&family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&display=swap");
