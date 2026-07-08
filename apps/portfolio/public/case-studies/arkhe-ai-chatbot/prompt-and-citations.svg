@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 340" width="100%" preserveAspectRatio="xMidYMid meet">
+
+  <!-- Kicker -->
+  <text x="20" y="30" font-family="'DM Mono','Courier New',monospace" font-size="9" fill="#9d9185" letter-spacing="0.18em">PROMPT LAYERING &amp; CITATION ROUND-TRIP</text>
+
+  <!-- ══════════ Layered prompt stack ══════════ -->
+  <!-- system layer -->
+  <rect x="20" y="52" width="250" height="56" rx="6" fill="#e2e7d6" stroke="#cdd3bc" stroke-width="1"/>
+  <text x="34" y="72" font-family="'DM Mono','Courier New',monospace" font-size="7.5" fill="#566244" letter-spacing="0.12em">SYSTEM</text>
+  <text x="34" y="90" font-family="'Fraunces',Georgia,serif" font-size="13" font-style="italic" fill="#2f3a22">Arkhe persona</text>
+  <text x="256" y="90" text-anchor="end" font-family="'DM Mono','Courier New',monospace" font-size="7.5" fill="#8e9d75" letter-spacing="0.06em">stable · cached</text>
+
+  <!-- developer layer -->
+  <rect x="20" y="118" width="250" height="146" rx="6" fill="#faf9f7" stroke="#d4cec8" stroke-width="1"/>
+  <text x="34" y="138" font-family="'DM Mono','Courier New',monospace" font-size="7.5" fill="#76695f" letter-spacing="0.12em">DEVELOPER</text>
+  <text x="34" y="156" font-family="'Fraunces',Georgia,serif" font-size="13" font-style="italic" fill="#17130f">behaviour + knowledge</text>
+
+  <!-- retrieved excerpt chips (numbered) -->
+  <rect x="34" y="168" width="66" height="30" rx="5" fill="#f2ddd7" stroke="#e9c8be" stroke-width="1"/>
+  <text x="67" y="187" text-anchor="middle" font-family="'DM Mono','Courier New',monospace" font-size="9" fill="#8f554d" letter-spacing="0.02em">[1] excerpt</text>
+  <rect x="108" y="168" width="66" height="30" rx="5" fill="#f2ddd7" stroke="#e9c8be" stroke-width="1"/>
+  <text x="141" y="187" text-anchor="middle" font-family="'DM Mono','Courier New',monospace" font-size="9" fill="#8f554d" letter-spacing="0.02em">[2] excerpt</text>
+  <rect x="182" y="168" width="66" height="30" rx="5" fill="#f2ddd7" stroke="#e9c8be" stroke-width="1"/>
+  <text x="215" y="187" text-anchor="middle" font-family="'DM Mono','Courier New',monospace" font-size="9" fill="#8f554d" letter-spacing="0.02em">[3] excerpt</text>
+  <text x="34" y="216" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="8.5" font-weight="300" fill="#9d9185">retrieved excerpts — ranked, citable</text>
+
+  <!-- portfolio profile chip -->
+  <rect x="34" y="226" width="214" height="28" rx="5" fill="#e2e7d6" stroke="#cdd3bc" stroke-width="1"/>
+  <text x="141" y="244" text-anchor="middle" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="9" font-weight="400" fill="#3a5020">portfolio profile — fallback, not citable</text>
+
+  <!-- arrow stack → model -->
+  <line x1="270" y1="158" x2="312" y2="158" stroke="#c8c2ba" stroke-width="1.5"/>
+  <polygon points="307,153 317,158 307,163" fill="#c8c2ba"/>
+
+  <!-- ══════════ Model ══════════ -->
+  <rect x="320" y="128" width="118" height="60" rx="6" fill="#653a35" stroke="#653a35" stroke-width="1"/>
+  <text x="379" y="152" text-anchor="middle" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="11" font-weight="500" fill="#faf9f7">gpt-5.4-nano</text>
+  <text x="379" y="169" text-anchor="middle" font-family="'DM Mono','Courier New',monospace" font-size="7.5" fill="#e9c8be" letter-spacing="0.06em">stream tokens</text>
+
+  <!-- arrow model → reply -->
+  <line x1="438" y1="158" x2="480" y2="158" stroke="#c8c2ba" stroke-width="1.5"/>
+  <polygon points="475,153 485,158 475,163" fill="#c8c2ba"/>
+
+  <!-- ══════════ Reply ══════════ -->
+  <rect x="488" y="52" width="272" height="120" rx="8" fill="#faf9f7" stroke="#d4cec8" stroke-width="1"/>
+  <text x="504" y="72" font-family="'DM Mono','Courier New',monospace" font-size="7.5" fill="#76695f" letter-spacing="0.12em">STREAMED REPLY</text>
+  <rect x="504" y="82" width="200" height="7" rx="3.5" fill="#ddd7cf"/>
+  <rect x="504" y="96" width="240" height="7" rx="3.5" fill="#ddd7cf"/>
+  <!-- inline citation [1] -->
+  <rect x="708" y="82" width="18" height="12" rx="3" fill="#f2ddd7" stroke="#e9c8be" stroke-width="0.75"/>
+  <text x="717" y="91.5" text-anchor="middle" font-family="'DM Mono','Courier New',monospace" font-size="7.5" fill="#8f554d">1</text>
+  <rect x="504" y="110" width="150" height="7" rx="3.5" fill="#ddd7cf"/>
+  <!-- inline citation [3] -->
+  <rect x="660" y="110" width="18" height="12" rx="3" fill="#f2ddd7" stroke="#e9c8be" stroke-width="0.75"/>
+  <text x="669" y="119.5" text-anchor="middle" font-family="'DM Mono','Courier New',monospace" font-size="7.5" fill="#8f554d">3</text>
+  <rect x="504" y="130" width="210" height="7" rx="3.5" fill="#ddd7cf"/>
+  <text x="504" y="158" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="8.5" font-weight="300" fill="#9d9185">grounded prose · [n] woven inline</text>
+
+  <!-- arrow reply → sources (down) -->
+  <line x1="624" y1="172" x2="624" y2="206" stroke="#c8c2ba" stroke-width="1.5"/>
+  <polygon points="619,201 624,211 629,201" fill="#c8c2ba"/>
+  <text x="636" y="192" font-family="'DM Mono','Courier New',monospace" font-size="7" fill="#9d9185" letter-spacing="0.06em">filter cited [n]</text>
+
+  <!-- ══════════ Sources footer ══════════ -->
+  <rect x="488" y="214" width="272" height="72" rx="8" fill="#f2ddd7" stroke="#e9c8be" stroke-width="1"/>
+  <text x="504" y="234" font-family="'DM Mono','Courier New',monospace" font-size="7.5" fill="#8f554d" letter-spacing="0.12em">SOURCES — only what was cited</text>
+  <rect x="504" y="244" width="240" height="15" rx="4" fill="rgba(255,255,255,0.7)"/>
+  <text x="512" y="255" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="9" font-weight="400" fill="#653a35">[1]  Treely case study  →</text>
+  <rect x="504" y="263" width="240" height="15" rx="4" fill="rgba(255,255,255,0.7)"/>
+  <text x="512" y="274" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="9" font-weight="400" fill="#653a35">[3]  Milk Pump Tracker  →</text>
+
+  <!-- note: [2] dropped -->
+  <text x="379" y="232" text-anchor="middle" font-family="'DM Mono','Courier New',monospace" font-size="8" fill="#bd8276" letter-spacing="0.04em">[2] retrieved</text>
+  <text x="379" y="248" text-anchor="middle" font-family="'DM Mono','Courier New',monospace" font-size="8" fill="#bd8276" letter-spacing="0.04em">but uncited</text>
+  <text x="379" y="264" text-anchor="middle" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="8.5" font-weight="300" fill="#c3b9ad">→ dropped</text>
+
+  <!-- ══════════ Caption ══════════ -->
+  <text x="390" y="312" text-anchor="middle" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="10" font-weight="300" fill="#76695f">Sources go in numbered; only the [n] the model actually cites come back to the UI as linked sources.</text>
+
+</svg>
