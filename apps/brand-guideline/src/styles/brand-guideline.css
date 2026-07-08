@@ -1,4 +1,5 @@
 @import "@arkaes/tokens/css";
+@import "@arkaes/tokens/fonts.css";
 
 /* RESET & TOKENS */
 *, *::before, *::after { box-sizing: border-box; }

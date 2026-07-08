@@ -1,4 +1,5 @@
 import "@arkaes/tokens/css";
+import "@arkaes/tokens/fonts.css";
 import "@arkaes/ui/register";
 import { inject } from "@vercel/analytics";
 
