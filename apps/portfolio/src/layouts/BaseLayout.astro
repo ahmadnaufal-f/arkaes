@@ -86,6 +86,7 @@ const {
     </style>
   </head>
   <body>
+    <div id="nav-progress" transition:persist aria-hidden="true"></div>
     <div id="page-loader" aria-hidden="true">
       <span class="page-loader-spinner"></span>
     </div>
@@ -135,11 +136,72 @@ const {
           });
       });
 
+      // ── Global navigation progress bar ──────────────────────────────
+      // A persistent top-of-page bar giving continuous feedback from the moment
+      // a navigation starts (click, keyboard, or back/forward) until the new
+      // page is loaded and shown. The reveal itself is already ready-gated —
+      // ClientRouter awaits the incoming page's stylesheet preloads before the
+      // swap, and custom elements are registered for the document lifetime — so
+      // this bar is feedback only, not a gate.
+      const navProgress = {
+        set(scale: number, animate = true) {
+          const node = document.getElementById("nav-progress");
+          if (!node) return;
+          if (animate) {
+            node.style.transform = `scaleX(${scale})`;
+          } else {
+            node.style.transition = "none";
+            node.style.transform = `scaleX(${scale})`;
+            void node.offsetWidth; // flush so the next change animates from here
+            node.style.transition = "";
+          }
+        },
+        start() {
+          const node = document.getElementById("nav-progress");
+          if (!node) return;
+          this.set(reduceMotion ? 1 : 0, false);
+          node.classList.add("is-active");
+          // Trickle toward — but never reach — the end while the fetch is in
+          // flight; reduced motion shows a static full-width bar instead.
+          if (!reduceMotion) requestAnimationFrame(() => this.set(0.3));
+        },
+        advance() {
+          const node = document.getElementById("nav-progress");
+          if (node?.classList.contains("is-active") && !reduceMotion) this.set(0.7);
+        },
+        done() {
+          const node = document.getElementById("nav-progress");
+          if (!node || !node.classList.contains("is-active")) return;
+          this.set(1);
+          node.classList.remove("is-active"); // fade out via CSS opacity
+          window.setTimeout(() => this.set(0, false), 250);
+        },
+      };
+
+      document.addEventListener("astro:before-preparation", () => navProgress.start());
+      document.addEventListener("astro:after-preparation", () => navProgress.advance());
+
       // Activate the loading/navigating state on the clicked link element as
       // soon as the user clicks, so there is immediate feedback while
       // Astro's ClientRouter fetches the next page in the background.
       const NAV_TAGS = new Set(["ARK-BUTTON", "ARK-NAV-LINK", "ARK-NAVIGATION-CTA"]);
       let pendingNavEls: Element[] = [];
+      let navSafetyTimer: number | undefined;
+
+      // Idempotent: clears every pending spinner and the safety timer. Runs on
+      // swap and page-load (normal completion) and via a timeout (aborted or
+      // failed navigation) so a spinner can never get stuck.
+      const clearPendingNav = () => {
+        window.clearTimeout(navSafetyTimer);
+        pendingNavEls.forEach((el) => {
+          if (el.tagName === "ARK-BUTTON") {
+            (el as ArkButton).loading = false;
+          } else {
+            (el as ArkNavLink | ArkNavigationCta).navigating = false;
+          }
+        });
+        pendingNavEls = [];
+      };
 
       document.addEventListener("click", (e) => {
         if (e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
@@ -169,20 +231,16 @@ const {
           (host as ArkNavLink | ArkNavigationCta).navigating = true;
         }
         pendingNavEls.push(host);
+        // Safety net: if the navigation is aborted or fails (no swap / no
+        // page-load ever fires), don't leave the spinner running forever.
+        window.clearTimeout(navSafetyTimer);
+        navSafetyTimer = window.setTimeout(clearPendingNav, 8000);
       });
 
-      // Clear all loading/navigating states just before the DOM swap —
-      // the transition animation takes over as visual feedback from here.
-      document.addEventListener("astro:before-swap", () => {
-        pendingNavEls.forEach((el) => {
-          if (el.tagName === "ARK-BUTTON") {
-            (el as ArkButton).loading = false;
-          } else {
-            (el as ArkNavLink | ArkNavigationCta).navigating = false;
-          }
-        });
-        pendingNavEls = [];
-      });
+      // Clear the per-element spinners before the DOM swap (the transition takes
+      // over as feedback), and again on page-load as a backstop. The persisted
+      // #nav-progress bar bridges the rest of the way to the ready new page.
+      document.addEventListener("astro:before-swap", clearPendingNav);
 
       const scrollToTop = () => {
         window.scrollTo({
@@ -223,7 +281,11 @@ const {
           });
       };
 
-      document.addEventListener("astro:page-load", initPage);
+      document.addEventListener("astro:page-load", () => {
+        navProgress.done();
+        clearPendingNav();
+        initPage();
+      });
     </script>
   </body>
 </html>
