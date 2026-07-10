@@ -2,6 +2,9 @@
    the results — extracted JD and the ranked chunk cards — are built at runtime
    by client JS, which Astro's scoped-style attributes never reach. */
 
+/* Token variables for the standalone admin page (it doesn't use BaseLayout). */
+@import "@arkaes/tokens/css";
+
 body {
   background: var(--ark-color-bg);
   color: var(--ark-color-text);
