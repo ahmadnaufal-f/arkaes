@@ -1,0 +1,241 @@
+/* Styling for the admin CV-retrieval tool. Global (not Astro-scoped) because
+   the results — extracted JD and the ranked chunk cards — are built at runtime
+   by client JS, which Astro's scoped-style attributes never reach. */
+
+body {
+  background: var(--ark-color-bg);
+  color: var(--ark-color-text);
+  font-family: var(--ark-font-sans);
+  line-height: var(--ark-leading-normal);
+  margin: 0;
+  padding: var(--ark-space-6);
+}
+
+main {
+  margin: 0 auto;
+  max-width: 780px;
+}
+
+h1 {
+  font-size: var(--ark-text-xl, 1.5rem);
+  margin: 0 0 var(--ark-space-2);
+}
+
+p.lede {
+  color: var(--ark-color-text-muted);
+  margin: 0 0 var(--ark-space-6);
+}
+
+fieldset {
+  border: 1px solid var(--ark-color-border);
+  border-radius: var(--ark-radius-md);
+  margin: 0 0 var(--ark-space-6);
+  min-width: 0;
+  padding: var(--ark-space-4);
+}
+
+legend {
+  font-weight: var(--ark-weight-semibold);
+  padding: 0 var(--ark-space-2);
+}
+
+label {
+  display: block;
+  font-size: var(--ark-text-sm);
+  font-weight: var(--ark-weight-medium, 500);
+  margin: 0 0 var(--ark-space-1);
+}
+
+.field {
+  margin-bottom: var(--ark-space-4);
+}
+
+input[type="text"],
+input[type="url"],
+input[type="number"],
+textarea {
+  background: var(--ark-color-surface);
+  border: 1px solid var(--ark-color-border);
+  border-radius: var(--ark-radius-sm, 6px);
+  box-sizing: border-box;
+  color: var(--ark-color-text);
+  font: inherit;
+  padding: var(--ark-space-2) var(--ark-space-3);
+  width: 100%;
+}
+
+textarea {
+  min-height: 8rem;
+  resize: vertical;
+}
+
+.advanced summary {
+  color: var(--ark-color-text-muted);
+  cursor: pointer;
+  font-size: var(--ark-text-sm);
+  margin-bottom: var(--ark-space-3);
+}
+
+.advanced-grid {
+  display: grid;
+  gap: var(--ark-space-4);
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+
+.hint {
+  color: var(--ark-color-text-muted);
+  font-size: var(--ark-text-sm);
+  font-weight: var(--ark-weight-regular, 400);
+  margin: var(--ark-space-1) 0 0;
+}
+
+button {
+  background: var(--ark-color-accent);
+  border: none;
+  border-radius: var(--ark-radius-sm, 6px);
+  color: var(--ark-color-on-accent, #fff);
+  cursor: pointer;
+  font: inherit;
+  font-weight: var(--ark-weight-semibold);
+  padding: var(--ark-space-2) var(--ark-space-4);
+}
+
+button:disabled {
+  cursor: progress;
+  opacity: 0.6;
+}
+
+button.ghost {
+  background: transparent;
+  border: 1px solid var(--ark-color-border);
+  color: var(--ark-color-text);
+  font-weight: var(--ark-weight-medium, 500);
+}
+
+#status {
+  border-radius: var(--ark-radius-sm, 6px);
+  font-size: var(--ark-text-sm);
+  margin-top: var(--ark-space-4);
+  padding: var(--ark-space-3);
+}
+
+#status.ok {
+  background: color-mix(in srgb, var(--ark-color-secondary) 16%, transparent);
+}
+
+#status.err {
+  background: color-mix(in srgb, var(--ark-color-danger) 16%, transparent);
+}
+
+.disabled-note {
+  background: color-mix(in srgb, var(--ark-color-danger) 12%, transparent);
+  border-radius: var(--ark-radius-md);
+  padding: var(--ark-space-4);
+}
+
+/* --- Results (built at runtime) --------------------------------------- */
+
+#results[hidden] {
+  display: none;
+}
+
+.results-head {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ark-space-2) var(--ark-space-4);
+  justify-content: space-between;
+  margin-bottom: var(--ark-space-4);
+}
+
+.results-meta {
+  color: var(--ark-color-text-muted);
+  font-size: var(--ark-text-sm);
+}
+
+.warning-note {
+  background: color-mix(in srgb, var(--ark-color-warning, #b8860b) 18%, transparent);
+  border-radius: var(--ark-radius-sm, 6px);
+  font-size: var(--ark-text-sm);
+  margin-bottom: var(--ark-space-4);
+  padding: var(--ark-space-3);
+}
+
+.jd-details {
+  border: 1px solid var(--ark-color-border);
+  border-radius: var(--ark-radius-md);
+  margin-bottom: var(--ark-space-6);
+  padding: var(--ark-space-3) var(--ark-space-4);
+}
+
+.jd-details summary {
+  cursor: pointer;
+  font-weight: var(--ark-weight-semibold);
+}
+
+.jd-text {
+  color: var(--ark-color-text-muted);
+  font-size: var(--ark-text-sm);
+  margin-top: var(--ark-space-3);
+  max-height: 22rem;
+  overflow: auto;
+  white-space: pre-wrap;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ark-space-2);
+  margin-bottom: var(--ark-space-4);
+}
+
+.chunk {
+  border: 1px solid var(--ark-color-border);
+  border-radius: var(--ark-radius-md);
+  margin-bottom: var(--ark-space-3);
+  padding: var(--ark-space-3) var(--ark-space-4);
+}
+
+.chunk-head {
+  align-items: center;
+  color: var(--ark-color-text-muted);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: var(--ark-text-sm);
+  gap: var(--ark-space-2);
+  margin-bottom: var(--ark-space-2);
+}
+
+.chunk-rank {
+  color: var(--ark-color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.chunk-source {
+  color: var(--ark-color-text);
+  font-weight: var(--ark-weight-medium, 500);
+}
+
+.chunk-score {
+  background: var(--ark-color-surface);
+  border: 1px solid var(--ark-color-border);
+  border-radius: 999px;
+  font-variant-numeric: tabular-nums;
+  margin-left: auto;
+  padding: 0 var(--ark-space-2);
+}
+
+.chunk-score.weak {
+  color: var(--ark-color-danger);
+}
+
+.chunk-body {
+  font-size: var(--ark-text-sm);
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.results-empty {
+  color: var(--ark-color-text-muted);
+  padding: var(--ark-space-4) 0;
+}

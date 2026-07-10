@@ -1,0 +1,332 @@
+---
+// Admin CV-retrieval tool. Server-rendered and gated by the Basic Auth
+// middleware (src/middleware.ts) — set ADMIN_PASSWORD to enable. Paste a job
+// posting URL; the server fetches it, extracts the job description, embeds it,
+// and returns the top-matching chunks from the Arkhe pgvector knowledge base so
+// they can be copied into a CV-tailoring conversation. Read-only: it never
+// writes to the store. Standalone layout so the chatbot widget / site chrome
+// don't load here.
+import { ragConfigured } from "@/lib/rag";
+import "./_cv-retrieval.css";
+
+export const prerender = false;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>CV retrieval · Arkhe</title>
+  </head>
+  <body>
+    <main>
+      <h1>CV retrieval</h1>
+      <p class="lede">
+        Paste a job posting URL. The server fetches it, extracts the job
+        description, and returns the closest-matching chunks from the Arkhe
+        knowledge base — ready to copy into a CV-tailoring chat. Read-only; it
+        never modifies the vector store.
+      </p>
+
+      {
+        !ragConfigured && (
+          <div class="disabled-note">
+            Supabase / OpenAI are not configured. Set <code>SUPABASE_URL</code>,
+            <code>SUPABASE_SERVICE_ROLE_KEY</code>, and
+            <code>OPENAI_API_KEY</code> to enable retrieval.
+          </div>
+        )
+      }
+
+      {
+        ragConfigured && (
+          <>
+            <form id="retrieve-form">
+              <fieldset>
+                <legend>Job posting</legend>
+                <div class="field">
+                  <label for="url">Posting URL</label>
+                  <input
+                    id="url"
+                    type="url"
+                    placeholder="https://boards.greenhouse.io/…"
+                    autocomplete="off"
+                  />
+                </div>
+
+                <details class="advanced">
+                  <summary>Retrieval settings</summary>
+                  <div class="advanced-grid">
+                    <div>
+                      <label for="match-count">Chunks to fetch</label>
+                      <input
+                        id="match-count"
+                        type="number"
+                        min="1"
+                        max="50"
+                        step="1"
+                        value="18"
+                      />
+                    </div>
+                    <div>
+                      <label for="match-threshold">Min similarity</label>
+                      <input
+                        id="match-threshold"
+                        type="number"
+                        min="0"
+                        max="1"
+                        step="0.01"
+                        value="0.15"
+                      />
+                      <p class="hint">
+                        Lower = more (noisier) matches. Chatbot uses 0.3.
+                      </p>
+                    </div>
+                  </div>
+                </details>
+
+                <button type="submit" id="submit-btn">Retrieve</button>
+
+                <details class="advanced" style="margin-top: var(--ark-space-4)">
+                  <summary>Can't fetch? Paste the posting text</summary>
+                  <div class="field">
+                    <textarea
+                      id="text"
+                      placeholder="Paste the job description here if the URL is blocked (LinkedIn, some Workday tenants, etc.)."
+                    />
+                    <p class="hint">
+                      When filled, this is used instead of fetching the URL.
+                    </p>
+                  </div>
+                </details>
+              </fieldset>
+
+              <div id="status" hidden />
+            </form>
+
+            <section id="results" hidden>
+              <div class="results-head">
+                <strong>Retrieved chunks</strong>
+                <span class="results-meta" id="results-meta" />
+              </div>
+              <div class="warning-note" id="warning-note" hidden />
+
+              <div class="toolbar">
+                <button type="button" class="ghost" id="copy-chunks">
+                  Copy all chunks
+                </button>
+                <button type="button" class="ghost" id="copy-jd">
+                  Copy extracted JD
+                </button>
+              </div>
+
+              <details class="jd-details">
+                <summary>Extracted job description</summary>
+                <div class="jd-text" id="jd-text" />
+              </details>
+
+              <div id="chunks" />
+            </section>
+          </>
+        )
+      }
+    </main>
+
+    <script>
+      interface Chunk {
+        content: string;
+        source?: string;
+        similarity?: number;
+        metadata?: Record<string, unknown>;
+      }
+
+      interface ApiResult {
+        ok?: boolean;
+        error?: string;
+        extractedText?: string;
+        warning?: string;
+        chunks?: Chunk[];
+        meta?: {
+          sourceUrl?: string | null;
+          model?: string;
+          matchCount?: number;
+          matchThreshold?: number;
+          wordCount?: number;
+          returned?: number;
+        };
+      }
+
+      const $ = <T extends HTMLElement>(id: string): T =>
+        document.getElementById(id) as T;
+
+      const form = document.getElementById("retrieve-form");
+      // The form only renders when RAG is configured.
+      if (form) {
+        const statusEl = $<HTMLDivElement>("status");
+        const resultsEl = $<HTMLElement>("results");
+        const metaEl = $<HTMLSpanElement>("results-meta");
+        const warningEl = $<HTMLDivElement>("warning-note");
+        const jdEl = $<HTMLDivElement>("jd-text");
+        const chunksEl = $<HTMLDivElement>("chunks");
+        const submitBtn = $<HTMLButtonElement>("submit-btn");
+
+        // The last successful result, kept for the copy buttons.
+        let lastJd = "";
+        let lastChunks: Chunk[] = [];
+
+        const setStatus = (message: string, ok: boolean) => {
+          statusEl.hidden = false;
+          statusEl.textContent = message;
+          statusEl.className = ok ? "ok" : "err";
+        };
+
+        const flash = (button: HTMLButtonElement, label: string) => {
+          const original = button.textContent ?? "";
+          button.textContent = label;
+          window.setTimeout(() => {
+            button.textContent = original;
+          }, 1200);
+        };
+
+        const copy = async (text: string, button: HTMLButtonElement) => {
+          if (!text) return;
+          try {
+            await navigator.clipboard.writeText(text);
+            flash(button, "Copied!");
+          } catch {
+            flash(button, "Copy failed");
+          }
+        };
+
+        const chunksToText = (chunks: Chunk[]): string =>
+          chunks.map((chunk) => chunk.content).join("\n\n---\n\n");
+
+        const render = (data: ApiResult) => {
+          lastJd = data.extractedText ?? "";
+          lastChunks = data.chunks ?? [];
+
+          jdEl.textContent = lastJd;
+
+          const meta = data.meta ?? {};
+          const parts = [
+            `${lastChunks.length} chunks`,
+            typeof meta.matchThreshold === "number"
+              ? `≥ ${meta.matchThreshold} similarity`
+              : "",
+            meta.model ? `via ${meta.model}` : "",
+          ].filter(Boolean);
+          metaEl.textContent = parts.join(" · ");
+
+          if (data.warning) {
+            warningEl.hidden = false;
+            warningEl.textContent = data.warning;
+          } else {
+            warningEl.hidden = true;
+          }
+
+          chunksEl.innerHTML = "";
+          if (lastChunks.length === 0) {
+            const empty = document.createElement("p");
+            empty.className = "results-empty";
+            empty.textContent =
+              "No chunks matched above the similarity threshold. Try lowering it.";
+            chunksEl.append(empty);
+          } else {
+            lastChunks.forEach((chunk, index) => {
+              const card = document.createElement("div");
+              card.className = "chunk";
+
+              const head = document.createElement("div");
+              head.className = "chunk-head";
+
+              const rank = document.createElement("span");
+              rank.className = "chunk-rank";
+              rank.textContent = `#${index + 1}`;
+              head.append(rank);
+
+              if (chunk.source) {
+                const source = document.createElement("span");
+                source.className = "chunk-source";
+                source.textContent = chunk.source;
+                head.append(source);
+              }
+
+              if (typeof chunk.similarity === "number") {
+                const score = document.createElement("span");
+                // Flag the weakest matches so I can judge whether to trust them.
+                score.className =
+                  chunk.similarity < 0.2 ? "chunk-score weak" : "chunk-score";
+                score.textContent = chunk.similarity.toFixed(3);
+                head.append(score);
+              }
+
+              const body = document.createElement("p");
+              body.className = "chunk-body";
+              body.textContent = chunk.content;
+
+              card.append(head, body);
+              chunksEl.append(card);
+            });
+          }
+
+          resultsEl.hidden = false;
+        };
+
+        form.addEventListener("submit", (event) => {
+          event.preventDefault();
+          void (async () => {
+            const url = $<HTMLInputElement>("url").value.trim();
+            const text = $<HTMLTextAreaElement>("text").value.trim();
+            if (!url && !text) {
+              setStatus("Enter a URL or paste the posting text.", false);
+              return;
+            }
+
+            const matchCount = Number($<HTMLInputElement>("match-count").value);
+            const matchThreshold = Number(
+              $<HTMLInputElement>("match-threshold").value,
+            );
+
+            submitBtn.disabled = true;
+            setStatus("Fetching, extracting, and retrieving…", true);
+            try {
+              const res = await fetch("/api/admin/cv-retrieval", {
+                method: "POST",
+                headers: { "content-type": "application/json" },
+                body: JSON.stringify({
+                  url: url || undefined,
+                  text: text || undefined,
+                  matchCount,
+                  matchThreshold,
+                }),
+              });
+              const data = (await res.json()) as ApiResult;
+              if (!res.ok || data.error) {
+                setStatus(data.error ?? `Request failed (${res.status}).`, false);
+                return;
+              }
+              setStatus(
+                `Done — ${data.meta?.returned ?? data.chunks?.length ?? 0} chunks retrieved.`,
+                true,
+              );
+              render(data);
+            } catch {
+              setStatus("Request failed.", false);
+            } finally {
+              submitBtn.disabled = false;
+            }
+          })();
+        });
+
+        $<HTMLButtonElement>("copy-chunks").addEventListener("click", (event) => {
+          void copy(chunksToText(lastChunks), event.currentTarget as HTMLButtonElement);
+        });
+        $<HTMLButtonElement>("copy-jd").addEventListener("click", (event) => {
+          void copy(lastJd, event.currentTarget as HTMLButtonElement);
+        });
+      }
+    </script>
+  </body>
+</html>
