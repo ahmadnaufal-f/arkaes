@@ -4,12 +4,7 @@ import {
   createMemoryRateLimitStore,
   rateLimitHeaders,
 } from "@arkaes/chatbot/server";
-import {
-  getCvDataComposer,
-  getExtractor,
-  getRetriever,
-  ragConfigured,
-} from "@/lib/rag";
+import { getExtractor, getRetriever, ragConfigured } from "@/lib/rag";
 import { htmlToText } from "@/lib/html-to-text";
 
 // Server-rendered + protected by the Basic Auth middleware (see src/middleware).
@@ -151,8 +146,7 @@ export const POST: APIRoute = async ({ request }) => {
   }
   const retriever = getRetriever();
   const extractor = getExtractor();
-  const composer = getCvDataComposer();
-  if (!retriever || !extractor || !composer) {
+  if (!retriever || !extractor) {
     return json({ error: "RAG is not configured." }, 503, headers);
   }
 
@@ -169,7 +163,6 @@ export const POST: APIRoute = async ({ request }) => {
 
   const url = asTrimmed(body.url);
   const pastedText = asTrimmed(body.text);
-  const companyOverride = asTrimmed(body.company);
   if (!url && !pastedText) {
     return json({ error: "Provide a job posting URL or paste text." }, 400, headers);
   }
@@ -210,15 +203,10 @@ export const POST: APIRoute = async ({ request }) => {
     );
   }
 
-  // 2. Isolate the company, role, and job-description text with the extractor.
+  // 2. Isolate the job-description text with the LLM extractor.
   let extractedText: string;
-  let extractedCompany: string;
-  let extractedRole: string;
   try {
-    const job = await extractor.extractJob(pageText);
-    extractedText = job.jobDescription;
-    extractedCompany = job.company;
-    extractedRole = job.roleTitle;
+    extractedText = await extractor.extractJobDescription(pageText);
   } catch (error) {
     // Admin-only tool — surface the underlying reason so failures are
     // diagnosable instead of a blank "try again".
@@ -237,18 +225,6 @@ export const POST: APIRoute = async ({ request }) => {
       headers,
     );
   }
-
-  // Best available company name: manual override wins, then the extracted name,
-  // then the URL host (the client falls back to "company" for the filename).
-  const hostName = (() => {
-    if (!url) return "";
-    try {
-      return new URL(url).hostname.replace(/^www\./, "").split(".")[0] ?? "";
-    } catch {
-      return "";
-    }
-  })();
-  const company = companyOverride || extractedCompany || hostName;
 
   const words = wordCount(extractedText);
   const warning =
@@ -275,37 +251,14 @@ export const POST: APIRoute = async ({ request }) => {
     );
   }
 
-  // 4. Compose a CV_DATA markdown file from the retrieved chunks, tailored to
-  // the posting. This is the primary deliverable the admin downloads and feeds
-  // (with the CV skill) into a CV-writing conversation. Only facts present in
-  // the chunks are used. A retrieval that returned nothing yields no file.
-  let cvData = "";
-  if (chunks.length > 0) {
-    try {
-      cvData = await composer.compose({
-        jobDescription: extractedText,
-        company,
-        roleTitle: extractedRole,
-        chunks,
-      });
-    } catch (error) {
-      const detail = error instanceof Error ? error.message : String(error);
-      console.error("cv-retrieval CV_DATA composition failed:", error);
-      return json({ error: `CV_DATA composition failed: ${detail}` }, 502, headers);
-    }
-  }
-
   return json(
     {
       ok: true,
       extractedText,
-      cvData,
       warning,
       chunks,
       meta: {
         sourceUrl: url || null,
-        company,
-        roleTitle: extractedRole,
         model: extractor.model,
         matchCount,
         matchThreshold,

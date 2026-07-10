@@ -25,10 +25,9 @@ export const prerender = false;
       <h1>CV retrieval</h1>
       <p class="lede">
         Paste a job posting URL. The server fetches it, extracts the job
-        description, retrieves the closest-matching chunks from the Arkhe
-        knowledge base, and composes them into a tailored
-        <code>CV_DATA_&lt;company&gt;.md</code> file — ready to hand to the CV
-        skill. Read-only; it never modifies the vector store.
+        description, and returns the closest-matching chunks from the Arkhe
+        knowledge base — ready to copy into a CV-tailoring chat. Read-only; it
+        never modifies the vector store.
       </p>
 
       {
@@ -55,20 +54,6 @@ export const prerender = false;
                     placeholder="https://boards.greenhouse.io/…"
                     autocomplete="off"
                   />
-                </div>
-
-                <div class="field">
-                  <label for="company">Company (for the filename)</label>
-                  <input
-                    id="company"
-                    type="text"
-                    placeholder="Auto-detected from the posting if left blank"
-                    autocomplete="off"
-                  />
-                  <p class="hint">
-                    Sets the download name <code>CV_DATA_&lt;company&gt;.md</code>.
-                    Auto-filled after retrieval; edit and re-download anytime.
-                  </p>
                 </div>
 
                 <details class="advanced">
@@ -123,40 +108,29 @@ export const prerender = false;
 
             <section id="results" hidden>
               <div class="results-head">
-                <strong>Results</strong>
+                <strong>Retrieved chunks</strong>
                 <span class="results-meta" id="results-meta" />
               </div>
               <div class="warning-note" id="warning-note" hidden />
 
               <div class="toolbar">
-                <button type="button" id="download-md">
-                  Download CV_DATA.md
-                </button>
-                <button type="button" class="ghost" id="copy-cvdata">
-                  Copy CV_DATA
-                </button>
                 <button type="button" class="ghost" id="copy-chunks">
-                  Copy raw chunks
+                  Copy all chunks
                 </button>
                 <button type="button" class="ghost" id="copy-jd">
                   Copy extracted JD
                 </button>
+                <button type="button" class="ghost" id="download-md">
+                  Download .md
+                </button>
               </div>
-
-              <details class="jd-details" id="cvdata-details" open>
-                <summary>Composed CV_DATA</summary>
-                <div class="jd-text" id="cvdata-text" />
-              </details>
 
               <details class="jd-details">
                 <summary>Extracted job description</summary>
                 <div class="jd-text" id="jd-text" />
               </details>
 
-              <details class="jd-details">
-                <summary id="chunks-summary">Retrieved chunks</summary>
-                <div id="chunks" />
-              </details>
+              <div id="chunks" />
             </section>
           </>
         )
@@ -175,13 +149,10 @@ export const prerender = false;
         ok?: boolean;
         error?: string;
         extractedText?: string;
-        cvData?: string;
         warning?: string;
         chunks?: Chunk[];
         meta?: {
           sourceUrl?: string | null;
-          company?: string;
-          roleTitle?: string;
           model?: string;
           matchCount?: number;
           matchThreshold?: number;
@@ -189,16 +160,6 @@ export const prerender = false;
           returned?: number;
         };
       }
-
-      // "Acme, Inc." -> "acme-inc"; "" -> "company".
-      const slugifyCompany = (name: string): string => {
-        const slug = name
-          .toLowerCase()
-          .replace(/['".]/g, "")
-          .replace(/[^a-z0-9]+/g, "-")
-          .replace(/^-+|-+$/g, "");
-        return slug || "company";
-      };
 
       const $ = <T extends HTMLElement>(id: string): T =>
         document.getElementById(id) as T;
@@ -211,15 +172,11 @@ export const prerender = false;
         const metaEl = $<HTMLSpanElement>("results-meta");
         const warningEl = $<HTMLDivElement>("warning-note");
         const jdEl = $<HTMLDivElement>("jd-text");
-        const cvDataEl = $<HTMLDivElement>("cvdata-text");
         const chunksEl = $<HTMLDivElement>("chunks");
-        const chunksSummaryEl = $<HTMLElement>("chunks-summary");
-        const companyEl = $<HTMLInputElement>("company");
         const submitBtn = $<HTMLButtonElement>("submit-btn");
 
         // The last successful result, kept for the copy / download buttons.
         let lastJd = "";
-        let lastCvData = "";
         let lastChunks: Chunk[] = [];
         let lastMeta: ApiResult["meta"] = undefined;
 
@@ -250,23 +207,51 @@ export const prerender = false;
         const chunksToText = (chunks: Chunk[]): string =>
           chunks.map((chunk) => chunk.content).join("\n\n---\n\n");
 
-        // Download the composed CV_DATA markdown as CV_DATA_<company>.md. The
-        // company comes from the (possibly hand-edited) form field, falling back
-        // to whatever the server detected.
-        const download = (button: HTMLButtonElement) => {
-          if (!lastCvData) {
-            flash(button, "Nothing to download");
-            return;
+        // Assemble a self-contained markdown document: the retrieval context,
+        // the extracted JD, then every chunk with its source + similarity.
+        const buildMarkdown = (): string => {
+          const meta = lastMeta ?? {};
+          const lines: string[] = ["# CV retrieval"];
+
+          const context: string[] = [];
+          if (meta.sourceUrl) context.push(`- **Source:** ${meta.sourceUrl}`);
+          context.push(`- **Retrieved:** ${new Date().toISOString()}`);
+          if (meta.model) context.push(`- **Extraction model:** ${meta.model}`);
+          if (typeof meta.matchThreshold === "number") {
+            context.push(`- **Min similarity:** ${meta.matchThreshold}`);
           }
-          const company =
-            companyEl.value.trim() || lastMeta?.company || "company";
-          const blob = new Blob([lastCvData], {
+          context.push(`- **Chunks:** ${lastChunks.length}`);
+          lines.push("", ...context);
+
+          lines.push("", "## Extracted job description", "", lastJd || "_none_");
+
+          lines.push("", "## Retrieved chunks");
+          if (lastChunks.length === 0) {
+            lines.push("", "_No chunks matched above the similarity threshold._");
+          } else {
+            lastChunks.forEach((chunk, index) => {
+              const bits = [`### ${index + 1}.`];
+              if (chunk.source) bits.push(chunk.source);
+              if (typeof chunk.similarity === "number") {
+                bits.push(`(similarity ${chunk.similarity.toFixed(3)})`);
+              }
+              lines.push("", bits.join(" "), "", chunk.content);
+            });
+          }
+
+          return lines.join("\n") + "\n";
+        };
+
+        const download = (button: HTMLButtonElement) => {
+          if (lastChunks.length === 0 && !lastJd) return;
+          const blob = new Blob([buildMarkdown()], {
             type: "text/markdown;charset=utf-8",
           });
           const url = URL.createObjectURL(blob);
+          const stamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-");
           const anchor = document.createElement("a");
           anchor.href = url;
-          anchor.download = `CV_DATA_${slugifyCompany(company)}.md`;
+          anchor.download = `cv-retrieval-${stamp}.md`;
           document.body.append(anchor);
           anchor.click();
           anchor.remove();
@@ -276,25 +261,13 @@ export const prerender = false;
 
         const render = (data: ApiResult) => {
           lastJd = data.extractedText ?? "";
-          lastCvData = data.cvData ?? "";
           lastChunks = data.chunks ?? [];
           lastMeta = data.meta;
 
           jdEl.textContent = lastJd;
-          cvDataEl.textContent =
-            lastCvData || "No CV_DATA was composed (no chunks matched).";
-          chunksSummaryEl.textContent = `Retrieved chunks (${lastChunks.length})`;
 
           const meta = data.meta ?? {};
-          // Auto-fill the company field so the filename is right, but never
-          // clobber a value the admin has already typed.
-          if (meta.company && !companyEl.value.trim()) {
-            companyEl.value = meta.company;
-          }
-
           const parts = [
-            meta.company ? meta.company : "",
-            meta.roleTitle ? meta.roleTitle : "",
             `${lastChunks.length} chunks`,
             typeof meta.matchThreshold === "number"
               ? `≥ ${meta.matchThreshold} similarity`
@@ -363,7 +336,6 @@ export const prerender = false;
           void (async () => {
             const url = $<HTMLInputElement>("url").value.trim();
             const text = $<HTMLTextAreaElement>("text").value.trim();
-            const company = companyEl.value.trim();
             if (!url && !text) {
               setStatus("Enter a URL or paste the posting text.", false);
               return;
@@ -375,7 +347,7 @@ export const prerender = false;
             );
 
             submitBtn.disabled = true;
-            setStatus("Fetching, extracting, retrieving, and composing CV_DATA…", true);
+            setStatus("Fetching, extracting, and retrieving…", true);
             try {
               const res = await fetch("/api/admin/cv-retrieval", {
                 method: "POST",
@@ -383,7 +355,6 @@ export const prerender = false;
                 body: JSON.stringify({
                   url: url || undefined,
                   text: text || undefined,
-                  company: company || undefined,
                   matchCount,
                   matchThreshold,
                 }),
@@ -393,11 +364,8 @@ export const prerender = false;
                 setStatus(data.error ?? `Request failed (${res.status}).`, false);
                 return;
               }
-              const count = data.meta?.returned ?? data.chunks?.length ?? 0;
               setStatus(
-                data.cvData
-                  ? `Done — CV_DATA composed from ${count} chunks.`
-                  : `Done, but no chunks matched — nothing to compose.`,
+                `Done — ${data.meta?.returned ?? data.chunks?.length ?? 0} chunks retrieved.`,
                 true,
               );
               render(data);
@@ -409,9 +377,6 @@ export const prerender = false;
           })();
         });
 
-        $<HTMLButtonElement>("copy-cvdata").addEventListener("click", (event) => {
-          void copy(lastCvData, event.currentTarget as HTMLButtonElement);
-        });
         $<HTMLButtonElement>("copy-chunks").addEventListener("click", (event) => {
           void copy(chunksToText(lastChunks), event.currentTarget as HTMLButtonElement);
         });
