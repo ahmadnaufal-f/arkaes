@@ -207,8 +207,12 @@ export const POST: APIRoute = async ({ request }) => {
   let extractedText: string;
   try {
     extractedText = await extractor.extractJobDescription(pageText);
-  } catch {
-    return json({ error: "Extraction failed. Try again." }, 502, headers);
+  } catch (error) {
+    // Admin-only tool — surface the underlying reason so failures are
+    // diagnosable instead of a blank "try again".
+    const detail = error instanceof Error ? error.message : String(error);
+    console.error("cv-retrieval extraction failed:", error);
+    return json({ error: `Extraction failed: ${detail}` }, 502, headers);
   }
   if (!extractedText) {
     return json(
@@ -237,8 +241,14 @@ export const POST: APIRoute = async ({ request }) => {
       matchCount,
       minSimilarity: matchThreshold,
     });
-  } catch {
-    return json({ error: "Retrieval from the knowledge base failed." }, 502, headers);
+  } catch (error) {
+    const detail = error instanceof Error ? error.message : String(error);
+    console.error("cv-retrieval retrieval failed:", error);
+    return json(
+      { error: `Retrieval from the knowledge base failed: ${detail}` },
+      502,
+      headers,
+    );
   }
 
   return json(

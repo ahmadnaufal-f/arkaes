@@ -36,7 +36,10 @@ export interface ExtractorOptions {
   client?: OpenAI;
   /** Defaults to gpt-5.4-nano. */
   model?: string;
-  /** Reasoning budget. Defaults to "minimal" — this is a copy-out task. */
+  /**
+   * Reasoning budget. Defaults to "low" — matching the chat handler's proven
+   * config. (Not every GPT-5-class deployment accepts "minimal".)
+   */
   reasoningEffort?: "minimal" | "low" | "medium" | "high";
   /** Hard ceiling on generated tokens. Defaults to 4000. */
   maxOutputTokens?: number;
@@ -53,7 +56,7 @@ export const createJobDescriptionExtractor = (
   options: ExtractorOptions,
 ): Extractor => {
   const model = options.model ?? DEFAULT_EXTRACTION_MODEL;
-  const reasoningEffort = options.reasoningEffort ?? "minimal";
+  const reasoningEffort = options.reasoningEffort ?? "low";
   const maxOutputTokens = options.maxOutputTokens ?? 4000;
   const maxInputChars = options.maxInputChars ?? 48_000;
   const client = options.client ?? new OpenAI({ apiKey: options.apiKey });
