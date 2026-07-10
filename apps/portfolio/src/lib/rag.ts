@@ -3,9 +3,11 @@
 // configured (so chat falls back to the static knowledge base, and the admin
 // UI reports "not configured" instead of crashing).
 import {
+  createCvDataComposer,
   createJobDescriptionExtractor,
   createSupabaseIngestor,
   createSupabaseRetriever,
+  type CvDataComposer,
   type Extractor,
   type Ingestor,
   type Retriever,
@@ -32,11 +34,16 @@ export const getRetriever = (): Retriever | null => {
 };
 
 // Only needs the OpenAI key (no Supabase) — but the CV-retrieval route that
-// uses it also needs a retriever, so it gates on `ragConfigured` anyway.
+// uses these also needs a retriever, so it gates on `ragConfigured` anyway.
 export const getExtractor = (): Extractor | null => {
   if (!openaiApiKey) return null;
   return createJobDescriptionExtractor({
     apiKey: openaiApiKey,
     model: openaiModel,
   });
+};
+
+export const getCvDataComposer = (): CvDataComposer | null => {
+  if (!openaiApiKey) return null;
+  return createCvDataComposer({ apiKey: openaiApiKey, model: openaiModel });
 };

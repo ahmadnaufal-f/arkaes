@@ -7,6 +7,7 @@ export * from "./rate-limit";
 export * from "./chunk";
 export * from "./embeddings";
 export * from "./extraction";
+export * from "./cv-data";
 export * from "./retrieval";
 export * from "./retriever";
 export * from "./ingest";
