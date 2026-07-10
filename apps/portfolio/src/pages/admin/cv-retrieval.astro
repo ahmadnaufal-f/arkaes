@@ -120,6 +120,9 @@ export const prerender = false;
                 <button type="button" class="ghost" id="copy-jd">
                   Copy extracted JD
                 </button>
+                <button type="button" class="ghost" id="download-md">
+                  Download .md
+                </button>
               </div>
 
               <details class="jd-details">
@@ -172,9 +175,10 @@ export const prerender = false;
         const chunksEl = $<HTMLDivElement>("chunks");
         const submitBtn = $<HTMLButtonElement>("submit-btn");
 
-        // The last successful result, kept for the copy buttons.
+        // The last successful result, kept for the copy / download buttons.
         let lastJd = "";
         let lastChunks: Chunk[] = [];
+        let lastMeta: ApiResult["meta"] = undefined;
 
         const setStatus = (message: string, ok: boolean) => {
           statusEl.hidden = false;
@@ -203,9 +207,62 @@ export const prerender = false;
         const chunksToText = (chunks: Chunk[]): string =>
           chunks.map((chunk) => chunk.content).join("\n\n---\n\n");
 
+        // Assemble a self-contained markdown document: the retrieval context,
+        // the extracted JD, then every chunk with its source + similarity.
+        const buildMarkdown = (): string => {
+          const meta = lastMeta ?? {};
+          const lines: string[] = ["# CV retrieval"];
+
+          const context: string[] = [];
+          if (meta.sourceUrl) context.push(`- **Source:** ${meta.sourceUrl}`);
+          context.push(`- **Retrieved:** ${new Date().toISOString()}`);
+          if (meta.model) context.push(`- **Extraction model:** ${meta.model}`);
+          if (typeof meta.matchThreshold === "number") {
+            context.push(`- **Min similarity:** ${meta.matchThreshold}`);
+          }
+          context.push(`- **Chunks:** ${lastChunks.length}`);
+          lines.push("", ...context);
+
+          lines.push("", "## Extracted job description", "", lastJd || "_none_");
+
+          lines.push("", "## Retrieved chunks");
+          if (lastChunks.length === 0) {
+            lines.push("", "_No chunks matched above the similarity threshold._");
+          } else {
+            lastChunks.forEach((chunk, index) => {
+              const bits = [`### ${index + 1}.`];
+              if (chunk.source) bits.push(chunk.source);
+              if (typeof chunk.similarity === "number") {
+                bits.push(`(similarity ${chunk.similarity.toFixed(3)})`);
+              }
+              lines.push("", bits.join(" "), "", chunk.content);
+            });
+          }
+
+          return lines.join("\n") + "\n";
+        };
+
+        const download = (button: HTMLButtonElement) => {
+          if (lastChunks.length === 0 && !lastJd) return;
+          const blob = new Blob([buildMarkdown()], {
+            type: "text/markdown;charset=utf-8",
+          });
+          const url = URL.createObjectURL(blob);
+          const stamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-");
+          const anchor = document.createElement("a");
+          anchor.href = url;
+          anchor.download = `cv-retrieval-${stamp}.md`;
+          document.body.append(anchor);
+          anchor.click();
+          anchor.remove();
+          URL.revokeObjectURL(url);
+          flash(button, "Downloaded!");
+        };
+
         const render = (data: ApiResult) => {
           lastJd = data.extractedText ?? "";
           lastChunks = data.chunks ?? [];
+          lastMeta = data.meta;
 
           jdEl.textContent = lastJd;
 
@@ -325,6 +382,9 @@ export const prerender = false;
         });
         $<HTMLButtonElement>("copy-jd").addEventListener("click", (event) => {
           void copy(lastJd, event.currentTarget as HTMLButtonElement);
+        });
+        $<HTMLButtonElement>("download-md").addEventListener("click", (event) => {
+          download(event.currentTarget as HTMLButtonElement);
         });
       }
     </script>
