@@ -39,10 +39,12 @@
     "./theme.css": "./src/styles/theme.css",
     "./reset.css": "./src/styles/reset.css",
     "./typography.css": "./src/styles/typography.css",
+    "./cloak.css": "./src/styles/cloak.css",
     "./styles/tokens.css": "./src/styles/tokens.css",
     "./styles/theme.css": "./src/styles/theme.css",
     "./styles/reset.css": "./src/styles/reset.css",
-    "./styles/typography.css": "./src/styles/typography.css"
+    "./styles/typography.css": "./src/styles/typography.css",
+    "./styles/cloak.css": "./src/styles/cloak.css"
   },
   "publishConfig": {
     "access": "public",
@@ -59,10 +61,12 @@
       "./theme.css": "./dist/styles/theme.css",
       "./reset.css": "./dist/styles/reset.css",
       "./typography.css": "./dist/styles/typography.css",
+      "./cloak.css": "./dist/styles/cloak.css",
       "./styles/tokens.css": "./dist/styles/tokens.css",
       "./styles/theme.css": "./dist/styles/theme.css",
       "./styles/reset.css": "./dist/styles/reset.css",
-      "./styles/typography.css": "./dist/styles/typography.css"
+      "./styles/typography.css": "./dist/styles/typography.css",
+      "./styles/cloak.css": "./dist/styles/cloak.css"
     }
   },
   "scripts": {

@@ -1,0 +1,96 @@
+/*
+ * FOUCE prevention — Flash Of Undefined Custom Elements.
+ *
+ * A custom element renders as an inert, unstyled "unknown element" until its
+ * class is registered and the browser upgrades it. Until then it can flash its
+ * bare light-DOM contents (or collapse to nothing) and then snap into its
+ * finished, shadow-DOM form once the defining script runs — the FOUCE.
+ *
+ * Two cooperating techniques, after
+ * https://webawesome.com/docs/utilities/fouce/.
+ */
+
+/*
+ * 1. Per-element auto-cloak (zero JS).
+ *
+ * The `:defined` pseudo-class matches a custom element only once it is
+ * registered, so `:not(:defined)` matches it *before* upgrade. Hiding it with
+ * `visibility: hidden` (never `display: none`) keeps the element's layout box,
+ * so it upgrades in place — snapping in fully styled with no reflow — instead
+ * of the surrounding content jumping when it appears. Each element reveals
+ * itself automatically the instant it registers; no script, no coordination.
+ *
+ * Scoped to the Arkaes element allowlist on purpose: a bare, global
+ * `:not(:defined)` would also hide framework-owned custom elements that are
+ * defined later by their own runtime (e.g. Astro's `astro-island` /
+ * `astro-slot`), briefly hiding island content until hydration. `:where()`
+ * keeps specificity at 0 so each element's own `:host` styles win once defined.
+ *
+ * Keep this list in sync when adding a custom element to @arkaes/ui (or
+ * @arkaes/chatbot) — see the checklist in CLAUDE.md.
+ */
+:where(
+  ark-accordion,
+  ark-accordion-item,
+  ark-badge,
+  ark-brand-logo,
+  ark-button,
+  ark-card,
+  ark-card-action,
+  ark-card-content,
+  ark-card-description,
+  ark-card-footer,
+  ark-card-header,
+  ark-card-title,
+  ark-case-study-card,
+  ark-chatbot,
+  ark-checkbox,
+  ark-chip,
+  ark-cursor,
+  ark-dialog-close,
+  ark-dialog-content,
+  ark-dialog-description,
+  ark-dialog-overlay,
+  ark-dialog-portal,
+  ark-dialog-root,
+  ark-dialog-title,
+  ark-dialog-trigger,
+  ark-dropdown,
+  ark-dropdown-option,
+  ark-empty,
+  ark-hero,
+  ark-input,
+  ark-nav-link,
+  ark-navigation-brand,
+  ark-navigation-cta,
+  ark-navigation-links,
+  ark-navigation-mobile-menu,
+  ark-navigation-mobile-toggle,
+  ark-navigation-root,
+  ark-page-header,
+  ark-project-header,
+  ark-radio,
+  ark-radio-group,
+  ark-radio-select,
+  ark-spinner,
+  ark-toast,
+  ark-toaster,
+  ark-toggle
+):not(:defined) {
+  visibility: hidden;
+}
+
+/*
+ * 2. Coordinated cloak (opt-in, needs a reveal).
+ *
+ * Sometimes a whole region — or the entire page — should stay hidden until
+ * *all* of its elements are ready and then reveal in one clean paint, rather
+ * than popping in piecemeal. Add the `ark-cloak` class to any element (or to
+ * <html> for the whole page) and remove it once the region has upgraded.
+ * `uncloak()` from @arkaes/ui does exactly that: it awaits the region's custom
+ * elements (`customElements.whenDefined`) and removes the class, with a timeout
+ * fallback so the page can never stay hidden if an element never registers.
+ */
+.ark-cloak {
+  visibility: hidden;
+}

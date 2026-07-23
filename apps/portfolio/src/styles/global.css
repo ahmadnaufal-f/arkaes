@@ -27,36 +27,14 @@
   --ark-font-mono: var(--font-mono, "DM Mono", "SFMono-Regular", Consolas, monospace);
 }
 
-/* Hide custom elements until their definition upgrades them, so their slotted
-   light-DOM content doesn't flash unstyled/unpositioned before the Lit
-   registration script runs. `:where()` keeps specificity at 0 so each element's
-   own shadow/host styles win once defined. Registration is eager (BaseLayout
-   imports `@arkaes/ui/register`), so this window is sub-frame in practice; it's
-   the belt-and-suspenders layer alongside #page-loader for full page loads. */
-:where(
-  ark-navigation-root,
-  ark-navigation-brand,
-  ark-navigation-links,
-  ark-nav-link,
-  ark-navigation-cta,
-  ark-navigation-mobile-toggle,
-  ark-navigation-mobile-menu,
-  ark-hero,
-  ark-page-header,
-  ark-project-header,
-  ark-case-study-card,
-  ark-accordion,
-  ark-accordion-item,
-  ark-dropdown,
-  ark-dropdown-option,
-  ark-button,
-  ark-chip,
-  ark-badge,
-  ark-empty,
-  ark-chatbot
-):not(:defined) {
-  visibility: hidden;
-}
+/* FOUCE prevention (hiding custom elements until their definition upgrades
+   them, so slotted light-DOM content doesn't flash unstyled before the Lit
+   registration script runs) now ships with the design system — the
+   `:not(:defined)` auto-cloak comes in via `@arkaes/tokens/cloak.css`, folded
+   into the `@arkaes/tokens/css` import at the top of this file. Registration is
+   eager (BaseLayout imports `@arkaes/ui/register`), so the cloak window is
+   sub-frame in practice; it's the belt-and-suspenders layer alongside
+   #page-loader for full page loads. */
 
 /* Global navigation progress bar (see BaseLayout's `navProgress`). A persisted,
    top-of-page bar that fills while ClientRouter fetches the next page and

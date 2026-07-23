@@ -144,6 +144,28 @@ Then use the tags in markup:
 <ark-button variant="primary">Get in touch</ark-button>
 ```
 
+## Prevent FOUCE
+
+Until a custom element's registration script runs, the browser renders it as an
+unstyled unknown element — a **Flash Of Undefined Custom Elements**. Importing
+`@arkaes/tokens/css` already fixes this: it includes an auto-cloak that hides
+each Arkaes element (`:not(:defined)`) until it upgrades, then reveals it in
+place with no reflow. Zero configuration required.
+
+To reveal a whole region in a single paint instead of letting elements pop in
+one at a time, cloak a wrapper with the `ark-cloak` class and call `uncloak()`
+once your registration import has run. It waits for the region's elements to be
+defined, with a timeout fallback so the page is never left hidden:
+
+```html
+<body class="ark-cloak">…</body>
+<script type="module">
+  import "@arkaes/ui/register";
+  import { uncloak } from "@arkaes/ui";
+  uncloak(); // reveal <html> once every ark-* element in it is defined
+</script>
+```
+
 ## React
 
 First-class React bindings (built with [`@lit/react`](https://www.npmjs.com/package/@lit/react))

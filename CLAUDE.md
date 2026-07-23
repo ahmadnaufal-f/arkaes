@@ -48,6 +48,8 @@ Turborepo orchestrates build order: `@arkaes/tokens` → `@arkaes/ui` → apps. 
 
 Source is split between TypeScript token constants (`src/tokens/*.ts`) and CSS files (`src/styles/*.css`). Apps and Storybook import the CSS directly via the package exports (e.g. `@arkaes/tokens/css`, `@arkaes/tokens/theme.css`). The TS exports are for programmatic token access.
 
+**FOUCE prevention.** `src/styles/cloak.css` (folded into the `@arkaes/tokens/css` aggregate, and also exported standalone as `@arkaes/tokens/cloak.css`) hides Arkaes custom elements until they upgrade, preventing a Flash Of Undefined Custom Elements. It ships two techniques (after [Web Awesome](https://webawesome.com/docs/utilities/fouce/)): (1) a zero-JS per-element auto-cloak — `:where(<ark-* allowlist>):not(:defined) { visibility: hidden }` (`visibility`, not `display`, so upgrades cause no reflow; scoped to an allowlist so framework elements like Astro's `astro-island` are never hidden); and (2) an opt-in coordinated `.ark-cloak` wrapper revealed in one paint by `uncloak()` from `@arkaes/ui` (`customElements.whenDefined` for the region's tags, with a timeout fallback). Because every app and Storybook import `@arkaes/tokens/css`, they all get the per-element cloak for free.
+
 ### `@arkaes/ui`
 
 Source is organized in three layers, each with a barrel `index.ts`:
@@ -73,7 +75,7 @@ Source is organized in three layers, each with a barrel `index.ts`:
 
 Since custom elements only matter client-side after upgrade, Astro renders the element's attributes server-side; registration via one of the above imports is what actually upgrades them in the browser. CSS can't pierce a primitive's shadow DOM, so parent-driven state (e.g. a card-wide hover) is done by toggling a reflected property from a small client script (see the tech-stack cards in `index.astro` driving `ark-chip`'s `isHovered` → `data-is-hovered`).
 
-New custom elements go in `src/primitives/`, follow the `ArkFoo` class naming convention with `ark-foo` tag names, and must be: (1) exported from `src/primitives/index.ts`, (2) given a `src/register/ark-foo.ts` side-effect file, and (3) added to `registerArkPrimitives()` in `src/register.ts` so the global barrel picks them up.
+New custom elements go in `src/primitives/`, follow the `ArkFoo` class naming convention with `ark-foo` tag names, and must be: (1) exported from `src/primitives/index.ts`, (2) given a `src/register/ark-foo.ts` side-effect file, (3) added to `registerArkPrimitives()` in `src/register.ts` so the global barrel picks them up, and (4) added to the FOUCE auto-cloak allowlist in `packages/tokens/src/styles/cloak.css` so it's hidden until it upgrades.
 
 ### Storybook
 
