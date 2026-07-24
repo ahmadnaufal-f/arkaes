@@ -1,0 +1,31 @@
+{
+  "color": {
+    "blush-50": { "$type": "color", "$value": "#fff8f6", "$description": "Blush ramp step 50 (lightest)." },
+    "blush-100": { "$type": "color", "$value": "#f7e8e3", "$description": "Blush ramp step 100." },
+    "blush-200": { "$type": "color", "$value": "#e9c8be", "$description": "Blush ramp step 200." },
+    "blush-300": { "$type": "color", "$value": "#d7a79b", "$description": "Blush ramp step 300." },
+    "blush-400": { "$type": "color", "$value": "#bd8276", "$description": "Blush ramp step 400." },
+    "blush-500": { "$type": "color", "$value": "#9d6359", "$description": "Blush ramp step 500." },
+    "blush-600": { "$type": "color", "$value": "#784a43", "$description": "Blush ramp step 600 (darkest)." },
+
+    "sage-50": { "$type": "color", "$value": "#f7f8f3", "$description": "Sage ramp step 50 (lightest)." },
+    "sage-100": { "$type": "color", "$value": "#e8eadf", "$description": "Sage ramp step 100." },
+    "sage-200": { "$type": "color", "$value": "#cdd3bc", "$description": "Sage ramp step 200." },
+    "sage-300": { "$type": "color", "$value": "#aeb997", "$description": "Sage ramp step 300." },
+    "sage-400": { "$type": "color", "$value": "#8e9d75", "$description": "Sage ramp step 400." },
+    "sage-500": { "$type": "color", "$value": "#6f7f58", "$description": "Sage ramp step 500." },
+    "sage-600": { "$type": "color", "$value": "#566244", "$description": "Sage ramp step 600 (darkest)." },
+
+    "neutral-0": { "$type": "color", "$value": "#fafaf9", "$description": "Neutral ramp step 0 (brightest surface white)." },
+    "neutral-50": { "$type": "color", "$value": "#faf9f7", "$description": "Neutral ramp step 50." },
+    "neutral-100": { "$type": "color", "$value": "#f1eee9", "$description": "Neutral ramp step 100." },
+    "neutral-200": { "$type": "color", "$value": "#ddd7cf", "$description": "Neutral ramp step 200." },
+    "neutral-300": { "$type": "color", "$value": "#c3b9ad", "$description": "Neutral ramp step 300." },
+    "neutral-400": { "$type": "color", "$value": "#9d9185", "$description": "Neutral ramp step 400." },
+    "neutral-500": { "$type": "color", "$value": "#76695f", "$description": "Neutral ramp step 500." },
+    "neutral-600": { "$type": "color", "$value": "#5e554d", "$description": "Neutral ramp step 600." },
+    "neutral-700": { "$type": "color", "$value": "#463f39", "$description": "Neutral ramp step 700." },
+    "neutral-800": { "$type": "color", "$value": "#302b27", "$description": "Neutral ramp step 800." },
+    "neutral-900": { "$type": "color", "$value": "#17130f", "$description": "Neutral ramp step 900 (ink)." }
+  }
+}

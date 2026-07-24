@@ -1,0 +1,22 @@
+{
+  "color": {
+    "bg": { "$type": "color", "$value": "#fbf8f3", "$description": "Page background." },
+    "surface": { "$type": "color", "$value": "{color.neutral-0}", "$description": "Raised surface background." },
+    "surface-soft": { "$type": "color", "$value": "#f6f0ea", "$description": "Recessed / soft surface background." },
+    "text": { "$type": "color", "$value": "#17130f", "$description": "Primary body text." },
+    "text-soft": { "$type": "color", "$value": "#332b25", "$description": "Slightly softened body text." },
+    "text-muted": { "$type": "color", "$value": "#5f534a", "$description": "Muted / secondary text." },
+    "text-subtle": { "$type": "color", "$value": "#76695f", "$description": "Subtle / tertiary text." },
+    "border": {
+      "$type": "color",
+      "$value": "color-mix(in srgb, {color.neutral-700}, transparent 78%)",
+      "$description": "Default hairline border (neutral-700 at low opacity)."
+    },
+    "accent": { "$type": "color", "$value": "#8f554d", "$description": "Primary accent (clay)." },
+    "accent-soft": { "$type": "color", "$value": "#f2ddd7", "$description": "Soft accent tint." },
+    "accent-strong": { "$type": "color", "$value": "#653a35", "$description": "Strong / deep accent." },
+    "secondary": { "$type": "color", "$value": "#5f6f48", "$description": "Secondary accent (sage-green)." },
+    "secondary-soft": { "$type": "color", "$value": "#e2e7d6", "$description": "Soft secondary tint." },
+    "focus": { "$type": "color", "$value": "#4f6540", "$description": "Focus ring color." }
+  }
+}

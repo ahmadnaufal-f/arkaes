@@ -1,49 +1,12 @@
+/* Color and spacing tokens are generated from the DTCG sources in
+   packages/tokens/tokens/ via Style Dictionary (see scripts/build-tokens.mjs)
+   and imported here. Do NOT hand-author color or spacing custom properties in
+   this file — edit the JSON sources instead. Everything below (typography,
+   radius, shadow, motion, containers, cursor, layout) is still hand-authored;
+   those tiers are a follow-up migration. */
+@import "./tokens.generated.css";
+
 :root {
-  /* Brand primitives */
-  --ark-color-blush-50: #fff8f6;
-  --ark-color-blush-100: #f7e8e3;
-  --ark-color-blush-200: #e9c8be;
-  --ark-color-blush-300: #d7a79b;
-  --ark-color-blush-400: #bd8276;
-  --ark-color-blush-500: #9d6359;
-  --ark-color-blush-600: #784a43;
-
-  --ark-color-sage-50: #f7f8f3;
-  --ark-color-sage-100: #e8eadf;
-  --ark-color-sage-200: #cdd3bc;
-  --ark-color-sage-300: #aeb997;
-  --ark-color-sage-400: #8e9d75;
-  --ark-color-sage-500: #6f7f58;
-  --ark-color-sage-600: #566244;
-
-  --ark-color-neutral-0: #fafaf9;
-  --ark-color-neutral-50: #faf9f7;
-  --ark-color-neutral-100: #f1eee9;
-  --ark-color-neutral-200: #ddd7cf;
-  --ark-color-neutral-300: #c3b9ad;
-  --ark-color-neutral-400: #9d9185;
-  --ark-color-neutral-500: #76695f;
-  --ark-color-neutral-600: #5e554d;
-  --ark-color-neutral-700: #463f39;
-  --ark-color-neutral-800: #302b27;
-  --ark-color-neutral-900: #17130f;
-
-  /* Semantic colors: improved contrast */
-  --ark-color-bg: #fbf8f3;
-  --ark-color-surface: var(--ark-color-neutral-0);
-  --ark-color-surface-soft: #f6f0ea;
-  --ark-color-text: #17130f;
-  --ark-color-text-soft: #332b25;
-  --ark-color-text-muted: #5f534a;
-  --ark-color-text-subtle: #76695f;
-  --ark-color-border: color-mix(in srgb, #463f39, transparent 78%);
-  --ark-color-accent: #8f554d;
-  --ark-color-accent-soft: #f2ddd7;
-  --ark-color-accent-strong: #653a35;
-  --ark-color-secondary: #5f6f48;
-  --ark-color-secondary-soft: #e2e7d6;
-  --ark-color-focus: #4f6540;
-
   /* Typography: readability first */
   --ark-font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --ark-font-display: "Fraunces", "Cormorant Garamond", Georgia, serif;
@@ -81,21 +44,6 @@
   --ark-measure-sm: 56ch;
   --ark-measure-md: 68ch;
   --ark-measure-lg: 78ch;
-
-  /* Spacing */
-  --ark-space-0: 0;
-  --ark-space-1: 0.25rem;
-  --ark-space-2: 0.5rem;
-  --ark-space-3: 0.75rem;
-  --ark-space-4: 1rem;
-  --ark-space-5: 1.25rem;
-  --ark-space-6: 1.5rem;
-  --ark-space-8: 2rem;
-  --ark-space-10: 2.5rem;
-  --ark-space-12: 3rem;
-  --ark-space-16: 4rem;
-  --ark-space-20: 5rem;
-  --ark-space-24: 6rem;
 
   --ark-radius-xs: 0.375rem;
   --ark-radius-sm: 0.5rem;
@@ -141,31 +89,9 @@
     calc((100vw - var(--site-content-max-width)) / 2)
   );
 
-  /* Legacy aliases for the existing portfolio and UI components. */
-  --ark-color-warm-white: var(--ark-color-neutral-50);
-  --ark-color-parchment: var(--ark-color-neutral-100);
-  --ark-color-parchment-deep: var(--ark-color-neutral-200);
-  --ark-color-ink: var(--ark-color-neutral-900);
-  --ark-color-ink-muted: var(--ark-color-text-muted);
-  --ark-color-ink-ghost: var(--ark-color-text-subtle);
-  --ark-color-blush: var(--ark-color-blush-300);
-  --ark-color-blush-light: var(--ark-color-blush-200);
-  --ark-color-blush-deep: var(--ark-color-accent-strong);
-  --ark-color-blush-tint: var(--ark-color-accent-soft);
-  --ark-color-sage: var(--ark-color-secondary);
-  --ark-color-sage-light: var(--ark-color-sage-300);
-  --ark-color-sage-tint: var(--ark-color-secondary-soft);
-
-  --ark-color-background: var(--ark-color-bg);
-  --ark-color-surface-muted: var(--ark-color-surface-soft);
-  --ark-color-text-ghost: var(--ark-color-text-subtle);
-  --ark-color-border-strong: color-mix(in srgb, var(--ark-color-accent), transparent 54%);
-  --ark-color-accent-contrast: var(--ark-color-neutral-0);
-  --ark-color-counterpoint: var(--ark-color-secondary);
-  --ark-color-counterpoint-soft: var(--ark-color-secondary-soft);
-  --ark-color-success: var(--ark-color-secondary);
-  --ark-color-danger: #9f3f38;
-
+  /* Legacy typography/motion aliases for the existing portfolio and UI
+     components. (Legacy color aliases now live in the generated component
+     tier — see tokens/component/color.json.) */
   --ark-font-size-xs: var(--ark-text-xs);
   --ark-font-size-sm: var(--ark-text-sm);
   --ark-font-size-md: var(--ark-text-md);

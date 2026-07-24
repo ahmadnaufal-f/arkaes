@@ -42,7 +42,12 @@
     "./styles/tokens.css": "./src/styles/tokens.css",
     "./styles/theme.css": "./src/styles/theme.css",
     "./styles/reset.css": "./src/styles/reset.css",
-    "./styles/typography.css": "./src/styles/typography.css"
+    "./styles/typography.css": "./src/styles/typography.css",
+    "./generated": {
+      "types": "./src/generated/tokens.ts",
+      "default": "./src/generated/tokens.ts"
+    },
+    "./tokens.json": "./src/generated/tokens.json"
   },
   "publishConfig": {
     "access": "public",
@@ -62,15 +67,22 @@
       "./styles/tokens.css": "./dist/styles/tokens.css",
       "./styles/theme.css": "./dist/styles/theme.css",
       "./styles/reset.css": "./dist/styles/reset.css",
-      "./styles/typography.css": "./dist/styles/typography.css"
+      "./styles/typography.css": "./dist/styles/typography.css",
+      "./generated": {
+        "types": "./dist/generated/tokens.d.ts",
+        "default": "./dist/generated/tokens.js"
+      },
+      "./tokens.json": "./dist/tokens.json"
     }
   },
   "scripts": {
-    "build": "tsdown",
+    "generate": "node scripts/build-tokens.mjs",
+    "build": "pnpm generate && tsdown",
     "check": "tsc -p tsconfig.json --noEmit",
     "lint": "eslint src --max-warnings=0"
   },
   "devDependencies": {
+    "style-dictionary": "^5.5.0",
     "tsdown": "^0.22.3"
   }
 }

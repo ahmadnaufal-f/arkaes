@@ -21,6 +21,7 @@
     "dev:portfolio": "pnpm --filter portfolio dev",
     "format": "eslint . --fix",
     "lint": "turbo lint",
+    "lint:tokens": "node scripts/token-lint.mjs",
     "test": "turbo test",
     "changeset": "changeset",
     "version-packages": "changeset version",

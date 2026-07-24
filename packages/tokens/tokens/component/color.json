@@ -1,0 +1,30 @@
+{
+  "color": {
+    "warm-white": { "$type": "color", "$value": "{color.neutral-50}", "$description": "Legacy alias used by portfolio/UI components." },
+    "parchment": { "$type": "color", "$value": "{color.neutral-100}", "$description": "Legacy alias used by portfolio/UI components." },
+    "parchment-deep": { "$type": "color", "$value": "{color.neutral-200}", "$description": "Legacy alias used by portfolio/UI components." },
+    "ink": { "$type": "color", "$value": "{color.neutral-900}", "$description": "Legacy alias used by portfolio/UI components." },
+    "ink-muted": { "$type": "color", "$value": "{color.text-muted}", "$description": "Legacy alias used by portfolio/UI components." },
+    "ink-ghost": { "$type": "color", "$value": "{color.text-subtle}", "$description": "Legacy alias used by portfolio/UI components." },
+    "blush": { "$type": "color", "$value": "{color.blush-300}", "$description": "Legacy alias used by portfolio/UI components." },
+    "blush-light": { "$type": "color", "$value": "{color.blush-200}", "$description": "Legacy alias used by portfolio/UI components." },
+    "blush-deep": { "$type": "color", "$value": "{color.accent-strong}", "$description": "Legacy alias used by portfolio/UI components." },
+    "blush-tint": { "$type": "color", "$value": "{color.accent-soft}", "$description": "Legacy alias used by portfolio/UI components." },
+    "sage": { "$type": "color", "$value": "{color.secondary}", "$description": "Legacy alias used by portfolio/UI components." },
+    "sage-light": { "$type": "color", "$value": "{color.sage-300}", "$description": "Legacy alias used by portfolio/UI components." },
+    "sage-tint": { "$type": "color", "$value": "{color.secondary-soft}", "$description": "Legacy alias used by portfolio/UI components." },
+    "background": { "$type": "color", "$value": "{color.bg}", "$description": "Legacy alias used by portfolio/UI components." },
+    "surface-muted": { "$type": "color", "$value": "{color.surface-soft}", "$description": "Legacy alias used by portfolio/UI components." },
+    "text-ghost": { "$type": "color", "$value": "{color.text-subtle}", "$description": "Legacy alias used by portfolio/UI components." },
+    "border-strong": {
+      "$type": "color",
+      "$value": "color-mix(in srgb, {color.accent}, transparent 54%)",
+      "$description": "Legacy stronger border alias (accent at low opacity)."
+    },
+    "accent-contrast": { "$type": "color", "$value": "{color.neutral-0}", "$description": "Legacy alias: foreground on accent surfaces." },
+    "counterpoint": { "$type": "color", "$value": "{color.secondary}", "$description": "Legacy alias used by portfolio/UI components." },
+    "counterpoint-soft": { "$type": "color", "$value": "{color.secondary-soft}", "$description": "Legacy alias used by portfolio/UI components." },
+    "success": { "$type": "color", "$value": "{color.secondary}", "$description": "Legacy alias: success state color." },
+    "danger": { "$type": "color", "$value": "#9f3f38", "$description": "Legacy alias: danger / error state color." }
+  }
+}

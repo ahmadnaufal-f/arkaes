@@ -21,6 +21,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Token compliance
+        # Fail if @arkaes/ui source hard-codes raw hex colors or spacing-scale
+        # px/rem values instead of design tokens. See scripts/token-lint.mjs.
+        run: pnpm lint:tokens
+
       - name: Build
         run: pnpm build
 
