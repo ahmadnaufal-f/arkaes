@@ -1,0 +1,62 @@
+.blog-page {
+  padding-bottom: 120px;
+}
+
+.blog-hero-cover {
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+.blog-article {
+  margin-inline: auto;
+  max-width: 920px;
+  padding: 80px var(--site-content-padding) 0;
+}
+
+.blog-article-date {
+  color: var(--ark-color-text-muted);
+  display: block;
+  font-family: var(--ark-font-mono);
+  font-size: var(--ark-text-xs);
+  letter-spacing: 0.08em;
+  margin-bottom: var(--ark-space-6);
+  text-transform: uppercase;
+}
+
+/* The article measure: .ark-readable caps line length at --ark-measure-md,
+   which reads narrow against the 920px article column — recenter it. */
+.blog-body {
+  margin-inline: auto;
+}
+
+/* Shiki (`css-variables` theme) palette, mapped onto the design tokens so
+   code blocks follow the site theme instead of a hardcoded scheme. */
+.blog-body {
+  --astro-code-color-text: var(--ark-color-text);
+  --astro-code-color-background: var(--ark-color-surface-soft);
+  --astro-code-token-constant: var(--ark-color-blush-deep);
+  --astro-code-token-string: var(--ark-color-sage);
+  --astro-code-token-comment: var(--ark-color-text-subtle);
+  --astro-code-token-keyword: var(--ark-color-blush);
+  --astro-code-token-parameter: var(--ark-color-text-soft);
+  --astro-code-token-function: var(--ark-color-accent-strong);
+  --astro-code-token-string-expression: var(--ark-color-sage);
+  --astro-code-token-punctuation: var(--ark-color-text-muted);
+  --astro-code-token-link: var(--ark-color-accent-strong);
+}
+
+.blog-footer-nav {
+  border-top: 1px solid var(--ark-color-border);
+  margin-inline: auto;
+  margin-top: 64px;
+  max-width: var(--ark-measure-md);
+  padding-top: var(--ark-space-6);
+}
+
+@media (max-width: 900px) {
+  .blog-article {
+    padding-top: 56px;
+  }
+}

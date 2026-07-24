@@ -1,0 +1,21 @@
+/* Blog-specific additions on top of the shared listing shell
+   (_filterable-listing.css). */
+
+/* Cover images fill the card's media band the way CaseStudyVisual does for
+   work listings; the height matches the shared --thumbnail-height. */
+.blog-listing .blog-cover {
+  display: block;
+  height: var(--thumbnail-height, 200px);
+  object-fit: cover;
+  width: 100%;
+}
+
+.blog-listing .blog-card-date {
+  color: var(--ark-color-text-muted);
+  display: block;
+  font-family: var(--ark-font-mono);
+  font-size: var(--ark-text-xs);
+  letter-spacing: 0.08em;
+  margin-top: var(--ark-space-2);
+  text-transform: uppercase;
+}

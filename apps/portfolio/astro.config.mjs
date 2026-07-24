@@ -1,3 +1,4 @@
+import process from "node:process";
 import vercel from "@astrojs/vercel";
 import { defineConfig, fontProviders } from "astro/config";
 
@@ -5,9 +6,22 @@ export default defineConfig({
   site: "https://arkaes.dev",
   // Pages stay static (prerendered) by default; the adapter only kicks in for
   // routes that opt into on-demand rendering via `export const prerender = false`
-  // — currently just the `/api/chat` chatbot endpoint, which needs a server to
-  // hold the OpenAI API key.
-  adapter: vercel(),
+  // — the `/api/chat` chatbot endpoint (needs a server to hold the OpenAI API
+  // key) and the blog routes, which fetch from Contentful and are ISR-cached.
+  adapter: vercel({
+    // ISR: on-demand routes render once, then serve from the edge cache like
+    // static pages. Contentful's publish webhook hits /api/revalidate, which
+    // uses the bypass token to refresh just the affected blog paths — so a
+    // publish never needs a rebuild or a commit. `expiration` is a safety net
+    // in case a webhook is missed.
+    isr: {
+      expiration: 60 * 60,
+      bypassToken: process.env.VERCEL_ISR_BYPASS_TOKEN,
+      // API endpoints must run on every request: /api/revalidate performs the
+      // invalidation itself and /api/chat streams per-user responses.
+      exclude: ["/api/revalidate", "/api/chat"],
+    },
+  }),
 
   // Prefetch in-viewport links so ClientRouter has the next page's HTML ready
   // before the click — this closes the navigation flash window. The site is

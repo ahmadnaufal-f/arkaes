@@ -10,12 +10,21 @@ import "../styles/global.css";
 interface Props {
   description?: string;
   title?: string;
+  /** Absolute URL for the social share image (e.g. a blog post cover). */
+  image?: string;
+  ogType?: "website" | "article";
 }
 
 const {
   description = "A performance-first portfolio powered by Astro and a small Lit-based design system.",
   title = "Arkaes Portfolio",
+  image,
+  ogType = "website",
 } = Astro.props;
+
+// Astro.site is set in astro.config.mjs; fall back to the request URL so
+// preview deployments still emit sane absolute URLs.
+const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
 ---
 
 <!doctype html>
@@ -28,6 +37,17 @@ const {
     <link rel="icon" type="image/png" sizes="512x512" href="/favicon-512.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/favicon-180.png" />
     <meta name="theme-color" content="#8f554d" />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content="Arkaes" />
+    {image && <meta property="og:image" content={image} />}
+    <meta name="twitter:card" content={image ? "summary_large_image" : "summary"} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    {image && <meta name="twitter:image" content={image} />}
     <!-- Self-hosted fonts (see astro.config.mjs `fonts`). Emits @font-face +
          <link rel="preload"> for the woff2 files so text renders in the correct
          family immediately, without the fallback→web-font swap. -->

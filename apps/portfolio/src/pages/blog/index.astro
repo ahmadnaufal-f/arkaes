@@ -1,0 +1,24 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import BlogListing from "../../components/BlogListing.astro";
+import { getAllPosts } from "../../lib/contentful";
+
+// On-demand + ISR: posts live in Contentful, so this page fetches at request
+// time and Vercel caches the rendered HTML at the edge. Publishing in
+// Contentful refreshes it via /api/revalidate — no rebuild, no commit.
+export const prerender = false;
+
+const posts = await getAllPosts();
+---
+
+<BaseLayout
+  title="Blog | Arkaes"
+  description="Writing on frontend engineering, design systems, and product craft."
+>
+  <BlogListing
+    eyebrow="Blog"
+    title="Notes on engineering and craft."
+    description="Writing on frontend engineering, design systems, and product craft — filterable by category and tag."
+    posts={posts}
+  />
+</BaseLayout>
