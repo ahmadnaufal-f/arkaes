@@ -242,6 +242,34 @@ Notes:
 Each element ships its own `HTMLElementTagNameMap` declaration, so `document.querySelector`
 and the single-element register subpaths are fully typed.
 
+## MCP server (for coding agents)
+
+This package ships a local [Model Context Protocol](https://modelcontextprotocol.io)
+server so agents (and you) can query the component API and design tokens **offline** —
+no network, no hosted endpoint. It reads the generated Custom Elements Manifest and the
+`@arkaes/tokens` source at startup and speaks over stdio.
+
+Point your MCP client at it:
+
+```json
+{
+  "mcpServers": {
+    "arkaes": {
+      "command": "npx",
+      "args": ["--package", "@arkaes/ui", "arkaes-mcp"]
+    }
+  }
+}
+```
+
+Three tools:
+
+| Tool | Use it to |
+| --- | --- |
+| `list_components` | Get a compact index of every element — tag, one-line summary, variant names, slot names. Call this first. |
+| `get_component_api` | Get the full API (props, events, slots, CSS custom properties, CSS parts) plus a canonical usage snippet for one or more elements. |
+| `get_tokens` | Query the `--ark-*` design tokens by `category` (color, spacing, typography, …) or name `prefix`. With no arguments it lists the categories. |
+
 ## License
 
 MIT

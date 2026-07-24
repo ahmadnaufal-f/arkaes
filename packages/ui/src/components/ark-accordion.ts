@@ -23,6 +23,15 @@ import { defineElement } from "../define-element";
  *   --accordion-heading-size    (default: clamp(1.25rem, 2vw, 1.75rem))
  *   --accordion-duration        (default: 360ms)
  *   --accordion-body-padding    (default: 40px)
+ *
+ * @summary A single expandable accordion section.
+ * @slot trigger - Optional rich-text heading; falls back to the `heading` attribute.
+ * @slot - The expandable body content.
+ * @fires ark-accordion:toggle - Bubbles, composed. detail: `{ open: boolean }`.
+ * @cssprop [--accordion-trigger-padding=28px 0] - Padding around the trigger row.
+ * @cssprop [--accordion-heading-size=clamp(1.25rem, 2vw, 1.75rem)] - Heading font size.
+ * @cssprop [--accordion-duration=360ms] - Expand/collapse animation duration.
+ * @cssprop [--accordion-body-padding=40px] - Padding around the body content.
  */
 export class ArkAccordionItem extends LitElement {
   static override properties = {

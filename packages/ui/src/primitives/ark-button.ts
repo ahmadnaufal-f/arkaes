@@ -11,6 +11,14 @@ export enum ButtonVariant {
   Ghost = "ghost",
 }
 
+/**
+ * Primary action control. Renders a native `<button>` by default, or an `<a>`
+ * when `href` is set. Shows a spinner while `loading` is true or while a
+ * `loadingPromise` is pending. The label goes in the default slot.
+ *
+ * @summary Button / link action.
+ * @slot - The button label (and optional inline icon).
+ */
 export class ArkButton extends LitElement {
   static override properties = {
     disabled: { reflect: true, type: Boolean },

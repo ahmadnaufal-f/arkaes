@@ -4,6 +4,14 @@ import { ifDefined } from "lit/directives/if-defined.js";
 import { when } from "lit/directives/when.js";
 import { defineElement } from "../define-element";
 
+/**
+ * On/off switch with an inline label. `label-position` places the label before
+ * or after the switch. The label is set via the `label` attribute (not a slot).
+ *
+ * @summary Toggle switch with label.
+ * @fires input - On toggle. detail: `{ checked: boolean, value: string }`.
+ * @fires change - On toggle. detail: `{ checked: boolean, value: string }`.
+ */
 export class ArkToggle extends LitElement {
   static formAssociated = true;
 

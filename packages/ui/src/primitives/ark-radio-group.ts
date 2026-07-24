@@ -7,6 +7,17 @@ import type { ArkRadio } from "./ark-radio";
 
 const RADIO_SELECTOR = "ark-radio";
 
+/**
+ * Groups `ark-radio` children into a single selectable set. Owns the shared
+ * `name`, the selected `value`, roving-tabindex keyboard navigation, and the
+ * group label/hint. Slot the `ark-radio` options into the default slot and read
+ * the selection from this element's `change` event.
+ *
+ * @summary Radio group (wraps ark-radio options).
+ * @slot - The `ark-radio` options.
+ * @fires input - On selection change. detail: `{ value: string }`.
+ * @fires change - On selection change. detail: `{ value: string }`.
+ */
 export class ArkRadioGroup extends LitElement {
   static override properties = {
     name: { type: String, reflect: true },

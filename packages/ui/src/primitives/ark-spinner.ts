@@ -11,6 +11,15 @@ export enum SpinnerVariant {
   Dots = "dots",
 }
 
+/**
+ * Loading indicator with five visual variants. Set `decorative` to hide it from
+ * assistive tech (e.g. inside a button that already announces its busy state),
+ * or provide a `label` for a standalone accessible status. Color follows
+ * `--spinner-color` (defaults to the accent token).
+ *
+ * @summary Loading spinner.
+ * @cssprop [--spinner-color=var(--ark-color-accent)] - Stroke color of the spinner.
+ */
 export class ArkSpinner extends LitElement {
   static override properties = {
     variant: { type: String, reflect: true },

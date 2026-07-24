@@ -16,6 +16,12 @@ import { defineElement } from "../define-element";
  * containing block is the page ancestor (e.g. `.cs-page`) rather than the host
  * box, letting it stay pinned across the whole article. The stick offset is
  * configurable via the `--ark-project-header-stick-top` custom property.
+ *
+ * @summary Sticky project / case-study header.
+ * @slot visual - The page thumbnail / watermark visual.
+ * @slot title - Overrides the `heading` attribute with custom markup.
+ * @slot tag - The tag / stack chips.
+ * @cssprop --ark-project-header-stick-top - Offset from the top when pinned.
  */
 export class ArkProjectHeader extends LitElement {
   static override properties = {

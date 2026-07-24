@@ -12,6 +12,12 @@ import { defineArkBadge } from "../primitives/ark-badge";
  * The attribute API covers the common cases; named slots (`eyebrow`, `title`,
  * `lead`) override any field with custom markup, and the default slot appends
  * content below the lead.
+ *
+ * @summary Page-level header (eyebrow + title + lead).
+ * @slot eyebrow - Overrides the `eyebrow` attribute with custom markup.
+ * @slot title - Overrides the `title` attribute with custom markup.
+ * @slot lead - Overrides the `lead` attribute with custom markup.
+ * @slot - Supplementary content appended below the lead (e.g. a meta list).
  */
 export class ArkPageHeader extends LitElement {
   static override properties = {
