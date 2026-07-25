@@ -5,7 +5,7 @@ import "@arkaes/ui/register/ark-dropdown";
 import "@arkaes/ui/register/ark-empty";
 import "@arkaes/ui/register/ark-page-header";
 import type { BlogPost } from "../lib/contentful";
-import { categoriesOf, tagsOf } from "../lib/contentful";
+import { categoriesOf, coverTransitionName, tagsOf } from "../lib/contentful";
 // Shares the listing shell (grid, filter bar, empty state) with the
 // projects/case-studies listings; blog-specific bits live in _blog-listing.css.
 import "./_filterable-listing.css";
@@ -77,6 +77,7 @@ const dateFormat = new Intl.DateTimeFormat("en", { dateStyle: "long" });
                 src={post.cover.src}
                 alt={post.cover.alt}
                 loading="lazy"
+                style={`view-transition-name: ${coverTransitionName(post.slug)};`}
               />
             )}
             {post.tags.map((tag) => <ark-chip slot="tag">{tag}</ark-chip>)}
