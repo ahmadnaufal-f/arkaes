@@ -39,7 +39,7 @@ Fresh HTML stored in the edge cache
    | `slug`        | Short text            | required, unique — becomes the URL     |
    | `excerpt`     | Short text            | card summary + meta description        |
    | `category`    | Short text            | add an "Accept only specified values" validation with your category list |
-   | `tags`        | Short text, list      |                                        |
+   | `tags`        | Short text, list — or plain Short text | either works: a plain Short text field is split on commas and trimmed |
    | `publishDate` | Date & time           | required                               |
    | `coverImage`  | Media (one asset)     | optional                               |
    | `body`        | Long text             | the markdown body (GFM supported)      |

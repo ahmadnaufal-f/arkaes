@@ -18,7 +18,7 @@ interface BlogPostSkeleton {
     slug: EntryFieldTypes.Symbol;
     excerpt: EntryFieldTypes.Symbol;
     category: EntryFieldTypes.Symbol;
-    tags: EntryFieldTypes.Array<EntryFieldTypes.Symbol>;
+    tags: EntryFieldTypes.Symbol | EntryFieldTypes.Array<EntryFieldTypes.Symbol>;
     publishDate: EntryFieldTypes.Date;
     coverImage: EntryFieldTypes.AssetLink;
     body: EntryFieldTypes.Text;
@@ -52,6 +52,17 @@ const getClient = () => {
 
 type BlogPostEntry = Entry<BlogPostSkeleton, "WITHOUT_UNRESOLVABLE_LINKS">;
 
+/**
+ * `tags` may arrive as a list field (string[]) or as a single comma-separated
+ * short-text field, depending on how the content type is configured. The
+ * skeleton above is a compile-time assertion only — Contentful doesn't enforce
+ * it — so normalize whatever actually comes back.
+ */
+const toTags = (value: unknown): string[] => {
+  const raw = Array.isArray(value) ? value : String(value ?? "").split(",");
+  return raw.map((tag) => (tag == null ? "" : String(tag).trim())).filter(Boolean);
+};
+
 const toPost = (entry: BlogPostEntry): BlogPost => {
   const { title, slug, excerpt, category, tags, publishDate, coverImage, body, featured } =
     entry.fields;
@@ -61,7 +72,7 @@ const toPost = (entry: BlogPostEntry): BlogPost => {
     slug: slug ?? "",
     excerpt: excerpt ?? "",
     category: category ?? "",
-    tags: tags?.filter((tag): tag is string => Boolean(tag)) ?? [],
+    tags: toTags(tags),
     publishDate: new Date(publishDate ?? entry.sys.createdAt),
     cover: coverFile?.url
       ? {
