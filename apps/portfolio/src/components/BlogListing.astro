@@ -1,0 +1,145 @@
+---
+import "@arkaes/ui/register/ark-button";
+import "@arkaes/ui/register/ark-chip";
+import "@arkaes/ui/register/ark-dropdown";
+import "@arkaes/ui/register/ark-empty";
+import "@arkaes/ui/register/ark-page-header";
+import type { BlogPost } from "../lib/contentful";
+import { categoriesOf, tagsOf } from "../lib/contentful";
+// Shares the listing shell (grid, filter bar, empty state) with the
+// projects/case-studies listings; blog-specific bits live in _blog-listing.css.
+import "./_filterable-listing.css";
+import "./_blog-listing.css";
+
+interface Props {
+  eyebrow: string;
+  title: string;
+  description?: string;
+  posts: BlogPost[];
+}
+
+const { eyebrow, title, description, posts } = Astro.props;
+
+const categories = categoriesOf(posts);
+const tags = tagsOf(posts);
+
+const dateFormat = new Intl.DateTimeFormat("en", { dateStyle: "long" });
+---
+
+<section class="page-section listing blog-listing">
+  <ark-page-header eyebrow={eyebrow} heading={title} lead={description} />
+
+  <div class="filter-bar" data-blog-filter-bar>
+    <ark-dropdown
+      name="category"
+      data-filter="category"
+      label="Filter by category"
+      placeholder="All categories"
+      value=""
+    >
+      <ark-dropdown-option value="">All categories</ark-dropdown-option>
+      {
+        categories.map((category) => (
+          <ark-dropdown-option value={category}>{category}</ark-dropdown-option>
+        ))
+      }
+    </ark-dropdown>
+
+    <ark-dropdown
+      name="tag"
+      data-filter="tag"
+      label="Filter by tag"
+      placeholder="All tags"
+      value=""
+    >
+      <ark-dropdown-option value="">All tags</ark-dropdown-option>
+      {tags.map((tag) => <ark-dropdown-option value={tag}>{tag}</ark-dropdown-option>)}
+    </ark-dropdown>
+  </div>
+
+  <div class="project-grid" data-listing-grid>
+    {
+      posts.map((post) => (
+        <div class="listing-card" data-category={post.category} data-tags={post.tags.join("\n")}>
+          <ark-case-study-card
+            category={post.category}
+            href={`/blog/${post.slug}`}
+            summary={post.excerpt}
+            title={post.title}
+            variant="compact"
+          >
+            {post.cover && (
+              <img
+                slot="media"
+                class="blog-cover"
+                src={post.cover.src}
+                alt={post.cover.alt}
+                loading="lazy"
+              />
+            )}
+            {post.tags.map((tag) => <ark-chip slot="tag">{tag}</ark-chip>)}
+          </ark-case-study-card>
+          <time class="blog-card-date" datetime={post.publishDate.toISOString()}>
+            {dateFormat.format(post.publishDate)}
+          </time>
+        </div>
+      ))
+    }
+  </div>
+
+  <ark-empty
+    class="listing-empty"
+    data-listing-empty
+    eyebrow="No posts"
+    heading="Nothing here"
+    heading-emphasis="just yet."
+    description="No posts match this combination of filters. Try widening your selection."
+    hidden></ark-empty>
+
+  <div class="listing-footer">
+    <ark-button href="/" variant="ghost">&larr; Back to home page</ark-button>
+  </div>
+</section>
+
+<script>
+  // Same show/hide mechanics as FilterableListing, keyed on category + tag.
+  // Tags are matched exactly against the newline-joined data-tags list, since
+  // tag names may contain spaces.
+  function initBlogListing() {
+    document.querySelectorAll<HTMLElement>("[data-blog-filter-bar]").forEach((bar) => {
+      const section = bar.closest(".listing");
+      if (!section) return;
+
+      const cards = Array.from(section.querySelectorAll<HTMLElement>(".listing-card"));
+      const empty = section.querySelector<HTMLElement>("[data-listing-empty]");
+      const state = { category: "", tag: "" };
+
+      const apply = () => {
+        let visible = 0;
+        for (const card of cards) {
+          const category = card.dataset.category ?? "";
+          const cardTags = (card.dataset.tags ?? "").split("\n").filter(Boolean);
+          const matchCategory = !state.category || category === state.category;
+          const matchTag = !state.tag || cardTags.includes(state.tag);
+          const show = matchCategory && matchTag;
+          card.hidden = !show;
+          if (show) visible += 1;
+        }
+        if (empty) empty.hidden = visible !== 0;
+      };
+
+      bar.querySelectorAll<HTMLElement>("[data-filter]").forEach((dropdown) => {
+        dropdown.addEventListener("change", (event) => {
+          const detail = (event as CustomEvent<{ value: string }>).detail;
+          const key = dropdown.dataset.filter as "category" | "tag";
+          state[key] = detail?.value ?? "";
+          apply();
+        });
+      });
+
+      apply();
+    });
+  }
+
+  document.addEventListener("astro:page-load", initBlogListing);
+</script>

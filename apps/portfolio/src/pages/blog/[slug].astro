@@ -1,0 +1,54 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getPostBySlug } from "../../lib/contentful";
+import { renderPostBody } from "../../lib/markdown";
+import "./_blog.css";
+
+// On-demand + ISR, same contract as the blog index: rendered once per publish
+// (or per `expiration` window), then served from the edge cache.
+export const prerender = false;
+
+const { slug } = Astro.params;
+const post = slug ? await getPostBySlug(slug) : null;
+if (!post) {
+  return new Response("Not found", { status: 404 });
+}
+
+const bodyHtml = await renderPostBody(post.body);
+const dateFormat = new Intl.DateTimeFormat("en", { dateStyle: "long" });
+---
+
+<BaseLayout
+  title={`${post.title} | Arkaes`}
+  description={post.excerpt}
+  image={post.cover?.src}
+  ogType="article"
+>
+  <article class="blog-page">
+    <ark-project-header eyebrow={post.category} heading={post.title}>
+      {
+        post.cover && (
+          <img
+            slot="visual"
+            class="blog-hero-cover"
+            src={post.cover.src}
+            alt={post.cover.alt}
+          />
+        )
+      }
+      {post.tags.map((tag) => <ark-chip slot="tag">{tag}</ark-chip>)}
+    </ark-project-header>
+
+    <div class="blog-article">
+      <time class="blog-article-date" datetime={post.publishDate.toISOString()}>
+        {dateFormat.format(post.publishDate)}
+      </time>
+
+      <div class="ark-readable blog-body" set:html={bodyHtml} />
+
+      <div class="blog-footer-nav">
+        <ark-button href="/blog" variant="ghost">&larr; Back to blog</ark-button>
+      </div>
+    </div>
+  </article>
+</BaseLayout>
