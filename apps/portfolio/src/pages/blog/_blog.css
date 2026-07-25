@@ -2,9 +2,18 @@
   padding-bottom: 120px;
 }
 
-.blog-hero-cover {
+/* Article cover: sits above the body and matches its measure exactly, so both
+   share a left edge. Kept out of ark-project-header's visual slot so it has no
+   scroll animation. --blog-cover-max-height is a knob for retuning the cap. */
+.blog-article-cover {
+  --blog-cover-max-height: 420px;
+
+  border-radius: var(--ark-radius-sm);
   display: block;
-  height: 100%;
+  height: auto;
+  margin-bottom: var(--ark-space-6);
+  max-height: var(--blog-cover-max-height);
+  max-width: var(--ark-measure-md);
   object-fit: cover;
   width: 100%;
 }

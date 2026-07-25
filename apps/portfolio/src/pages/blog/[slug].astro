@@ -1,6 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { getPostBySlug } from "../../lib/contentful";
+import { coverTransitionName, getPostBySlug } from "../../lib/contentful";
 import { renderPostBody } from "../../lib/markdown";
 import "./_blog.css";
 
@@ -25,17 +25,10 @@ const dateFormat = new Intl.DateTimeFormat("en", { dateStyle: "long" });
   ogType="article"
 >
   <article class="blog-page">
+    {/* The cover deliberately stays out of slot="visual": that slot is
+        scroll-animated (scaled + collapsed as the header sticks), which isn't
+        wanted for a blog cover. It renders with the body instead. */}
     <ark-project-header eyebrow={post.category} heading={post.title}>
-      {
-        post.cover && (
-          <img
-            slot="visual"
-            class="blog-hero-cover"
-            src={post.cover.src}
-            alt={post.cover.alt}
-          />
-        )
-      }
       {post.tags.map((tag) => <ark-chip slot="tag">{tag}</ark-chip>)}
     </ark-project-header>
 
@@ -43,6 +36,17 @@ const dateFormat = new Intl.DateTimeFormat("en", { dateStyle: "long" });
       <time class="blog-article-date" datetime={post.publishDate.toISOString()}>
         {dateFormat.format(post.publishDate)}
       </time>
+
+      {
+        post.cover && (
+          <img
+            class="blog-article-cover"
+            src={post.cover.src}
+            alt={post.cover.alt}
+            style={`view-transition-name: ${coverTransitionName(post.slug)};`}
+          />
+        )
+      }
 
       <div class="ark-readable blog-body" set:html={bodyHtml} />
 
