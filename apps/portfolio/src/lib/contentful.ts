@@ -57,10 +57,17 @@ type BlogPostEntry = Entry<BlogPostSkeleton, "WITHOUT_UNRESOLVABLE_LINKS">;
  * short-text field, depending on how the content type is configured. The
  * skeleton above is a compile-time assertion only — Contentful doesn't enforce
  * it — so normalize whatever actually comes back.
+ *
+ * Capitalizing here (rather than in a view) keeps one spelling of each tag
+ * everywhere: the chip labels, the listing card's `data-tags`, and the filter
+ * dropdown's option values all have to match exactly for filtering to work.
  */
 const toTags = (value: unknown): string[] => {
   const raw = Array.isArray(value) ? value : String(value ?? "").split(",");
-  return raw.map((tag) => (tag == null ? "" : String(tag).trim())).filter(Boolean);
+  return raw
+    .map((tag) => (tag == null ? "" : String(tag).trim()))
+    .filter(Boolean)
+    .map((tag) => tag.charAt(0).toUpperCase() + tag.slice(1));
 };
 
 const toPost = (entry: BlogPostEntry): BlogPost => {
