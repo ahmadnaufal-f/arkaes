@@ -37,7 +37,10 @@ Sources live in `tokens/`, in three tiers:
 Each token uses the DTCG keys `$value`, `$type` (`color` or `dimension`), and
 `$description`.
 
-Run generation (also runs automatically as the first step of `pnpm build`):
+Generation runs automatically on `pnpm install` (via the root `postinstall`) and
+as the first step of `pnpm build`, so the generated CSS is always present before
+any app builds — including standalone app builds on Vercel that bypass
+Turborepo. Run it manually with:
 
 ```sh
 pnpm --filter @arkaes/tokens generate
