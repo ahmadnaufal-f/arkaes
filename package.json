@@ -14,6 +14,7 @@
   },
   "type": "module",
   "scripts": {
+    "postinstall": "pnpm --filter @arkaes/tokens run generate",
     "build": "turbo build",
     "check": "turbo check",
     "dev": "turbo dev",
@@ -21,6 +22,7 @@
     "dev:portfolio": "pnpm --filter portfolio dev",
     "format": "eslint . --fix",
     "lint": "turbo lint",
+    "lint:tokens": "node scripts/token-lint.mjs",
     "test": "turbo test",
     "changeset": "changeset",
     "version-packages": "changeset version",

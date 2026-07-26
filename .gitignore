@@ -10,3 +10,9 @@ coverage/
 storybook-static
 .vscode/
 .npmrc
+.env*
+
+# Generated design-token artifacts (Style Dictionary output from tokens/**/*.json).
+# Regenerate with `pnpm --filter @arkaes/tokens generate`.
+packages/tokens/src/styles/tokens.generated.css
+packages/tokens/src/generated/
