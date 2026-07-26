@@ -33,12 +33,29 @@ export function usageDir(root = findPackageRoot()): string {
 }
 
 /**
- * Resolve the design token source of truth. `@arkaes/tokens` exports the CSS
- * file directly, so we resolve it through Node rather than guessing a path —
- * this works against both the workspace source and the published dist.
+ * Resolve the hand-authored token CSS. `@arkaes/tokens` exports the CSS file
+ * directly, so we resolve it through Node rather than guessing a path — this
+ * works against both the workspace source and the published dist. As of the
+ * DTCG migration this file holds only typography, radius, shadow, motion, and
+ * layout tokens; color and spacing are generated (see `tokensJsonPath`).
  */
 export function tokensCssPath(): string {
   return require.resolve("@arkaes/tokens/tokens.css");
+}
+
+/**
+ * Resolve the DTCG flat token JSON (`{ "color.accent": { value, type,
+ * description }, … }`) that Style Dictionary generates from the token sources.
+ * It is the machine-readable source of truth for color and spacing, with
+ * references already dereferenced. Returns null if the installed
+ * `@arkaes/tokens` predates the DTCG migration.
+ */
+export function tokensJsonPath(): string | null {
+  try {
+    return require.resolve("@arkaes/tokens/tokens.json");
+  } catch {
+    return null;
+  }
 }
 
 export function readFile(path: string): string {

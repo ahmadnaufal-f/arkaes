@@ -119,11 +119,13 @@ export function createServer(): McpServer {
       title: "Get Arkaes design tokens",
       description:
         "Query Arkaes design tokens — the --ark-* CSS custom properties that theme every "
-        + "component. Filter by `category` (color, spacing, typography, radius, shadow, motion, "
-        + "layout) and/or `prefix` (prefix match on the token name, e.g. 'color-accent' or "
-        + "'space'). With NO arguments it returns the list of available categories with counts, "
-        + "never the full token dump. Use it to pick real token values instead of hardcoding "
-        + "colors, spacing, or type.",
+        + "component. Each token includes its CSS custom property, raw value, fully resolved "
+        + "value, and category; color and spacing tokens (generated from DTCG sources) also "
+        + "carry a type and description. Filter by `category` (color, spacing, typography, "
+        + "radius, shadow, motion, layout) and/or `prefix` (prefix match on the token name, "
+        + "e.g. 'color-accent' or 'space'). With NO arguments it returns the list of available "
+        + "categories with counts, never the full token dump. Use it to pick real token values "
+        + "instead of hardcoding colors, spacing, or type.",
       inputSchema: {
         category: z
           .string()
