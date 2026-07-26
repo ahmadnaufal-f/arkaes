@@ -65,7 +65,9 @@ Outputs (all git-ignored — regenerate rather than hand-edit):
 CI runs `pnpm lint:tokens` (`scripts/token-lint.mjs`), which fails the build if
 `@arkaes/ui` source hard-codes a raw hex color, or a px/rem value that matches a
 `--ark-space-*` token used in a spacing property (`padding`/`margin`/`gap`/`inset`).
-Layout dimensions and font sizes with no token equivalent are not flagged.
+Layout dimensions and font sizes with no token equivalent are not flagged. The
+spacing values it checks are read from the generated `tokens.json`, so adding a
+step to the scale automatically extends what the linter enforces.
 
 For a genuine one-off, add an escape-hatch comment on the offending line:
 
