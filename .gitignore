@@ -9,6 +9,7 @@ coverage/
 .tmp
 storybook-static
 custom-elements.json
+node-compile-cache/
 .vscode/
 .npmrc
 .env*
