@@ -21,10 +21,54 @@ const requireEnv = (name: string): string => {
   return value;
 };
 
+/**
+ * Best-effort read of the Postgres role a Supabase API key maps to.
+ *
+ * Legacy keys are unsigned-readable JWTs carrying a `role` claim ("anon" or
+ * "service_role"); newer keys are opaque and only tell you apart by prefix.
+ * Returns null when the format isn't recognised — this is a diagnostic, so it
+ * must never block a key it simply doesn't understand.
+ *
+ * Worth the few lines because the anon and service-role keys look alike in the
+ * dashboard, and swapping them surfaces as an opaque "violates row-level
+ * security policy" from Postgres rather than anything mentioning the key.
+ */
+const readKeyRole = (key: string): string | null => {
+  if (key.startsWith("sb_secret_")) return "service_role";
+  if (key.startsWith("sb_publishable_")) return "anon";
+
+  const payload = key.split(".")[1];
+  if (!payload) return null;
+
+  try {
+    const claims: unknown = JSON.parse(Buffer.from(payload, "base64url").toString("utf8"));
+    if (typeof claims !== "object" || claims === null) return null;
+    const role = (claims as { role?: unknown }).role;
+    return typeof role === "string" ? role : null;
+  } catch {
+    return null;
+  }
+};
+
+const WRONG_KEY_HINT =
+  "`keepalive_heartbeat` has RLS enabled with no public policy, so only the "
+  + "service-role key can write to it. Copy it from Project Settings → API "
+  + "(labelled `service_role` `secret`, not `anon` `public`).";
+
 const main = async (): Promise<void> => {
+  const supabaseKey = requireEnv("SUPABASE_SERVICE_ROLE_KEY");
+
+  const role = readKeyRole(supabaseKey);
+  if (role !== null && role !== "service_role") {
+    throw new Error(
+      `SUPABASE_SERVICE_ROLE_KEY holds a "${role}" key, not the service-role key. `
+      + WRONG_KEY_HINT,
+    );
+  }
+
   const supabase = createClient(
     requireEnv("SUPABASE_URL"),
-    requireEnv("SUPABASE_SERVICE_ROLE_KEY"),
+    supabaseKey,
     { auth: { persistSession: false } },
   );
 
@@ -39,7 +83,12 @@ const main = async (): Promise<void> => {
     .select("id, pinged_at")
     .single();
 
-  if (error) throw new Error(`Heartbeat write failed: ${error.message}`);
+  if (error) {
+    // An RLS rejection means the key authenticated but did not bypass RLS, so
+    // it is not the service-role key — say so, since Postgres won't.
+    const hint = /row-level security/i.test(error.message) ? ` ${WRONG_KEY_HINT}` : "";
+    throw new Error(`Heartbeat write failed: ${error.message}.${hint}`);
+  }
 
   console.log(`[keepalive] wrote heartbeat: id=${data.id} pinged_at=${data.pinged_at}`);
 };
