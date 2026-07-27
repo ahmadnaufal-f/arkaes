@@ -11,6 +11,7 @@ storybook-static
 .vscode/
 .npmrc
 .env*
+node-compile-cache/
 
 # Generated design-token artifacts (Style Dictionary output from tokens/**/*.json).
 # Regenerate with `pnpm --filter @arkaes/tokens generate`.
