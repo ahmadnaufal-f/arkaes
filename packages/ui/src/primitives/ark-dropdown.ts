@@ -56,6 +56,10 @@ export class ArkDropdownOption extends LitElement {
  * slotted `ark-dropdown-option` children (a hidden data source); the trigger
  * and listbox are rendered in this element's shadow DOM. Selecting an option
  * dispatches a composed, bubbling `change` event with `{ value, name }`.
+ *
+ * @summary Single-select combobox.
+ * @slot - The `ark-dropdown-option` children (a hidden data source).
+ * @fires change - On selection. detail: `{ value: string, name: string }`.
  */
 export class ArkDropdown extends LitElement {
   static override properties = {

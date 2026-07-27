@@ -470,7 +470,11 @@ export class ArkNavigationCta extends LitElement {
 }
 
 /**
- * ArkNavigationMobileToggle toggles the mobile menu.
+ * ArkNavigationMobileToggle toggles the mobile menu. Place it inside
+ * ark-navigation-root; the root listens for its event.
+ *
+ * @summary Mobile menu toggle button.
+ * @fires ark-nav:menu-toggle - Bubbles, composed. detail: `{ open: boolean }`.
  */
 export class ArkNavigationMobileToggle extends LitElement {
   static override properties = {

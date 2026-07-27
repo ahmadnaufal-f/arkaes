@@ -8,6 +8,10 @@ export type ArkCaseStudyCardVariant = "featured" | "compact";
 /**
  * ArkCaseStudyCard is a linked portfolio card composition with optional media,
  * category, summary, and tag content.
+ *
+ * @summary Linked portfolio / case-study card.
+ * @slot media - The card thumbnail / cover media (updates dynamically on slotchange).
+ * @slot tag - The tag / stack chips.
  */
 export class ArkCaseStudyCard extends LitElement {
   static override properties = {

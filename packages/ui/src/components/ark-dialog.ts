@@ -14,7 +14,16 @@ const getDeepActiveElement = (): HTMLElement | null => {
 };
 
 /**
- * ArkDialogRoot manages the open state of the dialog.
+ * ArkDialogRoot manages the open state of the dialog. Compose it with
+ * ark-dialog-trigger, ark-dialog-portal, ark-dialog-overlay, ark-dialog-content,
+ * ark-dialog-title, ark-dialog-description, and ark-dialog-close. Listen for
+ * open/close on this root element.
+ *
+ * @summary Dialog root — owns open state.
+ * @slot - The dialog composition (trigger + portal/content).
+ * @fires ark-dialog:open - Bubbles, composed. Request to open the dialog.
+ * @fires ark-dialog:close - Bubbles, composed. Request to close the dialog.
+ * @cssprop [--ark-dialog-overlay-bg] - Overlay scrim color (dim of --ark-color-neutral-900).
  */
 export class ArkDialogRoot extends LitElement {
   static override properties = {
@@ -129,6 +138,7 @@ export class ArkDialogRoot extends LitElement {
 
 /**
  * ArkDialogTrigger opens the dialog on click.
+ * @slot - The control that opens the dialog (e.g. an ark-button).
  */
 export class ArkDialogTrigger extends LitElement {
   static override styles = css`
@@ -345,6 +355,7 @@ export class ArkDialogOverlay extends LitElement {
 
 /**
  * ArkDialogContent contains the positioned dialog panel, manages focus loop and keyboard close.
+ * @slot - The dialog panel contents (title, description, actions, ark-dialog-close).
  */
 export class ArkDialogContent extends LitElement {
   static override properties = {
@@ -567,6 +578,7 @@ export class ArkDialogContent extends LitElement {
 
 /**
  * ArkDialogTitle provides display font heading inside dialog.
+ * @slot - The dialog title text.
  */
 export class ArkDialogTitle extends LitElement {
   static override styles = css`
@@ -595,6 +607,7 @@ export class ArkDialogTitle extends LitElement {
 
 /**
  * ArkDialogDescription provides body font secondary message inside dialog.
+ * @slot - The dialog description text.
  */
 export class ArkDialogDescription extends LitElement {
   static override styles = css`

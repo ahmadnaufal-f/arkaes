@@ -18,6 +18,13 @@ export enum HeroTitleVariant {
  *
  * The default visual includes pointer parallax. Custom visuals inherit the
  * same local parallax wrapper, which is disabled for reduced-motion users.
+ *
+ * @summary Two-column page hero.
+ * @slot eyebrow - Small kicker line above the title.
+ * @slot title - The hero headline.
+ * @slot subtitle - Supporting sentence beneath the title.
+ * @slot actions - Call-to-action controls (e.g. ark-button).
+ * @slot visual - The right-column visual / media.
  */
 export class ArkHero extends LitElement {
   static override properties = {

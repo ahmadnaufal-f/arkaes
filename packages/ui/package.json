@@ -31,8 +31,13 @@
   ],
   "files": [
     "dist",
+    "usage",
+    "custom-elements.json",
     "README.md"
   ],
+  "bin": {
+    "arkaes-mcp": "./dist/mcp/cli.js"
+  },
   "exports": {
     ".": {
       "types": "./src/index.ts",
@@ -131,7 +136,9 @@
     }
   },
   "scripts": {
-    "build": "tsdown && node ./scripts/postbuild-use-client.mjs",
+    "build": "tsdown && node ./scripts/postbuild-use-client.mjs && pnpm manifest",
+    "manifest": "cem analyze",
+    "prepack": "pnpm build",
     "check": "tsc -p tsconfig.json --noEmit",
     "lint": "eslint src --max-warnings=0",
     "test": "vitest run"
@@ -139,7 +146,9 @@
   "dependencies": {
     "@arkaes/tokens": "workspace:^",
     "@lit/react": "^1.0.8",
-    "lit": "^3.3.0"
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "lit": "^3.3.0",
+    "zod": "^4.4.3"
   },
   "peerDependencies": {
     "react": ">=18.0.0",
@@ -154,7 +163,9 @@
     }
   },
   "devDependencies": {
+    "@custom-elements-manifest/analyzer": "^0.11.0",
     "@testing-library/react": "^16.0.0",
+    "@types/node": "^26.0.0",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "happy-dom": "^20.0.0",
@@ -162,5 +173,6 @@
     "react-dom": "^19.2.7",
     "tsdown": "^0.22.3",
     "vitest": "^3.0.0"
-  }
+  },
+  "customElements": "custom-elements.json"
 }

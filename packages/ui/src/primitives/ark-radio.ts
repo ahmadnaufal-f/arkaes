@@ -4,6 +4,17 @@ import { ifDefined } from "lit/directives/if-defined.js";
 import { when } from "lit/directives/when.js";
 import { defineElement } from "../define-element";
 
+/**
+ * A single radio option. Almost always used as a child of `ark-radio-group`,
+ * which owns the `name`, selection, and keyboard roving — prefer listening on
+ * the group rather than the individual radio. The label is set via the `label`
+ * attribute (not a slot).
+ *
+ * @summary Radio option (use inside ark-radio-group).
+ * @fires ark-radio-select - When chosen. detail: `{ value: string, radio: ArkRadio }`.
+ * @fires input - On selection. detail: `{ checked: boolean, value: string }`.
+ * @fires change - On selection. detail: `{ checked: boolean, value: string }`.
+ */
 export class ArkRadio extends LitElement {
   static formAssociated = true;
 

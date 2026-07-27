@@ -14,6 +14,16 @@ export enum InputType {
   Search = "search",
 }
 
+/**
+ * Text field with a built-in label, hint, error message, and validation states.
+ * Wraps a native `<input>` and mirrors its constraint-validation API
+ * (`checkValidity`, `reportValidity`, `validity`). Set `invalid` together with
+ * `error` to show the error message. Password inputs get a show/hide toggle.
+ *
+ * @summary Labeled text input.
+ * @fires input - On every keystroke. detail: `{ value: string }`.
+ * @fires change - On commit (blur / Enter). detail: `{ value: string }`.
+ */
 export class ArkInput extends LitElement {
   static override properties = {
     // ── Core ────────────────────────────────────────────────────────

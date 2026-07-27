@@ -18,6 +18,14 @@ const normalizeBadgeSize = (size: string): BadgeSize =>
 const normalizeBadgeVariant = (variant: string): BadgeVariantValue =>
   (badgeVariants.has(variant) ? variant : BadgeVariant.Eyebrow) as BadgeVariantValue;
 
+/**
+ * Compact, text-only label for eyebrow kickers and status tags. Put the label
+ * text in the default slot. Use `variant="eyebrow"` for the mono, rule-prefixed
+ * section kicker and `variant="soft"` for a filled pill.
+ *
+ * @summary Eyebrow / status label.
+ * @slot - The badge label text.
+ */
 export class ArkBadge extends LitElement {
   static override properties = {
     size: { reflect: true, type: String },

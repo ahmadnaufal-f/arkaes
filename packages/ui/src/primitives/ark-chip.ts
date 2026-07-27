@@ -22,6 +22,13 @@ const normalizeChipSize = (size: string): ChipSize =>
 const normalizeChipVariant = (variant: string): ChipVariantValue =>
   (chipVariants.has(variant) ? variant : ChipVariant.Default) as ChipVariantValue;
 
+/**
+ * Small pill for tags, filters, and tech labels. Renders as an anchor when
+ * `href` is set, otherwise a static span. The label goes in the default slot.
+ *
+ * @summary Tag / filter pill.
+ * @slot - The chip label text.
+ */
 export class ArkChip extends LitElement {
   static override properties = {
     href: { type: String },

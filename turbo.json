@@ -3,7 +3,7 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".astro/**", "storybook-static/**"]
+      "outputs": ["dist/**", ".astro/**", "storybook-static/**", "custom-elements.json"]
     },
     "check": {
       "dependsOn": ["^build"]

@@ -76,6 +76,7 @@ export class ArkCard extends LitElement {
 
 /**
  * ArkCardHeader contains title, description, and action.
+ * @slot - ark-card-title, ark-card-description, and an optional ark-card-action.
  */
 export class ArkCardHeader extends LitElement {
   static override styles = css`
@@ -115,6 +116,7 @@ export class ArkCardHeader extends LitElement {
 
 /**
  * ArkCardTitle provides the main heading inside the card header.
+ * @slot - The title text.
  */
 export class ArkCardTitle extends LitElement {
   static override styles = css`
@@ -143,6 +145,7 @@ export class ArkCardTitle extends LitElement {
 
 /**
  * ArkCardDescription provides secondary supporting text inside the card header.
+ * @slot - The description text.
  */
 export class ArkCardDescription extends LitElement {
   static override properties = {
@@ -183,6 +186,7 @@ export class ArkCardDescription extends LitElement {
 
 /**
  * ArkCardAction contains action elements like buttons or badges in the card header.
+ * @slot - The trailing action control (icon button, badge, …).
  */
 export class ArkCardAction extends LitElement {
   static override styles = css`
@@ -198,6 +202,7 @@ export class ArkCardAction extends LitElement {
 
 /**
  * ArkCardContent contains the main body content of the card.
+ * @slot - The card body content.
  */
 export class ArkCardContent extends LitElement {
   static override styles = css`
@@ -218,6 +223,7 @@ export class ArkCardContent extends LitElement {
 
 /**
  * ArkCardFooter contains supplementary actions or metadata at the bottom of the card.
+ * @slot - Footer actions or metadata (e.g. ark-button controls).
  */
 export class ArkCardFooter extends LitElement {
   static override styles = css`

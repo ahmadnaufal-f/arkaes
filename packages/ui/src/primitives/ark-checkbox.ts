@@ -4,6 +4,14 @@ import { ifDefined } from "lit/directives/if-defined.js";
 import { when } from "lit/directives/when.js";
 import { defineElement } from "../define-element";
 
+/**
+ * Checkbox with an inline label and optional hint. Supports an `indeterminate`
+ * tri-state. The label is set via the `label` attribute (not a slot).
+ *
+ * @summary Checkbox with label.
+ * @fires input - On toggle. detail: `{ checked: boolean, value: string }`.
+ * @fires change - On toggle. detail: `{ checked: boolean, value: string }`.
+ */
 export class ArkCheckbox extends LitElement {
   static formAssociated = true;
 
