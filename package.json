@@ -21,6 +21,7 @@
     "dev:storybook": "pnpm --filter storybook dev",
     "dev:portfolio": "pnpm --filter portfolio dev",
     "format": "eslint . --fix",
+    "keepalive": "tsx scripts/keepalive.ts",
     "lint": "turbo lint",
     "lint:tokens": "node scripts/token-lint.mjs",
     "test": "turbo test",
@@ -32,7 +33,10 @@
     "@changesets/cli": "^2.31.0",
     "@eslint/js": "^9.25.1",
     "@stylistic/eslint-plugin": "^4.2.0",
+    "@supabase/supabase-js": "^2.108.2",
+    "@types/node": "^26.0.0",
     "eslint": "^9.25.1",
+    "tsx": "^4.22.4",
     "turbo": "^2.5.2",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.31.0"

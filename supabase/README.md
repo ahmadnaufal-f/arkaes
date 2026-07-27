@@ -28,8 +28,30 @@ in `migrations/` and the retrieval/ingest code is in `@arkaes/chatbot/server`.
 - `document_sources` (`0002`) — the exact pre-chunk text keyed by `source`
   (`content`, `metadata`, timestamps). Chunking is lossy, so this preserves the
   original for editing in the admin UI and for future re-chunking/re-embedding.
-- RLS is **enabled with no public policy** on both tables: only the service-role
-  key (used by the server and the ingest CLI) can read or write.
+- `keepalive_heartbeat` (`0003`) — a single row (`id = 1`) whose `pinged_at` is
+  rewritten by the keep-alive job. See below.
+- RLS is **enabled with no public policy** on all three tables: only the
+  service-role key (used by the server, the ingest CLI, and the keep-alive
+  script) can read or write.
+
+## Keeping the project awake
+
+Free-tier Supabase projects pause after 7 days of inactivity, and read-only
+queries don't reliably reset that timer — only a write does. `scripts/keepalive.ts`
+upserts the `keepalive_heartbeat` row, and
+`.github/workflows/keepalive.yml` runs it every 3 days (plus on-demand via
+**workflow_dispatch**).
+
+Set these two **repository secrets** (Settings → Secrets and variables →
+Actions) to the same values used locally:
+
+- `SUPABASE_URL`
+- `SUPABASE_SERVICE_ROLE_KEY`
+
+Run it by hand with `pnpm keepalive` (it exits non-zero if the write fails).
+
+> GitHub disables scheduled workflows in repos with no activity for 60 days. If
+> the repo goes quiet, re-enable the workflow from the Actions tab.
 
 ## Loading knowledge
 
