@@ -85,5 +85,5 @@ Storybook's preview (`.storybook/preview.ts`) imports `@arkaes/tokens/css` and `
 
 - All CSS values in Lit components use `var(--ark-*)` tokens — never hardcode colors, spacing, or font values outside of tokens. Lit `css` blocks may use native CSS nesting (`&`, nested `:host(...)`) to stay DRY.
 - ESLint is configured with `--max-warnings=0` in every package, so linting is strict.
-- `packageManager` is pinned to `pnpm@9.15.4` — use `corepack` if needed. A fresh container needs `pnpm install` before `pnpm build`/`check`/`lint` (these run through Turborepo's `turbo` binary, installed as a dev dependency).
+- `packageManager` is pinned to `pnpm@10.34.5` — use `corepack` if needed. Dependencies that run install scripts must be listed in `pnpm.onlyBuiltDependencies` (root `package.json`); pnpm 10 blocks them by default. A fresh container needs `pnpm install` before `pnpm build`/`check`/`lint` (these run through Turborepo's `turbo` binary, installed as a dev dependency).
 - Gotcha: ESLint's ignore list (root `eslint.config.js`) covers `**/dist/**`, `**/.astro/**`, `**/node_modules/**` but **not** Storybook's `storybook-static/` build output. Running `pnpm build` before `pnpm lint` makes lint scan that minified output and report hundreds of thousands of false errors. Remove `apps/storybook/storybook-static` before linting (it's gitignored).
