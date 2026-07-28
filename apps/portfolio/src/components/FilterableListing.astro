@@ -72,7 +72,7 @@ const { eyebrow, title, description, items } = Astro.props;
           data-category={item.categorySlug}
           data-expertise={item.expertise.join(" ")}
         >
-          <ark-case-study-card
+          <ark-media-card
             category={categoryLabel(item.categorySlug)}
             href={item.href}
             summary={item.summary}
@@ -89,7 +89,7 @@ const { eyebrow, title, description, items } = Astro.props;
                 {tag}
               </ark-chip>
             ))}
-          </ark-case-study-card>
+          </ark-media-card>
         </div>
       ))
     }

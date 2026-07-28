@@ -10,12 +10,6 @@
   width: 100%;
 }
 
-.blog-listing .blog-card-date {
-  color: var(--ark-color-text-muted);
-  display: block;
-  font-family: var(--ark-font-mono);
-  font-size: var(--ark-text-xs);
-  letter-spacing: 0.08em;
-  margin-top: var(--ark-space-2);
-  text-transform: uppercase;
-}
+/* The publish date now renders inside the card (ark-media-card's `date`
+   attribute) — as a sibling it sat outside the card box and was overlapped by
+   the next card in the grid. */

@@ -106,7 +106,7 @@ const services = EXPERTISE.map((area) => ({
     <div class="projects-carousel">
     <div class="projects-grid reveal reveal-delay-1">
       {featuredStudies.map((study) => (
-        <ark-case-study-card
+        <ark-media-card
           class="project-card"
           href={`/case-studies/${study.id}`}
           title={study.data.title}
@@ -119,7 +119,7 @@ const services = EXPERTISE.map((area) => ({
           {study.data.tags.map((tag) => (
             <ark-chip slot="tag">{tag}</ark-chip>
           ))}
-        </ark-case-study-card>
+        </ark-media-card>
       ))}
     </div>
 

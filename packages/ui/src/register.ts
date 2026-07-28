@@ -22,7 +22,7 @@ import {
   defineArkToast,
 } from "./components";
 import {
-  defineArkCaseStudyCard,
+  defineArkMediaCard,
   defineArkPageHeader,
   defineArkProjectHeader,
 } from "./patterns";
@@ -53,7 +53,7 @@ export const registerArkComponents = () => {
 };
 
 export const registerArkPatterns = () => {
-  defineArkCaseStudyCard();
+  defineArkMediaCard();
   defineArkPageHeader();
   defineArkProjectHeader();
 };

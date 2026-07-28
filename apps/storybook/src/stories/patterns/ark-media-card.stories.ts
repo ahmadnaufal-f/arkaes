@@ -1,8 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
 
-type CaseStudyCardArgs = {
+type MediaCardArgs = {
   category: string;
+  date: string;
+  datetime: string;
   href: string;
   summary: string;
   title: string;
@@ -11,13 +13,17 @@ type CaseStudyCardArgs = {
 
 const renderCard = ({
   category,
+  date,
+  datetime,
   href,
   summary,
   title,
   variant,
-}: CaseStudyCardArgs) => html`
-  <ark-case-study-card
+}: MediaCardArgs) => html`
+  <ark-media-card
     category=${category}
+    date=${date}
+    datetime=${datetime}
     href=${href}
     summary=${summary}
     title=${title}
@@ -42,7 +48,7 @@ const renderCard = ({
     </div>
     <ark-chip slot="tag">Performance</ark-chip>
     <ark-chip slot="tag">UI Architecture</ark-chip>
-  </ark-case-study-card>
+  </ark-media-card>
 `;
 
 const meta = {
@@ -54,30 +60,32 @@ const meta = {
   },
   args: {
     category: "Case Study",
+    date: "",
+    datetime: "",
     href: "#case-study",
     summary:
       "A focused case study about improving interface performance and maintainability.",
     title: "Interface Performance System",
     variant: "featured",
   },
-  component: "ark-case-study-card",
+  component: "ark-media-card",
   parameters: {
     docs: {
       description: {
         component: `
-\`ark-case-study-card\` showcases project work with a linked title, metadata, and custom media slot.
+\`ark-media-card\` presents a linked entry — a case study, project, or blog post — with a title, metadata, and a custom media slot.
 
-Provide a \`title\`, \`category\`, \`summary\`, and \`href\` to make the entire card clickable. Slot custom media in the \`media\` slot for hero imagery and badges via the \`tag\` slot. Choose \`featured\` for full-height showcase layouts or \`compact\` for dense grid presentations.
+Provide a \`title\`, \`category\`, \`summary\`, and \`href\` to make the entire card clickable. Slot custom media in the \`media\` slot for hero imagery and badges via the \`tag\` slot. Dated entries can add \`date\` (the label) and \`datetime\` (the machine-readable value), which render beside the category. Choose \`featured\` for full-height showcase layouts or \`compact\` for dense grid presentations.
         `,
       },
     },
   },
   render: renderCard,
-  title: "Patterns/Ark Case Study Card",
-} satisfies Meta<CaseStudyCardArgs>;
+  title: "Patterns/Ark Media Card",
+} satisfies Meta<MediaCardArgs>;
 
 export default meta;
-type Story = StoryObj<CaseStudyCardArgs>;
+type Story = StoryObj<MediaCardArgs>;
 
 export const Featured = {
   args: {
@@ -88,6 +96,18 @@ export const Featured = {
 
 export const Compact = {
   args: {
+    variant: "compact",
+  },
+} satisfies Story;
+
+export const Dated = {
+  args: {
+    category: "Career",
+    date: "July 25, 2026",
+    datetime: "2026-07-25T00:00:00.000Z",
+    summary:
+      "What a legal training session changed about how I collect data in my own app.",
+    title: "Why I Added a Privacy Notice to My App",
     variant: "compact",
   },
 } satisfies Story;

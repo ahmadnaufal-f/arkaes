@@ -1,21 +1,25 @@
 import { css, html, LitElement } from "lit";
+import { ifDefined } from "lit/directives/if-defined.js";
 import { when } from "lit/directives/when.js";
 import { defineArkCard } from "../components/ark-card";
 import { defineElement } from "../define-element";
 
-export type ArkCaseStudyCardVariant = "featured" | "compact";
+export type ArkMediaCardVariant = "featured" | "compact";
 
 /**
- * ArkCaseStudyCard is a linked portfolio card composition with optional media,
- * category, summary, and tag content.
+ * ArkMediaCard is a linked card composition with optional media, category,
+ * date, summary, and tag content — used for case studies, projects, and blog
+ * posts alike.
  *
- * @summary Linked portfolio / case-study card.
+ * @summary Linked media card.
  * @slot media - The card thumbnail / cover media (updates dynamically on slotchange).
  * @slot tag - The tag / stack chips.
  */
-export class ArkCaseStudyCard extends LitElement {
+export class ArkMediaCard extends LitElement {
   static override properties = {
     category: { type: String },
+    date: { type: String },
+    dateTime: { attribute: "datetime", type: String },
     href: { type: String },
     summary: { type: String },
     title: { type: String },
@@ -81,13 +85,32 @@ export class ArkCaseStudyCard extends LitElement {
       min-width: 0;
     }
 
-    .category {
-      color: var(--ark-color-accent-strong);
+    /* Category + date share one metadata line above the title. Wraps rather
+       than overflowing when a long category meets a long date on a narrow card. */
+    .meta {
+      align-items: baseline;
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--ark-space-2);
+      margin: 0 0 var(--ark-space-3);
+    }
+
+    .category,
+    .date {
       font-family: var(--ark-font-mono);
       font-size: var(--ark-font-size-xs);
       letter-spacing: 0.14em;
-      margin: 0 0 var(--ark-space-3);
+      margin: 0;
       text-transform: uppercase;
+    }
+
+    .category {
+      color: var(--ark-color-accent-strong);
+    }
+
+    .date,
+    .meta-separator {
+      color: var(--ark-color-text-muted);
     }
 
     .title {
@@ -154,10 +177,14 @@ export class ArkCaseStudyCard extends LitElement {
   `;
 
   category = "";
+  /** Human-readable date label, e.g. "July 25, 2026". Omitted when empty. */
+  date = "";
+  /** Machine-readable value for the rendered `<time datetime>`, e.g. an ISO string. */
+  dateTime = "";
   href = "";
   summary = "";
   override title = "";
-  variant: ArkCaseStudyCardVariant = "featured";
+  variant: ArkMediaCardVariant = "featured";
 
   // Whether any media is projected into the "media" slot. Drives showing the
   // thumbnail region for any variant (so compact listing cards can carry a
@@ -231,8 +258,32 @@ export class ArkCaseStudyCard extends LitElement {
           <div class="content">
             <div class="copy">
               ${when(
-                this.category,
-                () => html`<p class="category">${this.category}</p>`,
+                this.category || this.date,
+                () => html`
+                  <div class="meta">
+                    ${when(
+                      this.category,
+                      () => html`<p class="category">${this.category}</p>`,
+                    )}
+                    ${when(
+                      this.category && this.date,
+                      () =>
+                        html`<span class="meta-separator" aria-hidden="true"
+                          >&middot;</span
+                        >`,
+                    )}
+                    ${when(
+                      this.date,
+                      () => html`
+                        <time
+                          class="date"
+                          datetime=${ifDefined(this.dateTime || undefined)}
+                          >${this.date}</time
+                        >
+                      `,
+                    )}
+                  </div>
+                `,
               )}
               <h3 class="title">${this.title}</h3>
               ${when(
@@ -251,13 +302,13 @@ export class ArkCaseStudyCard extends LitElement {
   }
 }
 
-export const defineArkCaseStudyCard = () => {
+export const defineArkMediaCard = () => {
   defineArkCard();
-  defineElement("ark-case-study-card", ArkCaseStudyCard);
+  defineElement("ark-media-card", ArkMediaCard);
 };
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ark-case-study-card": ArkCaseStudyCard;
+    "ark-media-card": ArkMediaCard;
   }
 }

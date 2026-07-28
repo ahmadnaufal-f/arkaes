@@ -204,7 +204,7 @@ import { ArkHero, ArkButton } from "@arkaes/ui/react";
 | `ArkHero` | `eyebrow`, `title`, `subtitle`, `actions`, `visual` |
 | `ArkPageHeader` | `eyebrow`, `title`, `lead` |
 | `ArkProjectHeader` | `visual`, `title`, `tag` |
-| `ArkCaseStudyCard` | `media`, `tag` |
+| `ArkMediaCard` | `media`, `tag` |
 | `ArkAccordionItem` | `trigger` (rich trigger content; default children = panel body) |
 
 Notes:
@@ -213,7 +213,7 @@ Notes:
   carry it. Wrap text in a `<span slot="…">`.
 - `ArkPageHeader` and `ArkProjectHeader` read their slotted content once on mount. If you need to
   toggle a slotted `title`/`lead` at runtime, remount with a `key` rather than conditionally
-  rendering the slotted child in place. (`ArkCaseStudyCard` listens for `slotchange`, so its
+  rendering the slotted child in place. (`ArkMediaCard` listens for `slotchange`, so its
   `media` slot updates dynamically.)
 
 ## Entrypoints
@@ -235,7 +235,7 @@ Notes:
 **Components:** `ark-accordion`, `ark-card` (+ subparts), `ark-cursor`, `ark-dialog` (+ subparts),
 `ark-hero`, `ark-navigation` (+ subparts), `ark-toast`
 
-**Patterns:** `ark-case-study-card`, `ark-page-header`, `ark-project-header`
+**Patterns:** `ark-media-card`, `ark-page-header`, `ark-project-header`
 
 ## TypeScript
 
