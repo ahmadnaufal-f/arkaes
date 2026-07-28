@@ -20,6 +20,9 @@ const services = EXPERTISE.map((area) => ({
   techStack: area.techStack,
   relatedWork: area.relatedWork,
 }));
+
+const domainCount = techGroups.length;
+const techCount = techGroups.reduce((total, group) => total + group.items.length, 0);
 ---
 
 <BaseLayout
@@ -237,33 +240,36 @@ const services = EXPERTISE.map((area) => ({
         <h2 class="section-title">What I <em>build with</em></h2>
       </div>
       <div class="techstack-meta">
-        7 Domains<br />
-        33+ Technologies
+        {domainCount} Domains<br />
+        {techCount}+ Technologies
       </div>
     </div>
 
-    <div class="techstack-grid">
+    <ul class="techstack-index">
       {techGroups.map((group, index) => {
         const num = String(index + 1).padStart(2, "0");
-        const delay = `reveal-delay-${index + 1}`;
-        const extraClasses = [group.emerging && "techstack-card--emerging", group.wide && "techstack-card--wide"].filter(Boolean).join(" ");
-        const classStr = extraClasses ? `techstack-card ${extraClasses}` : "techstack-card";
+        const rowClass = ["techstack-row", group.emerging && "techstack-row--emerging", "reveal", `reveal-delay-${index + 1}`]
+          .filter(Boolean)
+          .join(" ");
         return (
-          <article class={`${classStr} reveal ${delay}`}>
-            <div class="techstack-number">{num}</div>
-            <h3 class="techstack-label">{group.label}</h3>
-            <div class="techstack-rule"></div>
-            <div class="techstack-pills">
-              {group.items.map((item) => (
-                <ark-chip variant={group.emerging ? (item.primary ? "emerging" : "default") : (item.primary ? "primary" : "default")}>
-                  {item.name}
-                </ark-chip>
-              ))}
+          <li class={rowClass}>
+            <div class="techstack-row-head">
+              <span class="techstack-row-num">{num}</span>
+              {group.emerging && <span class="techstack-row-tag">Emerging</span>}
             </div>
-          </article>
+            <h3 class="techstack-row-name">
+              <span class="techstack-row-name-roman">{group.label}</span>
+              <span class="techstack-row-name-italic" aria-hidden="true">{group.label}</span>
+            </h3>
+            <p class="techstack-row-items">
+              {group.items.map((item) => (
+                <span class={item.primary ? "techstack-item techstack-item--primary" : "techstack-item"}>{item.name}</span>
+              ))}
+            </p>
+          </li>
         );
       })}
-    </div>
+    </ul>
 
     <div class="techstack-footer reveal">
       <p class="techstack-note">
@@ -272,33 +278,14 @@ const services = EXPERTISE.map((area) => ({
       </p>
       <div class="techstack-learning">
         <div class="techstack-learning-label">Currently learning</div>
-        <div class="techstack-learning-pills">
+        <p class="techstack-learning-items">
           {currentlyLearning.map((item) => (
-            <ark-chip variant="learning">{item}</ark-chip>
+            <span class="techstack-learning-item">{item}</span>
           ))}
-        </div>
+        </p>
       </div>
     </div>
   </section>
-
-  <script>
-    // Light up every chip in a tech-stack card when the card is hovered.
-    // ark-chip lives in shadow DOM, so this drives its isHovered API rather
-    // than relying on a CSS descendant selector.
-    (function () {
-      const cards = document.querySelectorAll<HTMLElement>(".techstack-card");
-      cards.forEach((card) => {
-        const chips = card.querySelectorAll<HTMLElement & { isHovered: boolean }>("ark-chip");
-        const setHovered = (value: boolean) => {
-          chips.forEach((chip) => {
-            chip.isHovered = value;
-          });
-        };
-        card.addEventListener("mouseenter", () => setHovered(true));
-        card.addEventListener("mouseleave", () => setHovered(false));
-      });
-    })();
-  </script>
 
   <section class="about-strip" id="about">
     <div class="about-portrait reveal">

@@ -167,137 +167,180 @@
   text-transform: uppercase;
 }
 
-.techstack-grid {
+/* ── Typographic index ──────────────────────────────────────
+   Each domain is a full-width editorial row: mono index number,
+   large Fraunces name, and the tech list as mono text. Hover is
+   pure CSS — a wash sweeps in from the left while the name
+   crossfades to its italic cut. Rows are not interactive. */
+
+.techstack-index {
+  border-bottom: 1px solid var(--ark-color-parchment-deep);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.techstack-row {
+  /* How far the hover wash bleeds past the content edge. */
+  --row-bleed: var(--site-content-padding);
+
+  align-items: baseline;
+  border-top: 1px solid var(--ark-color-parchment-deep);
+  column-gap: var(--ark-space-6);
   display: grid;
-  gap: 2px;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 80px minmax(0, 1.1fr) minmax(0, 1fr);
+  padding: var(--ark-space-8) 0;
   position: relative;
 }
 
-.techstack-card {
-  background: var(--ark-color-parchment);
-  border-top: 2px solid var(--ark-color-parchment-deep);
-  overflow: hidden;
-  padding: var(--ark-space-8);
-  position: relative;
-  transition:
-    background var(--ark-duration-normal) var(--ark-ease-out),
-    border-color var(--ark-duration-normal) var(--ark-ease-out),
-    box-shadow var(--ark-duration-normal) var(--ark-ease-out),
-    transform var(--ark-duration-normal) var(--ark-ease-out);
-}
-
-.techstack-card::before {
-  background: var(--ark-color-blush);
-  bottom: 0;
-  content: "";
-  left: 0;
-  position: absolute;
-  top: 0;
-  transform: scaleY(0);
-  transform-origin: bottom;
-  transition: transform var(--ark-duration-normal) var(--ark-ease-out);
-  width: 2px;
-}
-
-.techstack-card::after {
+.techstack-row::before {
   background: var(--ark-color-blush-tint);
   content: "";
-  inset: 0;
-  opacity: 0;
+  inset: 0 calc(-1 * var(--row-bleed));
+  opacity: 0.55;
   pointer-events: none;
   position: absolute;
-  transition: opacity var(--ark-duration-normal) var(--ark-ease-out);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform var(--ark-duration-slow) var(--ark-ease-standard);
 }
 
-.techstack-card:hover,
-.techstack-card.reveal.visible:hover {
-  background: var(--ark-color-warm-white);
-  border-color: var(--ark-color-blush);
-  box-shadow: var(--ark-shadow-sm);
-  transition-delay: 0ms;
-  transform: translateY(-2px);
+.techstack-row:hover::before {
+  transform: scaleX(1);
+  transition: transform var(--ark-duration-slow) var(--ark-ease-quad-out);
 }
 
-.techstack-card:hover::before {
-  transform: scaleY(1);
-}
-
-.techstack-card:hover::after {
-  opacity: 0.2;
-}
-
-.techstack-card > * {
+.techstack-row > * {
   position: relative;
   z-index: 1;
 }
 
-.techstack-card--emerging::before {
-  background: var(--ark-color-sage);
+.techstack-row-head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ark-space-2);
 }
 
-.techstack-card--emerging:hover,
-.techstack-card--emerging.reveal.visible:hover {
-  border-color: var(--ark-color-sage);
+.techstack-row-num {
+  color: var(--ark-color-accent);
+  font-family: var(--ark-font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  transition: color var(--ark-duration-normal) var(--ark-ease-standard);
 }
 
-.techstack-card--wide {
-  background: var(--ark-color-warm-white);
-  border-top-width: 1px;
-  grid-column: 1 / -1;
+.techstack-row:hover .techstack-row-num {
+  color: var(--ark-color-accent-strong);
 }
 
-.techstack-card--wide:hover,
-.techstack-card--wide.reveal.visible:hover {
-  box-shadow: var(--ark-shadow-sm);
-  transform: translateY(-2px);
-  z-index: 2;
+.techstack-row-tag {
+  color: var(--ark-color-sage);
+  font-family: var(--ark-font-mono);
+  font-size: 0.58rem;
+  letter-spacing: var(--ark-letter-spacing-wide);
+  text-transform: uppercase;
 }
 
-.techstack-number {
-  color: var(--ark-color-blush-deep);
+.techstack-row-name {
+  display: grid;
   font-family: var(--ark-font-display);
-  font-size: var(--ark-font-size-xl);
-  font-style: italic;
+  font-size: var(--ark-text-3xl);
   font-weight: var(--ark-weight-thin);
-  line-height: 1;
-  margin-bottom: 14px;
+  line-height: var(--ark-leading-tight);
+  margin: 0;
 }
 
-.techstack-label {
-  color: var(--ark-color-text);
-  font-family: var(--ark-font-sans);
-  font-size: var(--ark-font-size-md);
-  font-weight: var(--ark-font-weight-medium);
-  line-height: var(--ark-line-height-tight);
-  margin-bottom: 6px;
-  transition: color var(--ark-duration-fast);
+/* Roman and italic copies overlap in one grid cell; hover
+   crossfades opacity only, so glyph-width differences between
+   the two Fraunces cuts never cause layout shift. */
+.techstack-row-name-roman,
+.techstack-row-name-italic {
+  grid-area: 1 / 1;
+  transition: opacity var(--ark-duration-normal) var(--ark-ease-standard);
 }
 
-.techstack-card:hover .techstack-label {
-  color: var(--ark-color-blush-deep);
+.techstack-row-name-roman {
+  color: var(--ark-color-ink);
 }
 
-.techstack-card--emerging:hover .techstack-label {
+.techstack-row-name-italic {
+  color: var(--ark-color-accent-strong);
+  font-style: italic;
+  opacity: 0;
+}
+
+.techstack-row:hover .techstack-row-name-roman {
+  opacity: 0;
+}
+
+.techstack-row:hover .techstack-row-name-italic {
+  opacity: 1;
+}
+
+.techstack-row-items {
+  color: var(--ark-color-ink-ghost);
+  display: flex;
+  flex-wrap: wrap;
+  font-family: var(--ark-font-mono);
+  font-size: var(--ark-text-xs);
+  font-weight: var(--ark-weight-thin);
+  gap: var(--ark-space-1) var(--ark-space-2);
+  letter-spacing: var(--ark-letter-spacing-mono);
+  line-height: var(--ark-leading-relaxed);
+  margin: 0;
+  text-transform: uppercase;
+  transition: color var(--ark-duration-normal) var(--ark-ease-standard);
+}
+
+.techstack-row:hover .techstack-row-items {
+  color: var(--ark-color-ink-muted);
+}
+
+.techstack-item {
+  transition: color var(--ark-duration-normal) var(--ark-ease-standard);
+  white-space: nowrap;
+}
+
+.techstack-item + .techstack-item::before {
+  color: var(--ark-color-parchment-deep);
+  content: "\00B7";
+  content: "\00B7" / "";
+  margin-right: var(--ark-space-2);
+  transition: color var(--ark-duration-normal) var(--ark-ease-standard);
+}
+
+.techstack-row:hover .techstack-item + .techstack-item::before {
+  color: var(--ark-color-blush);
+}
+
+.techstack-item--primary {
+  color: var(--ark-color-ink-muted);
+  font-weight: var(--ark-weight-regular);
+}
+
+.techstack-row:hover .techstack-item--primary {
+  color: var(--ark-color-accent-strong);
+}
+
+/* Emerging domain swaps the blush accents for sage. */
+.techstack-row--emerging::before {
+  background: var(--ark-color-sage-tint);
+}
+
+.techstack-row--emerging:hover .techstack-row-num {
   color: var(--ark-color-sage);
 }
 
-.techstack-rule {
-  background: var(--ark-color-sage);
-  height: 2px;
-  margin-bottom: var(--ark-space-5);
-  transition: width var(--ark-duration-normal) var(--ark-ease-out);
-  width: var(--ark-space-5);
+.techstack-row--emerging .techstack-row-name-italic {
+  color: var(--ark-color-sage);
 }
 
-.techstack-card:hover .techstack-rule {
-  width: 36px;
+.techstack-row--emerging:hover .techstack-item + .techstack-item::before {
+  color: var(--ark-color-sage-light);
 }
 
-.techstack-pills {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 7px;
+.techstack-row--emerging:hover .techstack-item--primary {
+  color: var(--ark-color-sage-600);
 }
 
 .techstack-footer {
@@ -320,7 +363,7 @@
 }
 
 .techstack-learning {
-  align-items: center;
+  align-items: baseline;
   display: flex;
   gap: var(--ark-space-3);
 }
@@ -333,9 +376,24 @@
   text-transform: uppercase;
 }
 
-.techstack-learning-pills {
+.techstack-learning-items {
+  color: var(--ark-color-ink-muted);
   display: flex;
-  gap: 6px;
+  flex-wrap: wrap;
+  font-family: var(--ark-font-mono);
+  font-size: var(--ark-text-xs);
+  gap: var(--ark-space-1) var(--ark-space-3);
+  letter-spacing: var(--ark-letter-spacing-mono);
+  margin: 0;
+  text-transform: uppercase;
+}
+
+/* Dashed sage underline — the typographic descendant of the old
+   learning chips' dashed border. */
+.techstack-learning-item {
+  text-decoration: underline dashed var(--ark-color-sage);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
 }
 
 .about-strip {
@@ -832,8 +890,17 @@
     text-align: center;
   }
 
-  .techstack-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .techstack-row {
+    --row-bleed: 24px;
+
+    column-gap: var(--ark-space-4);
+    grid-template-columns: 52px minmax(0, 1fr);
+    padding: var(--ark-space-6) 0;
+    row-gap: var(--ark-space-3);
+  }
+
+  .techstack-row-items {
+    grid-column: 2;
   }
 
   .techstack-footer {
@@ -902,8 +969,19 @@
     padding: 20px;
   }
 
-  .techstack-grid {
+  .techstack-row {
     grid-template-columns: 1fr;
+    row-gap: var(--ark-space-2);
+  }
+
+  .techstack-row-head {
+    flex-direction: row;
+    gap: var(--ark-space-3);
+  }
+
+  .techstack-row-items {
+    grid-column: 1;
+    margin-top: var(--ark-space-1);
   }
 
   .techstack-learning {
@@ -920,5 +998,15 @@
 @media (prefers-reduced-motion: reduce) {
   .marquee-track {
     animation: none;
+  }
+
+  .techstack-row::before,
+  .techstack-row-num,
+  .techstack-row-name-roman,
+  .techstack-row-name-italic,
+  .techstack-row-items,
+  .techstack-item,
+  .techstack-item + .techstack-item::before {
+    transition: none;
   }
 }
