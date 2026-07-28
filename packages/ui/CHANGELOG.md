@@ -1,5 +1,39 @@
 # @arkaes/ui
 
+## 1.2.0
+
+### Minor Changes
+
+- 5526d68: Add a local, offline MCP server so coding agents can query the design system's
+  component API and design tokens with no network dependency. It ships inside
+  `@arkaes/ui` as the `arkaes-mcp` bin (stdio transport) and is invokable via
+  `npx --package @arkaes/ui arkaes-mcp`.
+  - Three tools: `list_components` (compact index of every element with variants
+    and slots), `get_component_api` (full props/events/slots/CSS-props/CSS-parts
+    plus an authored usage snippet, multiple components per call), and
+    `get_tokens` (filter `--ark-*` tokens by category or name prefix; returns the
+    category list when unfiltered).
+  - Tokens are sourced from the DTCG pipeline: color and spacing come from the
+    generated flat JSON (`@arkaes/tokens/tokens.json`) with their `type` and
+    `description`, while typography, radius, shadow, motion, and layout come from
+    the hand-authored token CSS. A shared value map resolves cross-tier references
+    (e.g. a shadow's `var(--ark-color-neutral-900)`) to concrete values.
+  - Component/manifest data is read at startup from the generated Custom Elements
+    Manifest — nothing about the component API is hand-authored. A
+    `custom-elements-manifest.config.mjs` plugin recovers tag
+    names from the `defineElement` guard and expands enum- and CSS-selector-derived
+    attribute values into concrete option lists.
+  - Component sources gained JSDoc `@slot`/`@fires`/`@cssprop`/`@summary`
+    annotations, and canonical usage snippets live in `usage/*.md`.
+
+- 94677d2: **Breaking:** rename `ark-case-study-card` to `ark-media-card`. The card is used for case studies, projects, and now blog posts, so the name no longer described it. Renamed alongside the tag: `ArkCaseStudyCard` → `ArkMediaCard`, `ArkCaseStudyCardVariant` → `ArkMediaCardVariant`, `defineArkCaseStudyCard` → `defineArkMediaCard`, the `@arkaes/ui/register/ark-case-study-card` entrypoint → `@arkaes/ui/register/ark-media-card`, and the React wrapper export `ArkCaseStudyCard` → `ArkMediaCard`.
+
+  `ark-cursor`'s built-in defaults follow the rename: `ark-media-card` is now in `DEFAULT_INTERACTIVE_SELECTOR` and carries the "View" label. Apps that passed `labels: { "ark-case-study-card": … }` to `enableArkCursor` need to update that key.
+
+  Add an optional `datetime` attribute to `ark-media-card` — an ISO string or `YYYY-MM-DD`. The card derives the displayed label from it, so callers pass a single value instead of keeping a label and a machine value in sync. It renders on a metadata line beside `category`, keeping the date inside the card box, where a sibling element could be overlapped by neighbouring cards in a grid. Omitted when empty, so existing usage is unchanged.
+
+  The label is formatted in UTC: a publish date is a calendar date rather than an instant, and formatting in the viewer's zone would render `2026-07-25T00:00:00.000Z` as "July 24" everywhere west of UTC. An unparseable value renders nothing rather than "Invalid Date".
+
 ## 1.1.1
 
 ### Patch Changes
