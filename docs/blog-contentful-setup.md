@@ -76,6 +76,49 @@ Fresh HTML stored in the edge cache
   `/api/revalidate` (see the webhook log in Contentful) → the page reflects
   the change within seconds, with no redeploy and no commit.
 
+**Response contract:** `200` means every affected path was revalidated. `502`
+means at least one wasn't — the JSON body lists each path with its `status`, and
+a `mitigated` field when Vercel's firewall intercepted the request. Failures are
+also logged to the Vercel function logs. Contentful retries non-2xx responses.
+
+## Troubleshooting
+
+### Webhook returns 429 with `x-vercel-mitigated: challenge`
+
+Not a rate limit, despite the status code — this is **Vercel's Firewall serving a
+browser challenge** (an HTML body plus an `x-vercel-challenge-token` header).
+Vercel uses `429` for challenge responses. The request is stopped at the edge, so
+the function never runs and the webhook secret is never checked.
+
+Contentful's webhook is a plain server-to-server POST and cannot execute the
+challenge's JavaScript, so this fails every time, not intermittently.
+
+**Fix:** in the Vercel dashboard → project → Firewall, turn off **Attack Challenge
+Mode**. It's designed as a temporary measure during an attack, not a steady state.
+Also check for a WAF custom rule with a `challenge` action matching the path.
+
+If the mitigation must stay on, a **System Bypass** rule for Contentful's webhook
+IP ranges is the reliable route: a path-based custom `bypass` rule skips your own
+WAF rules but does not necessarily exempt system mitigations. Firewall rules can't
+be set in `vercel.json` — dashboard, `vercel firewall rules add`, or the API only.
+
+Note that ISR's `expiration` (1 hour, see `astro.config.mjs`) still refreshes pages
+even while the webhook is blocked, so the symptom is *delayed* publishing rather
+than stale-forever content.
+
+### Webhook returns 401
+
+Either the `x-webhook-secret` header doesn't match `CONTENTFUL_WEBHOOK_SECRET`, or
+the deployment has **Deployment Protection** enabled (a different feature from the
+firewall) and is rejecting the request. For the latter, set
+`VERCEL_AUTOMATION_BYPASS_SECRET` — the endpoint forwards it as
+`x-vercel-protection-bypass` on its own revalidation requests.
+
+### Webhook returns 503
+
+`CONTENTFUL_WEBHOOK_SECRET` or `VERCEL_ISR_BYPASS_TOKEN` is unset in the
+environment. Set both and redeploy.
+
 ## Related code
 
 - `src/lib/contentful.ts` — typed Delivery client + `BlogPost` mapping
