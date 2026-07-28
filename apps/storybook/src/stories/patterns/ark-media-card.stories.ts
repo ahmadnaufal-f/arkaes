@@ -3,7 +3,6 @@ import { html } from "lit";
 
 type MediaCardArgs = {
   category: string;
-  date: string;
   datetime: string;
   href: string;
   summary: string;
@@ -13,7 +12,6 @@ type MediaCardArgs = {
 
 const renderCard = ({
   category,
-  date,
   datetime,
   href,
   summary,
@@ -22,7 +20,6 @@ const renderCard = ({
 }: MediaCardArgs) => html`
   <ark-media-card
     category=${category}
-    date=${date}
     datetime=${datetime}
     href=${href}
     summary=${summary}
@@ -60,7 +57,6 @@ const meta = {
   },
   args: {
     category: "Case Study",
-    date: "",
     datetime: "",
     href: "#case-study",
     summary:
@@ -75,7 +71,7 @@ const meta = {
         component: `
 \`ark-media-card\` presents a linked entry — a case study, project, or blog post — with a title, metadata, and a custom media slot.
 
-Provide a \`title\`, \`category\`, \`summary\`, and \`href\` to make the entire card clickable. Slot custom media in the \`media\` slot for hero imagery and badges via the \`tag\` slot. Dated entries can add \`date\` (the label) and \`datetime\` (the machine-readable value), which render beside the category. Choose \`featured\` for full-height showcase layouts or \`compact\` for dense grid presentations.
+Provide a \`title\`, \`category\`, \`summary\`, and \`href\` to make the entire card clickable. Slot custom media in the \`media\` slot for hero imagery and badges via the \`tag\` slot. Dated entries can add \`datetime\` (an ISO string or \`YYYY-MM-DD\`); the card derives the display label from it, formatted in UTC, and renders it beside the category. Choose \`featured\` for full-height showcase layouts or \`compact\` for dense grid presentations.
         `,
       },
     },
@@ -103,7 +99,6 @@ export const Compact = {
 export const Dated = {
   args: {
     category: "Career",
-    date: "July 25, 2026",
     datetime: "2026-07-25T00:00:00.000Z",
     summary:
       "What a legal training session changed about how I collect data in my own app.",

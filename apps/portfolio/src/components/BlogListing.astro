@@ -22,8 +22,6 @@ const { eyebrow, title, description, posts } = Astro.props;
 
 const categories = categoriesOf(posts);
 const tags = tagsOf(posts);
-
-const dateFormat = new Intl.DateTimeFormat("en", { dateStyle: "long" });
 ---
 
 <section class="page-section listing blog-listing">
@@ -65,7 +63,6 @@ const dateFormat = new Intl.DateTimeFormat("en", { dateStyle: "long" });
         <div class="listing-card" data-category={post.category} data-tags={post.tags.join("\n")}>
           <ark-media-card
             category={post.category}
-            date={dateFormat.format(post.publishDate)}
             datetime={post.publishDate.toISOString()}
             href={`/blog/${post.slug}`}
             summary={post.excerpt}

@@ -1,10 +1,20 @@
 import { css, html, LitElement } from "lit";
-import { ifDefined } from "lit/directives/if-defined.js";
 import { when } from "lit/directives/when.js";
 import { defineArkCard } from "../components/ark-card";
 import { defineElement } from "../define-element";
 
 export type ArkMediaCardVariant = "featured" | "compact";
+
+/**
+ * Publish dates are calendar dates, not instants, so they are formatted in UTC.
+ * Formatting in the viewer's zone would shift the day backwards for anyone west
+ * of UTC — a date stored as `2026-07-25T00:00:00.000Z` would read "July 24" in
+ * the Americas. Built once; constructing an Intl formatter is not cheap.
+ */
+const dateFormatter = new Intl.DateTimeFormat("en", {
+  dateStyle: "long",
+  timeZone: "UTC",
+});
 
 /**
  * ArkMediaCard is a linked card composition with optional media, category,
@@ -18,7 +28,6 @@ export type ArkMediaCardVariant = "featured" | "compact";
 export class ArkMediaCard extends LitElement {
   static override properties = {
     category: { type: String },
-    date: { type: String },
     dateTime: { attribute: "datetime", type: String },
     href: { type: String },
     summary: { type: String },
@@ -177,9 +186,12 @@ export class ArkMediaCard extends LitElement {
   `;
 
   category = "";
-  /** Human-readable date label, e.g. "July 25, 2026". Omitted when empty. */
-  date = "";
-  /** Machine-readable value for the rendered `<time datetime>`, e.g. an ISO string. */
+  /**
+   * Machine-readable date, e.g. `2026-07-25T00:00:00.000Z` or `2026-07-25`. The
+   * displayed label is derived from it (in UTC — see `dateFormatter`), so
+   * callers pass one value rather than keeping a label and a value in sync.
+   * Omitted entirely when empty or unparseable.
+   */
   dateTime = "";
   href = "";
   summary = "";
@@ -196,6 +208,16 @@ export class ArkMediaCard extends LitElement {
     super.connectedCallback();
     this._hasMedia = this.querySelector(':scope > [slot="media"]') !== null;
     this.addEventListener("click", this.#forwardClickToLink);
+  }
+
+  /**
+   * The display label for `dateTime`, or "" when it is absent or not a date the
+   * platform can parse — rendering nothing beats rendering "Invalid Date".
+   */
+  get #dateLabel(): string {
+    if (!this.dateTime) return "";
+    const parsed = new Date(this.dateTime);
+    return Number.isNaN(parsed.getTime()) ? "" : dateFormatter.format(parsed);
   }
 
   #onMediaSlotChange = (event: Event) => {
@@ -246,6 +268,8 @@ export class ArkMediaCard extends LitElement {
   };
 
   override render() {
+    const dateLabel = this.#dateLabel;
+
     return html`
       <ark-card
         interactive
@@ -258,7 +282,7 @@ export class ArkMediaCard extends LitElement {
           <div class="content">
             <div class="copy">
               ${when(
-                this.category || this.date,
+                this.category || dateLabel,
                 () => html`
                   <div class="meta">
                     ${when(
@@ -266,21 +290,18 @@ export class ArkMediaCard extends LitElement {
                       () => html`<p class="category">${this.category}</p>`,
                     )}
                     ${when(
-                      this.category && this.date,
+                      this.category && dateLabel,
                       () =>
                         html`<span class="meta-separator" aria-hidden="true"
                           >&middot;</span
                         >`,
                     )}
                     ${when(
-                      this.date,
-                      () => html`
-                        <time
-                          class="date"
-                          datetime=${ifDefined(this.dateTime || undefined)}
-                          >${this.date}</time
-                        >
-                      `,
+                      dateLabel,
+                      () =>
+                        html`<time class="date" datetime=${this.dateTime}
+                          >${dateLabel}</time
+                        >`,
                     )}
                   </div>
                 `,
