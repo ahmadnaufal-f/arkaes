@@ -21,6 +21,6 @@ export * from "./ark-dialog";
 export * from "./ark-hero";
 export * from "./ark-navigation";
 export * from "./ark-toast";
-export * from "./ark-case-study-card";
+export * from "./ark-media-card";
 export * from "./ark-page-header";
 export * from "./ark-project-header";

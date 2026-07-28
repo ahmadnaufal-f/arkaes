@@ -17,9 +17,23 @@ export default defineConfig({
     isr: {
       expiration: 60 * 60,
       bypassToken: process.env.VERCEL_ISR_BYPASS_TOKEN,
-      // API endpoints must run on every request: /api/revalidate performs the
-      // invalidation itself and /api/chat streams per-user responses.
-      exclude: ["/api/revalidate", "/api/chat"],
+      // IMPORTANT: `isr` applies to *every* route that opts out of prerendering,
+      // not just the blog. Anything whose response is per-request — authenticated,
+      // personalized, or mutating — has to be listed here, or the edge will serve
+      // a cached copy and the function (including middleware) won't run at all.
+      // Only genuinely public, cacheable pages may be left in: today that's the
+      // blog routes, which is the entire point of enabling ISR.
+      exclude: [
+        // Performs the cache invalidation itself; must never be cached.
+        "/api/revalidate",
+        // Streams a per-user chat response.
+        "/api/chat",
+        // Everything behind Basic Auth. This mirrors PROTECTED in
+        // src/middleware.ts — the auth check lives in middleware, which only
+        // runs when the function does, so a cached response would bypass it.
+        // A pattern (not a path list) so new admin routes are covered too.
+        /^\/(admin|api\/admin)(\/|$)/,
+      ],
     },
   }),
 

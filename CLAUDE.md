@@ -54,7 +54,7 @@ Source is organized in three layers, each with a barrel `index.ts`:
 
 - `src/primitives/` — Lit `LitElement` subclasses with all styles inlined via tagged template `css\`...\``. Each primitive uses CSS custom properties from `@arkaes/tokens` for theming. Properties declared via `static override properties` with `reflect: true` are mirrored to HTML attributes. Several primitives (e.g. `ark-badge`, `ark-button`, `ark-chip`) normalize enum-like props with private getter/setter pairs that call `this.requestUpdate(...)` and default to a known value.
 - `src/components/` — higher-level compositions (`ark-card`, `ark-dialog`, `ark-hero`, `ark-navigation`, `ark-cursor`, `ark-toast`, `ark-accordion`).
-- `src/patterns/` — page-specific compositions (`ark-case-study-card`).
+- `src/patterns/` — page-level compositions (`ark-media-card`, `ark-page-header`, `ark-project-header`).
 
 `src/index.ts` re-exports everything from all layers. Each element self-registers its custom element tag through a `defineElement` guard (`src/define-element.ts`) that checks `customElements.get()` first to avoid double-registration.
 

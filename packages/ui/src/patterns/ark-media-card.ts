@@ -3,19 +3,32 @@ import { when } from "lit/directives/when.js";
 import { defineArkCard } from "../components/ark-card";
 import { defineElement } from "../define-element";
 
-export type ArkCaseStudyCardVariant = "featured" | "compact";
+export type ArkMediaCardVariant = "featured" | "compact";
 
 /**
- * ArkCaseStudyCard is a linked portfolio card composition with optional media,
- * category, summary, and tag content.
+ * Publish dates are calendar dates, not instants, so they are formatted in UTC.
+ * Formatting in the viewer's zone would shift the day backwards for anyone west
+ * of UTC — a date stored as `2026-07-25T00:00:00.000Z` would read "July 24" in
+ * the Americas. Built once; constructing an Intl formatter is not cheap.
+ */
+const dateFormatter = new Intl.DateTimeFormat("en", {
+  dateStyle: "long",
+  timeZone: "UTC",
+});
+
+/**
+ * ArkMediaCard is a linked card composition with optional media, category,
+ * date, summary, and tag content — used for case studies, projects, and blog
+ * posts alike.
  *
- * @summary Linked portfolio / case-study card.
+ * @summary Linked media card.
  * @slot media - The card thumbnail / cover media (updates dynamically on slotchange).
  * @slot tag - The tag / stack chips.
  */
-export class ArkCaseStudyCard extends LitElement {
+export class ArkMediaCard extends LitElement {
   static override properties = {
     category: { type: String },
+    dateTime: { attribute: "datetime", type: String },
     href: { type: String },
     summary: { type: String },
     title: { type: String },
@@ -81,13 +94,32 @@ export class ArkCaseStudyCard extends LitElement {
       min-width: 0;
     }
 
-    .category {
-      color: var(--ark-color-accent-strong);
+    /* Category + date share one metadata line above the title. Wraps rather
+       than overflowing when a long category meets a long date on a narrow card. */
+    .meta {
+      align-items: baseline;
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--ark-space-2);
+      margin: 0 0 var(--ark-space-3);
+    }
+
+    .category,
+    .date {
       font-family: var(--ark-font-mono);
       font-size: var(--ark-font-size-xs);
       letter-spacing: 0.14em;
-      margin: 0 0 var(--ark-space-3);
+      margin: 0;
       text-transform: uppercase;
+    }
+
+    .category {
+      color: var(--ark-color-accent-strong);
+    }
+
+    .date,
+    .meta-separator {
+      color: var(--ark-color-text-muted);
     }
 
     .title {
@@ -154,10 +186,17 @@ export class ArkCaseStudyCard extends LitElement {
   `;
 
   category = "";
+  /**
+   * Machine-readable date, e.g. `2026-07-25T00:00:00.000Z` or `2026-07-25`. The
+   * displayed label is derived from it (in UTC — see `dateFormatter`), so
+   * callers pass one value rather than keeping a label and a value in sync.
+   * Omitted entirely when empty or unparseable.
+   */
+  dateTime = "";
   href = "";
   summary = "";
   override title = "";
-  variant: ArkCaseStudyCardVariant = "featured";
+  variant: ArkMediaCardVariant = "featured";
 
   // Whether any media is projected into the "media" slot. Drives showing the
   // thumbnail region for any variant (so compact listing cards can carry a
@@ -169,6 +208,16 @@ export class ArkCaseStudyCard extends LitElement {
     super.connectedCallback();
     this._hasMedia = this.querySelector(':scope > [slot="media"]') !== null;
     this.addEventListener("click", this.#forwardClickToLink);
+  }
+
+  /**
+   * The display label for `dateTime`, or "" when it is absent or not a date the
+   * platform can parse — rendering nothing beats rendering "Invalid Date".
+   */
+  get #dateLabel(): string {
+    if (!this.dateTime) return "";
+    const parsed = new Date(this.dateTime);
+    return Number.isNaN(parsed.getTime()) ? "" : dateFormatter.format(parsed);
   }
 
   #onMediaSlotChange = (event: Event) => {
@@ -219,6 +268,8 @@ export class ArkCaseStudyCard extends LitElement {
   };
 
   override render() {
+    const dateLabel = this.#dateLabel;
+
     return html`
       <ark-card
         interactive
@@ -231,8 +282,29 @@ export class ArkCaseStudyCard extends LitElement {
           <div class="content">
             <div class="copy">
               ${when(
-                this.category,
-                () => html`<p class="category">${this.category}</p>`,
+                this.category || dateLabel,
+                () => html`
+                  <div class="meta">
+                    ${when(
+                      this.category,
+                      () => html`<p class="category">${this.category}</p>`,
+                    )}
+                    ${when(
+                      this.category && dateLabel,
+                      () =>
+                        html`<span class="meta-separator" aria-hidden="true"
+                          >&middot;</span
+                        >`,
+                    )}
+                    ${when(
+                      dateLabel,
+                      () =>
+                        html`<time class="date" datetime=${this.dateTime}
+                          >${dateLabel}</time
+                        >`,
+                    )}
+                  </div>
+                `,
               )}
               <h3 class="title">${this.title}</h3>
               ${when(
@@ -251,13 +323,13 @@ export class ArkCaseStudyCard extends LitElement {
   }
 }
 
-export const defineArkCaseStudyCard = () => {
+export const defineArkMediaCard = () => {
   defineArkCard();
-  defineElement("ark-case-study-card", ArkCaseStudyCard);
+  defineElement("ark-media-card", ArkMediaCard);
 };
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ark-case-study-card": ArkCaseStudyCard;
+    "ark-media-card": ArkMediaCard;
   }
 }

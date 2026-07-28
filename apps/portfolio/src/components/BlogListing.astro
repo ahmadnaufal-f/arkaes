@@ -22,8 +22,6 @@ const { eyebrow, title, description, posts } = Astro.props;
 
 const categories = categoriesOf(posts);
 const tags = tagsOf(posts);
-
-const dateFormat = new Intl.DateTimeFormat("en", { dateStyle: "long" });
 ---
 
 <section class="page-section listing blog-listing">
@@ -63,8 +61,9 @@ const dateFormat = new Intl.DateTimeFormat("en", { dateStyle: "long" });
     {
       posts.map((post) => (
         <div class="listing-card" data-category={post.category} data-tags={post.tags.join("\n")}>
-          <ark-case-study-card
+          <ark-media-card
             category={post.category}
+            datetime={post.publishDate.toISOString()}
             href={`/blog/${post.slug}`}
             summary={post.excerpt}
             title={post.title}
@@ -81,10 +80,7 @@ const dateFormat = new Intl.DateTimeFormat("en", { dateStyle: "long" });
               />
             )}
             {post.tags.map((tag) => <ark-chip slot="tag">{tag}</ark-chip>)}
-          </ark-case-study-card>
-          <time class="blog-card-date" datetime={post.publishDate.toISOString()}>
-            {dateFormat.format(post.publishDate)}
-          </time>
+          </ark-media-card>
         </div>
       ))
     }

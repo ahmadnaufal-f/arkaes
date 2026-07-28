@@ -1,8 +1,8 @@
 export {
-  ArkCaseStudyCard,
-  defineArkCaseStudyCard,
-} from "./ark-case-study-card";
-export type { ArkCaseStudyCardVariant } from "./ark-case-study-card";
+  ArkMediaCard,
+  defineArkMediaCard,
+} from "./ark-media-card";
+export type { ArkMediaCardVariant } from "./ark-media-card";
 export {
   ArkPageHeader,
   defineArkPageHeader,

@@ -12,7 +12,7 @@ const LABEL_ATTR = "data-cursor-label";
  * <ark-button> or the <a> links in <ark-navigation>).
  */
 const DEFAULT_INTERACTIVE_SELECTOR =
-  'a[href], button, [role="button"], ark-button, ark-card, ark-case-study-card';
+  'a[href], button, [role="button"], ark-button, ark-card, ark-media-card';
 
 /**
  * Default chip wording per selector. Elements can override with a
@@ -20,7 +20,7 @@ const DEFAULT_INTERACTIVE_SELECTOR =
  * {@link enableArkCursor}. Buttons get no default — they describe themselves.
  */
 const DEFAULT_LABELS: Record<string, string> = {
-  "ark-case-study-card": "View",
+  "ark-media-card": "View",
   "a[href]": "Navigate",
 };
 
@@ -163,7 +163,7 @@ export class ArkCursor extends LitElement {
       .filter((node): node is Element => node instanceof Element);
     // A data-cursor-label attribute wins, innermost element first. Otherwise
     // the label map applies in entry order against the whole path, so earlier
-    // entries take priority — e.g. ark-case-study-card ("View") beats the
+    // entries take priority — e.g. ark-media-card ("View") beats the
     // a[href] ("Navigate") inside its shadow DOM.
     let label = path
       .find((node) => node.hasAttribute(LABEL_ATTR))
@@ -442,7 +442,7 @@ export interface EnableArkCursorOptions {
   interactiveSelectors?: string[];
   /**
    * Chip wording per CSS selector, spread over the built-in defaults
-   * (`ark-case-study-card` → "View", `a[href]` → "Navigate"), so app entries win
+   * (`ark-media-card` → "View", `a[href]` → "Navigate"), so app entries win
    * on conflict; map a selector to `""` to suppress its default chip. Entry
    * order sets match priority; new selectors are checked after the built-ins.
    */
