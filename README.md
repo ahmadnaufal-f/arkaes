@@ -37,7 +37,7 @@ Install pnpm if needed:
 
 ```sh
 corepack enable
-corepack prepare pnpm@9.15.4 --activate
+corepack prepare pnpm@10.34.5 --activate
 ```
 
 Install dependencies:
