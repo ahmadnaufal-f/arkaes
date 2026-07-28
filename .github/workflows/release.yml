@@ -25,8 +25,14 @@ jobs:
           cache: pnpm
           registry-url: https://registry.npmjs.org
 
-      - name: Install latest npm
-        run: npm install -g npm@latest
+      # Pinned to 11.x, not `latest`. npm 12 changed `npm info --json` to return
+      # an array, so @changesets/cli reads `.versions` off it as undefined and
+      # concludes every package is unpublished — then fails the run trying to
+      # republish over an existing version. npm 12 also rejects unknown CLI
+      # flags outright. Trusted publishing (OIDC) needs >= 11.5.1, so 11.x is
+      # the usable range until changesets supports npm 12.
+      - name: Install npm 11
+        run: npm install -g npm@11
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
