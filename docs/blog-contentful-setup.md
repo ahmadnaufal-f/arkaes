@@ -24,6 +24,24 @@ Fresh HTML stored in the edge cache
 - ISR is configured on the Vercel adapter in `astro.config.mjs` (`isr:` block).
   `expiration: 3600` is a safety net; on-demand revalidation is the primary path.
 - Everything else on the site stays statically prerendered.
+
+> **Adding a new SSR route? Check `isr.exclude` first.**
+> The `isr` block applies to **every** route with `export const prerender = false`,
+> not just the blog. When a response is served from the ISR cache the function
+> never runs — and neither does `src/middleware.ts`, so an authenticated route
+> would hand out a cached page without checking auth. Any route that is
+> authenticated, personalized, or mutating must be listed in `isr.exclude`;
+> only genuinely public, cacheable pages may be left out of it. The admin routes
+> are excluded via a pattern that mirrors `PROTECTED` in the middleware, so new
+> `/admin/*` and `/api/admin/*` routes are covered automatically.
+>
+> Verify after a build:
+> ```sh
+> pnpm --filter @arkaes/portfolio build
+> # then confirm the route maps to _render (dynamic), not /_isr (cached):
+> grep -o '"src":"[^"]*your-route[^"]*"[^}]*' \
+>   apps/portfolio/.vercel/output/config.json
+> ```
 - Without Contentful env vars, `/blog` renders an empty listing (same graceful
   degradation as the RAG/chat features).
 
@@ -62,7 +80,10 @@ Fresh HTML stored in the edge cache
 
 4. **Webhook** (after the first deploy). Contentful → Settings → Webhooks →
    Add webhook:
-   - URL: `https://arkaes.dev/api/revalidate`, method POST
+   - URL: `https://<canonical-host>/api/revalidate`, method POST. Use the host
+     that does **not** redirect (check Vercel → Domains for which of apex/`www`
+     is primary), and **no trailing slash** — the route is matched exactly.
+     Anything else returns a 308, and Contentful does not follow redirects.
    - Triggers: Entry **publish** and **unpublish** (filter to the `blogPost`
      content type)
    - Custom header: `x-webhook-secret: <CONTENTFUL_WEBHOOK_SECRET>`
@@ -113,6 +134,19 @@ the deployment has **Deployment Protection** enabled (a different feature from t
 firewall) and is rejecting the request. For the latter, set
 `VERCEL_AUTOMATION_BYPASS_SECRET` — the endpoint forwards it as
 `x-vercel-protection-bypass` on its own revalidation requests.
+
+### Webhook returns 308
+
+A redirect — and Contentful does not follow redirects, so the request never
+reaches the function. The `Location` header names the URL you should be using.
+Two causes:
+
+- **Wrong host.** If apex and `www` are both configured, one redirects to the
+  other with a 308. Point the webhook at the primary (Vercel → Domains), and keep
+  `site` in `astro.config.mjs` on that same host so canonical/OG tags agree.
+- **Trailing slash.** `isr.exclude` entries compile to exact route patterns
+  (`^/api/revalidate$`, with no `/?`), so `/api/revalidate/` doesn't match and
+  gets normalized with a 308.
 
 ### Webhook returns 503
 
