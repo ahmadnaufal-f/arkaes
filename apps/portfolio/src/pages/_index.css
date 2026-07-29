@@ -244,7 +244,7 @@
 .techstack-row-name {
   display: grid;
   font-family: var(--ark-font-display);
-  font-size: var(--ark-text-3xl);
+  font-size: var(--ark-text-2xl);
   font-weight: var(--ark-weight-thin);
   line-height: var(--ark-leading-tight);
   margin: 0;
