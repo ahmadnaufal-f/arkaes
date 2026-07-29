@@ -1,6 +1,7 @@
 export interface TechItem {
   name: string;
   primary?: boolean;
+  learning?: boolean;
 }
 
 export interface TechGroup {
@@ -18,9 +19,11 @@ export const techGroups: TechGroup[] = [
       { name: "Lit", primary: true },
       { name: "TypeScript", primary: true },
       { name: "Next.js" },
+      { name: "Astro" },
       { name: "JavaScript" },
       { name: "HTML" },
       { name: "CSS" },
+      { name: "Vue JS", learning: true },
     ],
   },
   {
@@ -28,6 +31,7 @@ export const techGroups: TechGroup[] = [
     items: [
       { name: "Web Components", primary: true },
       { name: "Design Tokens", primary: true },
+      { name: "DTCG" },
       { name: "Storybook" },
       { name: "Accessibility" },
       { name: "Tailwind CSS" },
@@ -38,6 +42,7 @@ export const techGroups: TechGroup[] = [
     items: [
       { name: "React Query", primary: true },
       { name: "Zustand", primary: true },
+      { name: "Pinia" },
       { name: "Redux Toolkit" },
       { name: "REST API" },
       { name: "Zod" },
@@ -49,6 +54,7 @@ export const techGroups: TechGroup[] = [
       { name: "React Native", primary: true },
       { name: "Expo", primary: true },
       { name: "NativeWind" },
+      { name: "React Native Skia" },
     ],
   },
   {
@@ -57,6 +63,8 @@ export const techGroups: TechGroup[] = [
     items: [
       { name: "OpenAI API", primary: true },
       { name: "Prompt Design", primary: true },
+      { name: "RAG" },
+      { name: "MCP Server" },
       { name: "AI-assisted Workflows" },
     ],
   },
@@ -66,6 +74,7 @@ export const techGroups: TechGroup[] = [
       { name: "Framer Motion", primary: true },
       { name: "GSAP", primary: true },
       { name: "Lottie" },
+      { name: "View Transition API" },
     ],
   },
   {
@@ -82,5 +91,3 @@ export const techGroups: TechGroup[] = [
     ],
   },
 ];
-
-export const currentlyLearning: string[] = ["Angular", "Edge AI"];

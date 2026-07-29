@@ -278,48 +278,9 @@
 }
 
 .techstack-row-items {
-  color: var(--ark-color-ink-ghost);
   display: flex;
   flex-wrap: wrap;
-  font-family: var(--ark-font-mono);
-  font-size: var(--ark-text-xs);
-  font-weight: var(--ark-weight-thin);
-  gap: var(--ark-space-1) var(--ark-space-2);
-  letter-spacing: var(--ark-letter-spacing-mono);
-  line-height: var(--ark-leading-relaxed);
-  margin: 0;
-  text-transform: uppercase;
-  transition: color var(--ark-duration-normal) var(--ark-ease-standard);
-}
-
-.techstack-row:hover .techstack-row-items {
-  color: var(--ark-color-ink-muted);
-}
-
-.techstack-item {
-  transition: color var(--ark-duration-normal) var(--ark-ease-standard);
-  white-space: nowrap;
-}
-
-.techstack-item + .techstack-item::before {
-  color: var(--ark-color-parchment-deep);
-  content: "\00B7";
-  content: "\00B7" / "";
-  margin-right: var(--ark-space-2);
-  transition: color var(--ark-duration-normal) var(--ark-ease-standard);
-}
-
-.techstack-row:hover .techstack-item + .techstack-item::before {
-  color: var(--ark-color-blush);
-}
-
-.techstack-item--primary {
-  color: var(--ark-color-ink-muted);
-  font-weight: var(--ark-weight-regular);
-}
-
-.techstack-row:hover .techstack-item--primary {
-  color: var(--ark-color-accent-strong);
+  gap: 7px;
 }
 
 /* Emerging domain swaps the blush accents for sage. */
@@ -333,14 +294,6 @@
 
 .techstack-row--emerging .techstack-row-name-italic {
   color: var(--ark-color-sage);
-}
-
-.techstack-row--emerging:hover .techstack-item + .techstack-item::before {
-  color: var(--ark-color-sage-light);
-}
-
-.techstack-row--emerging:hover .techstack-item--primary {
-  color: var(--ark-color-sage-600);
 }
 
 .techstack-footer {
@@ -360,40 +313,6 @@
   font-weight: var(--ark-font-weight-light);
   line-height: var(--ark-line-height-relaxed);
   max-width: 480px;
-}
-
-.techstack-learning {
-  align-items: baseline;
-  display: flex;
-  gap: var(--ark-space-3);
-}
-
-.techstack-learning-label {
-  color: var(--ark-color-ink-ghost);
-  font-family: var(--ark-font-mono);
-  font-size: 0.58rem;
-  letter-spacing: var(--ark-letter-spacing-wide);
-  text-transform: uppercase;
-}
-
-.techstack-learning-items {
-  color: var(--ark-color-ink-muted);
-  display: flex;
-  flex-wrap: wrap;
-  font-family: var(--ark-font-mono);
-  font-size: var(--ark-text-xs);
-  gap: var(--ark-space-1) var(--ark-space-3);
-  letter-spacing: var(--ark-letter-spacing-mono);
-  margin: 0;
-  text-transform: uppercase;
-}
-
-/* Dashed sage underline — the typographic descendant of the old
-   learning chips' dashed border. */
-.techstack-learning-item {
-  text-decoration: underline dashed var(--ark-color-sage);
-  text-decoration-thickness: 1px;
-  text-underline-offset: 4px;
 }
 
 .about-strip {
@@ -984,11 +903,6 @@
     margin-top: var(--ark-space-1);
   }
 
-  .techstack-learning {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
   .contact-socials {
     flex-direction: column;
     gap: 18px;
@@ -1003,10 +917,7 @@
   .techstack-row::before,
   .techstack-row-num,
   .techstack-row-name-roman,
-  .techstack-row-name-italic,
-  .techstack-row-items,
-  .techstack-item,
-  .techstack-item + .techstack-item::before {
+  .techstack-row-name-italic {
     transition: none;
   }
 }

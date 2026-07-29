@@ -2,7 +2,7 @@
 import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import "./_index.css";
-import { techGroups, currentlyLearning } from "../data/techstack";
+import { techGroups } from "../data/techstack";
 import { EXPERTISE } from "../data/expertise";
 import CaseStudyVisual from "../components/CaseStudyVisual.astro";
 
@@ -261,11 +261,16 @@ const techCount = techGroups.reduce((total, group) => total + group.items.length
               <span class="techstack-row-name-roman">{group.label}</span>
               <span class="techstack-row-name-italic" aria-hidden="true">{group.label}</span>
             </h3>
-            <p class="techstack-row-items">
-              {group.items.map((item) => (
-                <span class={item.primary ? "techstack-item techstack-item--primary" : "techstack-item"}>{item.name}</span>
-              ))}
-            </p>
+            <div class="techstack-row-items">
+              {group.items.map((item) => {
+                const variant = item.learning
+                  ? "learning"
+                  : item.primary
+                    ? (group.emerging ? "emerging" : "primary")
+                    : "default";
+                return <ark-chip variant={variant}>{item.name}</ark-chip>;
+              })}
+            </div>
           </li>
         );
       })}
@@ -276,16 +281,27 @@ const techCount = techGroups.reduce((total, group) => total + group.items.length
         Primary framework is Lit for enterprise work. React for side projects and experiments. All
         stacks applied to shipped, production software.
       </p>
-      <div class="techstack-learning">
-        <div class="techstack-learning-label">Currently learning</div>
-        <p class="techstack-learning-items">
-          {currentlyLearning.map((item) => (
-            <span class="techstack-learning-item">{item}</span>
-          ))}
-        </p>
-      </div>
     </div>
   </section>
+
+  <script>
+    // Light up every chip in a tech-stack row when the row is hovered.
+    // ark-chip lives in shadow DOM, so this drives its isHovered API rather
+    // than relying on a CSS descendant selector.
+    (function () {
+      const rows = document.querySelectorAll<HTMLElement>(".techstack-row");
+      rows.forEach((row) => {
+        const chips = row.querySelectorAll<HTMLElement & { isHovered: boolean }>("ark-chip");
+        const setHovered = (value: boolean) => {
+          chips.forEach((chip) => {
+            chip.isHovered = value;
+          });
+        };
+        row.addEventListener("mouseenter", () => setHovered(true));
+        row.addEventListener("mouseleave", () => setHovered(false));
+      });
+    })();
+  </script>
 
   <section class="about-strip" id="about">
     <div class="about-portrait reveal">
