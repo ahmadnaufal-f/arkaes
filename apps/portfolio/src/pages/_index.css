@@ -184,7 +184,7 @@
   /* How far the hover wash bleeds past the content edge. */
   --row-bleed: var(--site-content-padding);
 
-  align-items: baseline;
+  align-items: center;
   border-top: 1px solid var(--ark-color-parchment-deep);
   column-gap: var(--ark-space-6);
   display: grid;
