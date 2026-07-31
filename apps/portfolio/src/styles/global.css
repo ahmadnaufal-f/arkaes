@@ -88,6 +88,14 @@
 }
 
 html {
+  /* Mobile Chromium (Android Chrome/Brave) paints its own translucent blue
+     tap-highlight on links/buttons by default, which briefly flashes over
+     tapped elements — including inside Lit shadow DOM, since this property
+     is inherited and crosses the shadow boundary (e.g. ark-media-card's
+     internal card link, ark-button's anchor). `:focus-visible` already
+     provides a deliberate focus state, so suppress the browser's own one
+     everywhere in one place rather than per-component. */
+  -webkit-tap-highlight-color: transparent;
   background: var(--ark-color-background);
   color: var(--ark-color-text);
   scroll-behavior: smooth;
@@ -142,12 +150,17 @@ body::before {
    `view-transition-class` instead — an explicit, build-safe alternative that
    also sidesteps ever touching the header/footer's root transition.
 
-   Keep these values in sync with src/transitions/fade-through-blank.ts: the
-   crossfade uses the same ark-fade-out/in keyframes so a shared image fades
-   to blank in step with the rest of the page, and the box-morph
-   (position/size interpolation, browser default 250ms) is stretched to the
-   full 500ms window so it doesn't snap into place while the page is still
-   mid-fade. */
+   Only the crossfade (old/new pixel content) is synced to
+   fade-through-blank's rhythm here — the box-morph (the browser's
+   `::view-transition-group` position/size interpolation) is deliberately left
+   at its fast default. A card thumbnail and its destination hero can sit far
+   apart with very different sizes (listing card → full-width project/case-
+   study hero), and the group isn't clipped by any ancestor while it
+   animates: stretching its duration to match the 500ms fade (as this rule
+   once did) made it drift across unrelated page content for far longer,
+   reading as a broken, oversized image flying over the heading instead of a
+   quick, easy-to-miss resize. Keep the crossfade timing here in sync with
+   src/transitions/fade-through-blank.ts. */
 .portrait-img,
 .about-summary-portrait,
 .blog-cover,
@@ -162,11 +175,6 @@ body::before {
 
 ::view-transition-new(.ark-shared-media) {
   animation: 300ms cubic-bezier(0, 0, 0.2, 1) 200ms backwards ark-fade-in;
-}
-
-::view-transition-group(.ark-shared-media) {
-  animation-duration: 500ms;
-  animation-timing-function: var(--ark-ease-standard, cubic-bezier(0.2, 0, 0, 1));
 }
 
 main {
