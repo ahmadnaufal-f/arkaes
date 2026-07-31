@@ -46,10 +46,10 @@ export interface ChatHandlerOptions {
    * this. Defaults to echoing the raw source id with no link.
    */
   resolveCitation?: ResolveCitation;
-  /** Chat model. Defaults to "gpt-5.4-nano". */
+  /** Chat model. Defaults to "gpt-5.6-luna". */
   model?: string;
   /**
-   * Sampling temperature. Left unset by default: gpt-5.4-nano is a reasoning
+   * Sampling temperature. Left unset by default: gpt-5.6-luna is a reasoning
    * model that expects the fixed default (1), and the earlier low value (0.4)
    * was a big contributor to the stiff, clipped replies. Only set this on a
    * model that honours arbitrary temperatures.
@@ -166,7 +166,7 @@ export const createChatHandler = (
   const {
     apiKey,
     knowledge,
-    model = "gpt-5.4-nano",
+    model = "gpt-5.6-luna",
     temperature,
     reasoningEffort = "low",
     verbosity = "medium",
@@ -291,7 +291,7 @@ export const createChatHandler = (
     try {
       const completion = await client.chat.completions.create({
         model,
-        // Reasoning + length controls are the right levers for gpt-5.4-nano;
+        // Reasoning + length controls are the right levers for gpt-5.6-luna;
         // `temperature` is only sent when explicitly configured.
         reasoning_effort: reasoningEffort,
         verbosity,

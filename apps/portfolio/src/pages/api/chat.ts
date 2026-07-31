@@ -129,7 +129,7 @@ const allowedOrigins = (process.env.CHAT_ALLOWED_ORIGINS ?? "")
 // falls back to the static knowledge base built above.
 const handler = createChatHandler({
   apiKey: process.env.OPENAI_API_KEY ?? "",
-  model: process.env.OPENAI_MODEL ?? "gpt-5.4-nano",
+  model: process.env.OPENAI_MODEL ?? "gpt-5.6-luna",
   knowledge: buildKnowledge,
   retriever: getRetriever() ?? undefined,
   resolveCitation,
