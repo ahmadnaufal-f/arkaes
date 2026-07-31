@@ -111,7 +111,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
       <span class="page-loader-spinner"></span>
     </div>
     <SiteHeader />
-    <main id="top" transition:animate={fadeThroughBlank}>
+    <main id="top" transition:name="main-content" transition:animate={fadeThroughBlank}>
       <slot />
     </main>
     <SiteFooter />

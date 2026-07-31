@@ -130,18 +130,41 @@ body::before {
   }
 }
 
-/* The "about-me" portrait is a shared-element transition (same
-   `transition:name` on the home and about pages), so the browser captures it
-   into its own view-transition group, independent of `<main>`'s
-   fade-through-blank. Its crossfade uses the same ark-fade-out/in keyframes
-   (see the `<img transition:animate={fadeThroughBlank}>` in index.astro /
-   about.astro) so it fades to blank in step with the rest of the page. But
-   the browser's default box-morph (position/size interpolation) animation is
-   only 250ms — half of fade-through-blank's 500ms window — which would snap
-   the portrait into its final position/size while the page is still
-   mid-fade. Stretch it to match so the morph and the crossfade finish
-   together. */
-::view-transition-group(about-me) {
+/* Shared-element transitions: several images carry a matching
+   `view-transition-name` across pages (the about-me portrait, blog post
+   covers via `coverTransitionName()`, project/case-study thumbnails via
+   `CaseStudyVisual`/`thumbnail.astro`). Each gets pulled into its own
+   view-transition group, independent of `<main>`'s fade-through-blank. Most
+   of these names are generated per-item at render time, so they can't be
+   targeted individually here. `::view-transition-*(*:not(...))` would be the
+   spec-correct way to exclude the page root and `<main>`, but lightningcss
+   1.32 fails to parse that selector form (`Invalid state`), so we opt in via
+   `view-transition-class` instead — an explicit, build-safe alternative that
+   also sidesteps ever touching the header/footer's root transition.
+
+   Keep these values in sync with src/transitions/fade-through-blank.ts: the
+   crossfade uses the same ark-fade-out/in keyframes so a shared image fades
+   to blank in step with the rest of the page, and the box-morph
+   (position/size interpolation, browser default 250ms) is stretched to the
+   full 500ms window so it doesn't snap into place while the page is still
+   mid-fade. */
+.portrait-img,
+.about-summary-portrait,
+.blog-cover,
+.blog-article-cover,
+[class^="thumb-"] {
+  view-transition-class: ark-shared-media;
+}
+
+::view-transition-old(.ark-shared-media) {
+  animation: 200ms cubic-bezier(0.4, 0, 1, 1) forwards ark-fade-out;
+}
+
+::view-transition-new(.ark-shared-media) {
+  animation: 300ms cubic-bezier(0, 0, 0.2, 1) 200ms backwards ark-fade-in;
+}
+
+::view-transition-group(.ark-shared-media) {
   animation-duration: 500ms;
   animation-timing-function: var(--ark-ease-standard, cubic-bezier(0.2, 0, 0, 1));
 }
