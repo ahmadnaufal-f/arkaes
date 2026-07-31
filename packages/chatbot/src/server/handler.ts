@@ -147,10 +147,15 @@ const isOriginAllowed = (
 ): boolean => {
   // Modern browsers tag embeds and other-site requests as "cross-site".
   if (request.headers.get("sec-fetch-site") === "cross-site") return false;
-  if (!allowedOrigins || allowedOrigins.length === 0) return true;
   const origin = request.headers.get("origin");
   // No Origin header → same-origin navigation or a non-browser client.
   if (!origin) return true;
+  // The endpoint's own origin is always allowed: `allowedOrigins` only adds
+  // extra origins (e.g. embedding the widget on another site), it never
+  // narrows access to the site the endpoint itself is deployed on — that
+  // would otherwise lock out every Vercel preview, which gets a unique URL.
+  if (origin === new URL(request.url).origin) return true;
+  if (!allowedOrigins || allowedOrigins.length === 0) return true;
   return allowedOrigins.includes(origin);
 };
 
