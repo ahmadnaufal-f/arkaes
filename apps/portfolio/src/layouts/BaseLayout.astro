@@ -198,8 +198,30 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
         },
       };
 
-      document.addEventListener("astro:before-preparation", () => navProgress.start());
-      document.addEventListener("astro:after-preparation", () => navProgress.advance());
+      // A view transition's "old" snapshot is captured at whatever scroll
+      // position the outgoing page is currently at, while Astro scrolls the
+      // incoming page to the top by default (`moveToLocation` in Astro's
+      // router). Left alone, that mismatch crossfades two different scroll
+      // windows of content on top of each other — e.g. an outgoing page
+      // scrolled mid-article ghosting through an incoming page's heading.
+      // Scrolling the outgoing page to top ourselves, right before Astro
+      // starts the view transition, makes both snapshots depict the same
+      // "top of page" content so they cleanly fade through blank instead.
+      // Skipped for back/forward (`traverse`) navigations, where Astro
+      // restores the destination's own saved scroll position instead of
+      // scrolling to top — forcing top here would just trade one mismatch
+      // for another.
+      let isTraverseNavigation = false;
+      document.addEventListener("astro:before-preparation", (event) => {
+        isTraverseNavigation = event.navigationType === "traverse";
+        navProgress.start();
+      });
+      document.addEventListener("astro:after-preparation", () => {
+        if (!isTraverseNavigation) {
+          window.scrollTo({ left: 0, top: 0, behavior: "instant" });
+        }
+        navProgress.advance();
+      });
 
       // Activate the loading/navigating state on the clicked link element as
       // soon as the user clicks, so there is immediate feedback while
