@@ -20,6 +20,7 @@ const items: ListingItem[] = entries.map((project) => ({
   tags: project.data.stack.slice(0, 3),
   // Slug doubles as the visual registry key (falls back to the brand mark).
   visual: project.id,
+  transitionName: `proj-thumb-${project.id}`,
 }));
 ---
 

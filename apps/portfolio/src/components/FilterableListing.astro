@@ -16,6 +16,7 @@ export interface ListingItem {
   expertise: string[];
   tags?: string[];
   visual?: string;
+  transitionName: string;
 }
 
 interface Props {
@@ -78,7 +79,11 @@ const { eyebrow, title, description, items } = Astro.props;
             title={item.title}
             variant="compact"
           >
-            <CaseStudyVisual visual={item.visual} asSlot="media" />
+            <CaseStudyVisual
+              visual={item.visual}
+              asSlot="media"
+              transitionName={item.transitionName}
+            />
             {(item.tags ?? []).map((tag) => (
               <ark-chip slot="tag">
                 {tag}

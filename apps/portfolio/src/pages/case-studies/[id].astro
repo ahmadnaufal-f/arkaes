@@ -54,7 +54,11 @@ const accordionSections = allSections.filter((s) => s.heading !== "Overview");
 <BaseLayout title={`${title} — Arkaes`} description={shortDesc}>
   <article class="cs-page">
     <ark-project-header eyebrow="Case Study" heading={title}>
-      <CaseStudyVisual visual={visual} asSlot="visual" />
+      <CaseStudyVisual
+        visual={visual}
+        asSlot="visual"
+        transitionName={`proj-thumb-${study.id}`}
+      />
       {tags.map((tag: string) => <ark-chip slot="tag">{tag}</ark-chip>)}
     </ark-project-header>
 

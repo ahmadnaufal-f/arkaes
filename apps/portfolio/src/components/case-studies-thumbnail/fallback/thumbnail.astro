@@ -1,13 +1,15 @@
 ---
 interface Props {
+  transitionName: string;
   asSlot?: string;
 }
-const { asSlot } = Astro.props;
+const { transitionName, asSlot } = Astro.props;
 ---
 
 <div
   class="thumb-fallback"
   slot={asSlot}
+  style={`view-transition-name: ${transitionName};`}
 >
   <div class="thumb-fallback-tile">
     <span class="thumb-fallback-mono">A</span>

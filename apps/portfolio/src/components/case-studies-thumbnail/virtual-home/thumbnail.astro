@@ -1,8 +1,9 @@
 ---
 interface Props {
+  transitionName: string;
   asSlot?: string;
 }
-const { asSlot } = Astro.props;
+const { transitionName, asSlot } = Astro.props;
 
 // Two product variants — a mobile app (phone) and the Family Hub screen (wide
 // display) — resting on one shared monorepo foundation. Kept deliberately
@@ -20,6 +21,7 @@ const pills = [{ x: 52 }, { x: 100, alt: true }, { x: 148 }];
 <div
   class="thumb-vhome"
   slot={asSlot}
+  style={`view-transition-name: ${transitionName};`}
 >
   <div class="thumb-vhome-card">
     <svg

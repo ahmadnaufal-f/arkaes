@@ -34,7 +34,11 @@ const bodyHtml = renderSectionHtml(project.body ?? "");
 <BaseLayout title={`${title} | Arkaes`} description={challenges}>
   <article class="cs-page">
     <ark-project-header eyebrow={categoryLabel(category)} heading={title}>
-      <CaseStudyVisual visual={project.id} asSlot="visual" />
+      <CaseStudyVisual
+        visual={project.id}
+        asSlot="visual"
+        transitionName={`proj-thumb-${project.id}`}
+      />
       {stack.map((tech) => <ark-chip slot="tag">{tech}</ark-chip>)}
     </ark-project-header>
 
