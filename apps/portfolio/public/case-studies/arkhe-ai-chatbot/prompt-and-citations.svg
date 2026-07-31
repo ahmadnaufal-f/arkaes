@@ -34,7 +34,7 @@
 
   <!-- ══════════ Model ══════════ -->
   <rect x="320" y="128" width="118" height="60" rx="6" fill="#653a35" stroke="#653a35" stroke-width="1"/>
-  <text x="379" y="152" text-anchor="middle" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="11" font-weight="500" fill="#faf9f7">gpt-5.4-nano</text>
+  <text x="379" y="152" text-anchor="middle" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="11" font-weight="500" fill="#faf9f7">gpt-5.6-luna</text>
   <text x="379" y="169" text-anchor="middle" font-family="'DM Mono','Courier New',monospace" font-size="7.5" fill="#e9c8be" letter-spacing="0.06em">stream tokens</text>
 
   <!-- arrow model → reply -->
