@@ -5,6 +5,7 @@ import "./_index.css";
 import { techGroups } from "../data/techstack";
 import { EXPERTISE } from "../data/expertise";
 import CaseStudyVisual from "../components/CaseStudyVisual.astro";
+import { fadeThroughBlank } from "../transitions/fade-through-blank";
 
 const CARD_ORDER = ["virtual-home", "virtual-home-tv", "milk-tracker", "air-care"];
 const getOrder = (id: string) => { const i = CARD_ORDER.indexOf(id); return i === -1 ? Infinity : i; };
@@ -313,6 +314,7 @@ const techCount = techGroups.reduce((total, group) => total + group.items.length
         height="427"
         loading="lazy"
         transition:name="about-me"
+        transition:animate={fadeThroughBlank}
       />
       <div class="portrait-rule"></div>
     </div>

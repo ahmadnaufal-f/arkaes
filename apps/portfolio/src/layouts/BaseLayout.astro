@@ -270,9 +270,28 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
       };
 
       // ── Per-page setup (runs on first load and after every navigation) ──
-      const initPage = () => {
+      const initPage = async () => {
         const loader = document.getElementById("page-loader");
         if (loader) {
+          // `:not(:defined)` only tells us a custom element's constructor has
+          // run — Lit schedules its first render as a microtask, so there's a
+          // brief window where the element is "defined" but hasn't painted
+          // its shadow DOM yet. Wait for every currently-undefined element to
+          // upgrade, then a couple of frames for that first render to flush,
+          // before dropping the loader — otherwise a fast load can reveal
+          // still-unstyled elements underneath it.
+          const undefinedTags = new Set(
+            Array.from(document.querySelectorAll(":not(:defined)")).map((el) =>
+              el.tagName.toLowerCase(),
+            ),
+          );
+          await Promise.all(
+            [...undefinedTags].map((tag) => customElements.whenDefined(tag)),
+          );
+          await new Promise<void>((resolve) =>
+            requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+          );
+
           loader.classList.add("page-loader--done");
           setTimeout(() => loader.remove(), 350);
         }
@@ -304,7 +323,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
       document.addEventListener("astro:page-load", () => {
         navProgress.done();
         clearPendingNav();
-        initPage();
+        void initPage();
       });
     </script>
   </body>

@@ -2,6 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { parseSections, renderSectionHtml } from "../utils/sections";
 import aboutContent from "../content/about.md?raw";
+import { fadeThroughBlank } from "../transitions/fade-through-blank";
 import "./_about.css";
 
 // Eagerly import every about illustration SVG as a raw string so we can
@@ -44,6 +45,7 @@ const sections = parseSections(aboutContent);
                 width="320"
                 height="427"
                 transition:name="about-me"
+                transition:animate={fadeThroughBlank}
               />
             )}
             <div
