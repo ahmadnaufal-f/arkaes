@@ -1,6 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { coverTransitionName, getPostBySlug } from "../../lib/contentful";
+import { getPostBySlug } from "../../lib/contentful";
 import { renderPostBody } from "../../lib/markdown";
 import "./_blog.css";
 
@@ -43,7 +43,6 @@ const dateFormat = new Intl.DateTimeFormat("en", { dateStyle: "long" });
             class="blog-article-cover"
             src={post.cover.src}
             alt={post.cover.alt}
-            style={`view-transition-name: ${coverTransitionName(post.slug)};`}
           />
         )
       }

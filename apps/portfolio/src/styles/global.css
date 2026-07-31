@@ -138,34 +138,27 @@ body::before {
   }
 }
 
-/* Shared-element transitions: several images carry a matching
-   `view-transition-name` across pages (the about-me portrait, blog post
-   covers via `coverTransitionName()`, project/case-study thumbnails via
-   `CaseStudyVisual`/`thumbnail.astro`). Each gets pulled into its own
-   view-transition group, independent of `<main>`'s fade-through-blank. Most
-   of these names are generated per-item at render time, so they can't be
-   targeted individually here. `::view-transition-*(*:not(...))` would be the
-   spec-correct way to exclude the page root and `<main>`, but lightningcss
-   1.32 fails to parse that selector form (`Invalid state`), so we opt in via
-   `view-transition-class` instead — an explicit, build-safe alternative that
-   also sidesteps ever touching the header/footer's root transition.
+/* Shared-element transition: the about-me portrait carries a matching
+   `transition:name` on the home and about pages (see index.astro /
+   about.astro), so it's pulled into its own view-transition group,
+   independent of `<main>`'s fade-through-blank. `view-transition-class`
+   (rather than targeting `::view-transition-old(about-me)` directly) is a
+   deliberate leftover from when this rule also covered blog covers and
+   project/case-study thumbnails — those used a per-item dynamic
+   `view-transition-name` (`coverTransitionName()`, `proj-thumb-${id}`) that
+   couldn't be listed individually, so grouping them under one class avoided
+   that. They no longer participate in view-transition at all: on real
+   (non-desktop-class) hardware, the browser needs to rasterize each
+   shared-element snapshot into a GPU texture, and under CPU pressure that
+   lagged a frame or two behind the compositor, showing a gray placeholder
+   box over the thumbnail before its content or the fade-through-blank
+   animation had even started. The about-me portrait is a single instance
+   the browser has already handled fine.
 
-   Only the crossfade (old/new pixel content) is synced to
-   fade-through-blank's rhythm here — the box-morph (the browser's
-   `::view-transition-group` position/size interpolation) is deliberately left
-   at its fast default. A card thumbnail and its destination hero can sit far
-   apart with very different sizes (listing card → full-width project/case-
-   study hero), and the group isn't clipped by any ancestor while it
-   animates: stretching its duration to match the 500ms fade (as this rule
-   once did) made it drift across unrelated page content for far longer,
-   reading as a broken, oversized image flying over the heading instead of a
-   quick, easy-to-miss resize. Keep the crossfade timing here in sync with
+   Keep the crossfade timing here in sync with
    src/transitions/fade-through-blank.ts. */
 .portrait-img,
-.about-summary-portrait,
-.blog-cover,
-.blog-article-cover,
-[class^="thumb-"] {
+.about-summary-portrait {
   view-transition-class: ark-shared-media;
 }
 

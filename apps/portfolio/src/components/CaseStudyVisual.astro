@@ -10,11 +10,10 @@ import FallbackThumbnail from "./case-studies-thumbnail/fallback/thumbnail.astro
 
 interface Props {
   visual?: string;
-  transitionName: string;
   asSlot?: string;
 }
 
-const { visual, transitionName, asSlot } = Astro.props;
+const { visual, asSlot } = Astro.props;
 
 // Single source of truth for mapping a `visual` key to its thumbnail. Anything
 // not registered (or a missing key) falls back to the brand placeholder.
@@ -32,4 +31,4 @@ const Thumbnail =
   (visual && REGISTRY[visual as keyof typeof REGISTRY]) || FallbackThumbnail;
 ---
 
-<Thumbnail transitionName={transitionName} asSlot={asSlot} />
+<Thumbnail asSlot={asSlot} />

@@ -1,15 +1,13 @@
 ---
 interface Props {
-  transitionName: string;
   asSlot?: string;
 }
-const { transitionName, asSlot } = Astro.props;
+const { asSlot } = Astro.props;
 ---
 
 <div
   class="thumb-vhome-tv"
   slot={asSlot}
-  style={`view-transition-name: ${transitionName};`}
 >
   <div class="thumb-tv-screen">
     <div class="thumb-tv-topbar">

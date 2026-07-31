@@ -1,9 +1,8 @@
 ---
 interface Props {
-  transitionName: string;
   asSlot?: string;
 }
-const { transitionName, asSlot } = Astro.props;
+const { asSlot } = Astro.props;
 
 // A miniature "component library" canvas: a token swatch palette up top, two
 // primitive previews (a filled button + an outlined chip) in the middle, and a
@@ -15,7 +14,6 @@ const swatches = ["accent", "strong", "soft", "neutral"] as const;
 <div
   class="thumb-ds"
   slot={asSlot}
-  style={`view-transition-name: ${transitionName};`}
 >
   <div class="thumb-ds-card">
     <!-- Design tokens: a small palette of color swatches -->

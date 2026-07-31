@@ -1,15 +1,13 @@
 ---
 interface Props {
-  transitionName: string;
   asSlot?: string;
 }
-const { transitionName, asSlot } = Astro.props;
+const { asSlot } = Astro.props;
 ---
 
 <div
   class="thumb-air"
   slot={asSlot}
-  style={`view-transition-name: ${transitionName};`}
 >
   <div class="thumb-air-scene">
     <div class="thumb-air-flow" aria-hidden="true">

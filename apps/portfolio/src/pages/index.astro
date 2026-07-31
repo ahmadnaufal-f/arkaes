@@ -114,11 +114,7 @@ const techCount = techGroups.reduce((total, group) => total + group.items.length
           href={`/case-studies/${study.id}`}
           title={study.data.title}
         >
-          <CaseStudyVisual
-            visual={study.data.visual}
-            asSlot="media"
-            transitionName={`proj-thumb-${study.id}`}
-          />
+          <CaseStudyVisual visual={study.data.visual} asSlot="media" />
           {study.data.tags.map((tag) => (
             <ark-chip slot="tag">{tag}</ark-chip>
           ))}

@@ -118,16 +118,6 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
   return entry ? toPost(entry) : null;
 }
 
-/**
- * View-transition name shared by a post's listing-card cover and its article
- * cover, so the image morphs across navigation. The slug comes from the CMS and
- * has to be a valid custom-ident: non-ident characters are replaced, and the
- * `blog-cover-` prefix guarantees a valid leading character even for a slug that
- * starts with a digit.
- */
-export const coverTransitionName = (slug: string): string =>
-  `blog-cover-${slug.replace(/[^a-zA-Z0-9_-]/g, "-")}`;
-
 /** Distinct categories across the given posts, in first-seen order. */
 export const categoriesOf = (posts: BlogPost[]): string[] => [
   ...new Set(posts.map((post) => post.category).filter(Boolean)),

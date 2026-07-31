@@ -1,9 +1,8 @@
 ---
 interface Props {
-  transitionName: string;
   asSlot?: string;
 }
-const { transitionName, asSlot } = Astro.props;
+const { asSlot } = Astro.props;
 
 // A miniature chat panel, echoing the Arkhe widget itself: a header with the
 // assistant's avatar and name, an incoming assistant bubble on the left, a
@@ -14,7 +13,6 @@ const { transitionName, asSlot } = Astro.props;
 <div
   class="thumb-chat"
   slot={asSlot}
-  style={`view-transition-name: ${transitionName};`}
 >
   <div class="thumb-chat-card">
     <!-- Panel header: assistant avatar + name -->

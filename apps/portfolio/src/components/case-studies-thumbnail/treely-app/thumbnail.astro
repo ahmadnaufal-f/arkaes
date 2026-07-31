@@ -1,9 +1,8 @@
 ---
 interface Props {
-  transitionName: string;
   asSlot?: string;
 }
-const { transitionName, asSlot } = Astro.props;
+const { asSlot } = Astro.props;
 
 // A small family tree: a "lead" couple at the root branching down to three
 // children. Each node is a soft avatar (head + shoulders) so the diagram reads
@@ -34,7 +33,6 @@ const avatars = nodes.map((n) => ({
 <div
   class="thumb-treely"
   slot={asSlot}
-  style={`view-transition-name: ${transitionName};`}
 >
   <div class="thumb-treely-card">
     <svg
