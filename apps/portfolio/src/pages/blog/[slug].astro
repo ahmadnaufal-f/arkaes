@@ -2,7 +2,6 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { coverTransitionName, getPostBySlug } from "../../lib/contentful";
 import { renderPostBody } from "../../lib/markdown";
-import "./_blog.css";
 
 // On-demand + ISR, same contract as the blog index: rendered once per publish
 // (or per `expiration` window), then served from the edge cache.

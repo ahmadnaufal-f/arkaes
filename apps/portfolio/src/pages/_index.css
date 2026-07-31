@@ -367,7 +367,7 @@
   font-style: italic;
 }
 
-.about-body {
+.about-strip-body {
   color: var(--ark-color-text-muted);
   font-size: var(--ark-font-size-lg);
   font-weight: var(--ark-font-weight-light);
