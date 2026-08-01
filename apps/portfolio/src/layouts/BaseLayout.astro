@@ -93,6 +93,12 @@ const schemaGraph = serializeJsonLd([
     <meta name="author" content={AUTHOR_NAME} />
     {noindex && <meta name="robots" content="noindex, follow" />}
     <link rel="canonical" href={canonical} />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={`${AUTHOR_NAME} — Blog`}
+      href={new URL("/rss.xml", site)}
+    />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content={ogType} />

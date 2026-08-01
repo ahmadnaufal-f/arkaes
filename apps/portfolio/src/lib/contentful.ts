@@ -137,6 +137,23 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
 export const coverTransitionName = (slug: string): string =>
   `blog-cover-${slug.replace(/[^a-zA-Z0-9_-]/g, "-")}`;
 
+/**
+ * Contentful's Images API resizes and re-encodes on its own CDN via query
+ * params, so cover images get modern formats and density variants without
+ * `<Image>`. Astro's component would otherwise have to route every CMS image
+ * through the serverless function at request time (the blog routes are
+ * on-demand), turning a CDN hit into a lambda invocation plus a re-fetch.
+ *
+ * `fm=webp` is safe to serve unconditionally — every browser that runs this
+ * site supports it — and `fit=fill` keeps the requested box exactly.
+ */
+export const coverUrl = (src: string, width: number): string =>
+  `${src}?w=${width}&fm=webp&q=80&fit=fill`;
+
+/** `srcset` string for a cover across the given rendition widths. */
+export const coverSrcSet = (src: string, widths: readonly number[]): string =>
+  widths.map((width) => `${coverUrl(src, width)} ${width}w`).join(", ");
+
 /** Distinct categories across the given posts, in first-seen order. */
 export const categoriesOf = (posts: BlogPost[]): string[] => [
   ...new Set(posts.map((post) => post.category).filter(Boolean)),

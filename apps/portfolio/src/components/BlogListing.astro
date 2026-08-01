@@ -5,7 +5,13 @@ import "@arkaes/ui/register/ark-dropdown";
 import "@arkaes/ui/register/ark-empty";
 import "@arkaes/ui/register/ark-page-header";
 import type { BlogPost } from "../lib/contentful";
-import { categoriesOf, coverTransitionName, tagsOf } from "../lib/contentful";
+import {
+  categoriesOf,
+  coverSrcSet,
+  coverTransitionName,
+  coverUrl,
+  tagsOf,
+} from "../lib/contentful";
 // Shares the listing shell (grid, filter bar, empty state) with the
 // projects/case-studies listings; blog-specific bits live in _blog-listing.css.
 import "./_filterable-listing.css";
@@ -25,7 +31,13 @@ const tags = tagsOf(posts);
 ---
 
 <section class="page-section listing blog-listing">
-  <ark-page-header eyebrow={eyebrow} heading={title} lead={description} />
+  {/* Light-DOM slot content rather than `heading`/`lead` attributes, so the
+      page's h1 and lead exist in the served HTML instead of only after the Lit
+      bundle upgrades the element. See FilterableListing.astro. */}
+  <ark-page-header eyebrow={eyebrow}>
+    <h1 slot="title">{title}</h1>
+    {description && <p slot="lead">{description}</p>}
+  </ark-page-header>
 
   <div class="filter-bar" data-blog-filter-bar>
     <ark-dropdown
@@ -73,8 +85,12 @@ const tags = tagsOf(posts);
               <img
                 slot="media"
                 class="blog-cover"
-                src={post.cover.src}
+                src={coverUrl(post.cover.src, 400)}
+                srcset={coverSrcSet(post.cover.src, [320, 640])}
+                sizes="(max-width: 720px) 100vw, 360px"
                 alt={post.cover.alt}
+                width={post.cover.width}
+                height={post.cover.height}
                 loading="lazy"
                 style={`view-transition-name: ${coverTransitionName(post.slug)};`}
               />

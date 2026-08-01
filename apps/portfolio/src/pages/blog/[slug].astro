@@ -1,6 +1,11 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { coverTransitionName, getPostBySlug } from "../../lib/contentful";
+import {
+  coverSrcSet,
+  coverTransitionName,
+  coverUrl,
+  getPostBySlug,
+} from "../../lib/contentful";
 import { renderPostBody } from "../../lib/markdown";
 import { AUTHOR_NAME, blogPostingSchema, breadcrumbSchema } from "../../lib/seo";
 import "./_blog.css";
@@ -44,7 +49,10 @@ const jsonLd = [
     {/* The cover deliberately stays out of slot="visual": that slot is
         scroll-animated (scaled + collapsed as the header sticks), which isn't
         wanted for a blog cover. It renders with the body instead. */}
-    <ark-project-header eyebrow={post.category} heading={post.title}>
+    <ark-project-header eyebrow={post.category}>
+      {/* Light-DOM h1 so the post title is in the served HTML, not only in the
+          shadow root after upgrade. See FilterableListing.astro. */}
+      <h1 slot="title">{post.title}</h1>
       {post.tags.map((tag) => <ark-chip slot="tag">{tag}</ark-chip>)}
     </ark-project-header>
 
@@ -57,10 +65,13 @@ const jsonLd = [
         post.cover && (
           <img
             class="blog-article-cover"
-            src={post.cover.src}
+            src={coverUrl(post.cover.src, 800)}
+            srcset={coverSrcSet(post.cover.src, [400, 800, 1200])}
+            sizes="(max-width: 800px) 100vw, 720px"
             alt={post.cover.alt}
             width={post.cover.width}
             height={post.cover.height}
+            fetchpriority="high"
             style={`view-transition-name: ${coverTransitionName(post.slug)};`}
           />
         )

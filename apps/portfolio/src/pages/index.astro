@@ -1,11 +1,18 @@
 ---
 import { getCollection } from "astro:content";
+import { Image } from "astro:assets";
+import portrait from "../assets/about-me.png";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import "./_index.css";
 import { techGroups } from "../data/techstack";
 import { EXPERTISE } from "../data/expertise";
 import CaseStudyVisual from "../components/CaseStudyVisual.astro";
-import { coverTransitionName, getAllPosts } from "../lib/contentful";
+import {
+  coverSrcSet,
+  coverTransitionName,
+  coverUrl,
+  getAllPosts,
+} from "../lib/contentful";
 import {
   AUTHOR_JOB_TITLE,
   AUTHOR_NAME,
@@ -67,16 +74,29 @@ const jsonLd = [
 >
   <a class="skip-link" href="#case-studies">Skip to case studies</a>
 
+  {/* The headline and subtitle are passed as light-DOM slot content rather
+      than as `title`/`subtitle` attributes: attribute-driven text is rendered
+      into the shadow root, so it only exists after the Lit bundle upgrades the
+      element and never appears in the served HTML. As slotted children they are
+      real markup in the response — the page's h1 — which crawlers that don't
+      execute JS can read. ark-hero's `::slotted([slot="title"])` rules style
+      them identically; the emphasis markup is styled from _index.css, since
+      ::slotted() can't reach descendants of the slotted node. */}
   <ark-hero
     eyebrow="Frontend Engineer & UI Systems Architect"
-    title="Frontend engineering"
-    title-emphasis="with clarity."
-    subtitle="Building scalable interfaces, design systems, and cross-platform products where technical structure and visual refinement work as one."
     primary-href="#contact"
     primary-label="Contact me"
     comp-label="Ahmad Naufal - mmxxvi"
     scroll-label="Explore the work"
-  ></ark-hero>
+  >
+    <h1 slot="title" class="hero-headline">
+      Frontend engineering <em><span class="hero-headline-break">with clarity.</span></em>
+    </h1>
+    <p slot="subtitle">
+      Building scalable interfaces, design systems, and cross-platform products
+      where technical structure and visual refinement work as one.
+    </p>
+  </ark-hero>
 
   <div class="marquee-section" aria-hidden="true">
     <div class="marquee-track" data-marquee-track>
@@ -372,8 +392,12 @@ const jsonLd = [
                 <img
                   slot="media"
                   class="writing-cover"
-                  src={post.cover.src}
+                  src={coverUrl(post.cover.src, 400)}
+                  srcset={coverSrcSet(post.cover.src, [320, 640])}
+                  sizes="(max-width: 720px) 100vw, 360px"
                   alt={post.cover.alt}
+                  width={post.cover.width}
+                  height={post.cover.height}
                   loading="lazy"
                   style={`view-transition-name: ${coverTransitionName(post.slug)};`}
                 />
@@ -401,12 +425,12 @@ const jsonLd = [
 
   <section class="about-strip" id="about">
     <div class="about-portrait reveal">
-      <img
+      <Image
         class="portrait-img"
-        src="/about-me.png"
+        src={portrait}
         alt="Ahmad Naufal"
-        width="320"
-        height="427"
+        widths={[320, 640]}
+        sizes="320px"
         loading="lazy"
         transition:name="about-me"
       />

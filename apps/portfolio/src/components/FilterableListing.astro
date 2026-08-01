@@ -30,7 +30,14 @@ const { eyebrow, title, description, items } = Astro.props;
 ---
 
 <section class="page-section listing">
-  <ark-page-header eyebrow={eyebrow} heading={title} lead={description} />
+  {/* Heading and lead go in as light-DOM slot content, not as `heading`/`lead`
+      attributes — attribute text renders into the shadow root and so is absent
+      from the served HTML until Lit upgrades the element. ark-page-header
+      styles both through `::slotted()`. */}
+  <ark-page-header eyebrow={eyebrow}>
+    <h1 slot="title">{title}</h1>
+    {description && <p slot="lead">{description}</p>}
+  </ark-page-header>
 
   <div class="filter-bar" data-filter-bar>
     <ark-dropdown

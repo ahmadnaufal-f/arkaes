@@ -76,7 +76,10 @@ const jsonLd = [
   jsonLd={jsonLd}
 >
   <article class="cs-page">
-    <ark-project-header eyebrow="Case Study" heading={title}>
+    <ark-project-header eyebrow="Case Study">
+      {/* Light-DOM h1 so the title is in the served HTML, not only in the
+          shadow root after upgrade. See FilterableListing.astro. */}
+      <h1 slot="title">{title}</h1>
       <CaseStudyVisual
         visual={visual}
         asSlot="visual"

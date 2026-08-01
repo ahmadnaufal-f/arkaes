@@ -985,3 +985,26 @@
     transition: none;
   }
 }
+
+/* Hero headline emphasis. The headline itself is light-DOM slot content (see
+   index.astro) so it is present in the served HTML; ark-hero styles the slotted
+   <h1> through `::slotted([slot="title"])`, but ::slotted() matches only the
+   slotted node itself — never its descendants — so the emphasis run and its
+   line break have to be styled from here. Values mirror ark-hero's own
+   `.hero-title em` / `.title-line2`, via the same tokens. */
+.hero-headline em {
+  color: var(--ark-color-accent-strong);
+  font-style: italic;
+  font-weight: var(--ark-weight-thin);
+}
+
+.hero-headline .hero-headline-break {
+  display: block;
+  padding-left: 80px;
+}
+
+@media (max-width: 900px) {
+  .hero-headline .hero-headline-break {
+    padding-left: 0;
+  }
+}

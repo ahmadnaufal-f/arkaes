@@ -3,8 +3,8 @@ import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { categoryLabel } from "../../data/expertise";
 import CaseStudyVisual from "../../components/CaseStudyVisual.astro";
+import { Image, getImage } from "astro:assets";
 import { renderSectionHtml } from "../../utils/sections";
-import { getPublicImageSize } from "../../lib/image-size";
 import {
   AUTHOR_NAME,
   breadcrumbSchema,
@@ -36,12 +36,49 @@ const { title, role, challenges, stack, category, screenshots, links } =
 
 const bodyHtml = renderSectionHtml(project.body ?? "");
 
-// Read once here rather than per-render: the gallery maps over this below and
-// the page is prerendered, so the file reads happen at build time only.
-const gallery = screenshots.map((src: string) => ({
-  src,
-  size: getPublicImageSize(src),
-}));
+// Screenshots are addressed in project frontmatter by their old public/ path
+// (e.g. "/projects/treely-app/1.jpeg"). The files now live in src/assets so
+// Astro can optimize them, which means the page needs the imported
+// ImageMetadata rather than a URL string — this glob maps one to the other and
+// keeps the content files free of build-tool paths. `eager` because the
+// mapping has to exist during render, not as a promise.
+const screenshotAssets = import.meta.glob<{ default: ImageMetadata }>(
+  "../../assets/projects/**/*.{png,jpg,jpeg,avif,webp}",
+  { eager: true },
+);
+const assetsByPublicPath = new Map(
+  Object.entries(screenshotAssets).map(([path, module]) => [
+    path.replace("../../assets", ""),
+    module.default,
+  ]),
+);
+
+// A frontmatter path with no matching file is dropped rather than rendered as
+// a broken image; `<Image>` would throw on an undefined src and fail the build.
+const galleryAssets = screenshots.flatMap((src: string) => {
+  const asset = assetsByPublicPath.get(src);
+  if (!asset) {
+    console.warn(`[projects] no screenshot asset for "${src}" (${project.id})`);
+    return [];
+  }
+  return [{ src, asset }];
+});
+
+// The thumbnails render at 220px, so their `currentSrc` — which is what the
+// lightbox script reads — is far too small to show full screen. Generate a
+// full-size variant per screenshot and hand its URL to the trigger, capped at
+// the source width so an upscale is never requested.
+const gallery = await Promise.all(
+  galleryAssets.map(async ({ src, asset }) => ({
+    src,
+    asset,
+    full: await getImage({
+      src: asset,
+      width: Math.min(asset.width, 1080),
+      format: "webp",
+    }),
+  })),
+);
 
 const site = Astro.site ?? new URL(Astro.url.origin);
 const jsonLd = [
@@ -65,7 +102,10 @@ const jsonLd = [
   jsonLd={jsonLd}
 >
   <article class="cs-page">
-    <ark-project-header eyebrow={categoryLabel(category)} heading={title}>
+    <ark-project-header eyebrow={categoryLabel(category)}>
+      {/* Light-DOM h1 so the title is in the served HTML, not only in the
+          shadow root after upgrade. See FilterableListing.astro. */}
+      <h1 slot="title">{title}</h1>
       <CaseStudyVisual
         visual={project.id}
         asSlot="visual"
@@ -91,21 +131,22 @@ const jsonLd = [
         <div set:html={bodyHtml} />
 
         {
-          screenshots.length > 0 && (
+          gallery.length > 0 && (
             <div class="proj-gallery" role="group" aria-label="Screenshots">
-              {gallery.map(({ src, size }, i) => (
+              {gallery.map(({ asset, full }, i) => (
                 <button
                   type="button"
                   class="proj-gallery-item"
                   data-lightbox-trigger
                   data-lightbox-index={i}
+                  data-lightbox-full={full.src}
                   aria-label={`View screenshot ${i + 1} of ${gallery.length} full screen`}
                 >
-                  <img
-                    src={src}
+                  <Image
+                    src={asset}
                     alt={`${title} screenshot ${i + 1}`}
-                    width={size?.width}
-                    height={size?.height}
+                    widths={[220, 440]}
+                    sizes="220px"
                     loading="lazy"
                   />
                 </button>
@@ -137,7 +178,7 @@ const jsonLd = [
     </section>
 
     {
-      screenshots.length > 0 && (
+      gallery.length > 0 && (
         <div
           class="proj-lightbox"
           data-lightbox
@@ -231,9 +272,18 @@ const jsonLd = [
 
     // Source the slides straight from the gallery thumbnails so there's a
     // single source of truth for the screenshot list.
+    // `data-lightbox-full` carries a full-size variant; the thumbnail's own
+    // src is only a 220px rendition and would look soft blown up to 82vw.
     const slides = triggers.map((trigger) => {
       const thumb = trigger.querySelector("img");
-      return { src: thumb?.currentSrc || thumb?.src || "", alt: thumb?.alt ?? "" };
+      return {
+        src:
+          trigger.dataset.lightboxFull ||
+          thumb?.currentSrc ||
+          thumb?.src ||
+          "",
+        alt: thumb?.alt ?? "",
+      };
     });
     const multiple = slides.length > 1;
     prevBtn.hidden = !multiple;
