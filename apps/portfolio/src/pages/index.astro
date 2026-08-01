@@ -5,6 +5,13 @@ import "./_index.css";
 import { techGroups } from "../data/techstack";
 import { EXPERTISE } from "../data/expertise";
 import CaseStudyVisual from "../components/CaseStudyVisual.astro";
+import { coverTransitionName, getAllPosts } from "../lib/contentful";
+
+// The "Latest Writing" strip reads blog posts from Contentful, which is a
+// request-time fetch — so the homepage renders on demand and is edge-cached by
+// Vercel ISR, the same arrangement the blog routes already use. A publish
+// refreshes it through /api/revalidate rather than waiting on a redeploy.
+export const prerender = false;
 
 const CARD_ORDER = ["virtual-home", "virtual-home-tv", "milk-tracker", "air-care"];
 const getOrder = (id: string) => { const i = CARD_ORDER.indexOf(id); return i === -1 ? Infinity : i; };
@@ -23,6 +30,12 @@ const services = EXPERTISE.map((area) => ({
 
 const domainCount = techGroups.length;
 const techCount = techGroups.reduce((total, group) => total + group.items.length, 0);
+
+// getAllPosts() already comes back newest-first from Contentful, so taking the
+// first three is the whole selection rule. It returns [] when Contentful isn't
+// configured (local dev, previews without secrets), which the section's length
+// guard below relies on to disappear cleanly instead of rendering an empty grid.
+const latestPosts = (await getAllPosts()).slice(0, 3);
 ---
 
 <BaseLayout
@@ -302,6 +315,49 @@ const techCount = techGroups.reduce((total, group) => total + group.items.length
       });
     })();
   </script>
+
+  {latestPosts.length > 0 && (
+    <section class="writing-section" id="writing">
+      <div class="section-header reveal">
+        <div>
+          <div class="section-eyebrow">Latest Writing</div>
+          <h2 class="section-title">Notes on <em>craft</em></h2>
+        </div>
+        <div class="section-count">{String(latestPosts.length).padStart(2, "0")} / Recent</div>
+      </div>
+
+      <div class="writing-grid reveal reveal-delay-1">
+        {latestPosts.map((post) => (
+          <div class="writing-card">
+            <ark-media-card
+              category={post.category}
+              datetime={post.publishDate.toISOString()}
+              href={`/blog/${post.slug}`}
+              summary={post.excerpt}
+              title={post.title}
+              variant="compact"
+            >
+              {post.cover && (
+                <img
+                  slot="media"
+                  class="writing-cover"
+                  src={post.cover.src}
+                  alt={post.cover.alt}
+                  loading="lazy"
+                  style={`view-transition-name: ${coverTransitionName(post.slug)};`}
+                />
+              )}
+              {post.tags.map((tag) => <ark-chip slot="tag">{tag}</ark-chip>)}
+            </ark-media-card>
+          </div>
+        ))}
+      </div>
+
+      <div class="section-cta reveal">
+        <ark-button class="section-cta-accent" href="/blog" variant="primary">Read all posts &rarr;</ark-button>
+      </div>
+    </section>
+  )}
 
   <section class="about-strip" id="about">
     <div class="about-portrait reveal">

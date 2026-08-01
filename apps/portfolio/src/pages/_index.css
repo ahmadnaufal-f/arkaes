@@ -62,6 +62,7 @@
 .work-section,
 .techstack-section,
 .services-section,
+.writing-section,
 .contact-section {
   padding: 120px var(--site-content-padding);
 }
@@ -313,6 +314,39 @@
   font-weight: var(--ark-font-weight-light);
   line-height: var(--ark-line-height-relaxed);
   max-width: 480px;
+}
+
+/* ── Latest writing ──────────────────────────────────────────
+   Cards match the blog listing exactly, so the breakpoints mirror
+   .listing .project-grid in components/_filterable-listing.css.
+   No background: the section sits between the warm-white tech-stack
+   block and the muted about strip, so the page background is the
+   contrast the alternating rhythm wants. */
+
+.writing-grid {
+  display: grid;
+  gap: var(--ark-space-4);
+  grid-template-columns: repeat(3, minmax(min(100%, 280px), 1fr));
+
+  @media (max-width: 1000px) {
+    grid-template-columns: repeat(2, minmax(min(100%, 280px), 1fr));
+  }
+
+  @media (max-width: 700px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Inherits through the card's slot into the thumbnail, which reads it for height. */
+.writing-card {
+  --thumbnail-height: 200px;
+}
+
+.writing-cover {
+  display: block;
+  height: var(--thumbnail-height, 200px);
+  object-fit: cover;
+  width: 100%;
 }
 
 .about-strip {
@@ -710,6 +744,7 @@
   .work-section,
   .techstack-section,
   .services-section,
+  .writing-section,
   .contact-section {
     padding: 86px 24px;
   }
