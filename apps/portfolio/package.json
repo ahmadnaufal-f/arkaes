@@ -8,6 +8,7 @@
     "check": "astro check",
     "dev": "astro dev",
     "ingest": "tsx scripts/ingest-knowledge.ts",
+    "og:image": "tsx scripts/generate-og-image.ts",
     "lint": "eslint . --max-warnings=0",
     "preview": "astro preview"
   },

@@ -2,6 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { parseSections, renderSectionHtml } from "../utils/sections";
 import aboutContent from "../content/about.md?raw";
+import { AUTHOR_NAME, PERSON_ID, WEBSITE_ID, breadcrumbSchema } from "../lib/seo";
 import "./_about.css";
 
 // Eagerly import every about illustration SVG as a raw string so we can
@@ -20,11 +21,26 @@ for (const [path, source] of Object.entries(svgModules)) {
 
 // Sections live in src/content/about.md, one `## Heading` per accordion item.
 const sections = parseSections(aboutContent);
+
+const site = Astro.site ?? new URL(Astro.url.origin);
+const jsonLd = [
+  {
+    "@type": "AboutPage",
+    "@id": new URL("/about", site).href,
+    url: new URL("/about", site).href,
+    name: `About ${AUTHOR_NAME}`,
+    inLanguage: "en",
+    isPartOf: { "@id": WEBSITE_ID(site) },
+    mainEntity: { "@id": PERSON_ID(site) },
+  },
+  breadcrumbSchema(site, [{ name: "About", path: "/about" }]),
+];
 ---
 
 <BaseLayout
-  title="About | Arkaes"
+  title={`About | ${AUTHOR_NAME}`}
   description="About Ahmad Naufal, a frontend engineer focused on scalable, maintainable, and pleasant interfaces."
+  jsonLd={jsonLd}
 >
   <section class="page-section narrow">
     <ark-page-header

@@ -5,6 +5,11 @@ import FilterableListing from "../../components/FilterableListing.astro";
 import type { ListingItem } from "../../components/FilterableListing.astro";
 import { expertiseForProject } from "../../data/expertise";
 import { toPlainText } from "../../utils/sections";
+import {
+  AUTHOR_NAME,
+  breadcrumbSchema,
+  collectionPageSchema,
+} from "../../lib/seo";
 
 // Order by shipped date, most recent first.
 const entries = (await getCollection("projects")).sort(
@@ -22,11 +27,36 @@ const items: ListingItem[] = entries.map((project) => ({
   visual: project.id,
   transitionName: `proj-thumb-${project.id}`,
 }));
+
+const PAGE_DESCRIPTION =
+  "Professional work and side projects from the Arkaes portfolio.";
+
+const site = Astro.site ?? new URL(Astro.url.origin);
+const jsonLd = [
+  {
+    ...collectionPageSchema(site, {
+      name: `Projects | ${AUTHOR_NAME}`,
+      description: PAGE_DESCRIPTION,
+      path: "/projects",
+    }),
+    mainEntity: {
+      "@type": "ItemList",
+      itemListElement: items.map((item, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        name: item.title,
+        url: new URL(item.href, site).href,
+      })),
+    },
+  },
+  breadcrumbSchema(site, [{ name: "Projects", path: "/projects" }]),
+];
 ---
 
 <BaseLayout
-  title="Projects | Arkaes"
-  description="Professional work and side projects from the Arkaes portfolio."
+  title={`Projects | ${AUTHOR_NAME}`}
+  description={PAGE_DESCRIPTION}
+  jsonLd={jsonLd}
 >
   <FilterableListing
     eyebrow="Projects"

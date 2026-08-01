@@ -4,6 +4,11 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import FilterableListing from "../../components/FilterableListing.astro";
 import type { ListingItem } from "../../components/FilterableListing.astro";
 import { expertiseForProject } from "../../data/expertise";
+import {
+  AUTHOR_NAME,
+  breadcrumbSchema,
+  collectionPageSchema,
+} from "../../lib/seo";
 
 const entries = (await getCollection("caseStudies")).sort(
   (a, b) => a.data.order - b.data.order,
@@ -19,11 +24,36 @@ const items: ListingItem[] = entries.map((study) => ({
   // Matches the detail page hero so the thumbnail morphs across navigation.
   transitionName: `proj-thumb-${study.id}`,
 }));
+
+const PAGE_DESCRIPTION =
+  "In-depth engineering case studies from the Arkaes portfolio.";
+
+const site = Astro.site ?? new URL(Astro.url.origin);
+const jsonLd = [
+  {
+    ...collectionPageSchema(site, {
+      name: `Case Studies | ${AUTHOR_NAME}`,
+      description: PAGE_DESCRIPTION,
+      path: "/case-studies",
+    }),
+    mainEntity: {
+      "@type": "ItemList",
+      itemListElement: items.map((item, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        name: item.title,
+        url: new URL(item.href, site).href,
+      })),
+    },
+  },
+  breadcrumbSchema(site, [{ name: "Case Studies", path: "/case-studies" }]),
+];
 ---
 
 <BaseLayout
-  title="Case Studies | Arkaes"
-  description="In-depth engineering case studies from the Arkaes portfolio."
+  title={`Case Studies | ${AUTHOR_NAME}`}
+  description={PAGE_DESCRIPTION}
+  jsonLd={jsonLd}
 >
   <FilterableListing
     eyebrow="Case Studies"

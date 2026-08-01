@@ -2,6 +2,12 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import BlogListing from "../../components/BlogListing.astro";
 import { getAllPosts } from "../../lib/contentful";
+import {
+  AUTHOR_NAME,
+  WEBSITE_ID,
+  breadcrumbSchema,
+  PERSON_ID,
+} from "../../lib/seo";
 
 // On-demand + ISR: posts live in Contentful, so this page fetches at request
 // time and Vercel caches the rendered HTML at the edge. Publishing in
@@ -9,11 +15,28 @@ import { getAllPosts } from "../../lib/contentful";
 export const prerender = false;
 
 const posts = await getAllPosts();
+
+const site = Astro.site ?? new URL(Astro.url.origin);
+const jsonLd = [
+  {
+    "@type": "Blog",
+    "@id": new URL("/blog", site).href,
+    url: new URL("/blog", site).href,
+    name: `Blog | ${AUTHOR_NAME}`,
+    description:
+      "Writing on frontend engineering, design systems, and product craft.",
+    inLanguage: "en",
+    author: { "@id": PERSON_ID(site) },
+    isPartOf: { "@id": WEBSITE_ID(site) },
+  },
+  breadcrumbSchema(site, [{ name: "Blog", path: "/blog" }]),
+];
 ---
 
 <BaseLayout
-  title="Blog | Arkaes"
+  title={`Blog | ${AUTHOR_NAME}`}
   description="Writing on frontend engineering, design systems, and product craft."
+  jsonLd={jsonLd}
 >
   <BlogListing
     eyebrow="Blog"

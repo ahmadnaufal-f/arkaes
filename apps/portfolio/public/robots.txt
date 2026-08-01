@@ -1,0 +1,11 @@
+# https://arkaes.dev
+
+User-agent: *
+Allow: /
+
+# Server-rendered endpoints — nothing crawlable, and /api/chat costs an LLM
+# call per request. /admin is additionally behind Basic Auth (src/middleware.ts).
+Disallow: /admin
+Disallow: /api/
+
+Sitemap: https://arkaes.dev/sitemap.xml
