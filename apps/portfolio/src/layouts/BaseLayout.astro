@@ -71,7 +71,6 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
     <Font cssVariable="--font-sans" preload />
     <Font cssVariable="--font-display" preload />
     <Font cssVariable="--font-mono" preload />
-    <Analytics />
     <ClientRouter />
     <title>{title}</title>
     <style>
@@ -123,6 +122,16 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
     </style>
   </head>
   <body>
+    <!-- Must stay in <body>, never <head>: this renders a `<vercel-analytics>`
+         custom element, and an unknown element inside <head> makes the HTML
+         parser close <head> early and open <body> (per the "in head" insertion
+         mode's "anything else" rule). Everything after it — <title>, the
+         ClientRouter script, and crucially the `<link rel=stylesheet>` tags —
+         would then land in <body>, where ClientRouter's `preloadStyleLinks`
+         (which only queries `head link[rel=stylesheet]`) can't preload them and
+         `swapBodyElement` destroys them on every navigation, leaving the page
+         with no CSS until the stylesheets re-fetch. -->
+    <Analytics />
     <div id="nav-progress" transition:persist aria-hidden="true"></div>
     <div id="page-loader" aria-hidden="true">
       <span class="page-loader-spinner"></span>
