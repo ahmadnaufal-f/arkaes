@@ -123,9 +123,16 @@ const schemaGraph = serializeJsonLd([
     <meta name="twitter:image" content={ogImage} />
     <meta name="twitter:image:alt" content={imageAlt ?? title} />
     <script type="application/ld+json" is:inline set:html={schemaGraph} />
-    <!-- Self-hosted fonts (see astro.config.mjs `fonts`). Emits @font-face +
-         <link rel="preload"> for the woff2 files so text renders in the correct
-         family immediately, without the fallback→web-font swap. -->
+    {
+      /* Self-hosted fonts (see astro.config.mjs `fonts`). Emits @font-face plus
+         a preload link for the woff2 files so text renders in the correct
+         family immediately, without the fallback→web-font swap.
+
+         Written as an expression comment, not an HTML one: an HTML comment
+         here reaches the compiled output, and the compiler mis-terminates it
+         at any markup it contains — the tail then lands in <head> as bare
+         text, which closes <head> early and paints as body content. */
+    }
     <Font cssVariable="--font-sans" preload />
     <Font cssVariable="--font-display" preload />
     <Font cssVariable="--font-mono" preload />
@@ -180,15 +187,22 @@ const schemaGraph = serializeJsonLd([
     </style>
   </head>
   <body>
-    <!-- Must stay in <body>, never <head>: this renders a `<vercel-analytics>`
-         custom element, and an unknown element inside <head> makes the HTML
-         parser close <head> early and open <body> (per the "in head" insertion
-         mode's "anything else" rule). Everything after it — <title>, the
-         ClientRouter script, and crucially the `<link rel=stylesheet>` tags —
-         would then land in <body>, where ClientRouter's `preloadStyleLinks`
-         (which only queries `head link[rel=stylesheet]`) can't preload them and
-         `swapBodyElement` destroys them on every navigation, leaving the page
-         with no CSS until the stylesheets re-fetch. -->
+    {
+      /* Must stay in the body, never the head: this renders a
+         `vercel-analytics` custom element, and an unknown element inside the
+         head makes the HTML parser close it early and open the body (per the
+         "in head" insertion mode's "anything else" rule). Everything after it —
+         the title, the ClientRouter script, and crucially the stylesheet link
+         tags — would then land in the body, where ClientRouter's
+         `preloadStyleLinks` (which only queries `head link[rel=stylesheet]`)
+         can't preload them and `swapBodyElement` destroys them on every
+         navigation, leaving the page with no CSS until the stylesheets
+         re-fetch.
+
+         An expression comment, and phrased without literal tags: an HTML
+         comment containing markup reaches the output and the compiler can
+         mis-terminate it, spilling its tail into the page as text. */
+    }
     <Analytics />
     <div id="nav-progress" transition:persist aria-hidden="true"></div>
     <div id="page-loader" aria-hidden="true">
