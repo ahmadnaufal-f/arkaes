@@ -173,6 +173,32 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
           });
       });
 
+      // The self-hosted <Font> component (see astro.config.mjs `fonts`) emits
+      // its `@font-face` rule and `--font-sans`/`--font-display`/`--font-mono`
+      // custom-property assignments as separate inline <style> tags, plus a
+      // preload <link>, none of which carry `transition:persist`. Astro's
+      // ClientRouter re-recognizes byte-identical <style> content across pages
+      // and keeps it in place instead of removing/re-adding it, but that's
+      // best-effort — explicitly marking these as persisted closes the gap
+      // regardless, so text never even briefly falls back through the whole
+      // font stack to a generic system font mid-navigation.
+      // See https://github.com/withastro/astro/issues/15465.
+      document.addEventListener("astro:before-swap", (event) => {
+        for (const head of [document.head, event.newDocument.head]) {
+          let index = 0;
+          head.querySelectorAll("style").forEach((style) => {
+            if (/@font-face|--font-(sans|display|mono):/.test(style.textContent ?? "")) {
+              style.setAttribute("data-astro-transition-persist", `font-style-${index++}`);
+            }
+          });
+          head
+            .querySelectorAll<HTMLLinkElement>('link[rel="preload"][as="font"]')
+            .forEach((link) => {
+              link.setAttribute("data-astro-transition-persist", `font-preload-${link.href}`);
+            });
+        }
+      });
+
       // ── Global navigation progress bar ──────────────────────────────
       // A persistent top-of-page bar giving continuous feedback from the moment
       // a navigation starts (click, keyboard, or back/forward) until the new
