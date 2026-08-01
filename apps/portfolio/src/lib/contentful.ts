@@ -33,7 +33,13 @@ export interface BlogPost {
   category: string;
   tags: string[];
   publishDate: Date;
-  cover: { src: string; alt: string } | null;
+  /**
+   * `width`/`height` are the asset's intrinsic pixel size. They're carried
+   * through to the <img> so the browser can reserve the right box before the
+   * image loads (otherwise the article cover, which is `height: auto`, shifts
+   * layout on load) and to og:image:width/height for social cards.
+   */
+  cover: { src: string; alt: string; width?: number; height?: number } | null;
   /** Raw markdown body — render with renderPostBody() from lib/markdown. */
   body: string;
   featured: boolean;
@@ -86,6 +92,9 @@ const toPost = (entry: BlogPostEntry): BlogPost => {
         // Contentful asset URLs are protocol-relative.
         src: `https:${coverFile.url}`,
         alt: coverImage?.fields.description ?? title ?? "",
+        // Absent for non-image assets (e.g. a PDF uploaded by mistake).
+        width: coverFile.details?.image?.width,
+        height: coverFile.details?.image?.height,
       }
       : null,
     body: body ?? "",

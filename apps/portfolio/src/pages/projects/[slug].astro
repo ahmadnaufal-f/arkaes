@@ -4,6 +4,12 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import { categoryLabel } from "../../data/expertise";
 import CaseStudyVisual from "../../components/CaseStudyVisual.astro";
 import { renderSectionHtml } from "../../utils/sections";
+import { getPublicImageSize } from "../../lib/image-size";
+import {
+  AUTHOR_NAME,
+  breadcrumbSchema,
+  creativeWorkSchema,
+} from "../../lib/seo";
 // Share the case study page's visual language so the project detail feels
 // like the same family of pages.
 import "../case-studies/_case-study.css";
@@ -29,9 +35,35 @@ const { title, role, challenges, stack, category, screenshots, links } =
   project.data;
 
 const bodyHtml = renderSectionHtml(project.body ?? "");
+
+// Read once here rather than per-render: the gallery maps over this below and
+// the page is prerendered, so the file reads happen at build time only.
+const gallery = screenshots.map((src: string) => ({
+  src,
+  size: getPublicImageSize(src),
+}));
+
+const site = Astro.site ?? new URL(Astro.url.origin);
+const jsonLd = [
+  creativeWorkSchema(site, {
+    name: title,
+    description: challenges,
+    path: `/projects/${project.id}`,
+    keywords: stack,
+    datePublished: project.data.shippedDate,
+  }),
+  breadcrumbSchema(site, [
+    { name: "Projects", path: "/projects" },
+    { name: title, path: `/projects/${project.id}` },
+  ]),
+];
 ---
 
-<BaseLayout title={`${title} | Arkaes`} description={challenges}>
+<BaseLayout
+  title={`${title} | ${AUTHOR_NAME}`}
+  description={challenges}
+  jsonLd={jsonLd}
+>
   <article class="cs-page">
     <ark-project-header eyebrow={categoryLabel(category)} heading={title}>
       <CaseStudyVisual
@@ -61,17 +93,19 @@ const bodyHtml = renderSectionHtml(project.body ?? "");
         {
           screenshots.length > 0 && (
             <div class="proj-gallery" role="group" aria-label="Screenshots">
-              {screenshots.map((src, i) => (
+              {gallery.map(({ src, size }, i) => (
                 <button
                   type="button"
                   class="proj-gallery-item"
                   data-lightbox-trigger
                   data-lightbox-index={i}
-                  aria-label={`View screenshot ${i + 1} of ${screenshots.length} full screen`}
+                  aria-label={`View screenshot ${i + 1} of ${gallery.length} full screen`}
                 >
                   <img
                     src={src}
                     alt={`${title} screenshot ${i + 1}`}
+                    width={size?.width}
+                    height={size?.height}
                     loading="lazy"
                   />
                 </button>

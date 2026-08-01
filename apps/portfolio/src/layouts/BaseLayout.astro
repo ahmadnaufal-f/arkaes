@@ -5,26 +5,79 @@ import { ClientRouter } from "astro:transitions";
 import SiteFooter from "../components/SiteFooter.astro";
 import SiteHeader from "../components/SiteHeader.astro";
 import { fadeThroughBlank } from "../transitions/fade-through-blank";
+import {
+  AUTHOR_NAME,
+  DEFAULT_OG_IMAGE,
+  DEFAULT_OG_IMAGE_HEIGHT,
+  DEFAULT_OG_IMAGE_WIDTH,
+  SITE_NAME,
+  personSchema,
+  serializeJsonLd,
+  websiteSchema,
+  type SchemaNode,
+} from "../lib/seo";
 import "../styles/global.css";
 
 interface Props {
   description?: string;
   title?: string;
-  /** Absolute URL for the social share image (e.g. a blog post cover). */
+  /** Share image — absolute, or root-relative to be resolved against the site. */
   image?: string;
+  imageAlt?: string;
+  /** Intrinsic size of `image`; omit when unknown (the tags are then skipped). */
+  imageWidth?: number;
+  imageHeight?: number;
   ogType?: "website" | "article";
+  /** Article-only Open Graph metadata; ignored when ogType is "website". */
+  publishedTime?: Date;
+  articleTags?: readonly string[];
+  /** Keep the page out of search indexes (it stays reachable and crawlable). */
+  noindex?: boolean;
+  /** Page-specific schema.org nodes, merged into the site-wide @graph. */
+  jsonLd?: readonly SchemaNode[];
 }
 
 const {
   description = "A performance-first portfolio powered by Astro and a small Lit-based design system.",
-  title = "Arkaes Portfolio",
+  title = `${AUTHOR_NAME} — ${SITE_NAME}`,
   image,
+  imageAlt,
+  imageWidth,
+  imageHeight,
   ogType = "website",
+  publishedTime,
+  articleTags = [],
+  noindex = false,
+  jsonLd = [],
 } = Astro.props;
 
 // Astro.site is set in astro.config.mjs; fall back to the request URL so
 // preview deployments still emit sane absolute URLs.
-const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
+const site = Astro.site ?? new URL(Astro.url.origin);
+// Astro serves both /page and /page/ (trailingSlash: "ignore"), and prerendered
+// routes report the trailing-slash form. Normalize to the slashless spelling so
+// the canonical agrees with how every internal link, the sitemap, and the JSON-LD
+// address the same page — otherwise the two forms look like duplicate URLs.
+const canonical = new URL(
+  Astro.url.pathname.replace(/(.)\/$/, "$1"),
+  site,
+);
+
+// og:image must be absolute. Resolving through URL() leaves an already-absolute
+// source (e.g. a Contentful asset) untouched and promotes a root-relative path.
+const ogImage = new URL(image ?? DEFAULT_OG_IMAGE, site);
+// Dimensions are only known for the built-in default unless a caller supplies
+// them; emitting wrong ones is worse than emitting none.
+const ogImageWidth = image ? imageWidth : DEFAULT_OG_IMAGE_WIDTH;
+const ogImageHeight = image ? imageHeight : DEFAULT_OG_IMAGE_HEIGHT;
+
+// The Person and WebSite nodes carry the site's identity, so every page emits
+// them; page-specific nodes reference them by @id rather than repeating them.
+const schemaGraph = serializeJsonLd([
+  personSchema(site),
+  websiteSchema(site),
+  ...jsonLd,
+]);
 ---
 
 <!doctype html>
@@ -37,20 +90,49 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
     <link rel="icon" type="image/png" sizes="512x512" href="/favicon-512.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/favicon-180.png" />
     <meta name="theme-color" content="#8f554d" />
+    <meta name="author" content={AUTHOR_NAME} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
     <link rel="canonical" href={canonical} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content={ogType} />
     <meta property="og:url" content={canonical} />
-    <meta property="og:site_name" content="Arkaes" />
-    {image && <meta property="og:image" content={image} />}
-    <meta name="twitter:card" content={image ? "summary_large_image" : "summary"} />
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:alt" content={imageAlt ?? title} />
+    {ogImageWidth && <meta property="og:image:width" content={String(ogImageWidth)} />}
+    {ogImageHeight && <meta property="og:image:height" content={String(ogImageHeight)} />}
+    {
+      ogType === "article" && (
+        <>
+          {publishedTime && (
+            <meta
+              property="article:published_time"
+              content={publishedTime.toISOString()}
+            />
+          )}
+          <meta property="article:author" content={AUTHOR_NAME} />
+          {articleTags.map((tag) => <meta property="article:tag" content={tag} />)}
+        </>
+      )
+    }
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
-    {image && <meta name="twitter:image" content={image} />}
-    <!-- Self-hosted fonts (see astro.config.mjs `fonts`). Emits @font-face +
-         <link rel="preload"> for the woff2 files so text renders in the correct
-         family immediately, without the fallback→web-font swap. -->
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content={imageAlt ?? title} />
+    <script type="application/ld+json" is:inline set:html={schemaGraph} />
+    {
+      /* Self-hosted fonts (see astro.config.mjs `fonts`). Emits @font-face plus
+         a preload link for the woff2 files so text renders in the correct
+         family immediately, without the fallback→web-font swap.
+
+         Written as an expression comment, not an HTML one: an HTML comment
+         here reaches the compiled output, and the compiler mis-terminates it
+         at any markup it contains — the tail then lands in <head> as bare
+         text, which closes <head> early and paints as body content. */
+    }
     <Font cssVariable="--font-sans" preload />
     <Font cssVariable="--font-display" preload />
     <Font cssVariable="--font-mono" preload />
@@ -105,15 +187,22 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
     </style>
   </head>
   <body>
-    <!-- Must stay in <body>, never <head>: this renders a `<vercel-analytics>`
-         custom element, and an unknown element inside <head> makes the HTML
-         parser close <head> early and open <body> (per the "in head" insertion
-         mode's "anything else" rule). Everything after it — <title>, the
-         ClientRouter script, and crucially the `<link rel=stylesheet>` tags —
-         would then land in <body>, where ClientRouter's `preloadStyleLinks`
-         (which only queries `head link[rel=stylesheet]`) can't preload them and
-         `swapBodyElement` destroys them on every navigation, leaving the page
-         with no CSS until the stylesheets re-fetch. -->
+    {
+      /* Must stay in the body, never the head: this renders a
+         `vercel-analytics` custom element, and an unknown element inside the
+         head makes the HTML parser close it early and open the body (per the
+         "in head" insertion mode's "anything else" rule). Everything after it —
+         the title, the ClientRouter script, and crucially the stylesheet link
+         tags — would then land in the body, where ClientRouter's
+         `preloadStyleLinks` (which only queries `head link[rel=stylesheet]`)
+         can't preload them and `swapBodyElement` destroys them on every
+         navigation, leaving the page with no CSS until the stylesheets
+         re-fetch.
+
+         An expression comment, and phrased without literal tags: an HTML
+         comment containing markup reaches the output and the compiler can
+         mis-terminate it, spilling its tail into the page as text. */
+    }
     <Analytics />
     <div id="nav-progress" transition:persist aria-hidden="true"></div>
     <div id="page-loader" aria-hidden="true">

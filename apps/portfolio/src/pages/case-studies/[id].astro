@@ -2,6 +2,11 @@
 import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { parseSections, renderSectionHtml } from "../../utils/sections";
+import {
+  AUTHOR_NAME,
+  breadcrumbSchema,
+  creativeWorkSchema,
+} from "../../lib/seo";
 import "./_case-study.css";
 import "@arkaes/ui/components/ark-accordion";
 import CaseStudyVisual from "../../components/CaseStudyVisual.astro";
@@ -49,9 +54,27 @@ for (const [path, source] of Object.entries(svgModules)) {
 const allSections = parseSections(study.body ?? "");
 const overviewSection = allSections.find((s) => s.heading === "Overview");
 const accordionSections = allSections.filter((s) => s.heading !== "Overview");
+
+const site = Astro.site ?? new URL(Astro.url.origin);
+const jsonLd = [
+  creativeWorkSchema(site, {
+    name: title,
+    description: shortDesc,
+    path: `/case-studies/${study.id}`,
+    keywords: tags,
+  }),
+  breadcrumbSchema(site, [
+    { name: "Case Studies", path: "/case-studies" },
+    { name: title, path: `/case-studies/${study.id}` },
+  ]),
+];
 ---
 
-<BaseLayout title={`${title} — Arkaes`} description={shortDesc}>
+<BaseLayout
+  title={`${title} | ${AUTHOR_NAME}`}
+  description={shortDesc}
+  jsonLd={jsonLd}
+>
   <article class="cs-page">
     <ark-project-header eyebrow="Case Study" heading={title}>
       <CaseStudyVisual

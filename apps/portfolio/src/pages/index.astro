@@ -6,6 +6,12 @@ import { techGroups } from "../data/techstack";
 import { EXPERTISE } from "../data/expertise";
 import CaseStudyVisual from "../components/CaseStudyVisual.astro";
 import { coverTransitionName, getAllPosts } from "../lib/contentful";
+import {
+  AUTHOR_JOB_TITLE,
+  AUTHOR_NAME,
+  PERSON_ID,
+  WEBSITE_ID,
+} from "../lib/seo";
 
 // The "Latest Writing" strip reads blog posts from Contentful, which is a
 // request-time fetch — so the homepage renders on demand and is edge-cached by
@@ -36,11 +42,28 @@ const techCount = techGroups.reduce((total, group) => total + group.items.length
 // configured (local dev, previews without secrets), which the section's length
 // guard below relies on to disappear cleanly instead of rendering an empty grid.
 const latestPosts = (await getAllPosts()).slice(0, 3);
+
+// The homepage is the Person node's canonical page: mainEntity ties the two
+// together so a search engine reading this URL knows the site is *about* this
+// person rather than merely mentioning them.
+const site = Astro.site ?? new URL(Astro.url.origin);
+const jsonLd = [
+  {
+    "@type": "ProfilePage",
+    "@id": new URL("/", site).href,
+    url: new URL("/", site).href,
+    name: `${AUTHOR_NAME} — ${AUTHOR_JOB_TITLE}`,
+    inLanguage: "en",
+    isPartOf: { "@id": WEBSITE_ID(site) },
+    mainEntity: { "@id": PERSON_ID(site) },
+  },
+];
 ---
 
 <BaseLayout
-  title="Arkaes - Performance-focused Frontend Engineering Portfolio"
+  title={`${AUTHOR_NAME} — Frontend Engineer & UI Systems Architect`}
   description="Performance-focused frontend engineering portfolio for UI systems, design systems, and cross-platform products."
+  jsonLd={jsonLd}
 >
   <a class="skip-link" href="#case-studies">Skip to case studies</a>
 
