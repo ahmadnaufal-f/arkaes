@@ -62,6 +62,7 @@
 .work-section,
 .techstack-section,
 .services-section,
+.writing-section,
 .contact-section {
   padding: 120px var(--site-content-padding);
 }
@@ -119,7 +120,7 @@
   width: 100%;
 }
 
-.projects-nav {
+.carousel-nav {
   display: none;
 }
 
@@ -313,6 +314,36 @@
   font-weight: var(--ark-font-weight-light);
   line-height: var(--ark-line-height-relaxed);
   max-width: 480px;
+}
+
+/* ── Latest writing ──────────────────────────────────────────
+   Cards match the blog listing exactly, so the breakpoints mirror
+   .listing .project-grid in components/_filterable-listing.css.
+   No background: the section sits between the warm-white tech-stack
+   block and the muted about strip, so the page background is the
+   contrast the alternating rhythm wants. */
+
+.writing-grid {
+  display: grid;
+  gap: var(--ark-space-4);
+  grid-template-columns: repeat(3, minmax(min(100%, 280px), 1fr));
+
+  /* Only one step down before the 900px carousel takes over below. */
+  @media (max-width: 1000px) {
+    grid-template-columns: repeat(2, minmax(min(100%, 280px), 1fr));
+  }
+}
+
+/* Inherits through the card's slot into the thumbnail, which reads it for height. */
+.writing-card {
+  --thumbnail-height: 200px;
+}
+
+.writing-cover {
+  display: block;
+  height: var(--thumbnail-height, 200px);
+  object-fit: cover;
+  width: 100%;
 }
 
 .about-strip {
@@ -710,6 +741,7 @@
   .work-section,
   .techstack-section,
   .services-section,
+  .writing-section,
   .contact-section {
     padding: 86px 24px;
   }
@@ -767,7 +799,39 @@
     --thumbnail-height: 280px;
   }
 
-  .projects-nav {
+  /* ── Latest writing carousel ─────────────────────────────
+     Same treatment as the case-study strip above: the grid becomes a
+     scroll-snapped flex track driven by the shared carousel nav. */
+
+  .writing-carousel {
+    overflow: hidden;
+  }
+
+  .writing-grid {
+    --thumbnail-height: 280px;
+
+    display: flex;
+    gap: 12px;
+    grid-template-columns: unset;
+    overflow-x: hidden;
+    padding-bottom: 4px;
+    padding-inline: 20px;
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .writing-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .writing-card {
+    flex: 0 0 calc(100vw - 56px);
+    scroll-snap-align: start;
+    width: unset;
+  }
+
+  .carousel-nav {
     align-items: center;
     display: flex;
     gap: 20px;
@@ -775,7 +839,7 @@
     padding-top: 20px;
   }
 
-  .projects-nav-btn {
+  .carousel-nav-btn {
     align-items: center;
     background: transparent;
     border: 1px solid var(--ark-color-border);
@@ -790,17 +854,17 @@
     width: 36px;
   }
 
-  .projects-nav-btn:hover:not(:disabled) {
+  .carousel-nav-btn:hover:not(:disabled) {
     border-color: var(--ark-color-accent);
     color: var(--ark-color-accent-strong);
   }
 
-  .projects-nav-btn:disabled {
+  .carousel-nav-btn:disabled {
     cursor: default;
     opacity: 0.3;
   }
 
-  .projects-nav-indicator {
+  .carousel-nav-indicator {
     color: var(--ark-color-text-subtle);
     font-family: var(--ark-font-mono);
     font-size: 0.7rem;

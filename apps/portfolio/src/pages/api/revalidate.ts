@@ -52,10 +52,11 @@ export const POST: APIRoute = async ({ request }) => {
     // Tolerate an empty/non-JSON body — we can still refresh the index.
   }
 
-  // The index always changes with any publish/unpublish; the detail page only
-  // exists when we can derive a slug (unpublish payloads omit fields).
+  // The blog index and the homepage's "Latest Writing" strip both always change
+  // with any publish/unpublish; the detail page only exists when we can derive a
+  // slug (unpublish payloads omit fields).
   const slug = slugFromPayload(payload);
-  const paths = ["/blog", ...(slug ? [`/blog/${slug}`] : [])];
+  const paths = ["/", "/blog", ...(slug ? [`/blog/${slug}`] : [])];
 
   // Re-request each path with the bypass token so Vercel bypasses the ISR
   // cache, renders fresh, and stores the result for subsequent visitors. These

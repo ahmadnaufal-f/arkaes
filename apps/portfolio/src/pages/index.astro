@@ -5,6 +5,13 @@ import "./_index.css";
 import { techGroups } from "../data/techstack";
 import { EXPERTISE } from "../data/expertise";
 import CaseStudyVisual from "../components/CaseStudyVisual.astro";
+import { coverTransitionName, getAllPosts } from "../lib/contentful";
+
+// The "Latest Writing" strip reads blog posts from Contentful, which is a
+// request-time fetch — so the homepage renders on demand and is edge-cached by
+// Vercel ISR, the same arrangement the blog routes already use. A publish
+// refreshes it through /api/revalidate rather than waiting on a redeploy.
+export const prerender = false;
 
 const CARD_ORDER = ["virtual-home", "virtual-home-tv", "milk-tracker", "air-care"];
 const getOrder = (id: string) => { const i = CARD_ORDER.indexOf(id); return i === -1 ? Infinity : i; };
@@ -23,6 +30,12 @@ const services = EXPERTISE.map((area) => ({
 
 const domainCount = techGroups.length;
 const techCount = techGroups.reduce((total, group) => total + group.items.length, 0);
+
+// getAllPosts() already comes back newest-first from Contentful, so taking the
+// first three is the whole selection rule. It returns [] when Contentful isn't
+// configured (local dev, previews without secrets), which the section's length
+// guard below relies on to disappear cleanly instead of rendering an empty grid.
+const latestPosts = (await getAllPosts()).slice(0, 3);
 ---
 
 <BaseLayout
@@ -106,11 +119,12 @@ const techCount = techGroups.reduce((total, group) => total + group.items.length
       <div class="section-count">{String(featuredStudies.length).padStart(2, "0")} / Selected</div>
     </div>
 
-    <div class="projects-carousel">
-    <div class="projects-grid reveal reveal-delay-1">
+    <div class="projects-carousel" data-carousel>
+    <div class="projects-grid reveal reveal-delay-1" data-carousel-track>
       {featuredStudies.map((study) => (
         <ark-media-card
           class="project-card"
+          data-carousel-item
           href={`/case-studies/${study.id}`}
           title={study.data.title}
         >
@@ -126,12 +140,12 @@ const techCount = techGroups.reduce((total, group) => total + group.items.length
       ))}
     </div>
 
-    <div class="projects-nav" aria-label="Case study navigation">
-      <button class="projects-nav-btn" data-carousel-prev aria-label="Previous case study" disabled>&#8592;</button>
-      <span class="projects-nav-indicator" aria-live="polite">
+    <div class="carousel-nav" aria-label="Case study navigation">
+      <button class="carousel-nav-btn" data-carousel-prev aria-label="Previous case study" disabled>&#8592;</button>
+      <span class="carousel-nav-indicator" aria-live="polite">
         <span data-carousel-current>01</span> / {String(featuredStudies.length).padStart(2, "0")}
       </span>
-      <button class="projects-nav-btn" data-carousel-next aria-label="Next case study">&#8594;</button>
+      <button class="carousel-nav-btn" data-carousel-next aria-label="Next case study">&#8594;</button>
     </div>
     </div>
 
@@ -142,43 +156,47 @@ const techCount = techGroups.reduce((total, group) => total + group.items.length
   </section>
 
   <script>
-    (function () {
-      const grid = document.querySelector<HTMLElement>(".projects-grid");
-      const prevBtn = document.querySelector<HTMLButtonElement>("[data-carousel-prev]");
-      const nextBtn = document.querySelector<HTMLButtonElement>("[data-carousel-next]");
-      const currentEl = document.querySelector<HTMLElement>("[data-carousel-current]");
-      if (!grid || !prevBtn || !nextBtn || !currentEl) return;
+    // Drives every mobile carousel on the page — the case-study grid and the
+    // latest-writing grid both collapse into the same button-driven, scroll-
+    // snapped strip under 900px. Scoped per [data-carousel] root rather than
+    // querying the document, so the two never bind to each other's controls.
+    // CSS owns the breakpoint: isActive() reads whether the nav is displayed.
+    function initCarousel(root: HTMLElement) {
+      const track = root.querySelector<HTMLElement>("[data-carousel-track]");
+      const prevBtn = root.querySelector<HTMLButtonElement>("[data-carousel-prev]");
+      const nextBtn = root.querySelector<HTMLButtonElement>("[data-carousel-next]");
+      const currentEl = root.querySelector<HTMLElement>("[data-carousel-current]");
+      if (!track || !prevBtn || !nextBtn || !currentEl) return;
 
-      const cards = Array.from(grid.querySelectorAll<HTMLElement>(".project-card"));
+      const cards = Array.from(track.querySelectorAll<HTMLElement>("[data-carousel-item]"));
       const total = cards.length;
+      if (total === 0) return;
       let current = 0;
 
-      function isActive() {
-        return window.getComputedStyle(prevBtn!).display !== "none";
-      }
+      const isActive = () => window.getComputedStyle(prevBtn).display !== "none";
 
-      function updateNav() {
-        currentEl!.textContent = String(current + 1).padStart(2, "0");
-        prevBtn!.disabled = current === 0;
-        nextBtn!.disabled = current === total - 1;
-      }
+      const updateNav = () => {
+        currentEl.textContent = String(current + 1).padStart(2, "0");
+        prevBtn.disabled = current === 0;
+        nextBtn.disabled = current === total - 1;
+      };
 
-      function goTo(index: number) {
+      const goTo = (index: number) => {
         current = Math.max(0, Math.min(total - 1, index));
         cards[current].scrollIntoView({ behavior: "smooth", block: "nearest", inline: "start" });
         updateNav();
-      }
+      };
 
       let scrollTimer: ReturnType<typeof setTimeout>;
-      grid.addEventListener("scroll", () => {
+      track.addEventListener("scroll", () => {
         if (!isActive()) return;
         clearTimeout(scrollTimer);
         scrollTimer = setTimeout(() => {
-          const gridLeft = grid.getBoundingClientRect().left;
+          const trackLeft = track.getBoundingClientRect().left;
           let closest = 0;
           let closestDist = Infinity;
           cards.forEach((card, i) => {
-            const dist = Math.abs(card.getBoundingClientRect().left - gridLeft);
+            const dist = Math.abs(card.getBoundingClientRect().left - trackLeft);
             if (dist < closestDist) { closestDist = dist; closest = i; }
           });
           if (closest !== current) { current = closest; updateNav(); }
@@ -189,7 +207,9 @@ const techCount = techGroups.reduce((total, group) => total + group.items.length
       nextBtn.addEventListener("click", () => { if (isActive()) goTo(current + 1); });
 
       updateNav();
-    })();
+    }
+
+    document.querySelectorAll<HTMLElement>("[data-carousel]").forEach(initCarousel);
   </script>
 
   <section class="services-section" id="expertise">
@@ -302,6 +322,59 @@ const techCount = techGroups.reduce((total, group) => total + group.items.length
       });
     })();
   </script>
+
+  {latestPosts.length > 0 && (
+    <section class="writing-section" id="writing">
+      <div class="section-header reveal">
+        <div>
+          <div class="section-eyebrow">Latest Writing</div>
+          <h2 class="section-title">Notes on <em>craft</em></h2>
+        </div>
+        <div class="section-count">{String(latestPosts.length).padStart(2, "0")} / Recent</div>
+      </div>
+
+      <div class="writing-carousel" data-carousel>
+      <div class="writing-grid reveal reveal-delay-1" data-carousel-track>
+        {latestPosts.map((post) => (
+          <div class="writing-card" data-carousel-item>
+            <ark-media-card
+              category={post.category}
+              datetime={post.publishDate.toISOString()}
+              href={`/blog/${post.slug}`}
+              summary={post.excerpt}
+              title={post.title}
+              variant="compact"
+            >
+              {post.cover && (
+                <img
+                  slot="media"
+                  class="writing-cover"
+                  src={post.cover.src}
+                  alt={post.cover.alt}
+                  loading="lazy"
+                  style={`view-transition-name: ${coverTransitionName(post.slug)};`}
+                />
+              )}
+              {post.tags.map((tag) => <ark-chip slot="tag">{tag}</ark-chip>)}
+            </ark-media-card>
+          </div>
+        ))}
+      </div>
+
+      <div class="carousel-nav" aria-label="Latest writing navigation">
+        <button class="carousel-nav-btn" data-carousel-prev aria-label="Previous post" disabled>&#8592;</button>
+        <span class="carousel-nav-indicator" aria-live="polite">
+          <span data-carousel-current>01</span> / {String(latestPosts.length).padStart(2, "0")}
+        </span>
+        <button class="carousel-nav-btn" data-carousel-next aria-label="Next post">&#8594;</button>
+      </div>
+      </div>
+
+      <div class="section-cta reveal">
+        <ark-button class="section-cta-accent" href="/blog" variant="primary">Read all posts &rarr;</ark-button>
+      </div>
+    </section>
+  )}
 
   <section class="about-strip" id="about">
     <div class="about-portrait reveal">

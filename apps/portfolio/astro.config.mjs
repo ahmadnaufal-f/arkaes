@@ -7,13 +7,14 @@ export default defineConfig({
   // Pages stay static (prerendered) by default; the adapter only kicks in for
   // routes that opt into on-demand rendering via `export const prerender = false`
   // — the `/api/chat` chatbot endpoint (needs a server to hold the OpenAI API
-  // key) and the blog routes, which fetch from Contentful and are ISR-cached.
+  // key), the blog routes, and the homepage: the latter two fetch posts from
+  // Contentful and are ISR-cached.
   adapter: vercel({
     // ISR: on-demand routes render once, then serve from the edge cache like
     // static pages. Contentful's publish webhook hits /api/revalidate, which
-    // uses the bypass token to refresh just the affected blog paths — so a
-    // publish never needs a rebuild or a commit. `expiration` is a safety net
-    // in case a webhook is missed.
+    // uses the bypass token to refresh just the affected paths (the homepage,
+    // the blog index, and the post) — so a publish never needs a rebuild or a
+    // commit. `expiration` is a safety net in case a webhook is missed.
     isr: {
       expiration: 60 * 60,
       bypassToken: process.env.VERCEL_ISR_BYPASS_TOKEN,
@@ -22,7 +23,9 @@ export default defineConfig({
       // personalized, or mutating — has to be listed here, or the edge will serve
       // a cached copy and the function (including middleware) won't run at all.
       // Only genuinely public, cacheable pages may be left in: today that's the
-      // blog routes, which is the entire point of enabling ISR.
+      // blog routes — the entire point of enabling ISR — plus the homepage,
+      // which renders the same Contentful posts and is revalidated alongside
+      // them by /api/revalidate.
       exclude: [
         // Performs the cache invalidation itself; must never be cached.
         "/api/revalidate",
