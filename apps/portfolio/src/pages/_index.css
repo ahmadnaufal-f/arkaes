@@ -120,7 +120,7 @@
   width: 100%;
 }
 
-.projects-nav {
+.carousel-nav {
   display: none;
 }
 
@@ -328,12 +328,9 @@
   gap: var(--ark-space-4);
   grid-template-columns: repeat(3, minmax(min(100%, 280px), 1fr));
 
+  /* Only one step down before the 900px carousel takes over below. */
   @media (max-width: 1000px) {
     grid-template-columns: repeat(2, minmax(min(100%, 280px), 1fr));
-  }
-
-  @media (max-width: 700px) {
-    grid-template-columns: 1fr;
   }
 }
 
@@ -802,7 +799,39 @@
     --thumbnail-height: 280px;
   }
 
-  .projects-nav {
+  /* ── Latest writing carousel ─────────────────────────────
+     Same treatment as the case-study strip above: the grid becomes a
+     scroll-snapped flex track driven by the shared carousel nav. */
+
+  .writing-carousel {
+    overflow: hidden;
+  }
+
+  .writing-grid {
+    --thumbnail-height: 280px;
+
+    display: flex;
+    gap: 12px;
+    grid-template-columns: unset;
+    overflow-x: hidden;
+    padding-bottom: 4px;
+    padding-inline: 20px;
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .writing-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .writing-card {
+    flex: 0 0 calc(100vw - 56px);
+    scroll-snap-align: start;
+    width: unset;
+  }
+
+  .carousel-nav {
     align-items: center;
     display: flex;
     gap: 20px;
@@ -810,7 +839,7 @@
     padding-top: 20px;
   }
 
-  .projects-nav-btn {
+  .carousel-nav-btn {
     align-items: center;
     background: transparent;
     border: 1px solid var(--ark-color-border);
@@ -825,17 +854,17 @@
     width: 36px;
   }
 
-  .projects-nav-btn:hover:not(:disabled) {
+  .carousel-nav-btn:hover:not(:disabled) {
     border-color: var(--ark-color-accent);
     color: var(--ark-color-accent-strong);
   }
 
-  .projects-nav-btn:disabled {
+  .carousel-nav-btn:disabled {
     cursor: default;
     opacity: 0.3;
   }
 
-  .projects-nav-indicator {
+  .carousel-nav-indicator {
     color: var(--ark-color-text-subtle);
     font-family: var(--ark-font-mono);
     font-size: 0.7rem;
