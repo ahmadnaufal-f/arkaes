@@ -4,6 +4,10 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import { categoryLabel } from "../../data/expertise";
 import CaseStudyVisual from "../../components/CaseStudyVisual.astro";
 import { renderSectionHtml } from "../../utils/sections";
+// Share the case study page's visual language so the project detail feels
+// like the same family of pages.
+import "../case-studies/_case-study.css";
+import "./_projects.css";
 
 export async function getStaticPaths() {
   const projects = await getCollection("projects");
