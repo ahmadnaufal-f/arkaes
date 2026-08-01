@@ -6,10 +6,6 @@ import "@arkaes/ui/register/ark-empty";
 import "@arkaes/ui/register/ark-page-header";
 import type { BlogPost } from "../lib/contentful";
 import { categoriesOf, coverTransitionName, tagsOf } from "../lib/contentful";
-// Shares the listing shell (grid, filter bar, empty state) with the
-// projects/case-studies listings; blog-specific bits live in _blog-listing.css.
-import "./_filterable-listing.css";
-import "./_blog-listing.css";
 
 interface Props {
   eyebrow: string;

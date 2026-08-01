@@ -1,7 +1,6 @@
 ---
 import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import "./_index.css";
 import { techGroups } from "../data/techstack";
 import { EXPERTISE } from "../data/expertise";
 import CaseStudyVisual from "../components/CaseStudyVisual.astro";
@@ -319,7 +318,7 @@ const techCount = techGroups.reduce((total, group) => total + group.items.length
     <div class="about-content reveal reveal-delay-2">
       <div class="section-eyebrow">About</div>
       <h2 class="about-title">Engineering <em>intentional</em> interfaces<br />for product clarity</h2>
-      <p class="about-body">
+      <p class="about-strip-body">
         I build frontend systems that help products feel clearer, calmer, and easier to maintain. My
         strength is not only in writing UI code, but also in shaping structure, improving team
         workflows, and mentoring others so the product can grow without becoming harder to work on.

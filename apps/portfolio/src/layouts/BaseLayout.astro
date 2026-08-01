@@ -6,6 +6,23 @@ import SiteFooter from "../components/SiteFooter.astro";
 import SiteHeader from "../components/SiteHeader.astro";
 import { fadeThroughBlank } from "../transitions/fade-through-blank";
 import "../styles/global.css";
+// Every page-specific stylesheet is imported here — rather than in its own
+// page/component — so it's always already present in <head>, on every page,
+// before any navigation. Astro's ClientRouter swaps <head> by removing the
+// outgoing page's unmatched elements first, then appending the incoming
+// page's unmatched elements afterward (see swapHeadElements in
+// astro/dist/transitions/swap-functions.js) — a synchronous but real gap
+// where neither page's specific CSS is present. Normally invisible, but under
+// real device CPU/memory pressure that gap can surface as a frame of
+// default-styled content. Keeping all of it loaded from the start means no
+// navigation ever has page-specific CSS to add or remove.
+import "../pages/_about.css";
+import "../pages/_index.css";
+import "../pages/blog/_blog.css";
+import "../pages/case-studies/_case-study.css";
+import "../pages/projects/_projects.css";
+import "../components/_blog-listing.css";
+import "../components/_filterable-listing.css";
 
 interface Props {
   description?: string;
@@ -111,7 +128,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
       <span class="page-loader-spinner"></span>
     </div>
     <SiteHeader />
-    <main id="top" transition:animate={fadeThroughBlank}>
+    <main id="top" transition:name="main-content" transition:animate={fadeThroughBlank}>
       <slot />
     </main>
     <SiteFooter />
@@ -156,6 +173,32 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
           });
       });
 
+      // The self-hosted <Font> component (see astro.config.mjs `fonts`) emits
+      // its `@font-face` rule and `--font-sans`/`--font-display`/`--font-mono`
+      // custom-property assignments as separate inline <style> tags, plus a
+      // preload <link>, none of which carry `transition:persist`. Astro's
+      // ClientRouter re-recognizes byte-identical <style> content across pages
+      // and keeps it in place instead of removing/re-adding it, but that's
+      // best-effort — explicitly marking these as persisted closes the gap
+      // regardless, so text never even briefly falls back through the whole
+      // font stack to a generic system font mid-navigation.
+      // See https://github.com/withastro/astro/issues/15465.
+      document.addEventListener("astro:before-swap", (event) => {
+        for (const head of [document.head, event.newDocument.head]) {
+          let index = 0;
+          head.querySelectorAll("style").forEach((style) => {
+            if (/@font-face|--font-(sans|display|mono):/.test(style.textContent ?? "")) {
+              style.setAttribute("data-astro-transition-persist", `font-style-${index++}`);
+            }
+          });
+          head
+            .querySelectorAll<HTMLLinkElement>('link[rel="preload"][as="font"]')
+            .forEach((link) => {
+              link.setAttribute("data-astro-transition-persist", `font-preload-${link.href}`);
+            });
+        }
+      });
+
       // ── Global navigation progress bar ──────────────────────────────
       // A persistent top-of-page bar giving continuous feedback from the moment
       // a navigation starts (click, keyboard, or back/forward) until the new
@@ -198,8 +241,30 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
         },
       };
 
-      document.addEventListener("astro:before-preparation", () => navProgress.start());
-      document.addEventListener("astro:after-preparation", () => navProgress.advance());
+      // A view transition's "old" snapshot is captured at whatever scroll
+      // position the outgoing page is currently at, while Astro scrolls the
+      // incoming page to the top by default (`moveToLocation` in Astro's
+      // router). Left alone, that mismatch crossfades two different scroll
+      // windows of content on top of each other — e.g. an outgoing page
+      // scrolled mid-article ghosting through an incoming page's heading.
+      // Scrolling the outgoing page to top ourselves, right before Astro
+      // starts the view transition, makes both snapshots depict the same
+      // "top of page" content so they cleanly fade through blank instead.
+      // Skipped for back/forward (`traverse`) navigations, where Astro
+      // restores the destination's own saved scroll position instead of
+      // scrolling to top — forcing top here would just trade one mismatch
+      // for another.
+      let isTraverseNavigation = false;
+      document.addEventListener("astro:before-preparation", (event) => {
+        isTraverseNavigation = event.navigationType === "traverse";
+        navProgress.start();
+      });
+      document.addEventListener("astro:after-preparation", () => {
+        if (!isTraverseNavigation) {
+          window.scrollTo({ left: 0, top: 0, behavior: "instant" });
+        }
+        navProgress.advance();
+      });
 
       // Activate the loading/navigating state on the clicked link element as
       // soon as the user clicks, so there is immediate feedback while
@@ -270,9 +335,37 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
       };
 
       // ── Per-page setup (runs on first load and after every navigation) ──
-      const initPage = () => {
+      const initPage = async () => {
         const loader = document.getElementById("page-loader");
         if (loader) {
+          // `:not(:defined)` only tells us a custom element's constructor has
+          // run — Lit schedules its first render as a microtask, so there's a
+          // brief window where the element is "defined" but hasn't painted
+          // its shadow DOM yet. Wait for our own currently-undefined elements
+          // to upgrade, then a couple of frames for that first render to
+          // flush, before dropping the loader — otherwise a fast load can
+          // reveal still-unstyled elements underneath it.
+          //
+          // Only wait on `ark-*` tags: third-party/injected elements (e.g.
+          // the Vercel Toolbar's `<vercel-live-feedback>` on preview
+          // deployments) are also `:not(:defined)` at this point but aren't
+          // ours to wait on — they can be slow, blocked, or never define,
+          // which would hang the loader forever. A timeout backstops this
+          // further in case an ark-* element itself never upgrades.
+          const undefinedTags = new Set(
+            Array.from(document.querySelectorAll(":not(:defined)"))
+              .map((el) => el.tagName.toLowerCase())
+              .filter((tag) => tag.startsWith("ark-")),
+          );
+          const whenReady = Promise.all(
+            [...undefinedTags].map((tag) => customElements.whenDefined(tag)),
+          );
+          const timeout = new Promise<void>((resolve) => setTimeout(resolve, 2000));
+          await Promise.race([whenReady, timeout]);
+          await new Promise<void>((resolve) =>
+            requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+          );
+
           loader.classList.add("page-loader--done");
           setTimeout(() => loader.remove(), 350);
         }
@@ -304,7 +397,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
       document.addEventListener("astro:page-load", () => {
         navProgress.done();
         clearPendingNav();
-        initPage();
+        void initPage();
       });
     </script>
   </body>
