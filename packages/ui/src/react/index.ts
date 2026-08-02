@@ -16,6 +16,7 @@ export * from "./ark-spinner";
 export * from "./ark-toggle";
 export * from "./ark-accordion";
 export * from "./ark-card";
+export * from "./ark-carousel";
 export * from "./ark-cursor";
 export * from "./ark-dialog";
 export * from "./ark-hero";

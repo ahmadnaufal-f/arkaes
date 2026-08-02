@@ -21,6 +21,7 @@ import {
   defineArkCardRoot,
   defineArkCardTitle,
 } from "./ark-card";
+import { ArkCarousel, defineArkCarousel } from "./ark-carousel";
 import {
   ArkDialogRoot,
   ArkDialogTrigger,
@@ -89,6 +90,7 @@ export {
   ArkCardContent,
   ArkCardFooter,
   Card,
+  ArkCarousel,
   ArkCursor,
   ArkToast,
   ArkToaster,
@@ -123,6 +125,7 @@ export {
   defineArkCardHeader,
   defineArkCardRoot,
   defineArkCardTitle,
+  defineArkCarousel,
   defineArkCursor,
   enableArkCursor,
   defineArkToast,

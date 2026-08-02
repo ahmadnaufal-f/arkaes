@@ -174,6 +174,7 @@ Reactive properties become typed props, and custom events are exposed as `on*` p
 | `ArkRadio` | `onInput`, `onChange`, `onSelect` → `ark-radio-select` |
 | `ArkDropdown` | `onChange` → `change` |
 | `ArkAccordionItem` | `onToggle` → `ark-accordion:toggle` |
+| `ArkCarousel` | `onChange` → `ark-carousel:change` |
 | `ArkDialogRoot` | `onOpen` → `ark-dialog:open`, `onClose` → `ark-dialog:close` |
 | `ArkNavigationMobileToggle` | `onMenuToggle` → `ark-nav:menu-toggle` |
 | `ArkToast` | `onDismiss` → `ark-toast:dismiss` |
@@ -233,8 +234,8 @@ Notes:
 `ark-dropdown`, `ark-empty`, `ark-input`, `ark-radio`, `ark-radio-group`, `ark-spinner`,
 `ark-toggle`
 
-**Components:** `ark-accordion`, `ark-card` (+ subparts), `ark-cursor`, `ark-dialog` (+ subparts),
-`ark-hero`, `ark-navigation` (+ subparts), `ark-toast`
+**Components:** `ark-accordion`, `ark-card` (+ subparts), `ark-carousel`, `ark-cursor`,
+`ark-dialog` (+ subparts), `ark-hero`, `ark-navigation` (+ subparts), `ark-toast`
 
 **Patterns:** `ark-media-card`, `ark-page-header`, `ark-project-header`
 

@@ -15,6 +15,7 @@ import {
 import {
   defineArkAccordion,
   defineArkCard,
+  defineArkCarousel,
   defineArkCursor,
   defineArkDialog,
   defineArkHero,
@@ -45,6 +46,7 @@ export const registerArkPrimitives = () => {
 export const registerArkComponents = () => {
   defineArkAccordion();
   defineArkCard();
+  defineArkCarousel();
   defineArkCursor();
   defineArkDialog();
   defineArkHero();
