@@ -112,7 +112,8 @@ global token when unset, so you only set them when you want that component to di
 | Variable | Component | Falls back to |
 | --- | --- | --- |
 | `--ark-button-primary-bg` | `ark-button` (primary) | `--ark-color-text` |
-| `--ark-button-primary-bg-hover` | `ark-button` (primary hover) | `--ark-color-neutral-800` |
+| `--ark-button-primary-bg-hover` | `ark-button` (primary hover) | `--ark-color-text-soft` |
+| `--ark-button-primary-fg` | `ark-button` (primary text) | `--ark-color-bg` |
 | `--ark-dialog-overlay-bg` | `ark-dialog` overlay scrim | dim of `--ark-color-neutral-900` |
 | `--ark-navigation-bg` | `ark-navigation` bar | `--ark-color-bg` |
 

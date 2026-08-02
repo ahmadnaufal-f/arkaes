@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
 import { ifDefined } from "lit/directives/if-defined.js";
-import { ArkButton, ButtonVariant } from "@arkaes/ui";
+import { ArkButton, ButtonTone, ButtonVariant } from "@arkaes/ui";
 
 type ButtonArgs = {
   disabled: boolean;
@@ -12,8 +12,17 @@ type ButtonArgs = {
   rel: string;
   size: "sm" | "md" | "lg";
   target: "" | "_blank" | "_self" | "_parent" | "_top";
+  tone: ButtonTone;
   type: "button" | "submit" | "reset";
   variant: ButtonVariant;
+};
+
+const variantRoles: Record<ButtonVariant, string> = {
+  [ButtonVariant.Primary]: "The one loud action per view",
+  [ButtonVariant.Secondary]: "Supporting action",
+  [ButtonVariant.Outline]: "Alternate path",
+  [ButtonVariant.Ghost]: "Quiet utility",
+  [ButtonVariant.Link]: "Inline navigation",
 };
 
 const renderButton = ({
@@ -25,6 +34,7 @@ const renderButton = ({
   rel,
   size,
   target,
+  tone,
   type,
   variant,
 }: ButtonArgs) => {
@@ -33,6 +43,7 @@ const renderButton = ({
       <ark-button
         href=${href}
         size=${size}
+        tone=${tone}
         variant=${variant}
         target=${ifDefined(target || undefined)}
         rel=${ifDefined(rel || undefined)}
@@ -48,6 +59,7 @@ const renderButton = ({
   return html`
     <ark-button
       size=${size}
+      tone=${tone}
       type=${type}
       variant=${variant}
       ?disabled=${disabled}
@@ -75,6 +87,10 @@ const meta = {
       control: "select",
       options: ["", "_blank", "_self", "_parent", "_top"],
     },
+    tone: {
+      control: "inline-radio",
+      options: Object.values(ButtonTone),
+    },
     type: {
       control: "inline-radio",
       options: ["button", "submit", "reset"],
@@ -93,6 +109,7 @@ const meta = {
     rel: "",
     size: "md",
     target: "",
+    tone: ButtonTone.Neutral,
     type: "button",
     variant: ButtonVariant.Primary,
   },
@@ -101,9 +118,14 @@ const meta = {
     docs: {
       description: {
         component: `
-\`ark-button\` is a versatile button element that works both as a native button and as a link.
+\`ark-button\` is the action control of the system, spanning a five-step emphasis scale:
+\`primary\` (the one loud action per view), \`secondary\` (supporting), \`outline\` (alternate paths),
+\`ghost\` (quiet utility), and \`link\` (inline serif navigation).
 
-Provide an \`href\` to render as an anchor; omit it for a regular button. Use \`type\` to set button behavior (\`button\`, \`submit\`, \`reset\`). Choose from three variants for different visual emphasis and multiple sizes to fit your layout.
+Provide an \`href\` to render as an anchor; omit it for a regular button. Use \`type\` to set button
+behavior (\`button\`, \`submit\`, \`reset\`). Sizes \`sm\`/\`md\`/\`lg\` scale the box for the four
+button-shaped variants and only the font size for \`link\`. Set \`tone="danger"\` on any variant for
+destructive actions, and use the \`prefix\`/\`suffix\` slots for directional glyphs.
         `,
       },
     },
@@ -115,23 +137,163 @@ Provide an \`href\` to render as an anchor; omit it for a regular button. Use \`
 export default meta;
 type Story = StoryObj<ButtonArgs>;
 
-export const Primary = {} satisfies Story;
+export const Playground = {} satisfies Story;
+
+export const EmphasisScale: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: "The five variants form a deliberate emphasis ladder, from the single loud action down to inline navigation.",
+      },
+    },
+  },
+  render: () => html`
+    <div style="display: flex; flex-direction: column; gap: var(--ark-space-6); align-items: flex-start;">
+      ${Object.values(ButtonVariant).map(
+        (variant) => html`
+          <div style="display: flex; align-items: center; gap: var(--ark-space-6);">
+            <ark-button variant=${variant} style="min-width: 12rem;">${variant}</ark-button>
+            <span
+              style="font-family: var(--ark-font-mono); font-size: var(--ark-font-size-xs); color: var(--ark-color-text-subtle); text-transform: uppercase; letter-spacing: var(--ark-letter-spacing-mono);"
+            >
+              ${variantRoles[variant]}
+            </span>
+          </div>
+        `,
+      )}
+    </div>
+  `,
+};
+
+export const Primary = {
+  args: {
+    label: "View all case studies",
+  },
+} satisfies Story;
 
 export const Secondary = {
   args: {
-    label: "Read Notes",
+    label: "Browse all projects",
     variant: ButtonVariant.Secondary,
+  },
+} satisfies Story;
+
+export const Outline = {
+  args: {
+    label: "See other options",
+    variant: ButtonVariant.Outline,
   },
 } satisfies Story;
 
 export const Ghost = {
   args: {
-    label: "View case study",
+    label: "Dismiss",
     variant: ButtonVariant.Ghost,
   },
 } satisfies Story;
 
 export const Link = {
+  args: {
+    label: "View case study",
+    variant: ButtonVariant.Link,
+  },
+} satisfies Story;
+
+export const SizeMatrix: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: "Sizes scale padding and min-height for the button-shaped variants. The `link` variant only scales its font size — it never grows a box.",
+      },
+    },
+  },
+  render: () => html`
+    <div style="display: flex; flex-direction: column; gap: var(--ark-space-6); align-items: flex-start;">
+      ${Object.values(ButtonVariant).map(
+        (variant) => html`
+          <div style="display: flex; align-items: center; gap: var(--ark-space-4);">
+            ${(["sm", "md", "lg"] as const).map(
+              (size) => html`
+                <ark-button variant=${variant} size=${size}>${variant} ${size}</ark-button>
+              `,
+            )}
+          </div>
+        `,
+      )}
+    </div>
+  `,
+};
+
+export const WithIcons: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: "Directional glyphs go in the `prefix`/`suffix` slots; they nudge outward on hover.",
+      },
+    },
+  },
+  render: () => html`
+    <div style="display: flex; align-items: center; gap: var(--ark-space-6); flex-wrap: wrap;">
+      <ark-button>
+        Read all posts
+        <span slot="suffix" aria-hidden="true">&rarr;</span>
+      </ark-button>
+      <ark-button variant="secondary">
+        Browse all projects
+        <span slot="suffix" aria-hidden="true">&rarr;</span>
+      </ark-button>
+      <ark-button variant="link">
+        <span slot="prefix" aria-hidden="true">&larr;</span>
+        Back to home page
+      </ark-button>
+    </div>
+  `,
+};
+
+export const DangerTone: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: "`tone=\"danger\"` composes with every emphasis level, so destructive actions can be loud or quiet.",
+      },
+    },
+  },
+  render: () => html`
+    <div style="display: flex; align-items: center; gap: var(--ark-space-6); flex-wrap: wrap;">
+      ${Object.values(ButtonVariant).map(
+        (variant) => html`
+          <ark-button variant=${variant} tone="danger">Delete draft</ark-button>
+        `,
+      )}
+    </div>
+  `,
+};
+
+export const States: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: "Disabled and loading states across the scale. Loading keeps full opacity and shows the built-in spinner.",
+      },
+    },
+  },
+  render: () => html`
+    <div style="display: flex; flex-direction: column; gap: var(--ark-space-6); align-items: flex-start;">
+      <div style="display: flex; align-items: center; gap: var(--ark-space-4); flex-wrap: wrap;">
+        ${Object.values(ButtonVariant).map(
+          (variant) => html`<ark-button variant=${variant} disabled>Unavailable</ark-button>`,
+        )}
+      </div>
+      <div style="display: flex; align-items: center; gap: var(--ark-space-4); flex-wrap: wrap;">
+        ${Object.values(ButtonVariant).map(
+          (variant) => html`<ark-button variant=${variant} loading>Saving</ark-button>`,
+        )}
+      </div>
+    </div>
+  `,
+};
+
+export const AsLink = {
   args: {
     href: "https://example.com",
     label: "Open Link",
@@ -139,43 +301,10 @@ export const Link = {
   },
 } satisfies Story;
 
-export const Disabled = {
+export const FullWidth = {
   args: {
-    disabled: true,
-    label: "Unavailable",
-  },
-} satisfies Story;
-
-export const LoadingPrimary = {
-  args: {
-    label: "Submitting",
-    loading: true,
-    variant: ButtonVariant.Primary,
-  },
-} satisfies Story;
-
-export const LoadingSecondary = {
-  args: {
-    label: "Saving",
-    loading: true,
-    variant: ButtonVariant.Secondary,
-  },
-} satisfies Story;
-
-export const LoadingGhost = {
-  args: {
-    label: "Sending",
-    loading: true,
-    variant: ButtonVariant.Ghost,
-  },
-} satisfies Story;
-
-export const LoadingLink = {
-  args: {
-    href: "https://example.com",
-    label: "Opening",
-    loading: true,
-    target: "_blank",
+    fullWidth: true,
+    label: "Send message",
   },
 } satisfies Story;
 

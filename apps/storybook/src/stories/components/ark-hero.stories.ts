@@ -31,7 +31,7 @@ Accepts content via slots: \`eyebrow\` for a leading badge, \`title\` and \`subt
       </p>
       <div slot="actions" style="display: flex; flex-wrap: wrap; gap: 1rem;">
         <ark-button>Primary action</ark-button>
-        <ark-button variant="ghost">Secondary action</ark-button>
+        <ark-button variant="link">Secondary action</ark-button>
       </div>
       <div
         slot="visual"

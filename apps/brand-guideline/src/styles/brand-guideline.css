@@ -412,7 +412,47 @@ ark-button {
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
-   04 LOGO & WORDMARK
+   04 INTERFACE · BUTTONS
+══════════════════════════════════════════════════════════════════════════ */
+.button-ladder { display: flex; flex-direction: column; gap: 20px; }
+
+.bl-item {
+  display: grid; grid-template-columns: 96px 1fr 200px;
+  align-items: center; gap: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--parchment-d);
+}
+
+.bl-item:last-child { border-bottom: none; padding-bottom: 0; }
+
+.bl-name {
+  font-family: var(--ark-font-mono); font-size: .6rem;
+  color: var(--blush); letter-spacing: .1em;
+}
+
+.bl-role {
+  font-family: var(--ark-font-mono); font-size: .55rem;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--ink-ghost); text-align: right;
+}
+
+.button-row {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 16px;
+}
+
+.button-note {
+  font-family: var(--ark-font-mono); font-size: .6rem;
+  letter-spacing: .1em; color: var(--ink-ghost);
+  margin-top: 20px; max-width: 60ch;
+}
+
+@media (max-width: 640px) {
+  .bl-item { grid-template-columns: 1fr; gap: 8px; }
+  .bl-role { text-align: left; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   05 LOGO & WORDMARK
 ══════════════════════════════════════════════════════════════════════════ */
 #logo {}
 
@@ -511,7 +551,7 @@ ark-button {
 .dnd-col--dont .dnd-list li::before { background: var(--blush-deep); }
 
 /* ══════════════════════════════════════════════════════════════════════════
-   05 VOICE & TONE
+   06 VOICE & TONE
 ══════════════════════════════════════════════════════════════════════════ */
 #voice {}
 
@@ -570,7 +610,7 @@ ark-button {
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
-   06 DIGITAL TOUCHPOINTS
+   07 DIGITAL TOUCHPOINTS
 ══════════════════════════════════════════════════════════════════════════ */
 #touchpoints {}
 
@@ -635,7 +675,7 @@ ark-button {
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
-   07 USAGE RULES
+   08 USAGE RULES
 ══════════════════════════════════════════════════════════════════════════ */
 #rules {
   background: var(--ink) !important;
