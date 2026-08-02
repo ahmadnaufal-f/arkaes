@@ -51,7 +51,7 @@ const jsonLd = [
       <h1 slot="title">Frontend engineering with a product eye.</h1>
     </ark-page-header>
 
-    <ark-accordion class="about-accordion">
+    <ark-accordion class="about-accordion" auto-scroll-when-expanded>
       {
         sections.map(({ heading, content }, index) => (
           <ark-accordion-item heading={heading} open={index === 0 ? "" : undefined}>
