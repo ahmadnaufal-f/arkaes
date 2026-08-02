@@ -15,10 +15,13 @@ export const AUTHOR_JOB_TITLE = "Frontend Engineer";
 
 /**
  * Profile URLs for Person.sameAs — the strongest signal tying this site to an
- * existing identity (GitHub, LinkedIn, X, …). Left empty deliberately: a wrong
- * URL here is worse than none. Add real profiles and they flow into every page.
+ * existing identity. Only profiles that represent the professional identity
+ * belong here; a personal account would tie the two together in search results.
  */
-export const AUTHOR_PROFILES: readonly string[] = [];
+export const AUTHOR_PROFILES: readonly string[] = [
+  "https://github.com/ahmadnaufal-f",
+  "https://linkedin.com/in/ahmad-naufal-f",
+];
 
 /** Fallback social share image; see scripts/generate-og-image.ts. */
 export const DEFAULT_OG_IMAGE = "/og-default.png";

@@ -1,5 +1,7 @@
 ---
+import { Image } from "astro:assets";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import portrait from "../assets/about-me.png";
 import { parseSections, renderSectionHtml } from "../utils/sections";
 import aboutContent from "../content/about.md?raw";
 import { AUTHOR_NAME, PERSON_ID, WEBSITE_ID, breadcrumbSchema } from "../lib/seo";
@@ -43,22 +45,27 @@ const jsonLd = [
   jsonLd={jsonLd}
 >
   <section class="page-section narrow">
-    <ark-page-header
-      eyebrow="About"
-      heading="Frontend engineering with a product eye."
-    ></ark-page-header>
+    {/* Light-DOM slot content, not a `heading` attribute — see
+        FilterableListing.astro. */}
+    <ark-page-header eyebrow="About">
+      <h1 slot="title">Frontend engineering with a product eye.</h1>
+    </ark-page-header>
 
     <ark-accordion class="about-accordion">
       {
         sections.map(({ heading, content }, index) => (
           <ark-accordion-item heading={heading} open={index === 0 ? "" : undefined}>
+            {/* Same widths/sizes as the homepage's portrait on purpose:
+                identical renditions mean the `about-me` shared-element
+                transition morphs one already-cached image rather than
+                cross-fading two different files. */}
             {index === 0 && (
-              <img
+              <Image
                 class="about-summary-portrait"
-                src="/about-me.png"
+                src={portrait}
                 alt="Ahmad Naufal"
-                width="320"
-                height="427"
+                widths={[320, 640]}
+                sizes="320px"
                 transition:name="about-me"
               />
             )}

@@ -42,6 +42,10 @@ export class ArkProjectHeader extends LitElement {
     :host {
       display: contents;
       --_stick-top: var(--ark-project-header-stick-top, 60px);
+      /* Floor for the unstuck hero. It exists to give the slotted visual room;
+         a consumer that slots no visual (the blog does not) is left with that
+         much empty space under the title, so it is tunable. */
+      --_min-height: var(--ark-project-header-min-height, 240px);
     }
 
     /* Spacer in normal flow above the hero that the IntersectionObserver
@@ -59,7 +63,7 @@ export class ArkProjectHeader extends LitElement {
       display: flex;
       flex-direction: row-reverse;
       gap: 80px;
-      min-height: 240px;
+      min-height: var(--_min-height);
       overflow: hidden;
       padding-block: 36px;
       padding-inline: var(--site-content-padding);

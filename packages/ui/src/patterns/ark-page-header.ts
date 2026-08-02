@@ -63,13 +63,25 @@ export class ArkPageHeader extends LitElement {
     }
 
     /* ── Lead ───────────────────────────────────────────────────────── */
+    /* The measure is set on the slot, not through ::slotted(). For a slotted
+       element the outer tree wins the cascade for normal declarations, so a
+       consumer's global p { max-width: … } would override anything declared
+       here and the lead would run wider than intended. The slot is shadow DOM
+       proper and out of the document's reach, so capping it constrains the
+       lead identically whether it arrives via the attribute or the slot.
+       (display: block is required — a slot is display: contents by default
+       and would generate no box to cap.) */
+    slot[name="lead"] {
+      display: block;
+      max-width: 680px;
+    }
+
     .lead,
     ::slotted([slot="lead"]) {
       color: var(--ark-color-text-muted);
       font-size: var(--ark-font-size-xl);
       line-height: var(--ark-line-height-relaxed);
       margin: 0;
-      max-width: 680px;
     }
 
     /* ── Trailing content ───────────────────────────────────────────── */

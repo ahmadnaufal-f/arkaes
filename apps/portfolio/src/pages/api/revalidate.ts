@@ -61,6 +61,7 @@ export const POST: APIRoute = async ({ request }) => {
     "/",
     "/blog",
     "/sitemap.xml",
+    "/rss.xml",
     ...(slug ? [`/blog/${slug}`] : []),
   ];
 

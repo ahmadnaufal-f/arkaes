@@ -17,10 +17,12 @@
     "@arkaes/tokens": "workspace:*",
     "@arkaes/ui": "workspace:*",
     "@astrojs/markdown-remark": "^7.2.0",
+    "@astrojs/rss": "^4.0.19",
     "@astrojs/vercel": "^11.0.0",
     "@vercel/analytics": "^1.5.0",
     "astro": "^7.0.2",
-    "contentful": "^11.12.7"
+    "contentful": "^11.12.7",
+    "sharp": "^0.35.3"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.9",

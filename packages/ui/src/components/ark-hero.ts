@@ -152,8 +152,18 @@ export class ArkHero extends LitElement {
     }
 
     /* ── Hero title ─────────────────────────────────────────────────── */
+    /* Spacing and sizing live on this wrapper, not on the title itself.
+       ::slotted() declarations sit in the shadow tree, and for a slotted
+       element the outer tree wins the cascade for normal declarations — so a
+       consumer's global reset (h1 { margin-block: 0 }) silently beats any
+       margin set through ::slotted(), and the slotted heading loses its
+       spacing while inherited properties like font-size still apply. The
+       wrapper is shadow DOM proper, out of the document's reach, so the box
+       model is identical whether the title arrives via the attribute or the
+       slot. Same reasoning for .hero-subtitle-slot below. */
     .hero-title-slot {
       animation: fadeSlideUp 1000ms var(--ark-ease-out) forwards 400ms;
+      margin-top: 36px;
       opacity: 0;
     }
 
@@ -165,7 +175,7 @@ export class ArkHero extends LitElement {
       font-weight: var(--ark-weight-thin);
       letter-spacing: 0;
       line-height: var(--ark-line-height-tight);
-      margin: 36px 0 0;
+      margin: 0;
     }
 
     .hero-title em {
@@ -193,6 +203,8 @@ export class ArkHero extends LitElement {
     /* ── Subtitle ───────────────────────────────────────────────────── */
     .hero-subtitle-slot {
       animation: fadeSlideUp 900ms var(--ark-ease-out) forwards 650ms;
+      margin-block: 40px 56px;
+      max-width: 380px;
       opacity: 0;
     }
 
@@ -202,8 +214,7 @@ export class ArkHero extends LitElement {
       font-size: var(--ark-font-size-xl);
       font-weight: var(--ark-font-weight-light);
       line-height: var(--ark-line-height-relaxed);
-      margin-block: 40px 56px;
-      max-width: 380px;
+      margin: 0;
     }
 
     /* ── Actions ────────────────────────────────────────────────────── */
@@ -536,10 +547,14 @@ export class ArkHero extends LitElement {
         padding-left: 0;
       }
 
+      /* max-width belongs to the wrapper (see .hero-subtitle-slot). */
+      .hero-subtitle-slot {
+        max-width: none;
+      }
+
       .hero-subtitle,
       ::slotted([slot="subtitle"]) {
         font-size: 1.14rem;
-        max-width: none;
       }
 
       .hero-actions {
