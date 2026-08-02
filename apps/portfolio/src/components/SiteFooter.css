@@ -15,27 +15,11 @@
   letter-spacing: 0.1em;
 }
 
-.footer-copy,
-.footer-links a {
+.footer-copy {
   color: rgba(250, 247, 245, 0.62);
   font-family: var(--ark-font-mono);
   font-size: 0.72rem;
   letter-spacing: 0.12em;
-}
-
-.footer-links {
-  display: flex;
-  gap: 28px;
-  list-style: none;
-}
-
-.footer-links a {
-  text-transform: uppercase;
-  transition: color var(--ark-duration-normal);
-}
-
-.footer-links a:hover {
-  color: var(--ark-color-blush-light);
 }
 
 @media (max-width: 900px) {
