@@ -36,6 +36,11 @@ function escapeHtml(str: string): string {
     .replace(/"/g, "&quot;");
 }
 
+/** A proof line: `→ ` followed by its pipe-separated fields. */
+const proofLineRe = /^→\s*(.+)$/;
+/** The linked-work field of a proof line, on its own so the card can wrap it. */
+const proofLinkRe = /^\[([^\]]+)\]\((https?:\/\/[^)]+|\/[^)]+)\)$/;
+
 function renderInline(text: string): string {
   return text
     // Links first, while their text is still raw markdown — otherwise bold/italic
@@ -121,6 +126,49 @@ export function renderSectionHtml(
       } else {
         parts.push(figures.join(""));
       }
+      continue;
+    }
+
+    // Proof block — consecutive `→` lines, each citing one piece of evidence:
+    //   → metric | [Linked work](/href) | supporting sentence
+    // The metric is optional (two fields = link + sentence), so a claim that is
+    // backed by a shipped thing rather than a number still renders as a card.
+    // Checked before the bullet list below, since a proof line is a list item
+    // with structure rather than free prose.
+    if (blockLines.length > 0 && blockLines.every((l) => proofLineRe.test(l.trim()))) {
+      const cards = blockLines.map((line) => {
+        const fields = line
+          .trim()
+          .replace(proofLineRe, "$1")
+          .split("|")
+          .map((f) => f.trim());
+        const metric = fields.length >= 3 ? (fields.shift() ?? "") : "";
+        const [linkField = "", ...rest] = fields;
+        // Re-join so a description may itself contain a pipe.
+        const desc = rest.join(" | ");
+
+        const link = linkField.match(proofLinkRe);
+        const label = link ? link[1] : linkField;
+        const href = link?.[2];
+        const isExternal = href ? /^https?:\/\//.test(href) : false;
+
+        const body =
+          (metric
+            ? `<span class="cs-proof-metric">${renderInline(metric)}</span>`
+            : "") +
+          `<span class="cs-proof-title">${escapeHtml(label)}</span>` +
+          (desc ? `<span class="cs-proof-desc">${renderInline(desc)}</span>` : "");
+
+        // Without a parseable link the evidence still reads — it just isn't
+        // clickable — rather than collapsing into a broken anchor.
+        if (!href) return `<li class="cs-proof">${body}</li>`;
+        const attrs = isExternal
+          ? " target=\"_blank\" rel=\"noopener noreferrer\""
+          : "";
+        return `<li class="cs-proof"><a class="cs-proof-link" href="${escapeHtml(href)}"${attrs}>${body}</a></li>`;
+      });
+
+      parts.push(`<ul class="cs-proofs">${cards.join("")}</ul>`);
       continue;
     }
 
