@@ -37,8 +37,9 @@ const DEFAULT_NAV_HEIGHT_PX = 80;
  *
  * @summary Fixed site header with condensed and immersive scroll states.
  * @csspart scrim - The gradient fill painted behind the floating pills.
- * @cssprop [--ark-nav-immersive-margin-block=12px] - Space above and below the
- *   floating row; the scrim is exactly the pill height plus these margins.
+ * @cssprop [--ark-nav-immersive-margin-block=var(--ark-space-3)] - Space above
+ *   and below the floating row; the scrim is exactly the pill height plus
+ *   these margins.
  * @cssprop [--ark-nav-immersive-pill-size=44px] - Minimum pill height (and the
  *   width of the square hamburger pill).
  * @cssprop [--ark-nav-immersive-pill-bg] - Pill background.
@@ -154,7 +155,7 @@ export class ArkNavigationRoot extends LitElement {
       --ark-nav-header-height: 80px;
 
       /* Immersive mode knobs — see the class doc comment. */
-      --ark-nav-immersive-margin-block: 12px;
+      --ark-nav-immersive-margin-block: var(--ark-space-3);
       --ark-nav-immersive-pill-size: 44px;
       --ark-nav-immersive-pill-bg: color-mix(
         in srgb,

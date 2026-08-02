@@ -118,7 +118,7 @@ export class ArkProjectHeader extends LitElement {
       /* The start padding carries the chrome clearance in both states — pinned
          at the top of the viewport, the hero slides under the nav, so the gap
          has to come from inside the hero rather than from a sticky offset. */
-      padding-block: calc(var(--_chrome-clearance) + 8px) 36px;
+      padding-block: calc(var(--_chrome-clearance) + var(--ark-space-2)) 36px;
       padding-inline: var(--site-content-padding);
       position: sticky;
       top: var(--_stick-top);
@@ -132,7 +132,7 @@ export class ArkProjectHeader extends LitElement {
        actually visible) for a compact, pinned header. */
     .hero.is-stuck {
       min-height: 0;
-      padding-block: var(--_chrome-clearance) 20px;
+      padding-block: var(--_chrome-clearance) var(--ark-space-5);
       box-shadow: var(--ark-shadow-md);
     }
 
@@ -227,11 +227,12 @@ export class ArkProjectHeader extends LitElement {
     @media (max-width: 860px) {
       .hero {
         min-height: 200px;
-        padding-block: calc(var(--_chrome-clearance) + 8px) 20px;
+        padding-block: calc(var(--_chrome-clearance) + var(--ark-space-2))
+          var(--ark-space-5);
       }
 
       .hero.is-stuck {
-        padding-block: var(--_chrome-clearance) 12px;
+        padding-block: var(--_chrome-clearance) var(--ark-space-3);
       }
 
       .visual {

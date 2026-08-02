@@ -84,9 +84,10 @@ const readConversation = (): StoredConversation | null => {
 };
 
 /**
- * The assistant mark: a large four-pointed star with a small one off its
- * shoulder. Each point is drawn as four quadratic curves that pull back through
- * the centre, which is what gives the star its concave waist.
+ * The assistant mark: a large four-pointed star with a small one tucked against
+ * its shoulder. Each point is drawn as a quadratic curve pulling back through
+ * the centre, which is what gives the star its concave waist — and what leaves
+ * the diagonals empty, so the small star can sit close without the two touching.
  */
 const sparkMark = () => html`
   <svg
@@ -96,10 +97,10 @@ const sparkMark = () => html`
     aria-hidden="true"
     focusable="false"
   >
-    <path d="M10 6 Q10 14 18 14 Q10 14 10 22 Q10 14 2 14 Q10 14 10 6 Z" />
     <path
-      d="M18.5 1 Q18.5 5.5 23 5.5 Q18.5 5.5 18.5 10 Q18.5 5.5 14 5.5 Q18.5 5.5 18.5 1 Z"
+      d="M9.5 5 Q9.5 14.5 19 14.5 Q9.5 14.5 9.5 24 Q9.5 14.5 0 14.5 Q9.5 14.5 9.5 5 Z"
     />
+    <path d="M17 1 Q17 7 23 7 Q17 7 17 13 Q17 7 11 7 Q17 7 17 1 Z" />
   </svg>
 `;
 
@@ -335,8 +336,8 @@ export class ArkChatbot extends LitElement {
        glyph reads as branding. The monogram still stands in for Arkhe inside
        the panel, where the heading has already introduced it. */
     .spark {
-      height: 1.15rem;
-      width: 1.15rem;
+      height: 1.5rem;
+      width: 1.5rem;
     }
     /* The halo breathes only until the chat has been opened once (persisted
        in localStorage) — it is an attention cue, not permanent decoration. */
