@@ -10,17 +10,68 @@ import {
 
 let mobileMenuId = 0;
 
+/** Scroll depth (px) past which the bar takes on its condensed look. */
+const SCROLLED_THRESHOLD_PX = 40;
+
+/**
+ * Viewport width (px) at or below which immersive mode is allowed — the same
+ * breakpoint where the desktop links give way to the hamburger.
+ */
+const IMMERSIVE_BREAKPOINT_PX = 900;
+
+/** Quiet time (ms) after the last scroll event before the pills settle back in. */
+const IMMERSIVE_SETTLE_MS = 200;
+
+/** Stand-in for the resting bar height until the first measurement lands. */
+const DEFAULT_NAV_HEIGHT_PX = 80;
+
 /**
  * ArkNavigationRoot manages the scroll and mobile menu state.
+ *
+ * On small screens it also drives *immersive mode* (the One UI trick): once the
+ * page has scrolled past the resting height of the bar, the bar itself dissolves
+ * and its children ride on top of a gradient scrim as separate floating pills.
+ * While the page is moving the pills step out of the way, and they settle back
+ * in once scrolling stops.
+ *
+ * @summary Fixed site header with condensed and immersive scroll states.
+ * @csspart scrim - The gradient fill painted behind the floating pills.
+ * @cssprop [--ark-nav-immersive-margin-block=12px] - Space above and below the
+ *   floating row; the scrim is exactly the pill height plus these margins.
+ * @cssprop [--ark-nav-immersive-pill-size=44px] - Minimum pill height (and the
+ *   width of the square hamburger pill).
+ * @cssprop [--ark-nav-immersive-pill-bg] - Pill background.
+ * @cssprop [--ark-nav-immersive-pill-radius=var(--ark-radius-full)] - Pill radius.
+ * @cssprop [--ark-nav-immersive-scrim] - The gradient fill under the pills.
+ * @cssprop [--ark-nav-immersive-hidden-shift=-8px] - How far the pills travel
+ *   while hidden mid-scroll.
  */
 export class ArkNavigationRoot extends LitElement {
   static override properties = {
     scrolled: { type: Boolean, reflect: true },
     menuOpen: { type: Boolean, reflect: true, attribute: "menu-open" },
+    immersive: { type: Boolean, reflect: true },
+    immersiveHidden: {
+      type: Boolean,
+      reflect: true,
+      attribute: "immersive-hidden",
+    },
   };
 
   private _scrolled = false;
   private _menuOpen = false;
+  private _immersive = false;
+  private _immersiveHidden = false;
+
+  /**
+   * Resting (unscrolled) bar height — the depth the page has to scroll past
+   * before immersive mode kicks in. Cached rather than read per scroll event so
+   * the condensed and floating heights can never move the threshold under us.
+   */
+  private _navHeight = DEFAULT_NAV_HEIGHT_PX;
+  private _lastScrollY = 0;
+  private _settleTimer: number | null = null;
+  private _viewportQuery: MediaQueryList | null = null;
 
   get scrolled(): boolean {
     return this._scrolled;
@@ -43,8 +94,38 @@ export class ArkNavigationRoot extends LitElement {
     if (oldVal !== val) {
       this._menuOpen = val;
       this.requestUpdate("menuOpen", oldVal);
+      // The drawer hangs off a solid bar, so opening it suspends immersive mode.
+      // Clearing the hidden flag keeps the close button from fading out under
+      // the finger that just opened the menu.
+      if (val) this.immersiveHidden = false;
       this._syncChildren();
       this._handleScrollLock(val);
+    }
+  }
+
+  /** True while the small-screen floating treatment is active. */
+  get immersive(): boolean {
+    return this._immersive;
+  }
+
+  set immersive(val: boolean) {
+    const oldVal = this._immersive;
+    if (oldVal !== val) {
+      this._immersive = val;
+      this.requestUpdate("immersive", oldVal);
+    }
+  }
+
+  /** True while the floating elements are tucked away mid-scroll. */
+  get immersiveHidden(): boolean {
+    return this._immersiveHidden;
+  }
+
+  set immersiveHidden(val: boolean) {
+    const oldVal = this._immersiveHidden;
+    if (oldVal !== val) {
+      this._immersiveHidden = val;
+      this.requestUpdate("immersiveHidden", oldVal);
     }
   }
 
@@ -70,6 +151,22 @@ export class ArkNavigationRoot extends LitElement {
         padding var(--ark-duration-normal) var(--ark-ease-standard);
       z-index: 100;
       --ark-nav-header-height: 80px;
+
+      /* Immersive mode knobs — see the class doc comment. */
+      --ark-nav-immersive-margin-block: 12px;
+      --ark-nav-immersive-pill-size: 44px;
+      --ark-nav-immersive-pill-bg: color-mix(
+        in srgb,
+        var(--ark-navigation-bg, var(--ark-color-bg)) 82%,
+        transparent
+      );
+      --ark-nav-immersive-pill-radius: var(--ark-radius-full);
+      --ark-nav-immersive-scrim: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.25),
+        rgba(0, 0, 0, 0)
+      );
+      --ark-nav-immersive-hidden-shift: -8px;
     }
 
     :host([scrolled]) {
@@ -83,29 +180,201 @@ export class ArkNavigationRoot extends LitElement {
       padding-block: 16px;
       --ark-nav-header-height: 60px;
     }
+
+    /* ── Immersive mode ────────────────────────────────────────────────
+       The immersive attribute is set by the root itself and only on small
+       screens (see _syncImmersive); the styles below are unconditional so a
+       story or a test can pin the state at any viewport width. It is suspended
+       while the mobile menu is open — the drawer needs the solid bar to hang
+       off, and the bar has to catch pointer events again. */
+
+    /* Painted behind the pills (negative z-index inside the host's own stacking
+       context) and sized to the host box: pill height + both block margins. */
+    .scrim {
+      background: var(--ark-nav-immersive-scrim);
+      inset: 0;
+      opacity: 0;
+      pointer-events: none;
+      position: absolute;
+      transition: opacity var(--ark-duration-normal) var(--ark-ease-standard);
+      z-index: -1;
+    }
+
+    :host([immersive]:not([menu-open])) {
+      backdrop-filter: none;
+      background: none;
+      box-shadow: none;
+      padding-block: var(--ark-nav-immersive-margin-block);
+      /* The bar is see-through now, so it must not swallow taps meant for the
+         page underneath. The pills opt back in below. */
+      pointer-events: none;
+
+      & .scrim {
+        opacity: 1;
+      }
+
+      & ::slotted(ark-navigation-brand),
+      & ::slotted(ark-navigation-mobile-toggle),
+      & ::slotted(ark-navigation-cta) {
+        align-items: center;
+        backdrop-filter: blur(10px);
+        background: var(--ark-nav-immersive-pill-bg);
+        box-shadow: var(--ark-shadow-md);
+        min-height: var(--ark-nav-immersive-pill-size);
+        pointer-events: auto;
+        transition:
+          opacity var(--ark-duration-normal) var(--ark-ease-standard),
+          transform var(--ark-duration-normal) var(--ark-ease-standard);
+      }
+
+      & ::slotted(ark-navigation-brand),
+      & ::slotted(ark-navigation-mobile-toggle) {
+        border: 1px solid var(--ark-color-border);
+        border-radius: var(--ark-nav-immersive-pill-radius);
+      }
+
+      & ::slotted(ark-navigation-brand) {
+        padding-inline: 18px;
+      }
+
+      & ::slotted(ark-navigation-mobile-toggle) {
+        justify-content: center;
+        min-width: var(--ark-nav-immersive-pill-size);
+      }
+
+      /* The CTA draws its own border, so it only needs the float — matching the
+         inner button's radius keeps it from reading as a pill inside a pill. */
+      & ::slotted(ark-navigation-cta) {
+        border-radius: var(--ark-radius-xs);
+      }
+    }
+
+    /* Mid-scroll: the immersion steps aside, then settles back once the page
+       stops moving. Keyboard focus wins over it — tabbing through the header
+       scrolls the page, and a focused-but-invisible link is a trap. */
+    :host([immersive][immersive-hidden]:not([menu-open]):not(:focus-within)) {
+      & .scrim {
+        opacity: 0;
+      }
+
+      & ::slotted(ark-navigation-brand),
+      & ::slotted(ark-navigation-mobile-toggle),
+      & ::slotted(ark-navigation-cta) {
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(var(--ark-nav-immersive-hidden-shift));
+      }
+    }
   `;
 
   override connectedCallback() {
     super.connectedCallback();
     window.addEventListener("scroll", this._handleScroll, { passive: true });
     this.addEventListener("ark-nav:menu-toggle", this._handleMenuToggle);
+    this._setupViewportQuery();
+    // Seed the baseline so a page restored mid-document doesn't read as a scroll.
+    this._lastScrollY = window.scrollY;
     this._handleScroll();
   }
 
   override disconnectedCallback() {
     window.removeEventListener("scroll", this._handleScroll);
     this.removeEventListener("ark-nav:menu-toggle", this._handleMenuToggle);
+    this._teardownViewportQuery();
+    this._clearSettleTimer();
     this._handleScrollLock(false);
     super.disconnectedCallback();
   }
 
   override firstUpdated() {
+    this._measureNavHeight();
     this._syncChildren();
   }
 
   private _handleScroll = () => {
-    this.scrolled = window.scrollY > 40;
+    const y = window.scrollY;
+    this.scrolled = y > SCROLLED_THRESHOLD_PX;
+    this._syncImmersive(y);
   };
+
+  /**
+   * Immersive mode is a small-screen affordance, so it hangs off a media query
+   * rather than a CSS breakpoint — the styles stay unconditional and this is the
+   * only thing deciding when they apply.
+   */
+  private _setupViewportQuery() {
+    if (typeof window === "undefined" || !window.matchMedia) return;
+    this._viewportQuery = window.matchMedia(
+      `(max-width: ${IMMERSIVE_BREAKPOINT_PX}px)`,
+    );
+    this._viewportQuery.addEventListener("change", this._handleViewportChange);
+  }
+
+  private _teardownViewportQuery() {
+    this._viewportQuery?.removeEventListener(
+      "change",
+      this._handleViewportChange,
+    );
+    this._viewportQuery = null;
+  }
+
+  private _handleViewportChange = () => {
+    this._measureNavHeight();
+    this._handleScroll();
+  };
+
+  /**
+   * Only measured in the resting state: the condensed bar is shorter and the
+   * immersive one shorter still, so re-reading the height in either would drag
+   * the threshold down behind the scroll position and flip the state back and
+   * forth around the boundary.
+   */
+  private _measureNavHeight() {
+    if (this._scrolled || this._immersive) return;
+    const height = this.offsetHeight;
+    if (height > 0) this._navHeight = height;
+  }
+
+  private _syncImmersive(y: number) {
+    const moved = y !== this._lastScrollY;
+    this._lastScrollY = y;
+
+    if (!this._viewportQuery?.matches) {
+      this._clearSettleTimer();
+      this.immersive = false;
+      this.immersiveHidden = false;
+      return;
+    }
+
+    this.immersive = y > this._navHeight;
+
+    if (!this.immersive || this.menuOpen) {
+      this._clearSettleTimer();
+      this.immersiveHidden = false;
+      return;
+    }
+
+    // The floating elements are only in the way while the page is actually
+    // moving, so any scroll tucks them and the settle timer brings them back.
+    if (!moved) return;
+    this.immersiveHidden = true;
+    this._restartSettleTimer();
+  }
+
+  private _restartSettleTimer() {
+    this._clearSettleTimer();
+    this._settleTimer = window.setTimeout(() => {
+      this._settleTimer = null;
+      this.immersiveHidden = false;
+    }, IMMERSIVE_SETTLE_MS);
+  }
+
+  private _clearSettleTimer() {
+    if (this._settleTimer !== null) {
+      window.clearTimeout(this._settleTimer);
+      this._settleTimer = null;
+    }
+  }
 
   private _handleMenuToggle = (e: Event) => {
     e.stopPropagation();
@@ -143,7 +412,10 @@ export class ArkNavigationRoot extends LitElement {
   }
 
   override render() {
-    return html`<slot></slot>`;
+    return html`
+      <div class="scrim" part="scrim" aria-hidden="true"></div>
+      <slot></slot>
+    `;
   }
 }
 
