@@ -25,7 +25,7 @@ export function toPlainText(markdown: string): string {
   return markdown
     .replace(/\*\*(.+?)\*\*/g, "$1")
     .replace(/\*(.+?)\*/g, "$1")
-    .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, "$1");
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+|\/[^)]+)\)/g, "$1");
 }
 
 function escapeHtml(str: string): string {
@@ -38,13 +38,19 @@ function escapeHtml(str: string): string {
 
 function renderInline(text: string): string {
   return text
-    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
-    .replace(/\*(.+?)\*/g, "<em>$1</em>")
+    // Links first, while their text is still raw markdown — otherwise bold/italic
+    // below would have already turned e.g. "**Label**" into "<strong>Label</strong>",
+    // and escaping the link text here would then double-escape those tags.
     .replace(
-      /\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g,
-      (_, t, href) =>
-        `<a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(t)}</a>`,
-    );
+      /\[([^\]]+)\]\((https?:\/\/[^)]+|\/[^)]+)\)/g,
+      (_, t, href) => {
+        const isExternal = /^https?:\/\//.test(href);
+        const attrs = isExternal ? " target=\"_blank\" rel=\"noopener noreferrer\"" : "";
+        return `<a href="${escapeHtml(href)}"${attrs}>${escapeHtml(t)}</a>`;
+      },
+    )
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*(.+?)\*/g, "<em>$1</em>");
 }
 
 export function renderSectionHtml(
