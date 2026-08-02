@@ -12,5 +12,10 @@ rich content.
 </ark-project-header>
 ```
 
-Override the heading with custom markup via `slot="title"`. Adjust the pinned
-offset with the `--ark-project-header-stick-top` custom property.
+Override the heading with custom markup via `slot="title"`.
+
+The hero pins flush with the top of the viewport and lets the fixed site nav
+float over it, so the room for that chrome is held as start padding inside the
+hero — `--ark-project-header-chrome-clearance` (default `88px`, enough for the
+condensed nav bar and for ark-navigation's immersive floating row). Move the pin
+itself with `--ark-project-header-stick-top` (default `0px`).
