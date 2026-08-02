@@ -54,7 +54,7 @@ let pinnedBottomOwner: symbol | null = null;
  * @cssprop [--ark-project-header-chrome-clearance=76px] - Room held at the top
  *   of the hero for the fixed nav that floats over it.
  * @cssprop [--ark-project-header-title-lines=2] - Lines the title may run to
- *   before it is ellipsised.
+ *   while pinned before it is ellipsised. Unpinned it is never clamped.
  */
 export class ArkProjectHeader extends LitElement {
   static override properties = {
@@ -90,8 +90,8 @@ export class ArkProjectHeader extends LitElement {
          The scrim under that row fades out at its own bottom edge, so the title
          only has to clear the row itself, not the gradient. */
       --_chrome-clearance: var(--ark-project-header-chrome-clearance, 76px);
-      /* The title is a landmark, not the article: past two lines a pinned
-         header eats the reading area it is supposed to be labelling. */
+      /* Applied only while pinned: past this many lines the header eats the
+         reading area it is supposed to be labelling. */
       --_title-lines: var(--ark-project-header-title-lines, 2);
       /* Floor for the unstuck hero. It exists to give the slotted visual room;
          a consumer that slots no visual (the blog does not) is left with that
@@ -204,20 +204,33 @@ export class ArkProjectHeader extends LitElement {
       margin-bottom: 24px;
     }
 
-    /* Clamped to --_title-lines, with the overflow ellipsised. The -webkit-
-       prefixed box is the only form with universal support; the text stays
-       whole in the DOM, so the accessible name and the page's h1 are unaffected
-       by what the box hides. */
     .title,
     ::slotted([slot="title"]) {
       color: var(--ark-color-text);
-      display: -webkit-box;
       font-family: var(--ark-font-display);
       font-size: clamp(1.8rem, 3vw, 2.8rem);
       font-weight: var(--ark-weight-thin);
       line-height: 1.12;
       margin: 0;
+    }
+
+    /* Only the pinned header clamps the title. Unstuck it is the top of the
+       page and can afford however many lines the title runs to; pinned it is a
+       label sitting on top of the article, and past --_title-lines it starts
+       eating the reading area it is supposed to be labelling.
+
+       The -webkit- prefixed box is the only form of line-clamp with universal
+       support. The text stays whole in the DOM, so the accessible name and the
+       page's h1 are unaffected by what the box hides.
+
+       The end padding is for descenders: the clamp clips at the padding box, and
+       a g/y/j/q/p on the last line hangs below its line box, which a 1.12
+       line-height leaves no room for. In em so it tracks the responsive size. */
+    .hero.is-stuck .title,
+    .hero.is-stuck ::slotted([slot="title"]) {
+      display: -webkit-box;
       overflow: hidden;
+      padding-block-end: 0.16em;
       text-overflow: ellipsis;
       -webkit-box-orient: vertical;
       -webkit-line-clamp: var(--_title-lines);

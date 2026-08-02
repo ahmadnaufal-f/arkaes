@@ -20,7 +20,9 @@ hero — `--ark-project-header-chrome-clearance` (default `76px`, enough for the
 condensed nav bar and for ark-navigation's immersive floating row). Move the pin
 itself with `--ark-project-header-stick-top` (default `0px`).
 
-The title is clamped to `--ark-project-header-title-lines` (default `2`) and
-ellipsised past that, so a long one cannot grow the pinned header into the
-reading area. The text is untouched in the DOM — only the box is clipped — so
-the page's `h1` and its accessible name stay whole.
+While pinned, the title is clamped to `--ark-project-header-title-lines`
+(default `2`) and ellipsised past that, so a long one cannot grow the header
+into the reading area. Unpinned — at the top of the page, where the hero has
+room — it is never clamped and runs to as many lines as it needs. The text is
+untouched in the DOM either way, so the page's `h1` and its accessible name stay
+whole.
