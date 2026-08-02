@@ -83,6 +83,27 @@ const readConversation = (): StoredConversation | null => {
   }
 };
 
+/** Fallback morph duration (ms) when the motion token cannot be read. */
+const MORPH_DURATION_FALLBACK_MS = 420;
+
+/**
+ * How far past the panel's border box the morph's final clip reaches. The clip
+ * is what gives the growing shape its silhouette, and it cuts the panel's drop
+ * shadow along with everything else — landing on `inset(0)` would slice the
+ * shadow off and then pop it back the moment the clip is released. Ending
+ * outside the box leaves the shadow intact through the hand-off.
+ */
+const MORPH_SHADOW_BLEED_PX = 80;
+
+/** Parse a CSS time token ("0.22s", "220ms") to milliseconds. */
+const readDurationMs = (value: string, fallback: number): number => {
+  const raw = value.trim();
+  const parsed = Number.parseFloat(raw);
+  if (!Number.isFinite(parsed)) return fallback;
+  const ms = raw.endsWith("ms") ? parsed : raw.endsWith("s") ? parsed * 1000 : NaN;
+  return Number.isFinite(ms) && ms > 0 ? ms : fallback;
+};
+
 /**
  * The assistant mark: a large four-pointed star with a small one tucked against
  * its shoulder. Each point is drawn as a quadratic curve pulling back through
@@ -124,6 +145,15 @@ const sparkMark = () => html`
  * `docked` to hand the launcher's placement to a parent instead — the widget is
  * then an in-flow box the size of its launcher, which is what lets it sit in
  * `ark-floating-action-container`.
+ *
+ * Opening and closing morphs the launcher into the panel and back: the pill
+ * travels to the panel's box and grows into it while the contents cross-fade
+ * (see `_startMorph`). It is skipped under `prefers-reduced-motion: reduce`,
+ * where a browser cannot animate, and whenever the two boxes cannot be
+ * measured — all of which fall back to the plain cross-fade. `no-morph` opts
+ * out for good.
+ *
+ * @attr no-morph - Skip the open/close morph; cross-fade instead.
  */
 export class ArkChatbot extends LitElement {
   static override properties = {
@@ -135,6 +165,7 @@ export class ArkChatbot extends LitElement {
     suggestions: { type: Array },
     launcherLabel: { attribute: "launcher-label", type: String },
     docked: { reflect: true, type: Boolean },
+    noMorph: { attribute: "no-morph", type: Boolean },
     open: { reflect: true, type: Boolean },
     _messages: { state: true },
     _draft: { state: true },
@@ -169,6 +200,12 @@ export class ArkChatbot extends LitElement {
    * clears the dock.
    */
   docked = false;
+  /**
+   * Opt out of the open/close morph and fall back to the plain cross-fade.
+   * Negative form because a boolean attribute defaulting to `true` cannot be
+   * switched off from HTML.
+   */
+  noMorph = false;
   /** Whether the panel is open. */
   open = false;
 
@@ -177,6 +214,8 @@ export class ArkChatbot extends LitElement {
   private _pending = false;
   private _error = "";
   private _hasOpened = false;
+  /** Animations owned by the morph currently in flight, if any. */
+  private _morphAnimations: Animation[] = [];
 
   static override styles = css`
     :host {
@@ -403,6 +442,34 @@ export class ArkChatbot extends LitElement {
         opacity var(--ark-duration-normal) var(--ark-ease-standard),
         transform var(--ark-duration-normal) var(--ark-ease-emphasized),
         visibility var(--ark-duration-normal) step-start;
+      visibility: visible;
+    }
+
+    /* ── Morph ─────────────────────────────────────────────────────────────
+       While the launcher is being animated into the panel, both elements' own
+       open/close styling has to stand down. Otherwise the launcher blinks out
+       on the first frame (visibility is a discrete property, it cannot fade)
+       and the panel's resting transform composes with the one the morph is
+       animating. Neutralising the transform is also what makes the panel's
+       measured rect its true resting box — see _startMorph, which sets this
+       attribute before it measures.
+
+       Keyframes take over both elements for the duration; nothing here
+       animates, so a morph that is cancelled mid-flight simply hands back to
+       the CSS above. */
+    :host([morphing]) .launcher {
+      opacity: 1;
+      /* The launcher is a ghost mid-morph — the panel is the live surface. */
+      pointer-events: none;
+      transform: none;
+      transition: none;
+      visibility: visible;
+    }
+
+    :host([morphing]) .panel {
+      opacity: 1;
+      transform: none;
+      transition: none;
       visibility: visible;
     }
 
@@ -903,6 +970,13 @@ export class ArkChatbot extends LitElement {
     this._restoreConversation();
   }
 
+  override disconnectedCallback() {
+    // A morph left running would hold the elements at a mid-flight clip if the
+    // widget is re-attached (a client-side navigation moving it, say).
+    this._cancelMorph();
+    super.disconnectedCallback();
+  }
+
   /**
    * Rehydrate the transcript, draft, and open state from sessionStorage. Only a
    * fresh instance is hydrated: if this element already holds messages (e.g. it
@@ -944,7 +1018,134 @@ export class ArkChatbot extends LitElement {
     }
   }
 
+  /**
+   * Morph the launcher into the panel (and back): the pill travels to the
+   * panel's box and grows into it while the contents cross-fade — the
+   * container-transform idea, so the panel reads as the launcher expanding
+   * rather than as a new surface appearing.
+   *
+   * The shape is a `clip-path` window rather than a scale, so the panel's text
+   * is revealed at its final size instead of being stretched through the
+   * motion, and nothing inside the panel is laid out more than once.
+   *
+   * Deliberately not the View Transition API, though that is the obvious tool
+   * for a morph: it cannot capture elements inside a shadow root — the name
+   * computes but no snapshot is taken, so no group is generated and nothing
+   * animates. It would also snapshot and freeze the whole host page for the
+   * duration, and collide with any view transition the host app runs of its
+   * own (a router's, say), since only one can be live per document.
+   *
+   * Returns false when it cannot run, leaving the caller on the CSS
+   * cross-fade.
+   */
+  private _startMorph(open: boolean): boolean {
+    if (this.noMorph) return false;
+    if (typeof Element === "undefined" || !Element.prototype.animate) return false;
+    // Under reduced motion the cross-fade already collapses to 1ms via the
+    // duration tokens; a morph would be exactly the sweeping motion the
+    // preference asks us not to make.
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
+      return false;
+    }
+
+    const launcher = this.renderRoot.querySelector<HTMLElement>(".launcher");
+    const panel = this.renderRoot.querySelector<HTMLElement>(".panel");
+    if (!launcher || !panel) return false;
+
+    this._cancelMorph();
+    // Set before measuring: the attribute zeroes the panel's resting transform,
+    // which getBoundingClientRect would otherwise bake into the geometry.
+    this.toggleAttribute("morphing", true);
+
+    const from = launcher.getBoundingClientRect();
+    const to = panel.getBoundingClientRect();
+    // Nothing to interpolate if either box is unrendered (a DOM shim, or a
+    // display:none ancestor) — hand back to the cross-fade.
+    if (!from.width || !from.height || !to.width || !to.height) {
+      this.toggleAttribute("morphing", false);
+      return false;
+    }
+
+    const style = getComputedStyle(panel);
+    // The slow token, not the normal one the cross-fade uses: this surface
+    // travels the height of the dock and grows from a pill to most of the
+    // screen, and at 220ms it is over before the eye can follow the shape.
+    const duration = readDurationMs(
+      style.getPropertyValue("--ark-duration-slow"),
+      MORPH_DURATION_FALLBACK_MS,
+    );
+    // Standard rather than emphasized: the emphasized curve overshoots, which
+    // on a clip-path reads as the panel snapping past its own edges.
+    const easing =
+      style.getPropertyValue("--ark-ease-standard").trim() ||
+      "cubic-bezier(0.2, 0, 0, 1)";
+
+    // The panel is centred on the launcher and clipped to a launcher-sized
+    // window at the start; both are released as it lands.
+    const collapsed = {
+      translate: `${from.left + from.width / 2 - (to.left + to.width / 2)}px ${
+        from.top + from.height / 2 - (to.top + to.height / 2)
+      }px`,
+      clipPath: `inset(${Math.max(0, (to.height - from.height) / 2)}px ${Math.max(
+        0,
+        (to.width - from.width) / 2,
+      )}px round ${Math.min(from.width, from.height) / 2}px)`,
+    };
+    const expanded = {
+      translate: "0px 0px",
+      clipPath: `inset(${-MORPH_SHADOW_BLEED_PX}px round ${style.borderRadius})`,
+    };
+
+    const shape = open ? [collapsed, expanded] : [expanded, collapsed];
+    // The launcher clears out early on the way in and returns late on the way
+    // out, so the two surfaces are never both solid at the same moment.
+    const fade = open ? [{ opacity: 1 }, { opacity: 0 }] : [{ opacity: 0 }, { opacity: 1 }];
+    const contents = open ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 1 }, { opacity: 0 }];
+
+    this._morphAnimations = [
+      panel.animate(shape, { duration, easing, fill: "both" }),
+      launcher.animate(fade, {
+        duration: duration * 0.45,
+        delay: open ? 0 : duration * 0.55,
+        easing,
+        fill: "both",
+      }),
+      ...Array.from(panel.children).map((child) =>
+        child.animate(contents, {
+          duration: duration * 0.6,
+          delay: open ? duration * 0.4 : 0,
+          easing,
+          fill: "both",
+        }),
+      ),
+    ];
+
+    const running = this._morphAnimations;
+    void Promise.allSettled(running.map((animation) => animation.finished)).then(
+      () => {
+        // A morph started since this one owns the element now.
+        if (this._morphAnimations !== running) return;
+        this._cancelMorph();
+      },
+    );
+    return true;
+  }
+
+  /**
+   * Drop any in-flight morph and hand both elements back to the CSS, which
+   * already describes the resting state for whatever `open` currently is.
+   */
+  private _cancelMorph() {
+    this._morphAnimations.forEach((animation) => animation.cancel());
+    this._morphAnimations = [];
+    this.toggleAttribute("morphing", false);
+  }
+
   private _toggle(open: boolean) {
+    // Started before the state change and synchronously with it, so the first
+    // frame after the toggle is already mid-morph rather than showing the
+    // panel at rest.
+    this._startMorph(open);
     this.open = open;
     if (open) {
       if (!this._hasOpened) {
