@@ -53,7 +53,7 @@ export const EXPERTISE: ExpertiseArea[] = [
     description:
       "I build reusable UI systems that help teams ship consistent interfaces faster, with attention to accessibility, design tokens, variants, component APIs, and documentation.",
     techStack: ["React", "Lit", "Web Components", "Storybook", "Tailwind CSS", "Figma", "Design Tokens"],
-    relatedWork: ["Arkaes Design System", "Internal React Design System"],
+    relatedWork: ["Arkaes Design System", "OneUX Lab"],
   },
   {
     slug: "performance",
