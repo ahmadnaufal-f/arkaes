@@ -104,6 +104,9 @@
   letter-spacing: var(--ark-letter-spacing-mono);
 }
 
+/* ark-carousel host. Its track is display: contents while the carousel is
+   inactive, so these rules lay out the cards directly — and they already do so
+   in the server-rendered HTML, before the element upgrades. */
 .projects-grid {
   background: var(--ark-color-border);
   display: grid;
@@ -118,10 +121,6 @@
 
 .project-card {
   width: 100%;
-}
-
-.carousel-nav {
-  display: none;
 }
 
 .section-cta {
@@ -328,7 +327,7 @@
   gap: var(--ark-space-4);
   grid-template-columns: repeat(3, minmax(min(100%, 280px), 1fr));
 
-  /* Only one step down before the 900px carousel takes over below. */
+  /* Only one step down before the carousel takes over at 900px. */
   @media (max-width: 1000px) {
     grid-template-columns: repeat(2, minmax(min(100%, 280px), 1fr));
   }
@@ -344,6 +343,38 @@
   height: var(--thumbnail-height, 200px);
   object-fit: cover;
   width: 100%;
+}
+
+/* ── Carousel mode ────────────────────────────────────────────
+   Both grids are ark-carousel hosts. The element reflects `active` at or below
+   its breakpoint (900px, set in index.astro), which is the switch these rules
+   hang off — the strip itself, its scroll snapping and its arrow nav come from
+   the component. All that is left here is releasing the desktop grid and
+   sizing the slides for the phone. */
+
+.projects-grid[active],
+.writing-grid[active] {
+  --ark-carousel-gap: 12px;
+
+  /* One slide per snapport: 100% is the track's content box, so a slide is
+     always a real snap target. A viewport-relative width wide enough to bleed
+     past that box turns snapping into a range and the strip stops landing on
+     card edges — see the max-width note in ark-carousel. */
+  --ark-carousel-item-width: 100%;
+  --ark-carousel-padding-inline: 20px;
+
+  background: transparent;
+  display: block;
+}
+
+/* Desktop sets per-card thumbnail heights from the grid rows; in the strip
+   every card is the same size. */
+.projects-grid[active] > .project-card:first-child,
+.projects-grid[active] > .project-card:not(:first-child),
+.writing-grid[active] > .writing-card {
+  --thumbnail-height: 280px;
+
+  grid-row: auto;
 }
 
 .about-strip {
@@ -753,124 +784,6 @@
 
   .section-count {
     margin-top: 18px;
-  }
-
-  /* ── Mobile carousel ─────────────────────────────────────── */
-
-  .projects-carousel {
-    overflow: hidden;
-  }
-
-  .projects-grid {
-    background: transparent;
-    display: flex;
-    gap: 12px;
-    grid-template-columns: unset;
-    grid-template-rows: unset;
-    overflow-x: hidden;
-    padding-bottom: 4px;
-    padding-inline: 20px;
-    scroll-behavior: smooth;
-    scroll-snap-type: x mandatory;
-    scrollbar-width: none;
-  }
-
-  .projects-grid::-webkit-scrollbar {
-    display: none;
-  }
-
-  .projects-grid > .project-card:first-child {
-    grid-row: auto;
-  }
-
-  .project-card {
-    flex: 0 0 calc(100vw - 56px);
-    scroll-snap-align: start;
-    width: unset;
-  }
-
-  .projects-grid {
-    --thumbnail-height: 280px;
-  }
-
-  /* Reset per-card desktop heights */
-  .projects-grid > .project-card:first-child,
-  .projects-grid > .project-card:not(:first-child) {
-    --thumbnail-height: 280px;
-  }
-
-  /* ── Latest writing carousel ─────────────────────────────
-     Same treatment as the case-study strip above: the grid becomes a
-     scroll-snapped flex track driven by the shared carousel nav. */
-
-  .writing-carousel {
-    overflow: hidden;
-  }
-
-  .writing-grid {
-    --thumbnail-height: 280px;
-
-    display: flex;
-    gap: 12px;
-    grid-template-columns: unset;
-    overflow-x: hidden;
-    padding-bottom: 4px;
-    padding-inline: 20px;
-    scroll-behavior: smooth;
-    scroll-snap-type: x mandatory;
-    scrollbar-width: none;
-  }
-
-  .writing-grid::-webkit-scrollbar {
-    display: none;
-  }
-
-  .writing-card {
-    flex: 0 0 calc(100vw - 56px);
-    scroll-snap-align: start;
-    width: unset;
-  }
-
-  .carousel-nav {
-    align-items: center;
-    display: flex;
-    gap: 20px;
-    justify-content: center;
-    padding-top: 20px;
-  }
-
-  .carousel-nav-btn {
-    align-items: center;
-    background: transparent;
-    border: 1px solid var(--ark-color-border);
-    border-radius: 50%;
-    color: var(--ark-color-text-muted);
-    cursor: pointer;
-    display: flex;
-    font-size: 14px;
-    height: 36px;
-    justify-content: center;
-    transition: border-color var(--ark-duration-fast), color var(--ark-duration-fast);
-    width: 36px;
-  }
-
-  .carousel-nav-btn:hover:not(:disabled) {
-    border-color: var(--ark-color-accent);
-    color: var(--ark-color-accent-strong);
-  }
-
-  .carousel-nav-btn:disabled {
-    cursor: default;
-    opacity: 0.3;
-  }
-
-  .carousel-nav-indicator {
-    color: var(--ark-color-text-subtle);
-    font-family: var(--ark-font-mono);
-    font-size: 0.7rem;
-    letter-spacing: 0.1em;
-    min-width: 48px;
-    text-align: center;
   }
 
   .techstack-row {

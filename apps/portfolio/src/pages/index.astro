@@ -26,6 +26,11 @@ import {
 // refreshes it through /api/revalidate rather than waiting on a redeploy.
 export const prerender = false;
 
+// Width at which the case-study and latest-writing grids become carousels.
+// ark-carousel owns the switch (it reflects `active`), so _index.css keys its
+// carousel-mode rules off that attribute rather than repeating the media query.
+const MOBILE_CAROUSEL_BREAKPOINT = 900;
+
 const CARD_ORDER = ["virtual-home", "virtual-home-tv", "milk-tracker", "air-care"];
 const getOrder = (id: string) => { const i = CARD_ORDER.indexOf(id); return i === -1 ? Infinity : i; };
 
@@ -162,12 +167,20 @@ const jsonLd = [
       <div class="section-count">{String(featuredStudies.length).padStart(2, "0")} / Selected</div>
     </div>
 
-    <div class="projects-carousel" data-carousel>
-    <div class="projects-grid reveal reveal-delay-1" data-carousel-track>
+    {/* Grid on desktop, carousel under 900px — see MOBILE_CAROUSEL_BREAKPOINT.
+        ark-carousel's track is display: contents while inactive, so the grid
+        rules on .projects-grid apply straight to these cards, including in the
+        server-rendered HTML before the element upgrades. */}
+    <ark-carousel
+      class="projects-grid reveal reveal-delay-1"
+      breakpoint={MOBILE_CAROUSEL_BREAKPOINT}
+      label="Case studies"
+      prev-label="Previous case study"
+      next-label="Next case study"
+    >
       {featuredStudies.map((study) => (
         <ark-media-card
           class="project-card"
-          data-carousel-item
           href={`/case-studies/${study.id}`}
           title={study.data.title}
         >
@@ -181,16 +194,7 @@ const jsonLd = [
           ))}
         </ark-media-card>
       ))}
-    </div>
-
-    <div class="carousel-nav" aria-label="Case study navigation">
-      <button class="carousel-nav-btn" data-carousel-prev aria-label="Previous case study" disabled>&#8592;</button>
-      <span class="carousel-nav-indicator" aria-live="polite">
-        <span data-carousel-current>01</span> / {String(featuredStudies.length).padStart(2, "0")}
-      </span>
-      <button class="carousel-nav-btn" data-carousel-next aria-label="Next case study">&#8594;</button>
-    </div>
-    </div>
+    </ark-carousel>
 
     <div class="section-cta reveal">
       <ark-button class="section-cta-accent" href="/case-studies" variant="primary">
@@ -203,63 +207,6 @@ const jsonLd = [
       </ark-button>
     </div>
   </section>
-
-  <script>
-    // Drives every mobile carousel on the page — the case-study grid and the
-    // latest-writing grid both collapse into the same button-driven, scroll-
-    // snapped strip under 900px. Scoped per [data-carousel] root rather than
-    // querying the document, so the two never bind to each other's controls.
-    // CSS owns the breakpoint: isActive() reads whether the nav is displayed.
-    function initCarousel(root: HTMLElement) {
-      const track = root.querySelector<HTMLElement>("[data-carousel-track]");
-      const prevBtn = root.querySelector<HTMLButtonElement>("[data-carousel-prev]");
-      const nextBtn = root.querySelector<HTMLButtonElement>("[data-carousel-next]");
-      const currentEl = root.querySelector<HTMLElement>("[data-carousel-current]");
-      if (!track || !prevBtn || !nextBtn || !currentEl) return;
-
-      const cards = Array.from(track.querySelectorAll<HTMLElement>("[data-carousel-item]"));
-      const total = cards.length;
-      if (total === 0) return;
-      let current = 0;
-
-      const isActive = () => window.getComputedStyle(prevBtn).display !== "none";
-
-      const updateNav = () => {
-        currentEl.textContent = String(current + 1).padStart(2, "0");
-        prevBtn.disabled = current === 0;
-        nextBtn.disabled = current === total - 1;
-      };
-
-      const goTo = (index: number) => {
-        current = Math.max(0, Math.min(total - 1, index));
-        cards[current].scrollIntoView({ behavior: "smooth", block: "nearest", inline: "start" });
-        updateNav();
-      };
-
-      let scrollTimer: ReturnType<typeof setTimeout>;
-      track.addEventListener("scroll", () => {
-        if (!isActive()) return;
-        clearTimeout(scrollTimer);
-        scrollTimer = setTimeout(() => {
-          const trackLeft = track.getBoundingClientRect().left;
-          let closest = 0;
-          let closestDist = Infinity;
-          cards.forEach((card, i) => {
-            const dist = Math.abs(card.getBoundingClientRect().left - trackLeft);
-            if (dist < closestDist) { closestDist = dist; closest = i; }
-          });
-          if (closest !== current) { current = closest; updateNav(); }
-        }, 80);
-      }, { passive: true });
-
-      prevBtn.addEventListener("click", () => { if (isActive()) goTo(current - 1); });
-      nextBtn.addEventListener("click", () => { if (isActive()) goTo(current + 1); });
-
-      updateNav();
-    }
-
-    document.querySelectorAll<HTMLElement>("[data-carousel]").forEach(initCarousel);
-  </script>
 
   <section class="services-section" id="expertise">
     <div class="section-header reveal">
@@ -382,10 +329,15 @@ const jsonLd = [
         <div class="section-count">{String(latestPosts.length).padStart(2, "0")} / Recent</div>
       </div>
 
-      <div class="writing-carousel" data-carousel>
-      <div class="writing-grid reveal reveal-delay-1" data-carousel-track>
+      <ark-carousel
+        class="writing-grid reveal reveal-delay-1"
+        breakpoint={MOBILE_CAROUSEL_BREAKPOINT}
+        label="Latest writing"
+        prev-label="Previous post"
+        next-label="Next post"
+      >
         {latestPosts.map((post) => (
-          <div class="writing-card" data-carousel-item>
+          <div class="writing-card">
             <ark-media-card
               category={post.category}
               datetime={post.publishDate.toISOString()}
@@ -412,16 +364,7 @@ const jsonLd = [
             </ark-media-card>
           </div>
         ))}
-      </div>
-
-      <div class="carousel-nav" aria-label="Latest writing navigation">
-        <button class="carousel-nav-btn" data-carousel-prev aria-label="Previous post" disabled>&#8592;</button>
-        <span class="carousel-nav-indicator" aria-live="polite">
-          <span data-carousel-current>01</span> / {String(latestPosts.length).padStart(2, "0")}
-        </span>
-        <button class="carousel-nav-btn" data-carousel-next aria-label="Next post">&#8594;</button>
-      </div>
-      </div>
+      </ark-carousel>
 
       <div class="section-cta reveal">
         <ark-button class="section-cta-accent" href="/blog" variant="primary">
