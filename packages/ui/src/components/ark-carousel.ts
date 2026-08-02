@@ -49,7 +49,8 @@ const arrow = (d: string) => html`
  * Events:
  *   ark-carousel:change — bubbles, composed. detail: { index: number, total: number }
  *
- * CSS custom properties:
+ * CSS custom properties (item width is measured against the track's content box
+ * and clamped to it, so every slide stays a snap target):
  *   --ark-carousel-item-width     (default: calc(100% - var(--ark-space-8)))
  *   --ark-carousel-gap            (default: var(--ark-space-3))
  *   --ark-carousel-padding-inline (default: var(--ark-space-5))
@@ -194,6 +195,20 @@ export class ArkCarousel extends LitElement {
     :host([active]) ::slotted(*) {
       flex: 0 0 var(--ark-carousel-item-width, calc(100% - var(--ark-space-8)));
       scroll-snap-align: start;
+
+      /*
+       * A snap area wider than the snapport stops being a snap *position* and
+       * becomes a snap *range* (CSS Scroll Snap §4.1): every offset where the
+       * slide covers the snapport counts as snapped, so a swipe rests wherever
+       * the finger lifts instead of landing on the slide edge. Percentages here
+       * resolve against the track's content box, which is narrower than the
+       * snapport, so this clamp keeps every slide a real snap target however
+       * --ark-carousel-item-width is set.
+       */
+      max-width: 100%;
+
+      /* One swipe, one slide — matching what the arrows do. */
+      scroll-snap-stop: always;
     }
 
     .nav {
@@ -405,6 +420,21 @@ export class ArkCarousel extends LitElement {
   }
 
   /**
+   * Distance from the track's border-box start edge to the start edge of the
+   * snapport — the border, plus the scroll padding the browser aligns
+   * `scroll-snap-align: start` against. Targeting this rather than the track's
+   * own padding is what makes a button land exactly where a swipe settles, even
+   * if a consumer sets scroll-padding independently of padding.
+   */
+  private _snapportOffset(track: HTMLElement): number {
+    const style = getComputedStyle(track);
+    const border = parseFloat(style.borderInlineStartWidth) || 0;
+    // `auto` (the initial value) means the snapport is the whole scrollport.
+    const scrollPadding = parseFloat(style.scrollPaddingInlineStart);
+    return border + (Number.isNaN(scrollPadding) ? 0 : scrollPadding);
+  }
+
+  /**
    * Scrolls the track itself rather than calling scrollIntoView on the item,
    * which would also scroll every ancestor — including the page — to bring the
    * strip into view.
@@ -414,13 +444,11 @@ export class ArkCarousel extends LitElement {
     const item = this._items[index];
     if (!track || !item) return;
 
-    const padStart =
-      parseFloat(getComputedStyle(track).paddingInlineStart) || 0;
     const left =
       item.getBoundingClientRect().left -
       track.getBoundingClientRect().left +
       track.scrollLeft -
-      padStart;
+      this._snapportOffset(track);
 
     const mode =
       behavior ?? (this._prefersReducedMotion() ? "auto" : "smooth");
@@ -438,9 +466,8 @@ export class ArkCarousel extends LitElement {
     this._scrollTimer = setTimeout(() => {
       const track = this._track;
       if (!track) return;
-      const padStart =
-        parseFloat(getComputedStyle(track).paddingInlineStart) || 0;
-      const origin = track.getBoundingClientRect().left + padStart;
+      const origin =
+        track.getBoundingClientRect().left + this._snapportOffset(track);
 
       let closest = 0;
       let closestDistance = Infinity;

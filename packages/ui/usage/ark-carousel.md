@@ -35,10 +35,18 @@ before the element upgrades.
 /* Carousel mode — tune the strip through the component's custom properties. */
 .work-grid[active] {
   display: block;
-  --ark-carousel-item-width: calc(100vw - 56px);
+  --ark-carousel-item-width: 100%;
   --ark-carousel-gap: 12px;
 }
 ```
+
+`--ark-carousel-item-width` is measured against the track's content box, so
+`100%` is one slide per view and smaller values let the next slide peek. Slides
+are clamped to that box: a snap area wider than the snapport stops being a snap
+position and becomes a snap *range*, which leaves swipes resting between slides
+instead of on a slide edge. Reach past the box — a viewport-relative width, say
+— and the clamp holds the strip snapping cleanly rather than honouring the
+width.
 
 The `active` attribute is reflected while the carousel is engaged, so CSS can
 branch on mode without repeating the breakpoint. Listen for

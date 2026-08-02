@@ -355,7 +355,12 @@
 .projects-grid[active],
 .writing-grid[active] {
   --ark-carousel-gap: 12px;
-  --ark-carousel-item-width: calc(100vw - 56px);
+
+  /* One slide per snapport: 100% is the track's content box, so a slide is
+     always a real snap target. A viewport-relative width wide enough to bleed
+     past that box turns snapping into a range and the strip stops landing on
+     card edges — see the max-width note in ark-carousel. */
+  --ark-carousel-item-width: 100%;
   --ark-carousel-padding-inline: 20px;
 
   background: transparent;
