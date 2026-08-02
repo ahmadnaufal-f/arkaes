@@ -1,4 +1,4 @@
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, type PropertyValues } from "lit";
 import { defineElement } from "../define-element";
 
 /**
@@ -10,6 +10,9 @@ import { defineElement } from "../define-element";
  *   expand-cursor-label / collapse-cursor-label (string) — wording for the
  *     ark-cursor label chip while the trigger is hovered (defaults "Expand" /
  *     "Collapse", picked by open state); inert when no cursor is mounted.
+ *   auto-scroll-when-expanded (boolean) — when the item opens, scroll the page
+ *     so the trigger sits at the top of the viewport. Set --accordion-scroll-margin
+ *     to clear a sticky header. Never fires for an item rendered open on load.
  *
  * Slots:
  *   trigger  — optional rich-text heading; falls back to the `heading` attribute.
@@ -23,6 +26,7 @@ import { defineElement } from "../define-element";
  *   --accordion-heading-size    (default: clamp(1.25rem, 2vw, 1.75rem))
  *   --accordion-duration        (default: 360ms)
  *   --accordion-body-padding    (default: 40px)
+ *   --accordion-scroll-margin   (default: 0px)
  *
  * @summary A single expandable accordion section.
  * @slot trigger - Optional rich-text heading; falls back to the `heading` attribute.
@@ -32,6 +36,8 @@ import { defineElement } from "../define-element";
  * @cssprop [--accordion-heading-size=clamp(1.25rem, 2vw, 1.75rem)] - Heading font size.
  * @cssprop [--accordion-duration=360ms] - Expand/collapse animation duration.
  * @cssprop [--accordion-body-padding=40px] - Padding around the body content.
+ * @cssprop [--accordion-scroll-margin=0px] - Gap left above the trigger when
+ *   `auto-scroll-when-expanded` scrolls it to the top — size it to a sticky header.
  */
 export class ArkAccordionItem extends LitElement {
   static override properties = {
@@ -39,19 +45,35 @@ export class ArkAccordionItem extends LitElement {
     open: { type: Boolean, reflect: true },
     expandCursorLabel: { type: String, attribute: "expand-cursor-label" },
     collapseCursorLabel: { type: String, attribute: "collapse-cursor-label" },
+    autoScrollWhenExpanded: {
+      type: Boolean,
+      reflect: true,
+      attribute: "auto-scroll-when-expanded",
+    },
   };
 
+  /**
+   * How far (px) the trigger may already sit from its scroll target before an
+   * auto-scroll is worth doing — keeps a sub-pixel offset from nudging the page.
+   */
+  private static readonly SCROLL_TOLERANCE_PX = 2;
+
   private _uid = `ark-acc-${Math.random().toString(36).slice(2, 9)}`;
+  private _hasCompletedFirstUpdate = false;
+  private _realignScrollOnSettle = false;
 
   heading = "";
   open = false;
   expandCursorLabel = "Expand";
   collapseCursorLabel = "Collapse";
+  autoScrollWhenExpanded = false;
 
   static override styles = css`
     :host {
       border-bottom: 1px solid var(--ark-color-border);
       display: block;
+      /* Honoured by scrollIntoView() when auto-scroll-when-expanded is on. */
+      scroll-margin-top: var(--accordion-scroll-margin, 0px);
     }
 
     .trigger {
@@ -126,6 +148,53 @@ export class ArkAccordionItem extends LitElement {
     }
   `;
 
+  override updated(changed: PropertyValues) {
+    const isFirstUpdate = !this._hasCompletedFirstUpdate;
+    this._hasCompletedFirstUpdate = true;
+
+    // An item rendered `open` on load reaches this in its first update; scrolling
+    // then would yank the viewport away from the top of the page on arrival.
+    if (isFirstUpdate || !changed.has("open")) return;
+    if (!this.open || !this.autoScrollWhenExpanded) return;
+
+    this._scrollTriggerToTop();
+    // The body reveal animates over --accordion-duration, and in type="single" a
+    // sibling above may be collapsing across the same window — either shifts this
+    // trigger while the scroll above is in flight, so re-align once it settles.
+    this._realignScrollOnSettle = true;
+  }
+
+  /**
+   * Bring the trigger to the top of its scrollport, unless it is already there.
+   * `scroll-margin-top` (via --accordion-scroll-margin) offsets the landing spot,
+   * and is measured here so the "already there" test agrees with the browser.
+   */
+  private _scrollTriggerToTop() {
+    const distanceFromTarget =
+      this.getBoundingClientRect().top -
+      (parseFloat(getComputedStyle(this).scrollMarginTop) || 0);
+    const tolerance = ArkAccordionItem.SCROLL_TOLERANCE_PX;
+    if (Math.abs(distanceFromTarget) <= tolerance) return;
+
+    this.scrollIntoView({
+      block: "start",
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? "auto"
+        : "smooth",
+    });
+  }
+
+  private _handleBodyTransitionEnd = (event: TransitionEvent) => {
+    if (event.target !== event.currentTarget) return;
+    if (event.propertyName !== "grid-template-rows") return;
+    if (!this._realignScrollOnSettle) return;
+
+    this._realignScrollOnSettle = false;
+    // A quick open → close leaves the flag set for a collapse transition; the
+    // item the user ended up on is closed, so there is nothing to scroll to.
+    if (this.open) this._scrollTriggerToTop();
+  };
+
   private _toggle() {
     this.open = !this.open;
     this.dispatchEvent(
@@ -179,6 +248,7 @@ export class ArkAccordionItem extends LitElement {
         class="body-clip"
         role="region"
         aria-labelledby=${triggerId}
+        @transitionend=${this._handleBodyTransitionEnd}
       >
         <div class="body-min">
           <div class="body-content">
@@ -195,13 +265,25 @@ export class ArkAccordionItem extends LitElement {
  *
  * Attributes:
  *   type ("multiple" | "single") — "single" closes other items when one opens.
+ *   auto-scroll-when-expanded (boolean) — opt every item in to scrolling its
+ *     trigger to the top of the viewport when it opens. Purely additive: an item
+ *     can set the attribute on itself, and this never switches one back off.
+ *
+ * @summary Optional accordion root that coordinates its items.
+ * @slot - The `ark-accordion-item` children.
  */
 export class ArkAccordion extends LitElement {
   static override properties = {
     type: { type: String, reflect: true },
+    autoScrollWhenExpanded: {
+      type: Boolean,
+      reflect: true,
+      attribute: "auto-scroll-when-expanded",
+    },
   };
 
   type: "multiple" | "single" = "multiple";
+  autoScrollWhenExpanded = false;
 
   static override styles = css`
     :host {
@@ -220,6 +302,20 @@ export class ArkAccordion extends LitElement {
     super.disconnectedCallback();
   }
 
+  override updated(changed: PropertyValues) {
+    if (changed.has("autoScrollWhenExpanded")) this._syncAutoScroll();
+  }
+
+  // Also runs on slotchange, so items added later inherit the root's setting.
+  private _syncAutoScroll = () => {
+    if (!this.autoScrollWhenExpanded) return;
+    this.querySelectorAll<ArkAccordionItem>("ark-accordion-item").forEach(
+      (item) => {
+        item.autoScrollWhenExpanded = true;
+      },
+    );
+  };
+
   private _handleToggle = (e: Event) => {
     if (this.type !== "single") return;
     const opened = e.target as ArkAccordionItem;
@@ -232,7 +328,7 @@ export class ArkAccordion extends LitElement {
   };
 
   override render() {
-    return html`<slot></slot>`;
+    return html`<slot @slotchange=${this._syncAutoScroll}></slot>`;
   }
 }
 

@@ -3,6 +3,21 @@ import { when } from "lit/directives/when.js";
 import { defineElement } from "../define-element";
 
 /**
+ * Custom property published on `:root` carrying the viewport-relative bottom
+ * edge of the pinned hero (`0px` while it is not pinned). Page CSS offsets
+ * in-page scrolling against it — see `_publishPinnedBottom`.
+ */
+const PINNED_BOTTOM_PROP = "--ark-project-header-pinned-bottom";
+
+/**
+ * The header that last wrote {@link PINNED_BOTTOM_PROP}. A page has one header,
+ * but ClientRouter navigations overlap two — the incoming one publishes while the
+ * outgoing one is still mounted, and without this the outgoing teardown would
+ * clear the value its replacement had just written.
+ */
+let pinnedBottomOwner: ArkProjectHeader | null = null;
+
+/**
  * ArkProjectHeader is the hero header shown at the top of a case study or
  * project detail page. A meta column (eyebrow, tags, title) sits beside a large
  * faded visual watermark.
@@ -16,6 +31,10 @@ import { defineElement } from "../define-element";
  * containing block is the page ancestor (e.g. `.cs-page`) rather than the host
  * box, letting it stay pinned across the whole article. The stick offset is
  * configurable via the `--ark-project-header-stick-top` custom property.
+ *
+ * While pinned it publishes its bottom edge on `:root` as
+ * `--ark-project-header-pinned-bottom` (`0px` when not pinned) so page CSS can
+ * keep in-page scrolling clear of it.
  *
  * @summary Sticky project / case-study header.
  * @slot visual - The page thumbnail / watermark visual.
@@ -37,6 +56,8 @@ export class ArkProjectHeader extends LitElement {
   private _visualEl: HTMLElement | null = null;
   private _stuck = false;
   private _ticking = false;
+  private _heroResize: ResizeObserver | null = null;
+  private _publishedPinnedBottom = -1;
 
   static override styles = css`
     :host {
@@ -211,6 +232,13 @@ export class ArkProjectHeader extends LitElement {
   override disconnectedCallback() {
     window.removeEventListener("scroll", this._onScroll);
     this._restoreScrollAnchoring();
+    this._heroResize?.disconnect();
+    this._heroResize = null;
+    if (pinnedBottomOwner === this) {
+      document.documentElement.style.removeProperty(PINNED_BOTTOM_PROP);
+      pinnedBottomOwner = null;
+    }
+    this._publishedPinnedBottom = -1;
     this._sentinel = null;
     this._hero = null;
     super.disconnectedCallback();
@@ -225,8 +253,41 @@ export class ArkProjectHeader extends LitElement {
     this._disableScrollAnchoring();
     window.removeEventListener("scroll", this._onScroll);
     window.addEventListener("scroll", this._onScroll, { passive: true });
+
+    // Scrolling alone doesn't tell us the hero's height: it collapses over a
+    // transition once stuck, and reflows on resize or when the title rewraps.
+    // Observing it keeps the published edge honest between scroll frames.
+    this._heroResize?.disconnect();
+    this._heroResize = new ResizeObserver(this._publishPinnedBottom);
+    this._heroResize.observe(this._hero);
+
     this._update();
   }
+
+  /**
+   * Publish the pinned hero's bottom edge on `:root` so page CSS can scroll
+   * content clear of it — `ark-accordion`'s `auto-scroll-when-expanded` on a case
+   * study would otherwise park a trigger underneath the header. No stylesheet
+   * could hardcode this: the collapsed hero measures ~220px with the visual
+   * watermark, ~52px once the visual is dropped below 860px, and more again when
+   * the title wraps. `0px` while unpinned leaves consumers on their own floor.
+   */
+  private _publishPinnedBottom = () => {
+    if (!this._hero) return;
+    const bottom = this._stuck
+      ? Math.round(this._hero.getBoundingClientRect().bottom)
+      : 0;
+    if (bottom === this._publishedPinnedBottom && pinnedBottomOwner === this) {
+      return;
+    }
+
+    this._publishedPinnedBottom = bottom;
+    pinnedBottomOwner = this;
+    document.documentElement.style.setProperty(
+      PINNED_BOTTOM_PROP,
+      `${bottom}px`,
+    );
+  };
 
   // Collapsing the pinned hero shrinks its in-flow box above the viewport. With
   // native scroll anchoring on (the default), the browser would compensate by
@@ -278,6 +339,10 @@ export class ArkProjectHeader extends LitElement {
       this._visualEl?.style.removeProperty("--_visual-collapsed-h");
       this._hero.classList.remove("is-stuck");
     }
+
+    // Pinning is a position change, not a size change, so the ResizeObserver
+    // does not see it — publish from the scroll frame too.
+    this._publishPinnedBottom();
   };
 
   override render() {

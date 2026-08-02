@@ -216,7 +216,7 @@ const jsonLd = [
       </div>
     </div>
 
-    <ark-accordion class="services-list" type="single">
+    <ark-accordion class="services-list" type="single" auto-scroll-when-expanded>
       {services.map((service, index) => (
         <ark-accordion-item class={`service-item reveal${index > 0 ? ` reveal-delay-${index}` : ""}`}>
           <span slot="trigger" class="service-trigger">
