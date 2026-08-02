@@ -1,4 +1,10 @@
 .blog-page {
+  /* ark-project-header's 240px floor exists to give its slotted visual room.
+     A blog post slots no visual (the cover renders with the body instead — see
+     .blog-article-cover), so that floor became empty space between the title
+     and the article. Let the header size to its own content here. */
+  --ark-project-header-min-height: 0px;
+
   padding-bottom: 120px;
 }
 
@@ -23,7 +29,7 @@
    the padding from a narrow box and crush the text). The inner elements carry
    the reading measure — same split as .cs-accordion-section/-inner. */
 .blog-article {
-  padding: 80px var(--site-content-padding) 0;
+  padding: 48px var(--site-content-padding) 0;
 }
 
 .blog-article-date {
@@ -38,11 +44,26 @@
 
 /* Shiki (`css-variables` theme) palette, mapped onto the design tokens so
    code blocks follow the site theme instead of a hardcoded scheme.
+
+   The surface/foreground pair is `--astro-code-background` / `-foreground`.
+   Shiki's older `--astro-code-color-background` / `-color-text` spelling is
+   not what the rendered `<pre>`'s inline style references, so setting those
+   did nothing and left the block's background invalid — i.e. transparent.
    .ark-readable caps the body at --ark-measure-md and stays left-aligned, so
    the text starts on the same edge as the header title above it. */
 .blog-body {
-  --astro-code-color-text: var(--ark-color-text);
-  --astro-code-color-background: var(--ark-color-surface-soft);
+  /* Code surface: a step darker than --ark-color-surface-soft, which sits so
+     close to the page background that blocks read as unstyled prose. Mixed
+     from the tokens rather than hardcoded so it tracks a palette change.
+     A knob — retune here and both the Shiki blocks and any plain <pre> follow. */
+  --blog-code-surface: color-mix(
+    in srgb,
+    var(--ark-color-surface-soft) 92%,
+    var(--ark-color-neutral-900) 8%
+  );
+
+  --astro-code-foreground: var(--ark-color-text);
+  --astro-code-background: var(--blog-code-surface);
   --astro-code-token-constant: var(--ark-color-blush-deep);
   --astro-code-token-string: var(--ark-color-sage);
   --astro-code-token-comment: var(--ark-color-text-subtle);
@@ -63,6 +84,38 @@
 
 @media (max-width: 900px) {
   .blog-article {
-    padding-top: 56px;
+    padding-top: 36px;
   }
+}
+
+/* Shiki renders its own background through --astro-code-background (above);
+   this covers a plain <pre> that never went through the highlighter. */
+.blog-body pre {
+  background: var(--blog-code-surface);
+}
+
+/* Article headings in the display face. The .ark-readable defaults are the
+   sans stack at 300/600, which reads as body copy at heading sizes and left
+   the post title (Fraunces, from ark-project-header) looking unrelated to the
+   sections beneath it. Both classes are on the same element, so the doubled
+   class specificity is what wins over .ark-readable's own rules. */
+.blog-body.ark-readable :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--ark-font-display);
+  font-weight: var(--ark-weight-regular);
+}
+
+/* .ark-readable leans on weight to separate heading levels (300 for h1-h3,
+   600 for h4-h6) and leaves the sizes at the browser defaults. At a single
+   regular weight that separation is gone — an h4 at 1em would be body copy in
+   a different face — so the levels are stepped by size instead. */
+.blog-body.ark-readable h2 {
+  font-size: var(--ark-text-2xl);
+}
+
+.blog-body.ark-readable h3 {
+  font-size: var(--ark-text-xl);
+}
+
+.blog-body.ark-readable :is(h4, h5, h6) {
+  font-size: var(--ark-text-lg);
 }
