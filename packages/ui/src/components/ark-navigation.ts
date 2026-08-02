@@ -163,7 +163,7 @@ export class ArkNavigationRoot extends LitElement {
       --ark-nav-immersive-pill-radius: var(--ark-radius-full);
       --ark-nav-immersive-scrim: linear-gradient(
         to bottom,
-        rgba(0, 0, 0, 0.25),
+        rgba(0, 0, 0, 0.38),
         rgba(0, 0, 0, 0)
       );
       --ark-nav-immersive-hidden-shift: -8px;
@@ -249,14 +249,13 @@ export class ArkNavigationRoot extends LitElement {
       }
     }
 
-    /* Mid-scroll: the immersion steps aside, then settles back once the page
-       stops moving. Keyboard focus wins over it — tabbing through the header
-       scrolls the page, and a focused-but-invisible link is a trap. */
-    :host([immersive][immersive-hidden]:not([menu-open]):not(:focus-within)) {
-      & .scrim {
-        opacity: 0;
-      }
-
+    /* Mid-scroll only the pills step aside, then settle back once the page
+       stops moving. The scrim stays: it is what keeps the content legible as it
+       travels under the status area, so it has nothing to get out of the way
+       of. (Keyboard focus is handled in _syncImmersive, not here — a pointer
+       tap leaves focus on the button it hit, so a :focus-within guard would
+       latch on after the first tap of the hamburger.) */
+    :host([immersive][immersive-hidden]:not([menu-open])) {
       & ::slotted(ark-navigation-brand),
       & ::slotted(ark-navigation-mobile-toggle),
       & ::slotted(ark-navigation-cta) {
@@ -271,6 +270,7 @@ export class ArkNavigationRoot extends LitElement {
     super.connectedCallback();
     window.addEventListener("scroll", this._handleScroll, { passive: true });
     this.addEventListener("ark-nav:menu-toggle", this._handleMenuToggle);
+    this.addEventListener("focusin", this._handleFocusIn);
     this._setupViewportQuery();
     // Seed the baseline so a page restored mid-document doesn't read as a scroll.
     this._lastScrollY = window.scrollY;
@@ -280,6 +280,7 @@ export class ArkNavigationRoot extends LitElement {
   override disconnectedCallback() {
     window.removeEventListener("scroll", this._handleScroll);
     this.removeEventListener("ark-nav:menu-toggle", this._handleMenuToggle);
+    this.removeEventListener("focusin", this._handleFocusIn);
     this._teardownViewportQuery();
     this._clearSettleTimer();
     this._handleScrollLock(false);
@@ -356,9 +357,42 @@ export class ArkNavigationRoot extends LitElement {
 
     // The floating elements are only in the way while the page is actually
     // moving, so any scroll tucks them and the settle timer brings them back.
-    if (!moved) return;
+    // Tabbing through the header scrolls the page too, and hiding the control
+    // the focus ring is on would leave the keyboard user with nothing to look at.
+    if (!moved || this._hasKeyboardFocus()) return;
     this.immersiveHidden = true;
     this._restartSettleTimer();
+  }
+
+  /** Focus arriving by keyboard brings the pills straight back. */
+  private _handleFocusIn = () => {
+    if (this._hasKeyboardFocus()) this.immersiveHidden = false;
+  };
+
+  /**
+   * True only for focus the browser is actually drawing a ring for. A pointer
+   * tap leaves focus sitting on the button it hit, so testing plain :focus-within
+   * would latch on after the first tap of the hamburger and suppress the tuck
+   * away from then on.
+   */
+  private _hasKeyboardFocus(): boolean {
+    try {
+      if (!this.matches(":focus-within")) return false;
+      return this._deepActiveElement()?.matches(":focus-visible") ?? false;
+    } catch {
+      // A DOM shim may not know either selector; immersion is cosmetic, so the
+      // safe answer is "no focus to protect".
+      return false;
+    }
+  }
+
+  /** The innermost focused element, following focus down through shadow roots. */
+  private _deepActiveElement(): Element | null {
+    let active = document.activeElement;
+    while (active?.shadowRoot?.activeElement) {
+      active = active.shadowRoot.activeElement;
+    }
+    return active;
   }
 
   private _restartSettleTimer() {

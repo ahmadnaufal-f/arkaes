@@ -265,6 +265,32 @@ describe("ArkNavigationRoot immersive mode", () => {
     expect(root.immersiveHidden).toBe(false);
   });
 
+  it("still hides the floating elements after a menu open/close round trip", () => {
+    vi.useFakeTimers();
+    const { root } = mountRoot(true);
+    const toggle =
+      document.createElement("ark-navigation-mobile-toggle") as ArkNavigationMobileToggle;
+    root.appendChild(toggle);
+
+    scrollTo(NAV_HEIGHT + 200);
+    vi.advanceTimersByTime(200);
+
+    // Toggling through the mobile menu leaves focus on the button that was hit,
+    // which used to latch the header into a permanently-visible state.
+    toggle.dispatchEvent(
+      new CustomEvent("ark-nav:menu-toggle", { bubbles: true, composed: true }),
+    );
+    expect(root.menuOpen).toBe(true);
+    toggle.dispatchEvent(
+      new CustomEvent("ark-nav:menu-toggle", { bubbles: true, composed: true }),
+    );
+    expect(root.menuOpen).toBe(false);
+
+    scrollTo(NAV_HEIGHT + 400);
+
+    expect(root.immersiveHidden).toBe(true);
+  });
+
   it("drops immersive mode when the viewport grows past the breakpoint", () => {
     const { root, queries } = mountRoot(true);
 
