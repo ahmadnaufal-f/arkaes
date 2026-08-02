@@ -84,6 +84,26 @@ const readConversation = (): StoredConversation | null => {
 };
 
 /**
+ * The assistant mark: a large four-pointed star with a small one off its
+ * shoulder. Each point is drawn as four quadratic curves that pull back through
+ * the centre, which is what gives the star its concave waist.
+ */
+const sparkMark = () => html`
+  <svg
+    class="spark"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <path d="M10 6 Q10 14 18 14 Q10 14 10 22 Q10 14 2 14 Q10 14 10 6 Z" />
+    <path
+      d="M18.5 1 Q18.5 5.5 23 5.5 Q18.5 5.5 18.5 10 Q18.5 5.5 14 5.5 Q18.5 5.5 18.5 1 Z"
+    />
+  </svg>
+`;
+
+/**
  * ArkChatbot is a self-contained floating chat widget. It owns a launcher
  * button and a panel; on submit it POSTs the running transcript to `endpoint`
  * and renders the streamed plain-text reply token by token.
@@ -245,21 +265,19 @@ export class ArkChatbot extends LitElement {
       visibility: hidden;
     }
 
-    /* ── Launcher ──────────────────────────────────────────────────────── */
+    /* ── Launcher ──────────────────────────────────────────────────────────
+       A raised surface chip rather than a solid accent pill, so it reads as one
+       family with the other floating controls it sits beside in a dock
+       (ark-scroll-top). Both custom properties below are the way back to a
+       louder treatment for a site that wants one. */
     .launcher {
       align-items: center;
-      background: linear-gradient(
-        135deg,
-        var(--ark-color-accent),
-        var(--ark-color-accent-strong)
-      );
-      border: none;
+      background: var(--ark-chatbot-launcher-bg, var(--ark-color-surface));
+      border: 1px solid var(--ark-color-border);
       border-radius: var(--ark-radius-full);
       bottom: 0;
-      box-shadow:
-        0 10px 30px color-mix(in srgb, var(--ark-color-accent), transparent 65%),
-        var(--ark-shadow-sm);
-      color: var(--ark-color-accent-contrast);
+      box-shadow: var(--ark-shadow-md);
+      color: var(--ark-chatbot-launcher-color, var(--ark-color-text));
       cursor: var(--ark-cursor-interactive, pointer);
       display: inline-flex;
       gap: var(--ark-space-2);
@@ -288,9 +306,8 @@ export class ArkChatbot extends LitElement {
       }
 
       &:hover {
-        box-shadow:
-          0 14px 36px color-mix(in srgb, var(--ark-color-accent), transparent 55%),
-          var(--ark-shadow-sm);
+        background: var(--ark-color-accent-soft);
+        color: var(--ark-color-accent-strong);
         transform: translateY(-2px);
       }
       &:active {
@@ -301,13 +318,25 @@ export class ArkChatbot extends LitElement {
         outline-offset: 3px;
       }
 
+      /* On the light chip the avatar goes back to the accent tint the panel
+         uses, rather than the knocked-out white it needed on a solid pill. */
       .avatar {
-        background: color-mix(in srgb, var(--ark-color-accent-contrast), transparent 84%);
-        border-color: color-mix(in srgb, var(--ark-color-accent-contrast), transparent 62%);
-        color: var(--ark-color-accent-contrast);
         height: 2.25rem;
         width: 2.25rem;
       }
+
+      &:hover .avatar {
+        background: var(--ark-color-surface);
+      }
+    }
+
+    /* The launcher wears the assistant mark — two four-pointed stars — rather
+       than the Æ monogram: it reads as "AI" at a glance where a wordmark
+       glyph reads as branding. The monogram still stands in for Arkhe inside
+       the panel, where the heading has already introduced it. */
+    .spark {
+      height: 1.15rem;
+      width: 1.15rem;
     }
     /* The halo breathes only until the chat has been opened once (persisted
        in localStorage) — it is an attention cue, not permanent decoration. */
@@ -1145,7 +1174,7 @@ export class ArkChatbot extends LitElement {
         data-cursor-label="Open"
         @click=${() => this._toggle(true)}
       >
-        <span class="avatar" aria-hidden="true">Æ</span>
+        <span class="avatar" aria-hidden="true">${sparkMark()}</span>
         <span class="launcher__label">${this.launcherLabel}</span>
       </button>
 

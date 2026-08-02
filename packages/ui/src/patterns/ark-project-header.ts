@@ -51,8 +51,10 @@ let pinnedBottomOwner: symbol | null = null;
  * @slot title - Overrides the `heading` attribute with custom markup.
  * @slot tag - The tag / stack chips.
  * @cssprop [--ark-project-header-stick-top=0px] - Offset from the top when pinned.
- * @cssprop [--ark-project-header-chrome-clearance=88px] - Room held at the top
+ * @cssprop [--ark-project-header-chrome-clearance=76px] - Room held at the top
  *   of the hero for the fixed nav that floats over it.
+ * @cssprop [--ark-project-header-title-lines=2] - Lines the title may run to
+ *   before it is ellipsised.
  */
 export class ArkProjectHeader extends LitElement {
   static override properties = {
@@ -85,8 +87,12 @@ export class ArkProjectHeader extends LitElement {
       /* Room reserved at the top of the hero for the fixed site chrome that
          floats over it — the condensed nav bar (60px) and, on small screens,
          ark-navigation's immersive floating row (68px) — plus breathing room.
-         Matches the 88px floor global.css uses for the same reason. */
-      --_chrome-clearance: var(--ark-project-header-chrome-clearance, 88px);
+         The scrim under that row fades out at its own bottom edge, so the title
+         only has to clear the row itself, not the gradient. */
+      --_chrome-clearance: var(--ark-project-header-chrome-clearance, 76px);
+      /* The title is a landmark, not the article: past two lines a pinned
+         header eats the reading area it is supposed to be labelling. */
+      --_title-lines: var(--ark-project-header-title-lines, 2);
       /* Floor for the unstuck hero. It exists to give the slotted visual room;
          a consumer that slots no visual (the blog does not) is left with that
          much empty space under the title, so it is tunable. */
@@ -198,14 +204,23 @@ export class ArkProjectHeader extends LitElement {
       margin-bottom: 24px;
     }
 
+    /* Clamped to --_title-lines, with the overflow ellipsised. The -webkit-
+       prefixed box is the only form with universal support; the text stays
+       whole in the DOM, so the accessible name and the page's h1 are unaffected
+       by what the box hides. */
     .title,
     ::slotted([slot="title"]) {
       color: var(--ark-color-text);
+      display: -webkit-box;
       font-family: var(--ark-font-display);
       font-size: clamp(1.8rem, 3vw, 2.8rem);
       font-weight: var(--ark-weight-thin);
       line-height: 1.12;
       margin: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: var(--_title-lines);
     }
 
     /* ── Responsive ─────────────────────────────────────────────────── */

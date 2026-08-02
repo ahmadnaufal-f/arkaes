@@ -16,6 +16,11 @@ Override the heading with custom markup via `slot="title"`.
 
 The hero pins flush with the top of the viewport and lets the fixed site nav
 float over it, so the room for that chrome is held as start padding inside the
-hero — `--ark-project-header-chrome-clearance` (default `88px`, enough for the
+hero — `--ark-project-header-chrome-clearance` (default `76px`, enough for the
 condensed nav bar and for ark-navigation's immersive floating row). Move the pin
 itself with `--ark-project-header-stick-top` (default `0px`).
+
+The title is clamped to `--ark-project-header-title-lines` (default `2`) and
+ellipsised past that, so a long one cannot grow the pinned header into the
+reading area. The text is untouched in the DOM — only the box is clipped — so
+the page's `h1` and its accessible name stay whole.
