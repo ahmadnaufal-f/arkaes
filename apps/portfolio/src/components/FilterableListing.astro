@@ -113,7 +113,10 @@ const { eyebrow, title, description, items } = Astro.props;
   ></ark-empty>
 
   <div class="listing-footer">
-    <ark-button href="/" variant="ghost">&larr; Back to home page</ark-button>
+    <ark-button href="/" variant="link">
+      <span slot="prefix" aria-hidden="true">&larr;</span>
+      Back to home page
+    </ark-button>
   </div>
 </section>
 

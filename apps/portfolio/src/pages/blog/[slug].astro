@@ -80,7 +80,10 @@ const jsonLd = [
       <div class="ark-readable blog-body" set:html={bodyHtml} />
 
       <div class="blog-footer-nav">
-        <ark-button href="/blog" variant="ghost">&larr; Back to blog</ark-button>
+        <ark-button href="/blog" variant="link">
+          <span slot="prefix" aria-hidden="true">&larr;</span>
+          Back to blog
+        </ark-button>
       </div>
     </div>
   </article>

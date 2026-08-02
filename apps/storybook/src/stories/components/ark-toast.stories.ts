@@ -144,7 +144,8 @@ export const Imperative = {
         Success
       </ark-button>
       <ark-button
-        variant="ghost"
+        variant="outline"
+        tone="danger"
         @click=${() => toast.error("Upload failed", { heading: "Error" })}
       >
         Error

@@ -694,7 +694,7 @@ export class ArkHero extends LitElement {
               ${when(
                 this.ghostLabel,
                 () =>
-                  html`<ark-button href=${this.ghostHref} variant="ghost"
+                  html`<ark-button href=${this.ghostHref} variant="link"
                     >${this.ghostLabel}</ark-button
                   >`,
               )}

@@ -79,7 +79,10 @@ const jsonLd = [
     </ark-accordion>
 
     <div class="about-footer-nav">
-      <ark-button href="/" variant="ghost">&larr; Back to home page</ark-button>
+      <ark-button href="/" variant="link">
+        <span slot="prefix" aria-hidden="true">&larr;</span>
+        Back to home page
+      </ark-button>
     </div>
   </section>
 </BaseLayout>

@@ -14,17 +14,19 @@ import BrandGuidelineLayout from "../layouts/BrandGuidelineLayout.astro";
     <ark-nav-link href="#foundation">Foundation</ark-nav-link>
     <ark-nav-link href="#color">Color</ark-nav-link>
     <ark-nav-link href="#typography">Typography</ark-nav-link>
+    <ark-nav-link href="#buttons">Buttons</ark-nav-link>
     <ark-nav-link href="#logo">Logo</ark-nav-link>
     <ark-nav-link href="#voice">Voice</ark-nav-link>
     <ark-nav-link href="#touchpoints">Touchpoints</ark-nav-link>
     <ark-nav-link href="#rules">Rules</ark-nav-link>
   </ark-navigation-links>
-  <div class="nav-version">v1.1 - 2026</div>
+  <div class="nav-version">v1.2 - 2026</div>
   <ark-navigation-mobile-toggle></ark-navigation-mobile-toggle>
   <ark-navigation-mobile-menu>
     <ark-nav-link href="#foundation">Foundation</ark-nav-link>
     <ark-nav-link href="#color">Color</ark-nav-link>
     <ark-nav-link href="#typography">Typography</ark-nav-link>
+    <ark-nav-link href="#buttons">Buttons</ark-nav-link>
     <ark-nav-link href="#logo">Logo</ark-nav-link>
     <ark-nav-link href="#voice">Voice</ark-nav-link>
     <ark-nav-link href="#touchpoints">Touchpoints</ark-nav-link>
@@ -261,9 +263,92 @@ import BrandGuidelineLayout from "../layouts/BrandGuidelineLayout.astro";
 
 </section>
 
-<!-- ══ 04 LOGO & WORDMARK ═════════════════════════════════════════════════ -->
+<!-- ══ 04 INTERFACE · BUTTONS ═════════════════════════════════════════════ -->
+<section id="buttons">
+  <ark-badge class="reveal" variant="eyebrow" size="lg">04 · Interface — Buttons</ark-badge>
+  <h2 class="section-title reveal d1">The <em>Emphasis Scale</em></h2>
+  <p class="section-lead reveal d2">One button, five levels of emphasis. Every action on an Arkaes surface sits somewhere on this ladder — from the single loud call-to-action down to inline serif navigation. Variants never compete: one primary per view, and everything else steps down.</p>
+
+  <div class="button-ladder reveal d3">
+    <div class="bl-item">
+      <div class="bl-name">primary</div>
+      <div class="bl-demo"><ark-button variant="primary">View all case studies</ark-button></div>
+      <div class="bl-role">The one loud action per view</div>
+    </div>
+    <div class="bl-item">
+      <div class="bl-name">secondary</div>
+      <div class="bl-demo"><ark-button variant="secondary">Browse all projects</ark-button></div>
+      <div class="bl-role">Supporting action</div>
+    </div>
+    <div class="bl-item">
+      <div class="bl-name">outline</div>
+      <div class="bl-demo"><ark-button variant="outline">See the archive</ark-button></div>
+      <div class="bl-role">Alternate path</div>
+    </div>
+    <div class="bl-item">
+      <div class="bl-name">ghost</div>
+      <div class="bl-demo"><ark-button variant="ghost">Dismiss</ark-button></div>
+      <div class="bl-role">Quiet utility</div>
+    </div>
+    <div class="bl-item">
+      <div class="bl-name">link</div>
+      <div class="bl-demo">
+        <ark-button variant="link">
+          <span slot="prefix" aria-hidden="true">&larr;</span>
+          Back to home page
+        </ark-button>
+      </div>
+      <div class="bl-role">Inline navigation</div>
+    </div>
+  </div>
+
+  <div class="type-scale reveal d4">
+    <div class="scale-label">Sizes</div>
+    <div class="button-row">
+      <ark-button variant="secondary" size="sm">Small</ark-button>
+      <ark-button variant="secondary" size="md">Medium</ark-button>
+      <ark-button variant="secondary" size="lg">Large</ark-button>
+    </div>
+    <p class="button-note">Three sizes scale the box for the four button-shaped variants. The link variant only scales its type — it never grows a box.</p>
+  </div>
+
+  <div class="type-scale reveal d4">
+    <div class="scale-label">Danger Tone</div>
+    <div class="button-row">
+      <ark-button variant="primary" tone="danger">Delete project</ark-button>
+      <ark-button variant="outline" tone="danger">Discard changes</ark-button>
+      <ark-button variant="ghost" tone="danger">Remove</ark-button>
+    </div>
+    <p class="button-note">Tone composes with every emphasis level, so destructive actions can be loud or quiet — but always unmistakably destructive.</p>
+  </div>
+
+  <div class="dnd-grid reveal d5">
+    <div class="dnd-col dnd-col--do">
+      <div class="dnd-heading">Do</div>
+      <ul class="dnd-list">
+        <li>Use one primary action per view — everything else steps down</li>
+        <li>Use the link variant for prose-adjacent navigation</li>
+        <li>Reserve <code>tone="danger"</code> for destructive actions</li>
+        <li>Put directional arrows in the prefix / suffix slots</li>
+        <li>Compose <code>ark-button</code> — never rebuild its styles by hand</li>
+      </ul>
+    </div>
+    <div class="dnd-col dnd-col--dont">
+      <div class="dnd-heading">Don't</div>
+      <ul class="dnd-list">
+        <li>Never place two primary buttons in the same view</li>
+        <li>Never use danger tone for emphasis — it signals destruction</li>
+        <li>Never mix accent and danger in one action cluster</li>
+        <li>Never box inline navigation that belongs to the link variant</li>
+        <li>Never hardcode button colors outside the token contract</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 05 LOGO & WORDMARK ═════════════════════════════════════════════════ -->
 <section id="logo">
-  <ark-badge class="reveal" variant="eyebrow" size="lg">04 · Logo & Wordmark</ark-badge>
+  <ark-badge class="reveal" variant="eyebrow" size="lg">05 · Logo & Wordmark</ark-badge>
   <h2 class="section-title reveal d1">The <em>Wordmark</em></h2>
   <p class="section-lead reveal d2">The Æ ligature is the defining mark of the brand. It is the junction of ARK and ES — the visual shorthand for "architecture meets aesthetics."</p>
 
@@ -314,9 +399,9 @@ import BrandGuidelineLayout from "../layouts/BrandGuidelineLayout.astro";
   </div>
 </section>
 
-<!-- ══ 05 VOICE & TONE ════════════════════════════════════════════════════ -->
+<!-- ══ 06 VOICE & TONE ════════════════════════════════════════════════════ -->
 <section id="voice">
-  <ark-badge class="reveal" variant="eyebrow" size="lg">05 · Voice & Tone</ark-badge>
+  <ark-badge class="reveal" variant="eyebrow" size="lg">06 · Voice & Tone</ark-badge>
   <h2 class="section-title reveal d1">How Arkaes <em>Speaks</em></h2>
   <p class="section-lead reveal d2">Calm authority. Never loud. Never generic. Confident without being boastful. The work leads — the words follow.</p>
 
@@ -372,9 +457,9 @@ import BrandGuidelineLayout from "../layouts/BrandGuidelineLayout.astro";
   </div>
 </section>
 
-<!-- ══ 06 DIGITAL TOUCHPOINTS ═════════════════════════════════════════════ -->
+<!-- ══ 07 DIGITAL TOUCHPOINTS ═════════════════════════════════════════════ -->
 <section id="touchpoints">
-  <ark-badge class="reveal" variant="eyebrow" size="lg">06 · Digital Touchpoints</ark-badge>
+  <ark-badge class="reveal" variant="eyebrow" size="lg">07 · Digital Touchpoints</ark-badge>
   <h2 class="section-title reveal d1">Brand Across <em>Platforms</em></h2>
   <p class="section-lead reveal d2">Every touchpoint should feel like it belongs to the same quiet, considered creative — regardless of the platform's own visual conventions.</p>
 
@@ -428,9 +513,9 @@ import BrandGuidelineLayout from "../layouts/BrandGuidelineLayout.astro";
   </div>
 </section>
 
-<!-- ══ 07 USAGE RULES ═════════════════════════════════════════════════════ -->
+<!-- ══ 08 USAGE RULES ═════════════════════════════════════════════════════ -->
 <section id="rules">
-  <ark-badge class="reveal" variant="eyebrow" size="lg">07 · Usage Rules</ark-badge>
+  <ark-badge class="reveal" variant="eyebrow" size="lg">08 · Usage Rules</ark-badge>
   <h2 class="section-title reveal d1">Brand <em>Integrity</em></h2>
   <p class="section-lead reveal d2">What protects the brand — and what breaks it. These rules exist because the brand's refinement is fragile. One wrong choice dilutes years of consistency.</p>
 

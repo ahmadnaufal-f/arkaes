@@ -158,20 +158,23 @@ const jsonLd = [
         <div class="project-footer-nav">
           {
             links.map((link) => (
-              <ark-button href={link.url} target="_blank" variant="ghost">
-                View {link.label} &rarr;
+              <ark-button href={link.url} target="_blank" variant="link">
+                View {link.label}
+                <span slot="suffix" aria-hidden="true">&rarr;</span>
               </ark-button>
             ))
           }
           {
             relatedCaseStudyId && (
-              <ark-button href={`/case-studies/${relatedCaseStudyId}`} variant="ghost">
-                View related case study &rarr;
+              <ark-button href={`/case-studies/${relatedCaseStudyId}`} variant="link">
+                View related case study
+                <span slot="suffix" aria-hidden="true">&rarr;</span>
               </ark-button>
             )
           }
-          <ark-button class="project-footer-back" href="/projects" variant="ghost">
-            &larr; Back to projects
+          <ark-button class="project-footer-back" href="/projects" variant="link">
+            <span slot="prefix" aria-hidden="true">&larr;</span>
+            Back to projects
           </ark-button>
         </div>
       </div>

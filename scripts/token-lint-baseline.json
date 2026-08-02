@@ -161,48 +161,6 @@
     "text": "padding: 12px;"
   },
   {
-    "file": "packages/ui/src/primitives/ark-button.ts",
-    "line": 48,
-    "kind": "spacing",
-    "value": "gap: 0.5rem",
-    "text": "gap: 0.5rem;"
-  },
-  {
-    "file": "packages/ui/src/primitives/ark-button.ts",
-    "line": 74,
-    "kind": "spacing",
-    "value": "padding: 1rem",
-    "text": "padding: 1rem 2.25rem;"
-  },
-  {
-    "file": "packages/ui/src/primitives/ark-button.ts",
-    "line": 118,
-    "kind": "spacing",
-    "value": "padding: 0.75rem",
-    "text": "padding: 0.75rem 1.35rem;"
-  },
-  {
-    "file": "packages/ui/src/primitives/ark-button.ts",
-    "line": 180,
-    "kind": "spacing",
-    "value": "padding: 1rem",
-    "text": "padding: 0.65rem 1rem;"
-  },
-  {
-    "file": "packages/ui/src/primitives/ark-button.ts",
-    "line": 186,
-    "kind": "spacing",
-    "value": "padding: 1rem",
-    "text": "padding: 1rem 2.5rem;"
-  },
-  {
-    "file": "packages/ui/src/primitives/ark-button.ts",
-    "line": 186,
-    "kind": "spacing",
-    "value": "padding: 2.5rem",
-    "text": "padding: 1rem 2.5rem;"
-  },
-  {
     "file": "packages/ui/src/primitives/ark-checkbox.ts",
     "line": 166,
     "kind": "spacing",
