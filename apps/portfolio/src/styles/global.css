@@ -89,14 +89,24 @@ ark-hero:not(:defined) {
 }
 
 /* Every accordion on the site opts in to `auto-scroll-when-expanded`, which
-   parks the opening trigger at the top of the viewport. The nav is
-   `position: fixed`, so without an offset the trigger would land underneath it.
-   88px clears the compacted 60px header — the auto-scroll only ever happens
-   away from the top of the page, where the nav has already shrunk — and leaves
-   a little breathing room above the heading. Inherits into the items' shadow
-   DOM, which is where `scroll-margin-top` is applied. */
+   parks the opening trigger at the top of the viewport. Two layers of chrome can
+   be in the way, so the trigger has to clear whichever is lower:
+
+   - The nav is `position: fixed`; 88px clears its compacted 60px height — the
+     auto-scroll only ever happens away from the top of the page, where the nav
+     has already shrunk — with a little breathing room above the heading.
+   - On case-study and blog pages `ark-project-header` pins below the nav and
+     publishes its bottom edge as `--ark-project-header-pinned-bottom`. Its
+     height is measured, not fixed: ~220px with the collapsed visual watermark,
+     ~52px once the visual is dropped below 860px, more again when the title
+     wraps. Unset (no header) or `0px` (not yet pinned) falls back to the 88px.
+
+   Inherits into the items' shadow DOM, where `scroll-margin-top` is applied. */
 ark-accordion {
-  --accordion-scroll-margin: 88px;
+  --accordion-scroll-margin: max(
+    88px,
+    calc(var(--ark-project-header-pinned-bottom, 0px) + 24px)
+  );
 }
 
 /* Global navigation progress bar (see BaseLayout's `navProgress`). A persisted,
