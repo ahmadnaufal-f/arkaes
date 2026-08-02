@@ -152,13 +152,9 @@ export class ArkHero extends LitElement {
     }
 
     /* ── Hero title ─────────────────────────────────────────────────── */
-    /* Slides but never starts transparent. The title is the hero's Largest
-       Contentful Paint candidate, and a fully-transparent element is not
-       "contentful" — starting at opacity 0 with a 400ms delay pushed LCP past
-       the end of the fade no matter how fast the page was delivered. The
-       motion reads the same; only the opacity ramp is gone. */
     .hero-title-slot {
-      animation: slideUp 1000ms var(--ark-ease-out) forwards 400ms;
+      animation: fadeSlideUp 1000ms var(--ark-ease-out) forwards 400ms;
+      opacity: 0;
     }
 
     .hero-title,
@@ -379,17 +375,6 @@ export class ArkHero extends LitElement {
       }
       to {
         opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    /* Same motion as fadeSlideUp with the opacity ramp removed — for content
-       that has to stay paintable while it animates (see .hero-title-slot). */
-    @keyframes slideUp {
-      from {
-        transform: translateY(36px);
-      }
-      to {
         transform: translateY(0);
       }
     }

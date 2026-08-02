@@ -41,6 +41,8 @@
   ark-navigation-cta,
   ark-navigation-mobile-toggle,
   ark-navigation-mobile-menu,
+  ark-hero,
+  ark-page-header,
   ark-project-header,
   ark-media-card,
   ark-accordion,
@@ -54,138 +56,6 @@
   ark-chatbot
 ):not(:defined) {
   visibility: hidden;
-}
-
-/* ── Pre-upgrade layout for the page headers ──────────────────────────────
-   ark-hero and ark-page-header are deliberately absent from the list above:
-   their headings are light-DOM slot content, so the browser can paint them
-   from the HTML alone, before the Lit bundle has loaded. Hiding them would
-   throw that away and keep first paint gated on JS.
-
-   The cost of not hiding them is that the un-upgraded host has none of the
-   layout its shadow root supplies, so the heading would paint in the wrong
-   place and then jump. These rules mirror enough of that layout for the
-   heading to land where it will finally sit; they stop applying the instant
-   the element upgrades, so they can never fight the component's own styles.
-
-   The reserved boxes matter as much as the typography: the eyebrow badge and
-   the hero's action buttons are generated from attributes inside the shadow
-   root, so they do not exist yet at this point. Reserving their height with
-   pseudo-elements keeps them from pushing the heading down on upgrade. Sizes
-   are approximate by nature — verified against a measured CLS of ~0, not
-   derived from the component. */
-
-ark-page-header:not(:defined) {
-  align-items: flex-start;
-  display: flex;
-  flex-direction: column;
-  gap: var(--ark-space-6);
-}
-
-/* Stands in for the eyebrow badge. */
-ark-page-header:not(:defined)::before {
-  content: "";
-  display: block;
-  height: 1.05rem;
-}
-
-ark-hero:not(:defined) {
-  align-content: center;
-  column-gap: 60px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  min-height: var(
-    --ark-hero-min-height,
-    calc(max(100vh, 960px) - var(--ark-nav-header-height, 80px))
-  );
-  padding-block: calc(var(--ark-hero-padding-top, 100px) + 80px) 80px;
-  padding-inline: var(
-    --ark-hero-content-padding,
-    var(--site-content-padding, 60px)
-  );
-}
-
-/* The upgraded hero is a two-column grid whose text all sits in the left
-   column; without this the subtitle would be placed in the right one. */
-ark-hero:not(:defined) > * {
-  grid-column: 1;
-}
-
-/* Stand-ins for the eyebrow badge (above) and the action buttons (below). */
-ark-hero:not(:defined)::before {
-  content: "";
-  display: block;
-  grid-column: 1;
-  height: 1.05rem;
-}
-
-ark-hero:not(:defined)::after {
-  content: "";
-  display: block;
-  grid-column: 1;
-  height: 48px;
-}
-
-/* Typography for the slotted headings. The components style these through
-   `::slotted()` once upgraded; this is the same treatment applied from the
-   document so the text does not reflow when that hand-off happens. */
-ark-hero:not(:defined) > [slot="title"],
-ark-page-header:not(:defined) > [slot="title"] {
-  color: var(--ark-color-text);
-  font-family: var(--ark-font-display);
-  font-size: 4rem;
-  font-weight: var(--ark-weight-thin);
-  letter-spacing: 0;
-  line-height: var(--ark-line-height-tight);
-  margin: 0;
-  text-wrap: balance;
-}
-
-ark-hero:not(:defined) > [slot="title"] {
-  margin-block-start: 36px;
-  text-wrap: initial;
-}
-
-ark-hero:not(:defined) > [slot="subtitle"] {
-  color: var(--ark-color-text-muted);
-  font-size: var(--ark-font-size-xl);
-  font-weight: var(--ark-font-weight-light);
-  line-height: var(--ark-line-height-relaxed);
-  margin-block: 40px 0;
-  max-width: 380px;
-}
-
-ark-page-header:not(:defined) > [slot="lead"] {
-  color: var(--ark-color-text-muted);
-  font-size: var(--ark-font-size-xl);
-  line-height: var(--ark-line-height-relaxed);
-  margin: 0;
-  max-width: 680px;
-}
-
-@media (min-width: 1120px) {
-  ark-hero:not(:defined) > [slot="title"] {
-    font-size: 6.5rem;
-  }
-}
-
-@media (max-width: 900px) {
-  ark-hero:not(:defined) {
-    grid-template-columns: 1fr;
-    min-height: auto;
-    padding: 158px 24px 56px;
-  }
-
-  ark-hero:not(:defined) > [slot="title"] {
-    font-size: 4rem;
-  }
-}
-
-@media (max-width: 520px) {
-  ark-hero:not(:defined) > [slot="title"],
-  ark-page-header:not(:defined) > [slot="title"] {
-    font-size: 3rem;
-  }
 }
 
 /* Global navigation progress bar (see BaseLayout's `navProgress`). A persisted,
