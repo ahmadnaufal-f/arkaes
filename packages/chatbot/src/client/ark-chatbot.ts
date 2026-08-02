@@ -98,6 +98,11 @@ const readConversation = (): StoredConversation | null => {
  * (`--ark-duration-*`) collapse to 1ms under `prefers-reduced-motion`, all
  * one-shot transitions degrade automatically; the looping animations (launcher
  * halo, typing dots) are additionally gated behind an explicit media query.
+ *
+ * By default it plants itself in the bottom-right corner of the viewport. Set
+ * `docked` to hand the launcher's placement to a parent instead — the widget is
+ * then an in-flow box the size of its launcher, which is what lets it sit in
+ * `ark-floating-action-container`.
  */
 export class ArkChatbot extends LitElement {
   static override properties = {
@@ -108,6 +113,7 @@ export class ArkChatbot extends LitElement {
     greeting: { type: String },
     suggestions: { type: Array },
     launcherLabel: { attribute: "launcher-label", type: String },
+    docked: { reflect: true, type: Boolean },
     open: { reflect: true, type: Boolean },
     _messages: { state: true },
     _draft: { state: true },
@@ -135,6 +141,13 @@ export class ArkChatbot extends LitElement {
   ];
   /** Accessible label for the floating launcher button (also its visible text). */
   launcherLabel = "Open chat";
+  /**
+   * Hand the launcher's placement to a parent — e.g. slot the widget into
+   * `ark-floating-action-container` to dock it in a centred row. The panel stays
+   * fixed to the viewport; `--ark-chatbot-docked-panel-bottom` sets how far it
+   * clears the dock.
+   */
+  docked = false;
   /** Whether the panel is open. */
   open = false;
 
@@ -156,6 +169,41 @@ export class ArkChatbot extends LitElement {
       position: fixed;
       right: var(--ark-space-5);
       z-index: 1200;
+    }
+
+    /* ── Docked ────────────────────────────────────────────────────────────
+       Handing the launcher's placement to a parent (ark-floating-action-
+       container docks it in a centred row at the bottom of the page). The host
+       joins that row as an ordinary in-flow box the size of the launcher, and
+       the panel — far too big to sit in a dock — takes over the fixed
+       positioning the host gives up, centred above it.
+
+       Note for the parent: while the panel is open the host must not be given a
+       transform, since that would make it the panel's containing block and drag
+       the fixed panel back into the dock. Parents that animate their children
+       are expected to leave an element carrying the open attribute alone. */
+    :host([docked]) {
+      bottom: auto;
+      position: static;
+      right: auto;
+      z-index: auto;
+    }
+
+    :host([docked]) .launcher {
+      bottom: auto;
+      position: relative;
+      right: auto;
+    }
+
+    :host([docked]) .panel {
+      /* Clears a dock of the launcher's height plus its block margins. */
+      bottom: var(--ark-chatbot-docked-panel-bottom, var(--ark-space-24));
+      inset-inline: 0;
+      margin-inline: auto;
+      position: fixed;
+      transform-origin: bottom center;
+      /* Above its siblings in the dock — the panel covers them while open. */
+      z-index: 1;
     }
 
     *,

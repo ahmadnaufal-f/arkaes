@@ -7,6 +7,7 @@ import {
   lockBodyScroll,
   unlockBodyScroll,
 } from "../utils/body-scroll-lock";
+import { hasKeyboardFocusWithin } from "../utils/keyboard-focus";
 
 let mobileMenuId = 0;
 
@@ -370,29 +371,11 @@ export class ArkNavigationRoot extends LitElement {
   };
 
   /**
-   * True only for focus the browser is actually drawing a ring for. A pointer
-   * tap leaves focus sitting on the button it hit, so testing plain :focus-within
-   * would latch on after the first tap of the hamburger and suppress the tuck
-   * away from then on.
+   * True only for focus the browser is actually drawing a ring for — a pointer
+   * tap on the hamburger leaves focus on it, and that must not count.
    */
   private _hasKeyboardFocus(): boolean {
-    try {
-      if (!this.matches(":focus-within")) return false;
-      return this._deepActiveElement()?.matches(":focus-visible") ?? false;
-    } catch {
-      // A DOM shim may not know either selector; immersion is cosmetic, so the
-      // safe answer is "no focus to protect".
-      return false;
-    }
-  }
-
-  /** The innermost focused element, following focus down through shadow roots. */
-  private _deepActiveElement(): Element | null {
-    let active = document.activeElement;
-    while (active?.shadowRoot?.activeElement) {
-      active = active.shadowRoot.activeElement;
-    }
-    return active;
+    return hasKeyboardFocusWithin(this);
   }
 
   private _restartSettleTimer() {

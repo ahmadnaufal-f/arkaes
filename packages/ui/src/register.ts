@@ -18,8 +18,10 @@ import {
   defineArkCarousel,
   defineArkCursor,
   defineArkDialog,
+  defineArkFloatingActionContainer,
   defineArkHero,
   defineArkNavigation,
+  defineArkScrollTop,
   defineArkToast,
 } from "./components";
 import {
@@ -49,8 +51,10 @@ export const registerArkComponents = () => {
   defineArkCarousel();
   defineArkCursor();
   defineArkDialog();
+  defineArkFloatingActionContainer();
   defineArkHero();
   defineArkNavigation();
+  defineArkScrollTop();
   defineArkToast();
 };
 

@@ -23,6 +23,11 @@ import {
 } from "./ark-card";
 import { ArkCarousel, defineArkCarousel } from "./ark-carousel";
 import {
+  ArkFloatingActionContainer,
+  defineArkFloatingActionContainer,
+} from "./ark-floating-action-container";
+import { ArkScrollTop, defineArkScrollTop } from "./ark-scroll-top";
+import {
   ArkDialogRoot,
   ArkDialogTrigger,
   ArkDialogPortal,
@@ -92,6 +97,8 @@ export {
   Card,
   ArkCarousel,
   ArkCursor,
+  ArkFloatingActionContainer,
+  ArkScrollTop,
   ArkToast,
   ArkToaster,
   Toast,
@@ -127,6 +134,8 @@ export {
   defineArkCardTitle,
   defineArkCarousel,
   defineArkCursor,
+  defineArkFloatingActionContainer,
+  defineArkScrollTop,
   enableArkCursor,
   defineArkToast,
   defineArkDialog,

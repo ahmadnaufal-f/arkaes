@@ -53,7 +53,9 @@
   ark-chip,
   ark-badge,
   ark-empty,
-  ark-chatbot
+  ark-chatbot,
+  ark-floating-action-container,
+  ark-scroll-top
 ):not(:defined) {
   visibility: hidden;
 }
