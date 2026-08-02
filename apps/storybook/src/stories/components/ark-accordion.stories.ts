@@ -46,6 +46,28 @@ const renderStandaloneItems = () => html`
   </div>
 `;
 
+// Long bodies plus generous padding above/below make the story taller than the
+// preview frame, so there is somewhere to scroll from and the auto-scroll is
+// actually visible.
+const renderAutoScroll = () => html`
+  <div style="max-width: 640px; padding: 60vh 2rem;">
+    <p style="color: var(--ark-color-text-muted); font-size: var(--ark-text-md); margin: 0 0 2rem;">
+      Scroll down and expand a section — its trigger travels to the top of the frame.
+    </p>
+    <ark-accordion type="single" auto-scroll-when-expanded>
+      ${SAMPLE_ITEMS.map(
+        ({ heading, body }) => html`
+          <ark-accordion-item heading=${heading}>
+            <p style="color: var(--ark-color-text-muted); font-size: var(--ark-text-md); line-height: var(--ark-leading-relaxed); margin: 0;">
+              ${body} ${body}
+            </p>
+          </ark-accordion-item>
+        `,
+      )}
+    </ark-accordion>
+  </div>
+`;
+
 const meta = {
   component: "ark-accordion",
   parameters: {
@@ -55,6 +77,8 @@ const meta = {
 \`ark-accordion\` manages collapsible content sections with smooth grid-based animations.
 
 Use \`type="single"\` to allow only one section open at a time, or omit it (default: multiple) to let users compare content across expanded sections. Wrap \`ark-accordion-item\` children and provide a \`heading\` for each. Accordion items can also stand alone for custom layouts.
+
+Add \`auto-scroll-when-expanded\` — on the root, or on a single item — to scroll an opening item's trigger to the top of the viewport.
         `,
       },
     },
@@ -75,4 +99,16 @@ export const SingleMode = {
 
 export const StandaloneItems = {
   render: renderStandaloneItems,
+} satisfies Story;
+
+export const AutoScrollWhenExpanded = {
+  render: renderAutoScroll,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "`auto-scroll-when-expanded` scrolls the opening item's trigger to the top of the viewport, so a long panel opens into view instead of below the fold. It is skipped when the trigger already sits at the top, and never runs for an item rendered `open` on load. Set `--accordion-scroll-margin` to leave room for a sticky header.",
+      },
+    },
+  },
 } satisfies Story;
