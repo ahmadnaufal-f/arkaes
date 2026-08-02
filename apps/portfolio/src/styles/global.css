@@ -224,6 +224,26 @@ a {
   text-decoration: none;
 }
 
+/* Links set in running body copy have no surrounding affordance — no card, no
+   button, no nav position — so the bare rule above leaves them
+   indistinguishable from the text around them (a bolded link reads as nothing
+   more than bold text). Give prose links the accent colour and an underline.
+   Scoped to the containers that render markdown body copy via
+   renderSectionHtml, so nav, cards, and buttons keep their clean treatment.
+   Blog bodies are excluded — .ark-readable already styles their links. */
+:is(.proj-body, .cs-overview-body, .cs-section-content, .about-body) a {
+  color: var(--ark-color-accent-strong);
+  text-decoration: underline;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.18em;
+  transition: text-decoration-thickness var(--ark-duration-fast)
+    var(--ark-ease-standard);
+}
+
+:is(.proj-body, .cs-overview-body, .cs-section-content, .about-body) a:hover {
+  text-decoration-thickness: 0.14em;
+}
+
 a:focus-visible,
 button:focus-visible {
   outline: 2px solid var(--ark-color-focus);

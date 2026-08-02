@@ -1,0 +1,278 @@
+---
+interface Props {
+  transitionName: string;
+  asSlot?: string;
+}
+const { transitionName, asSlot } = Astro.props;
+
+// A miniature "internal dashboard" canvas, built from the same parts as the
+// Arkaes thumbnail (token swatches, primitives, spec lines) but arranged around
+// a dense data table — the toolbar of filters up top, a header row plus
+// selectable rows with status pills in the middle, pagination below. Together
+// they read as the data-heavy CMS surfaces this system is designed for.
+const swatches = ["accent", "strong", "soft", "neutral"] as const;
+
+// Per-row label width (%) and status tone. Varying both keeps the grid from
+// reading as a uniform placeholder block and hints at real tabular data.
+const rows = [
+  { width: 68, status: "accent", selected: true },
+  { width: 45, status: "neutral", selected: false },
+  { width: 76, status: "success", selected: false },
+  { width: 38, status: "neutral", selected: false },
+] as const;
+---
+
+<div
+  class="thumb-oneux"
+  slot={asSlot}
+  style={`view-transition-name: ${transitionName};`}
+>
+  <div class="thumb-oneux-card">
+    <!-- Toolbar: the token palette doubles as the filter controls that sit
+         above a dense table, alongside a search field -->
+    <div class="thumb-oneux-toolbar" aria-hidden="true">
+      {swatches.map((name) => (
+        <span class={`thumb-oneux-swatch thumb-oneux-swatch--${name}`}></span>
+      ))}
+      <span class="thumb-oneux-search"></span>
+    </div>
+
+    <!-- Data table: header row, then selectable rows of checkbox / label /
+         status pill — the core primitive of a data-dense product -->
+    <div class="thumb-oneux-table" aria-hidden="true">
+      <div class="thumb-oneux-row thumb-oneux-row--head">
+        <span class="thumb-oneux-check thumb-oneux-check--head"></span>
+        <span class="thumb-oneux-cell thumb-oneux-cell--head"></span>
+        <span class="thumb-oneux-cell thumb-oneux-cell--head"></span>
+        <span class="thumb-oneux-cell thumb-oneux-cell--head"></span>
+      </div>
+      {rows.map((row) => (
+        <div
+          class:list={[
+            "thumb-oneux-row",
+            row.selected && "thumb-oneux-row--selected",
+          ]}
+        >
+          <span
+            class:list={[
+              "thumb-oneux-check",
+              row.selected && "thumb-oneux-check--on",
+            ]}
+          ></span>
+          <span class="thumb-oneux-cell" style={`width: ${row.width}%`}></span>
+          <span class="thumb-oneux-cell thumb-oneux-cell--num"></span>
+          <span class={`thumb-oneux-pill thumb-oneux-pill--${row.status}`}></span>
+        </div>
+      ))}
+    </div>
+
+    <!-- Pagination: a row count next to page controls -->
+    <div class="thumb-oneux-footer" aria-hidden="true">
+      <span class="thumb-oneux-count"></span>
+      <span class="thumb-oneux-pages">
+        <span class="thumb-oneux-page thumb-oneux-page--active"></span>
+        <span class="thumb-oneux-page"></span>
+        <span class="thumb-oneux-page"></span>
+      </span>
+    </div>
+  </div>
+</div>
+
+<style>
+  .thumb-oneux {
+    align-items: center;
+    background: var(--thumbnail-background, var(--ark-color-accent-soft));
+    display: flex;
+    height: var(--thumbnail-height, auto);
+    justify-content: center;
+    position: relative;
+  }
+
+  /* The card sits smaller than the container and centered, so its drop shadow
+     always has room to breathe and is never clipped. */
+  .thumb-oneux-card {
+    background: var(--ark-color-surface);
+    border: 1px solid var(--ark-color-border);
+    border-radius: 20px;
+    box-shadow: var(--ark-shadow-md);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px;
+    width: 200px;
+  }
+
+  /* ── Filter toolbar ────────────────────────────────────────────────── */
+  .thumb-oneux-toolbar {
+    align-items: center;
+    display: flex;
+    gap: 5px;
+  }
+
+  .thumb-oneux-swatch {
+    border-radius: 4px;
+    height: 14px;
+    width: 14px;
+  }
+
+  .thumb-oneux-swatch--accent {
+    background: var(--ark-color-accent);
+  }
+
+  .thumb-oneux-swatch--strong {
+    background: var(--ark-color-accent-strong);
+  }
+
+  .thumb-oneux-swatch--soft {
+    background: var(--ark-color-accent-soft);
+    border: 1.5px solid var(--ark-color-accent);
+  }
+
+  .thumb-oneux-swatch--neutral {
+    background: var(--ark-color-neutral-200);
+  }
+
+  .thumb-oneux-search {
+    background: var(--ark-color-surface-muted);
+    border: 1px solid var(--ark-color-border);
+    border-radius: 999px;
+    flex: 1;
+    height: 14px;
+    margin-left: 3px;
+  }
+
+  /* ── Data table ────────────────────────────────────────────────────── */
+  .thumb-oneux-table {
+    border: 1px solid var(--ark-color-border);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    /* Clip the rows' square corners to the table's rounded ones. */
+    overflow: hidden;
+  }
+
+  .thumb-oneux-row {
+    align-items: center;
+    /* Rules between rows, not around them — the border-radius above handles
+       the outer edge. */
+    border-top: 1px solid var(--ark-color-border);
+    display: grid;
+    gap: 6px;
+    /* checkbox · label · numeric column · status pill */
+    grid-template-columns: 7px 1fr 22px 20px;
+    padding: 4px 8px;
+  }
+
+  .thumb-oneux-row--head {
+    background: var(--ark-color-surface-muted);
+    border-top: 0;
+  }
+
+  .thumb-oneux-row--selected {
+    background: color-mix(in srgb, var(--ark-color-accent) 8%, transparent);
+  }
+
+  .thumb-oneux-check {
+    border: 1.5px solid var(--ark-color-neutral-300);
+    border-radius: 2px;
+    height: 7px;
+    width: 7px;
+  }
+
+  .thumb-oneux-check--head,
+  .thumb-oneux-check--on {
+    background: var(--ark-color-accent);
+    border-color: var(--ark-color-accent);
+  }
+
+  .thumb-oneux-cell {
+    background: var(--ark-color-neutral-200);
+    border-radius: 2px;
+    height: 5px;
+  }
+
+  /* The numeric column reads as a right-aligned figure, the way a count or
+     amount sits at the trailing edge of its cell. */
+  .thumb-oneux-cell--num {
+    background: var(--ark-color-neutral-300);
+    justify-self: end;
+    width: 72%;
+  }
+
+  .thumb-oneux-cell--head {
+    background: color-mix(in srgb, var(--ark-color-accent) 32%, transparent);
+    justify-self: stretch;
+    width: 100%;
+  }
+
+  .thumb-oneux-pill {
+    border-radius: 999px;
+    height: 6px;
+    width: 100%;
+  }
+
+  .thumb-oneux-pill--accent {
+    background: color-mix(in srgb, var(--ark-color-accent) 55%, transparent);
+  }
+
+  .thumb-oneux-pill--success {
+    background: color-mix(in srgb, var(--ark-color-success) 60%, transparent);
+  }
+
+  .thumb-oneux-pill--neutral {
+    background: var(--ark-color-neutral-200);
+  }
+
+  /* ── Pagination ────────────────────────────────────────────────────── */
+  .thumb-oneux-footer {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .thumb-oneux-count {
+    background: var(--ark-color-neutral-200);
+    border-radius: 3px;
+    height: 5px;
+    width: 46px;
+  }
+
+  .thumb-oneux-pages {
+    display: flex;
+    gap: 4px;
+  }
+
+  .thumb-oneux-page {
+    background: var(--ark-color-neutral-200);
+    border-radius: 2px;
+    height: 8px;
+    width: 8px;
+  }
+
+  .thumb-oneux-page--active {
+    background: var(--ark-color-accent);
+  }
+
+  /* The status pills quietly pulse in sequence, hinting at rows that update
+     live rather than a static mockup. */
+  @media (prefers-reduced-motion: no-preference) {
+    .thumb-oneux-pill--accent,
+    .thumb-oneux-pill--success {
+      animation: thumb-oneux-pulse 2.8s ease-in-out infinite;
+    }
+
+    .thumb-oneux-pill--success {
+      animation-delay: 0.9s;
+    }
+  }
+
+  @keyframes thumb-oneux-pulse {
+    0%,
+    100% {
+      opacity: 0.5;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+</style>
