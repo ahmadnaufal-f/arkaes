@@ -58,6 +58,36 @@
   visibility: hidden;
 }
 
+/* Cloaking hides an element; it does not reserve its space. An un-upgraded
+   <ark-hero> is an unknown element — inline, a few lines tall — so upgrading it
+   into the 100vh grid its shadow root defines drops every section below it down
+   the page in one frame. Reserve the height up front, using the same custom
+   property and fallback as the component's own `.hero` rule so the two cannot
+   disagree.
+
+   `display: block` is load-bearing: min-height has no effect on an inline box,
+   which is what an unknown element is until it upgrades.
+
+   This reserves space only — nothing paints any earlier, the cloak above still
+   governs visibility, and the rule stops matching the moment the element
+   upgrades, so it can never fight the component's own styles. */
+ark-hero:not(:defined) {
+  display: block;
+  min-height: var(
+    --ark-hero-min-height,
+    calc(max(100vh, 960px) - var(--ark-nav-header-height, 80px))
+  );
+}
+
+/* The component itself drops to `min-height: auto` at this breakpoint, so the
+   reservation has to as well — over-reserving would shift content upward on
+   upgrade, trading one jump for another. */
+@media (max-width: 900px) {
+  ark-hero:not(:defined) {
+    min-height: 0;
+  }
+}
+
 /* Global navigation progress bar (see BaseLayout's `navProgress`). A persisted,
    top-of-page bar that fills while ClientRouter fetches the next page and
    completes when it's shown. `scaleX` is driven from JS; opacity is toggled via
