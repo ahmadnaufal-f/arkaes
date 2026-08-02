@@ -67,6 +67,110 @@
   width: 100%;
 }
 
+/* ── Proof cards ──────────────────────────────────────────────────────
+   Evidence blocks rendered from `→ metric | [work](/href) | detail` lines in
+   about.md (see renderSectionHtml). Each card cites the work a claim came
+   from, so the prose above it can stay short. The whole card is the link
+   target; the global `.about-body a` prose treatment is overridden below
+   since a card already carries its own affordance. */
+.about-body .cs-proofs {
+  display: grid;
+  gap: var(--ark-space-3);
+  list-style: none;
+  margin: var(--ark-space-6) 0;
+  padding: 0;
+}
+
+.about-body .cs-proof {
+  margin: 0;
+}
+
+.about-body .cs-proof-link,
+.about-body .cs-proof {
+  border-inline-start: 2px solid var(--ark-color-border);
+  display: grid;
+  gap: var(--ark-space-1);
+  padding: var(--ark-space-2) 0 var(--ark-space-2) var(--ark-space-4);
+  transition:
+    border-color var(--ark-duration-fast) var(--ark-ease-standard),
+    padding-inline-start var(--ark-duration-fast) var(--ark-ease-standard);
+}
+
+/* When the card is a link the <li> is just a wrapper, so the rule above
+   applies to the anchor instead — reset the double treatment. */
+.about-body .cs-proof:has(.cs-proof-link) {
+  border-inline-start: 0;
+  display: block;
+  padding: 0;
+}
+
+.about-body .cs-proof-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.about-body .cs-proof-link:hover {
+  border-inline-start-color: var(--ark-color-accent);
+  padding-inline-start: var(--ark-space-5);
+}
+
+/* Mono, so numbers read as measurements rather than emphasis. */
+.about-body .cs-proof-metric {
+  color: var(--ark-color-accent-strong);
+  font-family: var(--ark-font-mono);
+  font-size: var(--ark-text-xs);
+  letter-spacing: var(--ark-tracking-label);
+  line-height: var(--ark-leading-snug);
+  text-transform: uppercase;
+}
+
+.about-body .cs-proof-title {
+  color: var(--ark-color-text);
+  font-size: var(--ark-text-md);
+  font-weight: var(--ark-weight-medium);
+  line-height: var(--ark-leading-snug);
+}
+
+.about-body .cs-proof-link .cs-proof-title::after {
+  content: "\2192";
+  display: inline-block;
+  margin-inline-start: 0.4em;
+  transition: transform var(--ark-duration-fast) var(--ark-ease-standard);
+}
+
+.about-body .cs-proof-link:hover .cs-proof-title::after {
+  transform: translateX(3px);
+}
+
+.about-body .cs-proof-desc {
+  color: var(--ark-color-text-muted);
+  font-size: var(--ark-text-sm);
+  line-height: var(--ark-leading-relaxed);
+}
+
+/* Descriptions may carry inline links; they inherit the card's colour rather
+   than the accent-underline prose treatment, which would compete with it. */
+.about-body .cs-proof-desc a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 0.06em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about-body .cs-proof-link,
+  .about-body .cs-proof-link .cs-proof-title::after {
+    transition: none;
+  }
+
+  .about-body .cs-proof-link:hover {
+    padding-inline-start: var(--ark-space-4);
+  }
+
+  .about-body .cs-proof-link:hover .cs-proof-title::after {
+    transform: none;
+  }
+}
+
 /* Closing navigation: a single ghost link back to the homepage. */
 .about-footer-nav {
   border-top: 1px solid var(--ark-color-border);
