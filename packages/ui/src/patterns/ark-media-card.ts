@@ -1,7 +1,9 @@
 import { css, html, LitElement } from "lit";
+import { ifDefined } from "lit/directives/if-defined.js";
 import { when } from "lit/directives/when.js";
 import { defineArkCard } from "../components/ark-card";
 import { defineElement } from "../define-element";
+import { defineArkSpinner } from "../primitives/ark-spinner";
 
 export type ArkMediaCardVariant = "featured" | "compact";
 
@@ -21,6 +23,11 @@ const dateFormatter = new Intl.DateTimeFormat("en", {
  * date, summary, and tag content — used for case studies, projects, and blog
  * posts alike.
  *
+ * Because the card is an entry point to another page, it carries the same
+ * loading affordance as `ark-button`: set `loading` (or assign a
+ * `loadingPromise`) and the corner arrow becomes a spinner while the next page
+ * is fetched, so a click gives immediate feedback instead of a silent wait.
+ *
  * @summary Linked media card.
  * @slot media - The card thumbnail / cover media (updates dynamically on slotchange).
  * @slot tag - The tag / stack chips.
@@ -30,6 +37,8 @@ export class ArkMediaCard extends LitElement {
     category: { type: String },
     dateTime: { attribute: "datetime", type: String },
     href: { type: String },
+    loading: { reflect: true, type: Boolean },
+    loadingPromise: { attribute: false },
     summary: { type: String },
     title: { type: String },
     variant: { reflect: true, type: String },
@@ -170,6 +179,28 @@ export class ArkMediaCard extends LitElement {
       transform: translate(3px, -3px);
     }
 
+    .arrow-spinner {
+      --spinner-color: var(--ark-color-accent-strong);
+
+      flex: none;
+      margin-top: 2px;
+    }
+
+    /* Navigating: freeze the hover affordances (thumbnail zoom, arrow slide) so
+       the card reads as in-flight rather than still-interactive, and dim only
+       the copy — the spinner stays at full strength as the active signal. */
+    :host([loading]) {
+      --_thumb-scale: 1;
+    }
+
+    :host([loading]) .link {
+      cursor: progress;
+    }
+
+    :host([loading]) .copy {
+      opacity: 0.6;
+    }
+
     :host([variant="compact"]) .link {
       background: var(--ark-color-surface);
     }
@@ -194,9 +225,40 @@ export class ArkMediaCard extends LitElement {
    */
   dateTime = "";
   href = "";
+  loading = false;
   summary = "";
   override title = "";
   variant: ArkMediaCardVariant = "featured";
+
+  #loadingPromiseValue: Promise<unknown> | undefined;
+  #promisePending = false;
+
+  get loadingPromise(): Promise<unknown> | undefined {
+    return this.#loadingPromiseValue;
+  }
+
+  set loadingPromise(p: Promise<unknown> | undefined) {
+    const old = this.#loadingPromiseValue;
+    this.#loadingPromiseValue = p;
+
+    if (p) {
+      this.#promisePending = true;
+      p.finally(() => {
+        if (this.#loadingPromiseValue === p) {
+          this.#promisePending = false;
+          this.requestUpdate();
+        }
+      });
+    } else {
+      this.#promisePending = false;
+    }
+
+    this.requestUpdate("loadingPromise", old);
+  }
+
+  get #isEffectivelyLoading() {
+    return this.loading || this.#promisePending;
+  }
 
   // Whether any media is projected into the "media" slot. Drives showing the
   // thumbnail region for any variant (so compact listing cards can carry a
@@ -237,8 +299,21 @@ export class ArkMediaCard extends LitElement {
   // `composedPath()[0].closest('a')`) can't see the link and fall back to a
   // full page load (skipping view transitions). Re-dispatch such clicks on the
   // real anchor so they route normally, preserving modifier keys for new-tab.
+  // A navigation is already in flight, so a second click would only start a
+  // competing one. The href stays on the anchor (the in-flight router still
+  // reads it) and the guard blocks the activation instead.
+  #blockClickWhileLoading = (event: MouseEvent) => {
+    if (!this.#isEffectivelyLoading) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+  };
+
   #forwardClickToLink = (event: MouseEvent) => {
     if (event.defaultPrevented || event.button !== 0) return;
+    if (this.#isEffectivelyLoading) {
+      event.preventDefault();
+      return;
+    }
 
     // Mirror how SPA routers locate the link: the real-DOM `.closest('a')` from
     // the deepest target. Shadow content inside the anchor (and our own
@@ -269,13 +344,19 @@ export class ArkMediaCard extends LitElement {
 
   override render() {
     const dateLabel = this.#dateLabel;
+    const isLoading = this.#isEffectivelyLoading;
 
     return html`
       <ark-card
         interactive
         variant=${this.variant === "featured" ? "project" : "surface"}
       >
-        <a class="link" href=${this.href || "#"}>
+        <a
+          class="link"
+          href=${this.href || "#"}
+          aria-busy=${ifDefined(isLoading ? "true" : undefined)}
+          @click=${this.#blockClickWhileLoading}
+        >
           <div class="media" ?hidden=${!this._hasMedia}>
             <slot name="media" @slotchange=${this.#onMediaSlotChange}></slot>
           </div>
@@ -315,7 +396,16 @@ export class ArkMediaCard extends LitElement {
                 <slot name="tag"></slot>
               </div>
             </div>
-            <span class="arrow" aria-hidden="true">&nearr;</span>
+            ${when(
+              isLoading,
+              () =>
+                html`<ark-spinner
+                  class="arrow-spinner"
+                  size="sm"
+                  decorative
+                ></ark-spinner>`,
+              () => html`<span class="arrow" aria-hidden="true">&nearr;</span>`,
+            )}
           </div>
         </a>
       </ark-card>
@@ -325,6 +415,7 @@ export class ArkMediaCard extends LitElement {
 
 export const defineArkMediaCard = () => {
   defineArkCard();
+  defineArkSpinner();
   defineElement("ark-media-card", ArkMediaCard);
 };
 

@@ -235,7 +235,7 @@ const schemaGraph = serializeJsonLd([
       import "@arkaes/ui/register";
       import "@arkaes/chatbot/register";
       import { enableArkCursor } from "@arkaes/ui/components/ark-cursor";
-      import type { ArkButton } from "@arkaes/ui";
+      import type { ArkButton, ArkMediaCard } from "@arkaes/ui";
       import type { ArkNavLink, ArkNavigationCta } from "@arkaes/ui";
 
       // ── Persistent setup (runs once for the document lifetime) ──────────
@@ -330,7 +330,14 @@ const schemaGraph = serializeJsonLd([
       // Activate the loading/navigating state on the clicked link element as
       // soon as the user clicks, so there is immediate feedback while
       // Astro's ClientRouter fetches the next page in the background.
-      const NAV_TAGS = new Set(["ARK-BUTTON", "ARK-NAV-LINK", "ARK-NAVIGATION-CTA"]);
+      const NAV_TAGS = new Set([
+        "ARK-BUTTON",
+        "ARK-MEDIA-CARD",
+        "ARK-NAV-LINK",
+        "ARK-NAVIGATION-CTA",
+      ]);
+      // These expose the state as `loading`; the nav elements call it `navigating`.
+      const LOADING_PROP_TAGS = new Set(["ARK-BUTTON", "ARK-MEDIA-CARD"]);
       let pendingNavEls: Element[] = [];
       let navSafetyTimer: number | undefined;
 
@@ -340,8 +347,8 @@ const schemaGraph = serializeJsonLd([
       const clearPendingNav = () => {
         window.clearTimeout(navSafetyTimer);
         pendingNavEls.forEach((el) => {
-          if (el.tagName === "ARK-BUTTON") {
-            (el as ArkButton).loading = false;
+          if (LOADING_PROP_TAGS.has(el.tagName)) {
+            (el as ArkButton | ArkMediaCard).loading = false;
           } else {
             (el as ArkNavLink | ArkNavigationCta).navigating = false;
           }
@@ -371,8 +378,8 @@ const schemaGraph = serializeJsonLd([
         const host = path.find((el): el is Element => el instanceof Element && NAV_TAGS.has(el.tagName));
         if (!host) return;
 
-        if (host.tagName === "ARK-BUTTON") {
-          (host as ArkButton).loading = true;
+        if (LOADING_PROP_TAGS.has(host.tagName)) {
+          (host as ArkButton | ArkMediaCard).loading = true;
         } else {
           (host as ArkNavLink | ArkNavigationCta).navigating = true;
         }

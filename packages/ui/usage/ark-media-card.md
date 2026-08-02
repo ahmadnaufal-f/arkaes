@@ -41,3 +41,18 @@ platform can't parse renders nothing at all rather than "Invalid Date".
   <ark-chip slot="tag">Privacy</ark-chip>
 </ark-media-card>
 ```
+
+Because the card is an entry point to another page, it carries the same loading
+affordance as `ark-button`. Set `loading` (or assign a `loadingPromise`) and the
+corner arrow becomes a spinner, the copy dims, and the hover affordances freeze
+while the next page is fetched — so a click gives immediate feedback instead of
+a silent wait. Clicks are blocked until it settles.
+
+```html
+<ark-media-card href="/projects/fintech" title="A design system" loading>
+</ark-media-card>
+```
+
+```js
+card.loadingPromise = fetch("/projects/fintech");
+```
