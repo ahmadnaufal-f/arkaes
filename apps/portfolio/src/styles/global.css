@@ -53,7 +53,9 @@
   ark-chip,
   ark-badge,
   ark-empty,
-  ark-chatbot
+  ark-chatbot,
+  ark-floating-action-container,
+  ark-scroll-top
 ):not(:defined) {
   visibility: hidden;
 }
@@ -95,11 +97,12 @@ ark-hero:not(:defined) {
    - The nav is `position: fixed`; 88px clears its compacted 60px height — the
      auto-scroll only ever happens away from the top of the page, where the nav
      has already shrunk — with a little breathing room above the heading.
-   - On case-study and blog pages `ark-project-header` pins below the nav and
-     publishes its bottom edge as `--ark-project-header-pinned-bottom`. Its
-     height is measured, not fixed: ~220px with the collapsed visual watermark,
-     ~52px once the visual is dropped below 860px, more again when the title
-     wraps. Unset (no header) or `0px` (not yet pinned) falls back to the 88px.
+   - On case-study and blog pages `ark-project-header` pins to the top of the
+     viewport (the nav floats over it) and publishes its bottom edge as
+     `--ark-project-header-pinned-bottom`. Its height is measured, not fixed:
+     ~220px with the collapsed visual watermark, ~140px once the visual is
+     dropped below 860px, more again when the title wraps. Unset (no header) or
+     `0px` (not yet pinned) falls back to the 88px.
 
    Inherits into the items' shadow DOM, where `scroll-margin-top` is applied. */
 ark-accordion {

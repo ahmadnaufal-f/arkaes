@@ -32,6 +32,17 @@ const meta = {
     heading: "A performance-focused interface system.",
   },
   component: "ark-project-header",
+  parameters: {
+    docs: {
+      description: {
+        component: `
+Sticky case-study / project header. It pins flush with the top of the viewport and lets the fixed site nav float over it, so the room for that chrome is held as start padding inside the hero (\`--ark-project-header-chrome-clearance\`, default \`88px\`). There is no nav in this canvas, so that clearance reads as empty space above the eyebrow.
+
+Scrolling 60px past the header collapses it: the eyebrow and tags fold away and the visual shrinks.
+        `,
+      },
+    },
+  },
   render: renderHeader,
   title: "Patterns/Ark Project Header",
 } satisfies Meta<ProjectHeaderArgs>;

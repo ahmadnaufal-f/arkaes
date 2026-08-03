@@ -220,14 +220,20 @@ const schemaGraph = serializeJsonLd([
     </main>
     <SiteFooter />
 
-    <!-- Arkhe — the portfolio AI assistant. Persisted across View Transitions
-         so an open conversation survives client-side navigation. -->
-    <ark-chatbot
-      heading="Arkhe"
-      tagline="Ask about Ahmad's work"
-      launcher-label="Chat with Arkhe"
-      transition:persist
-    ></ark-chatbot>
+    <!-- Bottom-edge dock: the counterpart to the nav's immersive header, and it
+         follows the same scroll rule. Persisted across View Transitions as a
+         whole, so an open Arkhe conversation survives client-side navigation.
+         The chatbot is `docked`, which hands its launcher's placement to the
+         container; its panel stays fixed to the viewport. -->
+    <ark-floating-action-container transition:persist="floating-actions">
+      <ark-chatbot
+        docked
+        heading="Arkhe"
+        tagline="Ask about Ahmad's work"
+        launcher-label="Chat with Arkhe"
+      ></ark-chatbot>
+      <ark-scroll-top label="Back to top"></ark-scroll-top>
+    </ark-floating-action-container>
 
     <script>
       // Register the full custom-element set once for the document lifetime so

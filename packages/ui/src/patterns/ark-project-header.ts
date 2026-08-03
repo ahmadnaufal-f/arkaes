@@ -10,12 +10,16 @@ import { defineElement } from "../define-element";
 const PINNED_BOTTOM_PROP = "--ark-project-header-pinned-bottom";
 
 /**
- * The header that last wrote {@link PINNED_BOTTOM_PROP}. A page has one header,
- * but ClientRouter navigations overlap two — the incoming one publishes while the
- * outgoing one is still mounted, and without this the outgoing teardown would
- * clear the value its replacement had just written.
+ * Identity of the header that last wrote {@link PINNED_BOTTOM_PROP}. A page has
+ * one header, but ClientRouter navigations overlap two — the incoming one
+ * publishes while the outgoing one is still mounted, and without this the
+ * outgoing teardown would clear the value its replacement had just written.
+ *
+ * Each instance's own token stands in for the instance: only identity is ever
+ * compared, and holding an element reference here would keep a disconnected
+ * header alive for as long as the module is loaded.
  */
-let pinnedBottomOwner: ArkProjectHeader | null = null;
+let pinnedBottomOwner: symbol | null = null;
 
 /**
  * ArkProjectHeader is the hero header shown at the top of a case study or
@@ -26,11 +30,17 @@ let pinnedBottomOwner: ArkProjectHeader | null = null;
  * tag/stack chips. `eyebrow` and `heading` are plain-text attributes; a `title`
  * slot can override the heading with custom markup.
  *
- * The hero pins to the top of the viewport and collapses its padding once
- * scrolled past. `:host` is `display: contents` so the sticky header's
+ * The hero pins flush with the top of the viewport and collapses its padding
+ * once scrolled past. `:host` is `display: contents` so the sticky header's
  * containing block is the page ancestor (e.g. `.cs-page`) rather than the host
- * box, letting it stay pinned across the whole article. The stick offset is
- * configurable via the `--ark-project-header-stick-top` custom property.
+ * box, letting it stay pinned across the whole article.
+ *
+ * The fixed site nav floats over the pinned hero rather than pushing it down —
+ * that is what keeps article text from scrolling through the gap between the
+ * two while ark-navigation is in its see-through immersive state — so the hero
+ * reserves room for the chrome as start padding instead of as a stick offset.
+ * Both are configurable: `--ark-project-header-chrome-clearance` and
+ * `--ark-project-header-stick-top`.
  *
  * While pinned it publishes its bottom edge on `:root` as
  * `--ark-project-header-pinned-bottom` (`0px` when not pinned) so page CSS can
@@ -40,7 +50,11 @@ let pinnedBottomOwner: ArkProjectHeader | null = null;
  * @slot visual - The page thumbnail / watermark visual.
  * @slot title - Overrides the `heading` attribute with custom markup.
  * @slot tag - The tag / stack chips.
- * @cssprop --ark-project-header-stick-top - Offset from the top when pinned.
+ * @cssprop [--ark-project-header-stick-top=0px] - Offset from the top when pinned.
+ * @cssprop [--ark-project-header-chrome-clearance=76px] - Room held at the top
+ *   of the hero for the fixed nav that floats over it.
+ * @cssprop [--ark-project-header-title-lines=2] - Lines the title may run to
+ *   while pinned before it is ellipsised. Unpinned it is never clamped.
  */
 export class ArkProjectHeader extends LitElement {
   static override properties = {
@@ -50,6 +64,9 @@ export class ArkProjectHeader extends LitElement {
 
   eyebrow = "";
   heading = "";
+
+  /** This instance's stand-in for `this` in {@link pinnedBottomOwner}. */
+  private readonly _ownerToken = Symbol("ark-project-header");
 
   private _sentinel: HTMLElement | null = null;
   private _hero: HTMLElement | null = null;
@@ -62,17 +79,29 @@ export class ArkProjectHeader extends LitElement {
   static override styles = css`
     :host {
       display: contents;
-      --_stick-top: var(--ark-project-header-stick-top, 60px);
+      /* Pinned flush with the top of the page rather than under the nav: the
+         nav is see-through in its immersive small-screen state, and parking the
+         hero below it left a band of article text scrolling between the two.
+         The clearance below is what keeps the title out from under the chrome. */
+      --_stick-top: var(--ark-project-header-stick-top, 0px);
+      /* Room reserved at the top of the hero for the fixed site chrome that
+         floats over it — the condensed nav bar (60px) and, on small screens,
+         ark-navigation's immersive floating row (68px) — plus breathing room.
+         The scrim under that row fades out at its own bottom edge, so the title
+         only has to clear the row itself, not the gradient. */
+      --_chrome-clearance: var(--ark-project-header-chrome-clearance, 76px);
+      /* Applied only while pinned: past this many lines the header eats the
+         reading area it is supposed to be labelling. */
+      --_title-lines: var(--ark-project-header-title-lines, 2);
       /* Floor for the unstuck hero. It exists to give the slotted visual room;
          a consumer that slots no visual (the blog does not) is left with that
          much empty space under the title, so it is tunable. */
       --_min-height: var(--ark-project-header-min-height, 240px);
     }
 
-    /* Spacer in normal flow above the hero that the IntersectionObserver
-       watches. Its height matches the stick offset so (a) the hero pins with no
-       jump and (b) once this spacer scrolls fully past the top of the viewport,
-       the hero is pinned and we mark it "stuck". */
+    /* Zero-height marker in normal flow, sitting exactly on the hero's top
+       edge: once its bottom passes the top of the viewport the hero has reached
+       its stick offset, which is the moment to mark it "stuck". */
     .sentinel {
       display: block;
       height: var(--_stick-top);
@@ -86,7 +115,10 @@ export class ArkProjectHeader extends LitElement {
       gap: 80px;
       min-height: var(--_min-height);
       overflow: hidden;
-      padding-block: 36px;
+      /* The start padding carries the chrome clearance in both states — pinned
+         at the top of the viewport, the hero slides under the nav, so the gap
+         has to come from inside the hero rather than from a sticky offset. */
+      padding-block: calc(var(--_chrome-clearance) + var(--ark-space-2)) 36px;
       padding-inline: var(--site-content-padding);
       position: sticky;
       top: var(--_stick-top);
@@ -100,7 +132,7 @@ export class ArkProjectHeader extends LitElement {
        actually visible) for a compact, pinned header. */
     .hero.is-stuck {
       min-height: 0;
-      padding-block: 40px 20px;
+      padding-block: var(--_chrome-clearance) var(--ark-space-5);
       box-shadow: var(--ark-shadow-md);
     }
 
@@ -182,15 +214,38 @@ export class ArkProjectHeader extends LitElement {
       margin: 0;
     }
 
+    /* Only the pinned header clamps the title. Unstuck it is the top of the
+       page and can afford however many lines the title runs to; pinned it is a
+       label sitting on top of the article, and past --_title-lines it starts
+       eating the reading area it is supposed to be labelling.
+
+       The -webkit- prefixed box is the only form of line-clamp with universal
+       support. The text stays whole in the DOM, so the accessible name and the
+       page's h1 are unaffected by what the box hides.
+
+       The end padding is for descenders: the clamp clips at the padding box, and
+       a g/y/j/q/p on the last line hangs below its line box, which a 1.12
+       line-height leaves no room for. In em so it tracks the responsive size. */
+    .hero.is-stuck .title,
+    .hero.is-stuck ::slotted([slot="title"]) {
+      display: -webkit-box;
+      overflow: hidden;
+      padding-block-end: 0.16em;
+      text-overflow: ellipsis;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: var(--_title-lines);
+    }
+
     /* ── Responsive ─────────────────────────────────────────────────── */
     @media (max-width: 860px) {
       .hero {
         min-height: 200px;
-        padding-block: 24px 20px;
+        padding-block: calc(var(--_chrome-clearance) + var(--ark-space-2))
+          var(--ark-space-5);
       }
 
       .hero.is-stuck {
-        padding-block: 10px;
+        padding-block: var(--_chrome-clearance) var(--ark-space-3);
       }
 
       .visual {
@@ -212,12 +267,18 @@ export class ArkProjectHeader extends LitElement {
     }
   `;
 
-  // Hysteresis band (px). The stuck state engages when the sentinel's bottom
-  // edge reaches the viewport top and only releases once it has scrolled back
-  // down past this band. The dead-zone between the two thresholds stops the
-  // state flickering when a smooth-scroll library (Lenis) oscillates by
-  // sub-pixels around the pin point — each flip would otherwise restart the
-  // collapse transition and make the header jiggle.
+  // How far (px) the page scrolls past the hero's flow position before the
+  // collapse engages. The hero pins at the very top of the viewport, and on
+  // these pages it starts there, so it is pinned from the first frame — this
+  // distance is what separates "at the top of the article" from "reading it",
+  // and it is the collapse, not the pinning, that it gates.
+  private static readonly _COLLAPSE_AFTER = 60;
+
+  // Hysteresis band (px). Having engaged, the collapse only releases once the
+  // page has scrolled back up through this band. The dead-zone between the two
+  // thresholds stops the state flickering when a smooth-scroll library (Lenis)
+  // oscillates by sub-pixels around the threshold — each flip would otherwise
+  // restart the collapse transition and make the header jiggle.
   private static readonly _UNSTICK_BAND = 24;
 
   override connectedCallback() {
@@ -234,7 +295,7 @@ export class ArkProjectHeader extends LitElement {
     this._restoreScrollAnchoring();
     this._heroResize?.disconnect();
     this._heroResize = null;
-    if (pinnedBottomOwner === this) {
+    if (pinnedBottomOwner === this._ownerToken) {
       document.documentElement.style.removeProperty(PINNED_BOTTOM_PROP);
       pinnedBottomOwner = null;
     }
@@ -277,12 +338,15 @@ export class ArkProjectHeader extends LitElement {
     const bottom = this._stuck
       ? Math.round(this._hero.getBoundingClientRect().bottom)
       : 0;
-    if (bottom === this._publishedPinnedBottom && pinnedBottomOwner === this) {
+    if (
+      bottom === this._publishedPinnedBottom &&
+      pinnedBottomOwner === this._ownerToken
+    ) {
       return;
     }
 
     this._publishedPinnedBottom = bottom;
-    pinnedBottomOwner = this;
+    pinnedBottomOwner = this._ownerToken;
     document.documentElement.style.setProperty(
       PINNED_BOTTOM_PROP,
       `${bottom}px`,
@@ -320,8 +384,11 @@ export class ArkProjectHeader extends LitElement {
     this._ticking = false;
     if (!this._sentinel || !this._hero) return;
 
+    // The sentinel is not sticky, so its bottom edge tracks the hero's flow
+    // position: it goes negative by exactly the distance scrolled past it.
     const bottom = this._sentinel.getBoundingClientRect().bottom;
-    if (!this._stuck && bottom <= 0) {
+    const engageAt = -ArkProjectHeader._COLLAPSE_AFTER;
+    if (!this._stuck && bottom <= engageAt) {
       this._stuck = true;
 
       const thumbnail = this.querySelector('[slot="visual"]');
@@ -333,7 +400,10 @@ export class ArkProjectHeader extends LitElement {
       }
 
       this._hero.classList.add("is-stuck");
-    } else if (this._stuck && bottom > ArkProjectHeader._UNSTICK_BAND) {
+    } else if (
+      this._stuck &&
+      bottom > engageAt + ArkProjectHeader._UNSTICK_BAND
+    ) {
       this._stuck = false;
       this._visualEl?.style.removeProperty("--_visual-scale");
       this._visualEl?.style.removeProperty("--_visual-collapsed-h");

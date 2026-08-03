@@ -9,16 +9,70 @@ import {
 } from "../ark-navigation";
 
 let wrapper: HTMLDivElement | null = null;
+let realMatchMedia: typeof window.matchMedia;
+
+type MediaListener = (e: MediaQueryListEvent) => void;
+
+type FakeQuery = {
+  media: string;
+  matches: boolean;
+  addEventListener: (type: string, fn: MediaListener) => void;
+  removeEventListener: (type: string, fn: MediaListener) => void;
+  /** Flips the query and notifies listeners, as a viewport resize would. */
+  setMatches: (value: boolean) => void;
+};
+
+/**
+ * Deterministic matchMedia: every query created is recorded so a test can flip
+ * it and fire the `change` event the component listens to, without depending on
+ * the DOM shim's media-query evaluation.
+ */
+function stubMatchMedia(matches: boolean): FakeQuery[] {
+  const queries: FakeQuery[] = [];
+  window.matchMedia = ((media: string) => {
+    const listeners = new Set<MediaListener>();
+    const query: FakeQuery = {
+      media,
+      matches: media.includes("prefers-reduced-motion") ? false : matches,
+      addEventListener: (_type, fn) => {
+        listeners.add(fn);
+      },
+      removeEventListener: (_type, fn) => {
+        listeners.delete(fn);
+      },
+      setMatches: (value) => {
+        query.matches = value;
+        listeners.forEach((fn) =>
+          fn({ matches: value, media } as MediaQueryListEvent),
+        );
+      },
+    };
+    queries.push(query);
+    return query as unknown as MediaQueryList;
+  }) as typeof window.matchMedia;
+  return queries;
+}
+
+const viewportQuery = (queries: FakeQuery[]) =>
+  [...queries].reverse().find((q) => q.media.includes("max-width"))!;
+
+function scrollTo(y: number) {
+  Object.defineProperty(window, "scrollY", { value: y, configurable: true, writable: true });
+  window.dispatchEvent(new Event("scroll"));
+}
 
 beforeEach(() => {
+  realMatchMedia = window.matchMedia;
   // Ensure scrollY starts at 0 for each test
   Object.defineProperty(window, "scrollY", { value: 0, configurable: true, writable: true });
 });
 
 afterEach(() => {
+  window.matchMedia = realMatchMedia;
   wrapper?.remove();
   wrapper = null;
   document.body.style.overflow = "";
+  vi.useRealTimers();
 });
 
 function mount(): HTMLDivElement {
@@ -78,6 +132,202 @@ describe("ArkNavigationRoot scroll detection", () => {
 
     // root is no longer connected so _handleScroll should not run
     expect(root.scrolled).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// ArkNavigationRoot — immersive mode
+// ---------------------------------------------------------------------------
+
+describe("ArkNavigationRoot immersive mode", () => {
+  /**
+   * happy-dom reports offsetHeight 0, so the root keeps its 80px fallback for
+   * the resting bar height — the depth the page must scroll past.
+   */
+  const NAV_HEIGHT = 80;
+
+  function mountRoot(smallViewport: boolean) {
+    const queries = stubMatchMedia(smallViewport);
+    const w = mount();
+    const root = document.createElement("ark-navigation-root") as ArkNavigationRoot;
+    w.appendChild(root);
+    return { root, queries };
+  }
+
+  it("stays out of immersive mode on a wide viewport", () => {
+    const { root } = mountRoot(false);
+
+    scrollTo(NAV_HEIGHT + 200);
+
+    expect(root.immersive).toBe(false);
+    expect(root.immersiveHidden).toBe(false);
+  });
+
+  it("enters immersive mode on a small viewport once scrolled past the bar height", () => {
+    const { root } = mountRoot(true);
+
+    scrollTo(NAV_HEIGHT + 1);
+
+    expect(root.immersive).toBe(true);
+  });
+
+  it("stays out of immersive mode while the scroll depth is within the bar height", () => {
+    const { root } = mountRoot(true);
+
+    scrollTo(NAV_HEIGHT);
+
+    expect(root.immersive).toBe(false);
+  });
+
+  it("leaves immersive mode when scrolling back up to the top", () => {
+    const { root } = mountRoot(true);
+
+    scrollTo(NAV_HEIGHT + 200);
+    expect(root.immersive).toBe(true);
+
+    scrollTo(0);
+    expect(root.immersive).toBe(false);
+  });
+
+  it("hides the floating elements while scrolling and shows them once it settles", () => {
+    vi.useFakeTimers();
+    const { root } = mountRoot(true);
+
+    scrollTo(NAV_HEIGHT + 200);
+    expect(root.immersiveHidden).toBe(true);
+
+    vi.advanceTimersByTime(199);
+    expect(root.immersiveHidden).toBe(true);
+
+    vi.advanceTimersByTime(1);
+    expect(root.immersiveHidden).toBe(false);
+  });
+
+  it("keeps the floating elements hidden while scroll events keep arriving", () => {
+    vi.useFakeTimers();
+    const { root } = mountRoot(true);
+
+    scrollTo(NAV_HEIGHT + 200);
+    vi.advanceTimersByTime(150);
+    scrollTo(NAV_HEIGHT + 400);
+    vi.advanceTimersByTime(150);
+
+    expect(root.immersiveHidden).toBe(true);
+
+    vi.advanceTimersByTime(200);
+    expect(root.immersiveHidden).toBe(false);
+  });
+
+  it("hides the floating elements when scrolling in either direction", () => {
+    vi.useFakeTimers();
+    const { root } = mountRoot(true);
+
+    scrollTo(NAV_HEIGHT + 400);
+    vi.advanceTimersByTime(200);
+    expect(root.immersiveHidden).toBe(false);
+
+    scrollTo(NAV_HEIGHT + 200);
+    expect(root.immersiveHidden).toBe(true);
+  });
+
+  it("does not hide the floating elements when a scroll event carries no movement", () => {
+    vi.useFakeTimers();
+    const { root } = mountRoot(true);
+
+    scrollTo(NAV_HEIGHT + 200);
+    vi.advanceTimersByTime(200);
+    expect(root.immersiveHidden).toBe(false);
+
+    window.dispatchEvent(new Event("scroll"));
+    expect(root.immersiveHidden).toBe(false);
+  });
+
+  it("shows the floating elements again when the mobile menu opens mid-scroll", () => {
+    vi.useFakeTimers();
+    const { root } = mountRoot(true);
+
+    scrollTo(NAV_HEIGHT + 200);
+    expect(root.immersiveHidden).toBe(true);
+
+    root.menuOpen = true;
+
+    expect(root.immersiveHidden).toBe(false);
+  });
+
+  it("does not hide the floating elements while the mobile menu is open", () => {
+    vi.useFakeTimers();
+    const { root } = mountRoot(true);
+
+    scrollTo(NAV_HEIGHT + 200);
+    root.menuOpen = true;
+    scrollTo(NAV_HEIGHT + 400);
+
+    expect(root.immersiveHidden).toBe(false);
+  });
+
+  it("still hides the floating elements after a menu open/close round trip", () => {
+    vi.useFakeTimers();
+    const { root } = mountRoot(true);
+    const toggle =
+      document.createElement("ark-navigation-mobile-toggle") as ArkNavigationMobileToggle;
+    root.appendChild(toggle);
+
+    scrollTo(NAV_HEIGHT + 200);
+    vi.advanceTimersByTime(200);
+
+    // Toggling through the mobile menu leaves focus on the button that was hit,
+    // which used to latch the header into a permanently-visible state.
+    toggle.dispatchEvent(
+      new CustomEvent("ark-nav:menu-toggle", { bubbles: true, composed: true }),
+    );
+    expect(root.menuOpen).toBe(true);
+    toggle.dispatchEvent(
+      new CustomEvent("ark-nav:menu-toggle", { bubbles: true, composed: true }),
+    );
+    expect(root.menuOpen).toBe(false);
+
+    scrollTo(NAV_HEIGHT + 400);
+
+    expect(root.immersiveHidden).toBe(true);
+  });
+
+  it("drops immersive mode when the viewport grows past the breakpoint", () => {
+    const { root, queries } = mountRoot(true);
+
+    scrollTo(NAV_HEIGHT + 200);
+    expect(root.immersive).toBe(true);
+
+    viewportQuery(queries).setMatches(false);
+
+    expect(root.immersive).toBe(false);
+    expect(root.immersiveHidden).toBe(false);
+  });
+
+  it("picks immersive mode back up when the viewport shrinks below the breakpoint", () => {
+    const { root, queries } = mountRoot(false);
+
+    scrollTo(NAV_HEIGHT + 200);
+    expect(root.immersive).toBe(false);
+
+    viewportQuery(queries).setMatches(true);
+
+    expect(root.immersive).toBe(true);
+  });
+
+  it("stops the settle timer on disconnect", () => {
+    vi.useFakeTimers();
+    const { root } = mountRoot(true);
+
+    scrollTo(NAV_HEIGHT + 200);
+    expect(root.immersiveHidden).toBe(true);
+
+    wrapper?.remove();
+    wrapper = null;
+
+    vi.advanceTimersByTime(500);
+
+    // The timer was cleared, so the hidden flag is left exactly as it was.
+    expect(root.immersiveHidden).toBe(true);
   });
 });
 

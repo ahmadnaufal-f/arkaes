@@ -1,10 +1,22 @@
 .site-footer {
+  /* The floating action dock is fixed over the bottom of the viewport and
+     stands about 84px tall, so it covers the end of the footer once the page is
+     scrolled all the way down. This holds the footer's text above it.
+
+     Deliberately a hardcoded number rather than the dock's measured height: the
+     footer would otherwise have to observe a component it does not own, for a
+     value that only ever changes when someone redesigns the dock — at which
+     point they can change this too. Keep it ahead of
+     --ark-floating-action-margin-block * 2 + the tallest action. */
+  --footer-dock-clearance: 104px;
+
   align-items: center;
   background: var(--ark-color-ink);
   border-top: 1px solid rgba(255, 255, 255, 0.05);
   display: flex;
   justify-content: space-between;
   padding: 30px var(--site-content-padding);
+  padding-block-end: var(--footer-dock-clearance);
 }
 
 .footer-logo {
@@ -15,27 +27,11 @@
   letter-spacing: 0.1em;
 }
 
-.footer-copy,
-.footer-links a {
+.footer-copy {
   color: rgba(250, 247, 245, 0.62);
   font-family: var(--ark-font-mono);
   font-size: 0.72rem;
   letter-spacing: 0.12em;
-}
-
-.footer-links {
-  display: flex;
-  gap: 28px;
-  list-style: none;
-}
-
-.footer-links a {
-  text-transform: uppercase;
-  transition: color var(--ark-duration-normal);
-}
-
-.footer-links a:hover {
-  color: var(--ark-color-blush-light);
 }
 
 @media (max-width: 900px) {
@@ -44,5 +40,7 @@
     flex-direction: column;
     gap: 18px;
     padding: 28px 24px;
+    /* Re-applied after the shorthand, which would otherwise reset it. */
+    padding-block-end: var(--footer-dock-clearance);
   }
 }
