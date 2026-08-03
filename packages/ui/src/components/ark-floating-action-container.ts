@@ -12,12 +12,14 @@ const SETTLE_MS = 200;
 
 /**
  * ArkFloatingActionContainer docks a row of floating actions to the bottom edge
- * of the viewport, centred over a gradient scrim.
+ * of the viewport.
  *
  * It is the bottom-edge counterpart to ark-navigation's immersive header and
  * follows the same scroll rule: the actions step out of the way while the page
- * is moving and settle back in once it stops. The scrim fades in only once the
- * page has scrolled, so a page sitting at its top is left clean.
+ * is moving and settle back in once it stops. The scrim behind the actions is
+ * unfilled by default (see `--ark-floating-action-scrim`); when it is given a
+ * fill it appears only once the page has scrolled, so a page sitting at its top
+ * is left clean.
  *
  * The container has no opinion about what the actions are — it centres whatever
  * is slotted into it. An action that collapses itself (see ark-scroll-top) can
@@ -32,14 +34,15 @@ const SETTLE_MS = 200;
  * the container mirrors it as `has-open-action` on itself. Hiding is also
  * suspended while the keyboard focus ring is inside the dock.
  *
- * @summary Bottom-docked row of floating actions over a gradient scrim.
+ * @summary Bottom-docked row of floating actions.
  * @slot - The actions to dock. Rendered in a centred row.
- * @csspart scrim - The gradient fill behind the actions.
+ * @csspart scrim - The layer behind the actions. Unfilled by default.
  * @cssprop [--ark-floating-action-gap=var(--ark-space-3)] - Space between
  *   actions; also what a self-collapsing action subtracts to stay centred.
  * @cssprop [--ark-floating-action-margin-block=var(--ark-space-4)] - Space above
  *   and below the row; the scrim is the row height plus these margins.
- * @cssprop [--ark-floating-action-scrim] - The gradient fill under the actions.
+ * @cssprop [--ark-floating-action-scrim=none] - Fill under the actions. Unset
+ *   for now; give it a value to paint a scrim there again.
  * @cssprop [--ark-floating-action-hidden-shift=8px] - How far the actions travel
  *   while hidden mid-scroll.
  */
@@ -108,11 +111,10 @@ export class ArkFloatingActionContainer extends LitElement {
     :host {
       --ark-floating-action-gap: var(--ark-space-3);
       --ark-floating-action-margin-block: var(--ark-space-4);
-      --ark-floating-action-scrim: linear-gradient(
-        to top,
-        rgba(0, 0, 0, 0.38),
-        rgba(0, 0, 0, 0)
-      );
+      /* No fill for now — the gradient scrim read badly over real pages. The
+         layer is still here and still sized to the action row, so setting this
+         property (or styling the scrim part) puts a fill back. */
+      --ark-floating-action-scrim: none;
       --ark-floating-action-hidden-shift: 8px;
 
       align-items: center;
@@ -134,9 +136,9 @@ export class ArkFloatingActionContainer extends LitElement {
       z-index: 100;
     }
 
-    /* Sized to the host box — the row height plus both block margins — and
-       painted behind the actions on a negative z-index inside the host's own
-       stacking context. */
+    /* Sized to the host box — the row height plus both block margins — and sits
+       behind the actions on a negative z-index inside the host's own stacking
+       context. Unfilled by default — see --ark-floating-action-scrim. */
     .scrim {
       background: var(--ark-floating-action-scrim);
       inset: 0;
@@ -158,8 +160,8 @@ export class ArkFloatingActionContainer extends LitElement {
         transform var(--ark-duration-normal) var(--ark-ease-standard);
     }
 
-    /* Mid-scroll only the actions step aside; the scrim stays, since it is what
-       keeps the content legible as it travels under the dock. */
+    /* Mid-scroll only the actions step aside; the scrim stays put, since it is
+       the backdrop the content travels under. */
     :host([actions-hidden]) ::slotted(*) {
       opacity: 0;
       pointer-events: none;

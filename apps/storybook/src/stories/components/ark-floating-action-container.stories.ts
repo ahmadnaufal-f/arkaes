@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
 
 // The dock is fixed to the bottom of the viewport, so the canvas needs a frame
-// with something behind it for the scrim to read as a scrim.
+// with something behind it for the actions to read as floating.
 const dockFrame = (content: ReturnType<typeof html>) => html`
   <div
     style="position: relative; height: 260px; overflow: hidden; background:
@@ -33,8 +33,8 @@ const renderDefault = () => dockFrame(html`
   </ark-floating-action-container>
 `);
 
-// At the top of a page there is no scrim and nothing for the back-to-top button
-// to do, so it collapses and the remaining action sits dead centre.
+// At the top of a page there is nothing for the back-to-top button to do, so it
+// collapses and the remaining action sits dead centre.
 const renderAtTop = () => dockFrame(html`
   <ark-floating-action-container style="position: absolute;">
     <ark-scroll-top .atTop=${true}></ark-scroll-top>
@@ -55,7 +55,7 @@ const meta = {
     docs: {
       description: {
         component: `
-\`ark-floating-action-container\` docks a row of floating actions to the bottom edge of the viewport, centred over a gradient scrim. It is the bottom-edge counterpart to \`ark-navigation\`'s immersive header and follows the same scroll rule: the actions step out of the way while the page is moving and settle back in once it stops.
+\`ark-floating-action-container\` docks a centred row of floating actions to the bottom edge of the viewport. It is the bottom-edge counterpart to \`ark-navigation\`'s immersive header and follows the same scroll rule: the actions step out of the way while the page is moving and settle back in once it stops.
 
 The container sets \`scrolled\` and \`actions-hidden\` on itself from the page scroll; the stories below pin them, and pin \`position: absolute\` so the dock sits in the canvas frame rather than at the bottom of the docs page.
 

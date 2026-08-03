@@ -31,12 +31,15 @@ const DEFAULT_NAV_HEIGHT_PX = 80;
  *
  * On small screens it also drives *immersive mode* (the One UI trick): once the
  * page has scrolled past the resting height of the bar, the bar itself dissolves
- * and its children ride on top of a gradient scrim as separate floating pills.
- * While the page is moving the pills step out of the way, and they settle back
- * in once scrolling stops.
+ * and its children float free as separate pills. While the page is moving the
+ * pills step out of the way, and they settle back in once scrolling stops.
+ *
+ * The scrim behind the pills is unfilled by default — see
+ * `--ark-nav-immersive-scrim`.
  *
  * @summary Fixed site header with condensed and immersive scroll states.
- * @csspart scrim - The gradient fill painted behind the floating pills.
+ * @csspart scrim - The layer painted behind the floating pills. Unfilled by
+ *   default.
  * @cssprop [--ark-nav-immersive-margin-block=var(--ark-space-3)] - Space above
  *   and below the floating row; the scrim is exactly the pill height plus
  *   these margins.
@@ -44,7 +47,8 @@ const DEFAULT_NAV_HEIGHT_PX = 80;
  *   width of the square hamburger pill).
  * @cssprop [--ark-nav-immersive-pill-bg] - Pill background.
  * @cssprop [--ark-nav-immersive-pill-radius=var(--ark-radius-full)] - Pill radius.
- * @cssprop [--ark-nav-immersive-scrim] - The gradient fill under the pills.
+ * @cssprop [--ark-nav-immersive-scrim=none] - Fill under the pills. Unset for
+ *   now; give it a value to paint a scrim there again.
  * @cssprop [--ark-nav-immersive-hidden-shift=-8px] - How far the pills travel
  *   while hidden mid-scroll.
  */
@@ -163,11 +167,10 @@ export class ArkNavigationRoot extends LitElement {
         transparent
       );
       --ark-nav-immersive-pill-radius: var(--ark-radius-full);
-      --ark-nav-immersive-scrim: linear-gradient(
-        to bottom,
-        rgba(0, 0, 0, 0.38),
-        rgba(0, 0, 0, 0)
-      );
+      /* No fill for now — the gradient scrim read badly over real pages. The
+         layer is still here and still sized to the floating row, so setting
+         this property (or styling the scrim part) puts a fill back. */
+      --ark-nav-immersive-scrim: none;
       --ark-nav-immersive-hidden-shift: -8px;
     }
 
@@ -190,8 +193,9 @@ export class ArkNavigationRoot extends LitElement {
        while the mobile menu is open — the drawer needs the solid bar to hang
        off, and the bar has to catch pointer events again. */
 
-    /* Painted behind the pills (negative z-index inside the host's own stacking
-       context) and sized to the host box: pill height + both block margins. */
+    /* Sits behind the pills (negative z-index inside the host's own stacking
+       context) and sized to the host box: pill height + both block margins.
+       Unfilled by default — see --ark-nav-immersive-scrim. */
     .scrim {
       background: var(--ark-nav-immersive-scrim);
       inset: 0;
@@ -252,9 +256,9 @@ export class ArkNavigationRoot extends LitElement {
     }
 
     /* Mid-scroll only the pills step aside, then settle back once the page
-       stops moving. The scrim stays: it is what keeps the content legible as it
-       travels under the status area, so it has nothing to get out of the way
-       of. (Keyboard focus is handled in _syncImmersive, not here — a pointer
+       stops moving. The scrim stays put: it is the backdrop the content travels
+       under, so it has nothing to get out of the way of.
+       (Keyboard focus is handled in _syncImmersive, not here — a pointer
        tap leaves focus on the button it hit, so a :focus-within guard would
        latch on after the first tap of the hamburger.) */
     :host([immersive][immersive-hidden]:not([menu-open])) {
