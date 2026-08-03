@@ -9,66 +9,23 @@ import {
 } from "../ark-navigation";
 
 let wrapper: HTMLDivElement | null = null;
-let realMatchMedia: typeof window.matchMedia;
 
-type MediaListener = (e: MediaQueryListEvent) => void;
-
-type FakeQuery = {
-  media: string;
-  matches: boolean;
-  addEventListener: (type: string, fn: MediaListener) => void;
-  removeEventListener: (type: string, fn: MediaListener) => void;
-  /** Flips the query and notifies listeners, as a viewport resize would. */
-  setMatches: (value: boolean) => void;
-};
-
-/**
- * Deterministic matchMedia: every query created is recorded so a test can flip
- * it and fire the `change` event the component listens to, without depending on
- * the DOM shim's media-query evaluation.
- */
-function stubMatchMedia(matches: boolean): FakeQuery[] {
-  const queries: FakeQuery[] = [];
-  window.matchMedia = ((media: string) => {
-    const listeners = new Set<MediaListener>();
-    const query: FakeQuery = {
-      media,
-      matches: media.includes("prefers-reduced-motion") ? false : matches,
-      addEventListener: (_type, fn) => {
-        listeners.add(fn);
-      },
-      removeEventListener: (_type, fn) => {
-        listeners.delete(fn);
-      },
-      setMatches: (value) => {
-        query.matches = value;
-        listeners.forEach((fn) =>
-          fn({ matches: value, media } as MediaQueryListEvent),
-        );
-      },
-    };
-    queries.push(query);
-    return query as unknown as MediaQueryList;
-  }) as typeof window.matchMedia;
-  return queries;
+/** Moves the page without dispatching, for tests that drive another event. */
+function setScrollY(y: number) {
+  Object.defineProperty(window, "scrollY", { value: y, configurable: true, writable: true });
 }
 
-const viewportQuery = (queries: FakeQuery[]) =>
-  [...queries].reverse().find((q) => q.media.includes("max-width"))!;
-
 function scrollTo(y: number) {
-  Object.defineProperty(window, "scrollY", { value: y, configurable: true, writable: true });
+  setScrollY(y);
   window.dispatchEvent(new Event("scroll"));
 }
 
 beforeEach(() => {
-  realMatchMedia = window.matchMedia;
   // Ensure scrollY starts at 0 for each test
-  Object.defineProperty(window, "scrollY", { value: 0, configurable: true, writable: true });
+  setScrollY(0);
 });
 
 afterEach(() => {
-  window.matchMedia = realMatchMedia;
   wrapper?.remove();
   wrapper = null;
   document.body.style.overflow = "";
@@ -146,25 +103,15 @@ describe("ArkNavigationRoot immersive mode", () => {
    */
   const NAV_HEIGHT = 80;
 
-  function mountRoot(smallViewport: boolean) {
-    const queries = stubMatchMedia(smallViewport);
+  function mountRoot() {
     const w = mount();
     const root = document.createElement("ark-navigation-root") as ArkNavigationRoot;
     w.appendChild(root);
-    return { root, queries };
+    return { root };
   }
 
-  it("stays out of immersive mode on a wide viewport", () => {
-    const { root } = mountRoot(false);
-
-    scrollTo(NAV_HEIGHT + 200);
-
-    expect(root.immersive).toBe(false);
-    expect(root.immersiveHidden).toBe(false);
-  });
-
-  it("enters immersive mode on a small viewport once scrolled past the bar height", () => {
-    const { root } = mountRoot(true);
+  it("enters immersive mode once scrolled past the bar height", () => {
+    const { root } = mountRoot();
 
     scrollTo(NAV_HEIGHT + 1);
 
@@ -172,7 +119,7 @@ describe("ArkNavigationRoot immersive mode", () => {
   });
 
   it("stays out of immersive mode while the scroll depth is within the bar height", () => {
-    const { root } = mountRoot(true);
+    const { root } = mountRoot();
 
     scrollTo(NAV_HEIGHT);
 
@@ -180,7 +127,7 @@ describe("ArkNavigationRoot immersive mode", () => {
   });
 
   it("leaves immersive mode when scrolling back up to the top", () => {
-    const { root } = mountRoot(true);
+    const { root } = mountRoot();
 
     scrollTo(NAV_HEIGHT + 200);
     expect(root.immersive).toBe(true);
@@ -191,7 +138,7 @@ describe("ArkNavigationRoot immersive mode", () => {
 
   it("hides the floating elements while scrolling and shows them once it settles", () => {
     vi.useFakeTimers();
-    const { root } = mountRoot(true);
+    const { root } = mountRoot();
 
     scrollTo(NAV_HEIGHT + 200);
     expect(root.immersiveHidden).toBe(true);
@@ -205,7 +152,7 @@ describe("ArkNavigationRoot immersive mode", () => {
 
   it("keeps the floating elements hidden while scroll events keep arriving", () => {
     vi.useFakeTimers();
-    const { root } = mountRoot(true);
+    const { root } = mountRoot();
 
     scrollTo(NAV_HEIGHT + 200);
     vi.advanceTimersByTime(150);
@@ -220,7 +167,7 @@ describe("ArkNavigationRoot immersive mode", () => {
 
   it("hides the floating elements when scrolling in either direction", () => {
     vi.useFakeTimers();
-    const { root } = mountRoot(true);
+    const { root } = mountRoot();
 
     scrollTo(NAV_HEIGHT + 400);
     vi.advanceTimersByTime(200);
@@ -232,7 +179,7 @@ describe("ArkNavigationRoot immersive mode", () => {
 
   it("does not hide the floating elements when a scroll event carries no movement", () => {
     vi.useFakeTimers();
-    const { root } = mountRoot(true);
+    const { root } = mountRoot();
 
     scrollTo(NAV_HEIGHT + 200);
     vi.advanceTimersByTime(200);
@@ -244,7 +191,7 @@ describe("ArkNavigationRoot immersive mode", () => {
 
   it("shows the floating elements again when the mobile menu opens mid-scroll", () => {
     vi.useFakeTimers();
-    const { root } = mountRoot(true);
+    const { root } = mountRoot();
 
     scrollTo(NAV_HEIGHT + 200);
     expect(root.immersiveHidden).toBe(true);
@@ -256,7 +203,7 @@ describe("ArkNavigationRoot immersive mode", () => {
 
   it("does not hide the floating elements while the mobile menu is open", () => {
     vi.useFakeTimers();
-    const { root } = mountRoot(true);
+    const { root } = mountRoot();
 
     scrollTo(NAV_HEIGHT + 200);
     root.menuOpen = true;
@@ -267,7 +214,7 @@ describe("ArkNavigationRoot immersive mode", () => {
 
   it("still hides the floating elements after a menu open/close round trip", () => {
     vi.useFakeTimers();
-    const { root } = mountRoot(true);
+    const { root } = mountRoot();
     const toggle =
       document.createElement("ark-navigation-mobile-toggle") as ArkNavigationMobileToggle;
     root.appendChild(toggle);
@@ -291,32 +238,33 @@ describe("ArkNavigationRoot immersive mode", () => {
     expect(root.immersiveHidden).toBe(true);
   });
 
-  it("drops immersive mode when the viewport grows past the breakpoint", () => {
-    const { root, queries } = mountRoot(true);
+  it("re-syncs on a resize, since the bar height it compares against can change", () => {
+    const { root } = mountRoot();
 
-    scrollTo(NAV_HEIGHT + 200);
-    expect(root.immersive).toBe(true);
-
-    viewportQuery(queries).setMatches(false);
-
+    // Moved without a scroll event, so only the resize can carry it through.
+    setScrollY(NAV_HEIGHT + 200);
     expect(root.immersive).toBe(false);
-    expect(root.immersiveHidden).toBe(false);
+
+    window.dispatchEvent(new Event("resize"));
+
+    expect(root.immersive).toBe(true);
   });
 
-  it("picks immersive mode back up when the viewport shrinks below the breakpoint", () => {
-    const { root, queries } = mountRoot(false);
+  it("removes the resize listener on disconnect", () => {
+    const { root } = mountRoot();
 
-    scrollTo(NAV_HEIGHT + 200);
+    wrapper?.remove();
+    wrapper = null;
+
+    setScrollY(NAV_HEIGHT + 200);
+    window.dispatchEvent(new Event("resize"));
+
     expect(root.immersive).toBe(false);
-
-    viewportQuery(queries).setMatches(true);
-
-    expect(root.immersive).toBe(true);
   });
 
   it("stops the settle timer on disconnect", () => {
     vi.useFakeTimers();
-    const { root } = mountRoot(true);
+    const { root } = mountRoot();
 
     scrollTo(NAV_HEIGHT + 200);
     expect(root.immersiveHidden).toBe(true);

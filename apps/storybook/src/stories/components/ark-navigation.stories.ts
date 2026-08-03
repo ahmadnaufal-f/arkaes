@@ -150,7 +150,7 @@ const meta = {
 
 Structure the header with \`ark-navigation-root\`, \`ark-navigation-brand\`, \`ark-navigation-links\`, \`ark-navigation-cta\`, \`ark-navigation-mobile-toggle\`, and \`ark-navigation-mobile-menu\`. Use \`ark-nav-link\` for menu items and set \`active\` to highlight the current page. The \`scrolled\` attribute changes appearance when the page is scrolled.
 
-On viewports up to 900px the root also drives **immersive mode**: once the page scrolls past the resting height of the bar, the bar dissolves and the brand and hamburger become separate floating pills. The pills tuck away while the page is moving and settle back in when scrolling stops. The root sets \`immersive\` and \`immersive-hidden\` itself — the stories below pin them so the states are visible at any canvas width.
+The root also drives **immersive mode**, at every viewport width: once the page scrolls past the resting height of the bar, the bar dissolves and its children become separate floating pills — brand, links and CTA on a wide canvas, brand and hamburger below the links' own 900px breakpoint. The pills tuck away while the page is moving and settle back in when scrolling stops. The root sets \`immersive\` and \`immersive-hidden\` itself — the stories below pin them so the states are visible without scrolling the docs page.
         `,
       },
     },

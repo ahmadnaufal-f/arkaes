@@ -28,9 +28,11 @@ toggle automatically.
 
 ## Immersive mode
 
-On viewports up to 900px the root also drives an immersive state: once the page
+The root also drives an immersive state, at every viewport width: once the page
 has scrolled past the resting height of the bar, the bar itself dissolves and
-the brand, CTA and hamburger become separate floating pills. Behind them sits a
+its children become separate floating pills — brand, links and CTA on a desktop;
+below the links' own 900px breakpoint the links are already gone and the
+hamburger pill takes their place. Behind them sits a
 scrim layer as tall as the pills plus their block margins; it is unfilled by
 default, so give `--ark-nav-immersive-scrim` a value to paint one. While the
 page is moving the pills tuck away — the scrim stays put, since it is the
@@ -49,6 +51,7 @@ only to pin a state (a story, a screenshot). Tune the look with:
 | `--ark-nav-immersive-pill-size`       | `44px`                     |
 | `--ark-nav-immersive-pill-bg`         | translucent nav background |
 | `--ark-nav-immersive-pill-radius`     | `var(--ark-radius-full)`   |
+| `--ark-nav-immersive-links-gap`       | `var(--ark-space-6)`       |
 | `--ark-nav-immersive-scrim`           | `none`                     |
 | `--ark-nav-immersive-hidden-shift`    | `-8px`                     |
 

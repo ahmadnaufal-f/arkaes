@@ -14,12 +14,6 @@ let mobileMenuId = 0;
 /** Scroll depth (px) past which the bar takes on its condensed look. */
 const SCROLLED_THRESHOLD_PX = 40;
 
-/**
- * Viewport width (px) at or below which immersive mode is allowed — the same
- * breakpoint where the desktop links give way to the hamburger.
- */
-const IMMERSIVE_BREAKPOINT_PX = 900;
-
 /** Quiet time (ms) after the last scroll event before the pills settle back in. */
 const IMMERSIVE_SETTLE_MS = 200;
 
@@ -29,10 +23,13 @@ const DEFAULT_NAV_HEIGHT_PX = 80;
 /**
  * ArkNavigationRoot manages the scroll and mobile menu state.
  *
- * On small screens it also drives *immersive mode* (the One UI trick): once the
- * page has scrolled past the resting height of the bar, the bar itself dissolves
- * and its children float free as separate pills. While the page is moving the
- * pills step out of the way, and they settle back in once scrolling stops.
+ * It also drives *immersive mode* (the One UI trick): once the page has
+ * scrolled past the resting height of the bar, the bar itself dissolves and its
+ * children float free as separate pills. While the page is moving the pills step
+ * out of the way, and they settle back in once scrolling stops. This runs at
+ * every viewport width — on a desktop the links ride in a pill of their own
+ * between the brand and the CTA; below the links' own 900px breakpoint they are
+ * already gone and the hamburger pill takes their place.
  *
  * The scrim behind the pills is unfilled by default — see
  * `--ark-nav-immersive-scrim`.
@@ -47,6 +44,8 @@ const DEFAULT_NAV_HEIGHT_PX = 80;
  *   width of the square hamburger pill).
  * @cssprop [--ark-nav-immersive-pill-bg] - Pill background.
  * @cssprop [--ark-nav-immersive-pill-radius=var(--ark-radius-full)] - Pill radius.
+ * @cssprop [--ark-nav-immersive-links-gap=var(--ark-space-6)] - Gap between the
+ *   desktop links while they are boxed into their pill.
  * @cssprop [--ark-nav-immersive-scrim=none] - Fill under the pills. Unset for
  *   now; give it a value to paint a scrim there again.
  * @cssprop [--ark-nav-immersive-hidden-shift=-8px] - How far the pills travel
@@ -77,7 +76,6 @@ export class ArkNavigationRoot extends LitElement {
   private _navHeight = DEFAULT_NAV_HEIGHT_PX;
   private _lastScrollY = 0;
   private _settleTimer: number | null = null;
-  private _viewportQuery: MediaQueryList | null = null;
 
   get scrolled(): boolean {
     return this._scrolled;
@@ -138,12 +136,11 @@ export class ArkNavigationRoot extends LitElement {
   static override styles = css`
     :host {
       align-items: center;
-      backdrop-filter: blur(2px);
-      background: linear-gradient(
-        to bottom,
-        color-mix(in srgb, var(--ark-navigation-bg, var(--ark-color-bg)) 96%, transparent) 60%,
-        transparent
-      );
+      /* No fill at rest. The gradient that used to sit here read badly over
+         real pages, and its 2px backdrop blur went with it: the gradient was
+         what hid the blur's hard bottom edge, so on its own the blur is the
+         same banding one step fainter. The scrolled state below still paints. */
+      background: none;
       display: flex;
       inset-inline: 0;
       width: 100vw;
@@ -167,6 +164,9 @@ export class ArkNavigationRoot extends LitElement {
         transparent
       );
       --ark-nav-immersive-pill-radius: var(--ark-radius-full);
+      /* The desktop links ride in a pill of their own, and the resting 48px
+         gap reads as three separate things once there is a border around it. */
+      --ark-nav-immersive-links-gap: var(--ark-space-6);
       /* No fill for now — the gradient scrim read badly over real pages. The
          layer is still here and still sized to the floating row, so setting
          this property (or styling the scrim part) puts a fill back. */
@@ -187,11 +187,13 @@ export class ArkNavigationRoot extends LitElement {
     }
 
     /* ── Immersive mode ────────────────────────────────────────────────
-       The immersive attribute is set by the root itself and only on small
-       screens (see _syncImmersive); the styles below are unconditional so a
-       story or a test can pin the state at any viewport width. It is suspended
-       while the mobile menu is open — the drawer needs the solid bar to hang
-       off, and the bar has to catch pointer events again. */
+       The immersive attribute is set by the root itself from the scroll depth
+       (see _syncImmersive), at every viewport width. Which pills exist is left
+       to the children's own breakpoints: below 900px the links are display:none
+       and the hamburger appears, so the rules below cover both sets and the
+       irrelevant half is simply inert. Suspended while the mobile menu is open —
+       the drawer needs the solid bar to hang off, and the bar has to catch
+       pointer events again. */
 
     /* Sits behind the pills (negative z-index inside the host's own stacking
        context) and sized to the host box: pill height + both block margins.
@@ -220,6 +222,7 @@ export class ArkNavigationRoot extends LitElement {
       }
 
       & ::slotted(ark-navigation-brand),
+      & ::slotted(ark-navigation-links),
       & ::slotted(ark-navigation-mobile-toggle),
       & ::slotted(ark-navigation-cta) {
         align-items: center;
@@ -234,13 +237,21 @@ export class ArkNavigationRoot extends LitElement {
       }
 
       & ::slotted(ark-navigation-brand),
+      & ::slotted(ark-navigation-links),
       & ::slotted(ark-navigation-mobile-toggle) {
         border: 1px solid var(--ark-color-border);
         border-radius: var(--ark-nav-immersive-pill-radius);
       }
 
-      & ::slotted(ark-navigation-brand) {
+      & ::slotted(ark-navigation-brand),
+      & ::slotted(ark-navigation-links) {
         padding-inline: 18px;
+      }
+
+      /* Custom properties inherit through the shadow boundary, so this is how
+         the links pill tightens the gap its own stylesheet draws. */
+      & ::slotted(ark-navigation-links) {
+        --ark-nav-links-gap: var(--ark-nav-immersive-links-gap);
       }
 
       & ::slotted(ark-navigation-mobile-toggle) {
@@ -263,6 +274,7 @@ export class ArkNavigationRoot extends LitElement {
        latch on after the first tap of the hamburger.) */
     :host([immersive][immersive-hidden]:not([menu-open])) {
       & ::slotted(ark-navigation-brand),
+      & ::slotted(ark-navigation-links),
       & ::slotted(ark-navigation-mobile-toggle),
       & ::slotted(ark-navigation-cta) {
         opacity: 0;
@@ -277,7 +289,7 @@ export class ArkNavigationRoot extends LitElement {
     window.addEventListener("scroll", this._handleScroll, { passive: true });
     this.addEventListener("ark-nav:menu-toggle", this._handleMenuToggle);
     this.addEventListener("focusin", this._handleFocusIn);
-    this._setupViewportQuery();
+    window.addEventListener("resize", this._handleResize, { passive: true });
     // Seed the baseline so a page restored mid-document doesn't read as a scroll.
     this._lastScrollY = window.scrollY;
     this._handleScroll();
@@ -287,7 +299,7 @@ export class ArkNavigationRoot extends LitElement {
     window.removeEventListener("scroll", this._handleScroll);
     this.removeEventListener("ark-nav:menu-toggle", this._handleMenuToggle);
     this.removeEventListener("focusin", this._handleFocusIn);
-    this._teardownViewportQuery();
+    window.removeEventListener("resize", this._handleResize);
     this._clearSettleTimer();
     this._handleScrollLock(false);
     super.disconnectedCallback();
@@ -305,27 +317,11 @@ export class ArkNavigationRoot extends LitElement {
   };
 
   /**
-   * Immersive mode is a small-screen affordance, so it hangs off a media query
-   * rather than a CSS breakpoint — the styles stay unconditional and this is the
-   * only thing deciding when they apply.
+   * A resize can change the resting bar height (the links wrap away below the
+   * breakpoint, the inline padding tracks the viewport), and that height is the
+   * immersive threshold, so it has to be re-read rather than kept from mount.
    */
-  private _setupViewportQuery() {
-    if (typeof window === "undefined" || !window.matchMedia) return;
-    this._viewportQuery = window.matchMedia(
-      `(max-width: ${IMMERSIVE_BREAKPOINT_PX}px)`,
-    );
-    this._viewportQuery.addEventListener("change", this._handleViewportChange);
-  }
-
-  private _teardownViewportQuery() {
-    this._viewportQuery?.removeEventListener(
-      "change",
-      this._handleViewportChange,
-    );
-    this._viewportQuery = null;
-  }
-
-  private _handleViewportChange = () => {
+  private _handleResize = () => {
     this._measureNavHeight();
     this._handleScroll();
   };
@@ -345,13 +341,6 @@ export class ArkNavigationRoot extends LitElement {
   private _syncImmersive(y: number) {
     const moved = y !== this._lastScrollY;
     this._lastScrollY = y;
-
-    if (!this._viewportQuery?.matches) {
-      this._clearSettleTimer();
-      this.immersive = false;
-      this.immersiveHidden = false;
-      return;
-    }
 
     this.immersive = y > this._navHeight;
 
@@ -491,7 +480,9 @@ export class ArkNavigationLinks extends LitElement {
 
     .links {
       display: flex;
-      gap: 48px;
+      /* Set by ark-navigation-root in immersive mode, where the row is boxed
+         into a pill and the resting gap is too wide for it. */
+      gap: var(--ark-nav-links-gap, 48px);
     }
 
     @media (max-width: 900px) {
