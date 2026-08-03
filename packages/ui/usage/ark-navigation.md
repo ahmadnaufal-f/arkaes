@@ -47,7 +47,10 @@ While the pills are tucked away the root publishes `--ark-nav-chrome-away: 1` on
 instead of holding room for pills that have stepped aside. `ark-project-header`
 consumes it to pull its own clearance up while the page is moving.
 
-Every pill floats on `--ark-shadow-float`. The CTA takes the pill radius through
+The pills sit on `--ark-shadow-md` rather than the `--ark-shadow-float` the
+bottom dock uses: they share the top of the screen with `ark-project-header`,
+itself elevated while pinned, and two float-height shadows stacked there is more
+depth than that corner can carry. The CTA takes the pill radius through
 to its own inner button, and drops its hover underline while it is one — a
 straight bar across the foot of a pill is clipped by the curve into a stub, and
 the background and border-colour change carry the hover on their own.

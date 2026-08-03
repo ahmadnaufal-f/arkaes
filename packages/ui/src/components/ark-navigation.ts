@@ -255,7 +255,11 @@ export class ArkNavigationRoot extends LitElement {
         align-items: center;
         backdrop-filter: blur(10px);
         background: var(--ark-nav-immersive-pill-bg);
-        box-shadow: var(--ark-shadow-float);
+        /* Not --ark-shadow-float, which the dock's actions use: the pills share
+           the top of the screen with ark-project-header, itself elevated when
+           pinned, and two float-height shadows stacked there is more depth than
+           that corner can carry. */
+        box-shadow: var(--ark-shadow-md);
         min-height: var(--ark-nav-immersive-pill-size);
         pointer-events: auto;
         transition:
