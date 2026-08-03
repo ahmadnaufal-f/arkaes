@@ -1097,16 +1097,17 @@ export class ArkChatbot extends LitElement {
     };
 
     const shape = open ? [collapsed, expanded] : [expanded, collapsed];
-    // The launcher clears out early on the way in and returns late on the way
-    // out, so the two surfaces are never both solid at the same moment.
+    // The launcher clears out early on the way in; on the way out it is back to
+    // full opacity before the morph ends, so that it is already covering the
+    // collapsed panel by the time that panel fades out underneath it (below).
     const fade = open ? [{ opacity: 1 }, { opacity: 0 }] : [{ opacity: 0 }, { opacity: 1 }];
     const contents = open ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 1 }, { opacity: 0 }];
 
     this._morphAnimations = [
       panel.animate(shape, { duration, easing, fill: "both" }),
       launcher.animate(fade, {
-        duration: duration * 0.45,
-        delay: open ? 0 : duration * 0.55,
+        duration: duration * (open ? 0.45 : 0.4),
+        delay: open ? 0 : duration * 0.45,
         easing,
         fill: "both",
       }),
@@ -1119,6 +1120,30 @@ export class ArkChatbot extends LitElement {
         }),
       ),
     ];
+
+    if (!open) {
+      // The close morph has to land on opacity 0, not merely on a collapsed
+      // shape. Releasing the animations hands the panel back to CSS, where the
+      // closed rule is `opacity: 0` *with a transition* — so a panel still
+      // committed at opacity 1 starts that transition from a full-size,
+      // no-longer-clipped box, and the whole panel flashes back for the length
+      // of the transition before fading out. Landing at 0 leaves the transition
+      // nothing to animate.
+      //
+      // It runs in the last sliver of the morph, by which point the shape has
+      // collapsed onto the launcher's rect and the launcher is opaque over it,
+      // so it is never actually seen: this exists to make the hand-off exact.
+      // The panel's transform has the same delta on release and is deliberately
+      // left alone — at opacity 0 it cannot be observed.
+      this._morphAnimations.push(
+        panel.animate([{ opacity: 1 }, { opacity: 0 }], {
+          duration: duration * 0.15,
+          delay: duration * 0.85,
+          easing,
+          fill: "both",
+        }),
+      );
+    }
 
     const running = this._morphAnimations;
     void Promise.allSettled(running.map((animation) => animation.finished)).then(
