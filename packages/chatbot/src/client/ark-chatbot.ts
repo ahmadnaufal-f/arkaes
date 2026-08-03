@@ -316,7 +316,7 @@ export class ArkChatbot extends LitElement {
       border: 1px solid var(--ark-color-border);
       border-radius: var(--ark-radius-full);
       bottom: 0;
-      box-shadow: var(--ark-shadow-md);
+      box-shadow: var(--ark-shadow-float);
       color: var(--ark-chatbot-launcher-color, var(--ark-color-text));
       cursor: var(--ark-cursor-interactive, pointer);
       display: inline-flex;

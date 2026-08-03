@@ -53,8 +53,6 @@ export class ArkScrollTop extends LitElement {
       --ark-scroll-top-size: 3.25rem;
 
       display: inline-flex;
-      /* Clipped so the button can shrink to nothing without spilling out. */
-      overflow: hidden;
       transition:
         margin var(--ark-duration-normal) var(--ark-ease-standard),
         opacity var(--ark-duration-normal) var(--ark-ease-standard),
@@ -67,6 +65,13 @@ export class ArkScrollTop extends LitElement {
        remaining actions stay centred. Works wherever the button sits in the row.
        Outside a dock the gap resolves to 0px and the margins are simply absent.
 
+       The button scales away with the host rather than being clipped by it. The
+       host used to carry overflow: hidden to keep the full-width button from
+       spilling out of the narrowing box, but that clip cut the button's own drop
+       shadow off square at the host edge — a hard grey ledge under a round
+       button. A transform takes the button out of the layout question entirely,
+       so nothing spills and there is nothing to clip.
+
        Keyboard focus holds it open: activating with Enter scrolls to the top,
        which is exactly when this rule would otherwise collapse the button out
        from under the focus ring. A pointer press blurs instead (see
@@ -76,6 +81,10 @@ export class ArkScrollTop extends LitElement {
       opacity: 0;
       pointer-events: none;
       width: 0;
+
+      & .button {
+        transform: scale(0);
+      }
     }
 
     .button {
@@ -84,7 +93,7 @@ export class ArkScrollTop extends LitElement {
       background: var(--ark-scroll-top-bg, var(--ark-color-surface));
       border: 1px solid var(--ark-color-border);
       border-radius: var(--ark-radius-full);
-      box-shadow: var(--ark-shadow-md);
+      box-shadow: var(--ark-shadow-float);
       color: var(--ark-scroll-top-color, var(--ark-color-text));
       cursor: var(--ark-cursor-interactive, pointer);
       display: flex;

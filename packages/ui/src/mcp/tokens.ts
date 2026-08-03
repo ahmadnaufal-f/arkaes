@@ -84,7 +84,9 @@ function parseCss(): { order: string[]; values: Map<string, string> } {
     // First declaration wins — later blocks (e.g. `:root[data-custom-cursor]`)
     // are conditional overrides, not the default value of the token.
     if (!values.has(prop)) {
-      values.set(prop, value.trim());
+      // Layered values (--ark-shadow-float) are authored across several lines;
+      // collapsing the whitespace keeps them one readable string here.
+      values.set(prop, value.replace(/\s+/g, " ").trim());
       order.push(prop);
     }
   }

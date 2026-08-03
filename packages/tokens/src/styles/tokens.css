@@ -57,6 +57,18 @@
   --ark-shadow-md: 0 10px 30px color-mix(in srgb, var(--ark-color-neutral-900), transparent 90%);
   --ark-shadow-lg: 0 24px 70px color-mix(in srgb, var(--ark-color-neutral-900), transparent 88%);
 
+  /* Elevation for chrome that floats free over the page — the dock actions and
+     anything else detached from a surface. A step above --ark-shadow-md, and
+     built from four layers instead of one: a single large blur falls off in one
+     ramp and reads as a grey smudge under a small round control, where stacked
+     layers (tight and near-opaque up close, wide and faint further out)
+     approximate the way real light falls off and stay smooth at any size. */
+  --ark-shadow-float:
+    0 1px 2px color-mix(in srgb, var(--ark-color-neutral-900), transparent 94%),
+    0 3px 6px color-mix(in srgb, var(--ark-color-neutral-900), transparent 95%),
+    0 8px 16px color-mix(in srgb, var(--ark-color-neutral-900), transparent 94%),
+    0 18px 40px color-mix(in srgb, var(--ark-color-neutral-900), transparent 92%);
+
   --ark-duration-fast: 120ms;
   --ark-duration-normal: 220ms;
   --ark-duration-slow: 420ms;

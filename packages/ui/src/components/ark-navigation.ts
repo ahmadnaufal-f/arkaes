@@ -482,7 +482,7 @@ export class ArkNavigationLinks extends LitElement {
       display: flex;
       /* Set by ark-navigation-root in immersive mode, where the row is boxed
          into a pill and the resting gap is too wide for it. */
-      gap: var(--ark-nav-links-gap, 48px);
+      gap: var(--ark-nav-links-gap, var(--ark-space-12));
     }
 
     @media (max-width: 900px) {
