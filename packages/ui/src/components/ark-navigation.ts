@@ -228,7 +228,7 @@ export class ArkNavigationRoot extends LitElement {
         align-items: center;
         backdrop-filter: blur(10px);
         background: var(--ark-nav-immersive-pill-bg);
-        box-shadow: var(--ark-shadow-md);
+        box-shadow: var(--ark-shadow-float);
         min-height: var(--ark-nav-immersive-pill-size);
         pointer-events: auto;
         transition:
@@ -259,10 +259,19 @@ export class ArkNavigationRoot extends LitElement {
         min-width: var(--ark-nav-immersive-pill-size);
       }
 
-      /* The CTA draws its own border, so it only needs the float — matching the
-         inner button's radius keeps it from reading as a pill inside a pill. */
+      /* The CTA draws its own border, so the host only supplies the float; the
+         radius has to reach the inner button too, or the border inside would
+         stay square inside a rounded backdrop. Stretching rather than centring
+         it makes the two outlines concentric — at this radius a button a couple
+         of pixels shorter than its host shows as a crescent of background at
+         the ends. The hover underline goes: a straight 2px bar across the foot
+         of a pill is clipped by the curve into a stub. Hover still reads
+         through the background and border-colour change. */
       & ::slotted(ark-navigation-cta) {
-        border-radius: var(--ark-radius-xs);
+        align-items: stretch;
+        border-radius: var(--ark-nav-immersive-pill-radius);
+        --ark-nav-cta-radius: var(--ark-nav-immersive-pill-radius);
+        --ark-nav-cta-underline-opacity: 0;
       }
     }
 
@@ -649,6 +658,12 @@ export class ArkNavLink extends LitElement {
 
 /**
  * ArkNavigationCta is the CTA button.
+ *
+ * @cssprop [--ark-nav-cta-radius=var(--ark-radius-xs)] - Button radius. Set to
+ *   the pill radius by ark-navigation-root while the header is immersive.
+ * @cssprop [--ark-nav-cta-underline-opacity=1] - Opacity of the hover
+ *   underline. Zeroed by ark-navigation-root while the button is a pill, where
+ *   the curve would clip a straight bar into a stub.
  */
 export class ArkNavigationCta extends LitElement {
   static override properties = {
@@ -667,7 +682,9 @@ export class ArkNavigationCta extends LitElement {
     .cta {
       align-items: center;
       border: 1px solid var(--ark-color-border);
-      border-radius: var(--ark-radius-xs);
+      /* Set by ark-navigation-root in immersive mode, where the button floats
+         as a pill of its own rather than sitting on a solid bar. */
+      border-radius: var(--ark-nav-cta-radius, var(--ark-radius-xs));
       color: var(--ark-color-text);
       cursor: var(--ark-cursor-interactive, pointer);
       display: inline-flex;
@@ -683,21 +700,27 @@ export class ArkNavigationCta extends LitElement {
       transition:
         background var(--ark-duration-normal) var(--ark-ease-standard),
         border-color var(--ark-duration-normal) var(--ark-ease-standard),
+        border-radius var(--ark-duration-normal) var(--ark-ease-standard),
         color var(--ark-duration-normal) var(--ark-ease-standard),
         transform var(--ark-duration-normal) var(--ark-ease-standard);
     }
 
-    /* Blush underline — scaleX from left on hover (primary button pattern §6) */
+    /* Blush underline — scaleX from left on hover (primary button pattern §6).
+       Suppressed while the button is a floating pill, where the curve would
+       clip it to a stub; ark-navigation-root sets the opacity for that. */
     .cta::after {
       background: var(--ark-color-accent);
       bottom: 0;
       content: '';
       height: 2px;
       left: 0;
+      opacity: var(--ark-nav-cta-underline-opacity, 1);
       position: absolute;
       transform: scaleX(0);
       transform-origin: left;
-      transition: transform var(--ark-duration-normal) var(--ark-ease-standard);
+      transition:
+        opacity var(--ark-duration-normal) var(--ark-ease-standard),
+        transform var(--ark-duration-normal) var(--ark-ease-standard);
       width: 100%;
     }
 

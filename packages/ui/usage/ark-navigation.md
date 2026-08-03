@@ -42,6 +42,11 @@ Opening the mobile menu suspends immersive mode so the drawer has a solid bar to
 hang off. Keyboard focus inside the header holds the pills open, so a scroll
 triggered by tabbing never hides the control the focus ring is on.
 
+Every pill floats on `--ark-shadow-float`. The CTA takes the pill radius through
+to its own inner button, and drops its hover underline while it is one — a
+straight bar across the foot of a pill is clipped by the curve into a stub, and
+the background and border-colour change carry the hover on their own.
+
 The root sets `immersive` and `immersive-hidden` on itself — set them by hand
 only to pin a state (a story, a screenshot). Tune the look with:
 
