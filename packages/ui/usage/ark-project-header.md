@@ -23,8 +23,10 @@ itself with `--ark-project-header-stick-top` (default `0px`).
 The pinned hero travels with that chrome rather than sitting under a gap where
 it used to be. While `ark-navigation` has its immersive pills tucked away
 mid-scroll it publishes `--ark-nav-chrome-away: 1` on `:root`, and the hero
-rides up by exactly the clearance it was holding for them — the band goes back
-to the reader until scrolling stops, and both come back together. A page whose
+rides up by the clearance it was holding for them, less its own end padding so
+the travelled header stays evenly padded rather than pushing the title against
+the top edge. The band goes back to the reader until scrolling stops, and both
+come back together. A page whose
 header never goes immersive, or that has no `ark-navigation` at all, never sees
 the flag and never moves.
 

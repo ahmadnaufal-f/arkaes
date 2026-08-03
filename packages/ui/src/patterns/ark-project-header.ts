@@ -64,9 +64,10 @@ function translateYOf(el: HTMLElement): number {
  * The pinned hero travels with the site chrome instead of sitting under a gap
  * where it used to be: while `ark-navigation` has its immersive pills tucked
  * away mid-scroll it publishes `--ark-nav-chrome-away: 1`, and the hero rides up
- * by exactly the clearance it holds for those pills, giving the band back to the
- * reader until scrolling stops. Pages without an immersive header never see the
- * flag and never move.
+ * by the clearance it holds for those pills, less its own end padding so the
+ * travelled header stays evenly padded. The reader gets that band back until
+ * scrolling stops. Pages without an immersive header never see the flag and
+ * never move.
  *
  * @summary Sticky project / case-study header.
  * @slot visual - The page thumbnail / watermark visual.
@@ -117,11 +118,19 @@ export class ArkProjectHeader extends LitElement {
          ark-navigation at all. Multiplied into the travel below rather than
          branched on, since a custom property cannot be tested in a selector. */
       --_chrome-away: var(--ark-nav-chrome-away, 0);
+      /* The pinned hero's end padding. Named because the travel below is
+         measured against it. */
+      --_stuck-padding-end: var(--ark-space-5);
       /* How far the pinned hero rides up while the pills are away. The
          clearance is room held for chrome that is no longer there, so it is
-         exactly what there is to reclaim: the title finishes where the pills
-         were, and the reader gets the band back until scrolling stops. */
-      --_chrome-travel: calc(var(--_chrome-away) * var(--_chrome-clearance));
+         what there is to reclaim — but not all of it: stopping short by the
+         hero's own end padding leaves the title in a band matching the one
+         under it, so the travelled header reads as evenly padded rather than
+         as a title shoved against the top edge. */
+      --_chrome-travel: calc(
+        var(--_chrome-away) *
+          (var(--_chrome-clearance) - var(--_stuck-padding-end))
+      );
       /* Applied only while pinned: past this many lines the header eats the
          reading area it is supposed to be labelling. */
       --_title-lines: var(--ark-project-header-title-lines, 2);
@@ -171,7 +180,7 @@ export class ArkProjectHeader extends LitElement {
        and nothing above it to move with. */
     .hero.is-stuck {
       min-height: 0;
-      padding-block: var(--_chrome-clearance) var(--ark-space-5);
+      padding-block: var(--_chrome-clearance) var(--_stuck-padding-end);
       box-shadow: var(--ark-shadow-md);
       transform: translateY(calc(-1 * var(--_chrome-travel)));
     }

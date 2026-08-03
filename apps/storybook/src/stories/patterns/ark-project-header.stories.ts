@@ -40,7 +40,7 @@ Sticky case-study / project header. It pins flush with the top of the viewport a
 
 Scrolling 60px past the header collapses it: the eyebrow and tags fold away and the visual shrinks.
 
-Once pinned it also travels with the site chrome: while \`ark-navigation\` has its immersive pills tucked away mid-scroll it publishes \`--ark-nav-chrome-away: 1\`, and the hero rides up by exactly the clearance it was holding for them, giving the band back to the reader until scrolling stops. Neither state is reachable in this canvas, which does not scroll and has no nav in it.
+Once pinned it also travels with the site chrome: while \`ark-navigation\` has its immersive pills tucked away mid-scroll it publishes \`--ark-nav-chrome-away: 1\`, and the hero rides up by the clearance it was holding for them, less its own end padding so the travelled header stays evenly padded, giving that band back to the reader until scrolling stops. Neither state is reachable in this canvas, which does not scroll and has no nav in it.
         `,
       },
     },
