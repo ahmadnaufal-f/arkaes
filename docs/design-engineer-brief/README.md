@@ -47,7 +47,7 @@ Dependencies are declared here rather than in the workspace, because nothing in
 the monorepo consumes this:
 
 ```sh
-cd docs/agileday
+cd docs/design-engineer-brief
 npm install
 npm run build           # writes ahmad-naufal-design-engineer.pdf
 npm run proof           # also writes out/proof-{1..4}.png
