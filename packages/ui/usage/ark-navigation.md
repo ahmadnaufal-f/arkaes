@@ -42,6 +42,11 @@ Opening the mobile menu suspends immersive mode so the drawer has a solid bar to
 hang off. Keyboard focus inside the header holds the pills open, so a scroll
 triggered by tabbing never hides the control the focus ring is on.
 
+While the pills are tucked away the root publishes `--ark-nav-chrome-away: 1` on
+`:root` (`0` the rest of the time), so other fixed chrome can travel with them
+instead of holding room for pills that have stepped aside. `ark-project-header`
+consumes it to pull its own clearance up while the page is moving.
+
 Every pill floats on `--ark-shadow-float`. The CTA takes the pill radius through
 to its own inner button, and drops its hover underline while it is one — a
 straight bar across the foot of a pill is clipped by the curve into a stub, and

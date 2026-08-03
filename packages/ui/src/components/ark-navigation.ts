@@ -14,6 +14,24 @@ let mobileMenuId = 0;
 /** Scroll depth (px) past which the bar takes on its condensed look. */
 const SCROLLED_THRESHOLD_PX = 40;
 
+/**
+ * Custom property published on `:root` carrying `1` while the immersive pills
+ * are tucked away mid-scroll and `0` the rest of the time. It is what lets other
+ * fixed chrome move with the header instead of holding room for pills that have
+ * stepped aside — see `ark-project-header`, which pulls its own clearance up by
+ * exactly this flag. A page with no immersive header never writes it, and the
+ * `0` fallback leaves consumers where they were.
+ */
+const CHROME_AWAY_PROP = "--ark-nav-chrome-away";
+
+/**
+ * Identity of the header that last wrote {@link CHROME_AWAY_PROP}. A page has
+ * one header, but ClientRouter navigations overlap two — the incoming one
+ * publishes while the outgoing one is still mounted, and without this the
+ * outgoing teardown would clear the value its replacement had just written.
+ */
+let chromeAwayOwner: symbol | null = null;
+
 /** Quiet time (ms) after the last scroll event before the pills settle back in. */
 const IMMERSIVE_SETTLE_MS = 200;
 
@@ -33,6 +51,11 @@ const DEFAULT_NAV_HEIGHT_PX = 80;
  *
  * The scrim behind the pills is unfilled by default — see
  * `--ark-nav-immersive-scrim`.
+ *
+ * While the pills are tucked away it publishes `--ark-nav-chrome-away: 1` on
+ * `:root` (`0` otherwise), so other fixed chrome can travel with them rather
+ * than hold room for pills that have stepped aside — `ark-project-header` pulls
+ * its own clearance up by exactly that flag.
  *
  * @summary Fixed site header with condensed and immersive scroll states.
  * @csspart scrim - The layer painted behind the floating pills. Unfilled by
@@ -76,6 +99,10 @@ export class ArkNavigationRoot extends LitElement {
   private _navHeight = DEFAULT_NAV_HEIGHT_PX;
   private _lastScrollY = 0;
   private _settleTimer: number | null = null;
+
+  /** This instance's stand-in for `this` in {@link chromeAwayOwner}. */
+  private readonly _ownerToken = Symbol("ark-navigation-root");
+  private _publishedChromeAway = -1;
 
   get scrolled(): boolean {
     return this._scrolled;
@@ -311,12 +338,38 @@ export class ArkNavigationRoot extends LitElement {
     window.removeEventListener("resize", this._handleResize);
     this._clearSettleTimer();
     this._handleScrollLock(false);
+    if (chromeAwayOwner === this._ownerToken) {
+      document.documentElement.style.removeProperty(CHROME_AWAY_PROP);
+      chromeAwayOwner = null;
+    }
+    this._publishedChromeAway = -1;
     super.disconnectedCallback();
   }
 
   override firstUpdated() {
     this._measureNavHeight();
     this._syncChildren();
+  }
+
+  /**
+   * Every input to the flag — immersive, immersive-hidden, menu-open — is a
+   * reactive property, so publishing from here covers all of them at once
+   * rather than from each place that sets one.
+   */
+  override updated() {
+    this._publishChromeAway();
+  }
+
+  private _publishChromeAway() {
+    const away =
+      this._immersive && this._immersiveHidden && !this._menuOpen ? 1 : 0;
+    if (away === this._publishedChromeAway && chromeAwayOwner === this._ownerToken) {
+      return;
+    }
+
+    this._publishedChromeAway = away;
+    chromeAwayOwner = this._ownerToken;
+    document.documentElement.style.setProperty(CHROME_AWAY_PROP, String(away));
   }
 
   private _handleScroll = () => {

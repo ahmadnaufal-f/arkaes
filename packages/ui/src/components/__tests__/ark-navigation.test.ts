@@ -29,6 +29,7 @@ afterEach(() => {
   wrapper?.remove();
   wrapper = null;
   document.body.style.overflow = "";
+  document.documentElement.style.removeProperty("--ark-nav-chrome-away");
   vi.useRealTimers();
 });
 
@@ -276,6 +277,84 @@ describe("ArkNavigationRoot immersive mode", () => {
 
     // The timer was cleared, so the hidden flag is left exactly as it was.
     expect(root.immersiveHidden).toBe(true);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// ArkNavigationRoot — chrome-away flag
+// ---------------------------------------------------------------------------
+
+describe("ArkNavigationRoot chrome-away flag", () => {
+  const NAV_HEIGHT = 80;
+  const flag = () =>
+    document.documentElement.style.getPropertyValue("--ark-nav-chrome-away");
+
+  async function mountRoot() {
+    const w = mount();
+    const root = document.createElement("ark-navigation-root") as ArkNavigationRoot;
+    w.appendChild(root);
+    await root.updateComplete;
+    return root;
+  }
+
+  it("publishes 0 while the pills are on screen", async () => {
+    await mountRoot();
+
+    expect(flag()).toBe("0");
+  });
+
+  it("publishes 1 while the pills are tucked away, and 0 once they settle", async () => {
+    vi.useFakeTimers();
+    const root = await mountRoot();
+
+    scrollTo(NAV_HEIGHT + 200);
+    await root.updateComplete;
+    expect(flag()).toBe("1");
+
+    vi.advanceTimersByTime(200);
+    await root.updateComplete;
+    expect(flag()).toBe("0");
+  });
+
+  it("publishes 0 while the mobile menu is open, which suspends the treatment", async () => {
+    vi.useFakeTimers();
+    const root = await mountRoot();
+
+    scrollTo(NAV_HEIGHT + 200);
+    await root.updateComplete;
+    expect(flag()).toBe("1");
+
+    root.menuOpen = true;
+    await root.updateComplete;
+
+    expect(flag()).toBe("0");
+  });
+
+  it("clears the flag on disconnect", async () => {
+    vi.useFakeTimers();
+    const root = await mountRoot();
+
+    scrollTo(NAV_HEIGHT + 200);
+    await root.updateComplete;
+    expect(flag()).toBe("1");
+
+    wrapper?.remove();
+    wrapper = null;
+
+    expect(flag()).toBe("");
+  });
+
+  it("leaves a replacement header's flag alone when the outgoing one tears down", async () => {
+    // Two headers overlap during a ClientRouter navigation: the incoming one
+    // publishes while the outgoing one is still mounted.
+    const outgoing = await mountRoot();
+    const incoming = document.createElement("ark-navigation-root") as ArkNavigationRoot;
+    wrapper?.appendChild(incoming);
+    await incoming.updateComplete;
+
+    outgoing.remove();
+
+    expect(flag()).toBe("0");
   });
 });
 

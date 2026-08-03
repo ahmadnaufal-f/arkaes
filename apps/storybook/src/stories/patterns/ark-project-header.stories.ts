@@ -36,9 +36,11 @@ const meta = {
     docs: {
       description: {
         component: `
-Sticky case-study / project header. It pins flush with the top of the viewport and lets the fixed site nav float over it, so the room for that chrome is held as start padding inside the hero (\`--ark-project-header-chrome-clearance\`, default \`88px\`). There is no nav in this canvas, so that clearance reads as empty space above the eyebrow.
+Sticky case-study / project header. It pins flush with the top of the viewport and lets the fixed site nav float over it, so the room for that chrome is held as start padding inside the hero (\`--ark-project-header-chrome-clearance\`, default \`76px\`). There is no nav in this canvas, so that clearance reads as empty space above the eyebrow.
 
 Scrolling 60px past the header collapses it: the eyebrow and tags fold away and the visual shrinks.
+
+Once pinned it also travels with the site chrome: while \`ark-navigation\` has its immersive pills tucked away mid-scroll it publishes \`--ark-nav-chrome-away: 1\`, and the hero rides up by exactly the clearance it was holding for them, giving the band back to the reader until scrolling stops. Neither state is reachable in this canvas, which does not scroll and has no nav in it.
         `,
       },
     },
