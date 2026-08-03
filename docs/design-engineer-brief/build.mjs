@@ -11,7 +11,7 @@
 //   2. assets  derived images — the screenshot crop, the grain tile, the QR codes
 //   3. render  substitute everything into document.html, print to PDF
 //
-// Run:  node docs/agileday/build.mjs [--proof] [--force]
+// Run:  node docs/design-engineer-brief/build.mjs [--proof] [--force]
 //   --proof  also writes out/proof-{1..4}.png for reviewing layout
 //   --force  redo every phase instead of reusing cached output
 //
