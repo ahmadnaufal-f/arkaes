@@ -21,6 +21,20 @@ const PINNED_BOTTOM_PROP = "--ark-project-header-pinned-bottom";
  */
 let pinnedBottomOwner: symbol | null = null;
 
+/** An element's current translateY in px, 0 when it is not transformed. */
+function translateYOf(el: HTMLElement): number {
+  const transform = getComputedStyle(el).transform;
+  if (!transform || transform === "none") return 0;
+  // Absent in a DOM shim; a test environment has no layout to correct for.
+  if (typeof DOMMatrixReadOnly === "undefined") return 0;
+  try {
+    return new DOMMatrixReadOnly(transform).f;
+  } catch {
+    // An unparseable transform is not worth failing a scroll frame over.
+    return 0;
+  }
+}
+
 /**
  * ArkProjectHeader is the hero header shown at the top of a case study or
  * project detail page. A meta column (eyebrow, tags, title) sits beside a large
@@ -44,7 +58,16 @@ let pinnedBottomOwner: symbol | null = null;
  *
  * While pinned it publishes its bottom edge on `:root` as
  * `--ark-project-header-pinned-bottom` (`0px` when not pinned) so page CSS can
- * keep in-page scrolling clear of it.
+ * keep in-page scrolling clear of it. That edge is the one the header rests at,
+ * transform excluded — see `_chromeTravel`.
+ *
+ * The pinned hero travels with the site chrome instead of sitting under a gap
+ * where it used to be: while `ark-navigation` has its immersive pills tucked
+ * away mid-scroll it publishes `--ark-nav-chrome-away: 1`, and the hero rides up
+ * by the clearance it holds for those pills, less its own end padding so the
+ * travelled header stays evenly padded. The reader gets that band back until
+ * scrolling stops. Pages without an immersive header never see the flag and
+ * never move.
  *
  * @summary Sticky project / case-study header.
  * @slot visual - The page thumbnail / watermark visual.
@@ -90,6 +113,24 @@ export class ArkProjectHeader extends LitElement {
          The scrim under that row fades out at its own bottom edge, so the title
          only has to clear the row itself, not the gradient. */
       --_chrome-clearance: var(--ark-project-header-chrome-clearance, 76px);
+      /* 1 while ark-navigation has tucked its immersive pills away mid-scroll,
+         0 otherwise; 0 on a page whose header never goes immersive, or has no
+         ark-navigation at all. Multiplied into the travel below rather than
+         branched on, since a custom property cannot be tested in a selector. */
+      --_chrome-away: var(--ark-nav-chrome-away, 0);
+      /* The pinned hero's end padding. Named because the travel below is
+         measured against it. */
+      --_stuck-padding-end: var(--ark-space-5);
+      /* How far the pinned hero rides up while the pills are away. The
+         clearance is room held for chrome that is no longer there, so it is
+         what there is to reclaim — but not all of it: stopping short by the
+         hero's own end padding leaves the title in a band matching the one
+         under it, so the travelled header reads as evenly padded rather than
+         as a title shoved against the top edge. */
+      --_chrome-travel: calc(
+        var(--_chrome-away) *
+          (var(--_chrome-clearance) - var(--_stuck-padding-end))
+      );
       /* Applied only while pinned: past this many lines the header eats the
          reading area it is supposed to be labelling. */
       --_title-lines: var(--ark-project-header-title-lines, 2);
@@ -125,15 +166,23 @@ export class ArkProjectHeader extends LitElement {
       z-index: 10;
       transition:
         padding var(--ark-duration-slow) var(--ark-ease-standard),
-        min-height var(--ark-duration-slow) var(--ark-ease-standard);
+        min-height var(--ark-duration-slow) var(--ark-ease-standard),
+        /* Not the slow duration the collapse uses: this one has to leave and
+           arrive with the nav pills, so it borrows their timing exactly. */
+        transform var(--ark-duration-normal) var(--ark-ease-standard);
     }
 
     /* Stuck: collapse the vertical padding (and the min-height so the shrink is
-       actually visible) for a compact, pinned header. */
+       actually visible) for a compact, pinned header.
+
+       Only the pinned hero travels. Unpinned it is the top of the page rather
+       than chrome sitting over the article, so there is no clearance to reclaim
+       and nothing above it to move with. */
     .hero.is-stuck {
       min-height: 0;
-      padding-block: var(--_chrome-clearance) var(--ark-space-5);
+      padding-block: var(--_chrome-clearance) var(--_stuck-padding-end);
       box-shadow: var(--ark-shadow-md);
+      transform: translateY(calc(-1 * var(--_chrome-travel)));
     }
 
     /* Visual illustration: a faint, background-less watermark beside the meta. */
@@ -335,9 +384,7 @@ export class ArkProjectHeader extends LitElement {
    */
   private _publishPinnedBottom = () => {
     if (!this._hero) return;
-    const bottom = this._stuck
-      ? Math.round(this._hero.getBoundingClientRect().bottom)
-      : 0;
+    const bottom = this._stuck ? this._restingBottom(this._hero) : 0;
     if (
       bottom === this._publishedPinnedBottom &&
       pinnedBottomOwner === this._ownerToken
@@ -352,6 +399,23 @@ export class ArkProjectHeader extends LitElement {
       `${bottom}px`,
     );
   };
+
+  /**
+   * The hero's bottom edge with the mid-scroll chrome travel taken back out, so
+   * the published edge is where the header comes to rest rather than where it
+   * happens to be while the page is moving. That travel ends on the nav's settle
+   * timer, with no scroll event behind it to publish again, so an edge sampled
+   * mid-travel would stand uncorrected and a consumer offsetting against it
+   * would park content under the header once it settled back.
+   *
+   * The offset is read off the computed transform rather than recomputed from
+   * the clearance: that is exact whatever unit the clearance is authored in, and
+   * mid-transition it carries the same offset the rect already has, so the two
+   * cancel wherever in the travel it is sampled.
+   */
+  private _restingBottom(hero: HTMLElement): number {
+    return Math.round(hero.getBoundingClientRect().bottom - translateYOf(hero));
+  }
 
   // Collapsing the pinned hero shrinks its in-flow box above the viewport. With
   // native scroll anchoring on (the default), the browser would compensate by
