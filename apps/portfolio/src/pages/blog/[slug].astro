@@ -77,7 +77,7 @@ const jsonLd = [
         )
       }
 
-      <div class="ark-readable blog-body" set:html={bodyHtml} />
+      <ark-markdown heading-style="article" set:html={bodyHtml} />
 
       <div class="blog-footer-nav">
         <ark-button href="/blog" variant="link">

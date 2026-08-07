@@ -28,8 +28,12 @@ export const markdownStyles = css`
   }
 
   /* Shadow roots do not inherit the global reset, so the box model is restated
-     rather than assumed, and flow spacing is applied on top of it. */
-  :is(.ark-md, ark-markdown) :is(p, h1, h2, h3, h4, h5, h6, ul, ol, pre,
+     rather than assumed, and flow spacing is applied on top of it.
+
+     :where() keeps this at zero added specificity. With :is() the reset would
+     out-specify the flow rule below and every block would sit flush against
+     the next. */
+  :is(.ark-md, ark-markdown) :where(p, h1, h2, h3, h4, h5, h6, ul, ol, pre,
     blockquote, figure, table, hr) {
     margin: 0;
   }
