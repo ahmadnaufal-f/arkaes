@@ -82,7 +82,12 @@
     "./react/*": {
       "types": "./src/react/*.ts",
       "default": "./src/react/*.ts"
-    }
+    },
+    "./markdown": {
+      "types": "./src/markdown/index.ts",
+      "default": "./src/markdown/index.ts"
+    },
+    "./markdown.css": "./src/styles/markdown.css"
   },
   "publishConfig": {
     "access": "public",
@@ -132,11 +137,17 @@
       "./react/*": {
         "types": "./dist/react/*.d.ts",
         "default": "./dist/react/*.js"
-      }
+      },
+      "./markdown": {
+        "types": "./dist/markdown/index.d.ts",
+        "default": "./dist/markdown/index.js"
+      },
+      "./markdown.css": "./dist/styles/markdown.css"
     }
   },
   "scripts": {
-    "build": "tsdown && node ./scripts/postbuild-use-client.mjs && pnpm manifest",
+    "build": "tsdown && node ./scripts/postbuild-use-client.mjs && pnpm emit-css && pnpm manifest",
+    "emit-css": "tsx ./scripts/emit-markdown-css.ts",
     "manifest": "cem analyze",
     "prepack": "pnpm build",
     "check": "tsc -p tsconfig.json --noEmit",
@@ -147,7 +158,9 @@
     "@arkaes/tokens": "workspace:^",
     "@lit/react": "^1.0.8",
     "@modelcontextprotocol/sdk": "^1.29.0",
+    "github-slugger": "^2.0.0",
     "lit": "^3.3.0",
+    "marked": "^18.0.9",
     "zod": "^4.4.3"
   },
   "peerDependencies": {
@@ -172,6 +185,7 @@
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "tsdown": "^0.22.3",
+    "tsx": "^4.22.4",
     "vitest": "^3.0.0"
   },
   "customElements": "custom-elements.json"

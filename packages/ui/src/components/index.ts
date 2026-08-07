@@ -22,6 +22,7 @@ import {
   defineArkCardTitle,
 } from "./ark-card";
 import { ArkCarousel, defineArkCarousel } from "./ark-carousel";
+import { ArkMarkdown, defineArkMarkdown } from "./ark-markdown";
 import {
   ArkFloatingActionContainer,
   defineArkFloatingActionContainer,
@@ -98,6 +99,7 @@ export {
   ArkCarousel,
   ArkCursor,
   ArkFloatingActionContainer,
+  ArkMarkdown,
   ArkScrollTop,
   ArkToast,
   ArkToaster,
@@ -135,6 +137,7 @@ export {
   defineArkCarousel,
   defineArkCursor,
   defineArkFloatingActionContainer,
+  defineArkMarkdown,
   defineArkScrollTop,
   enableArkCursor,
   defineArkToast,

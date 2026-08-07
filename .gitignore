@@ -19,3 +19,7 @@ node-compile-cache/
 # Regenerate with `pnpm --filter @arkaes/tokens generate`.
 packages/tokens/src/styles/tokens.generated.css
 packages/tokens/src/generated/
+
+# Generated markdown stylesheet (emitted from packages/ui/src/markdown/styles.ts).
+# Regenerate with `pnpm --filter @arkaes/ui emit-css`.
+packages/ui/src/styles/markdown.css

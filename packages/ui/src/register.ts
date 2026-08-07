@@ -20,6 +20,7 @@ import {
   defineArkDialog,
   defineArkFloatingActionContainer,
   defineArkHero,
+  defineArkMarkdown,
   defineArkNavigation,
   defineArkScrollTop,
   defineArkToast,
@@ -53,6 +54,7 @@ export const registerArkComponents = () => {
   defineArkDialog();
   defineArkFloatingActionContainer();
   defineArkHero();
+  defineArkMarkdown();
   defineArkNavigation();
   defineArkScrollTop();
   defineArkToast();

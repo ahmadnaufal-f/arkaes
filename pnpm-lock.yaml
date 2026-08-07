@@ -177,9 +177,15 @@ importers:
       '@modelcontextprotocol/sdk':
         specifier: ^1.29.0
         version: 1.29.0(zod@4.4.3)
+      github-slugger:
+        specifier: ^2.0.0
+        version: 2.0.0
       lit:
         specifier: ^3.3.0
         version: 3.3.3
+      marked:
+        specifier: ^18.0.9
+        version: 18.0.9
       zod:
         specifier: ^4.4.3
         version: 4.4.3
@@ -211,6 +217,9 @@ importers:
       tsdown:
         specifier: ^0.22.3
         version: 0.22.3(oxc-resolver@11.19.1(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1))(tsx@4.22.4)(typescript@6.0.3)
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
       vitest:
         specifier: ^3.0.0
         version: 3.2.6(@types/debug@4.1.13)(@types/node@26.0.0)(happy-dom@20.10.6)(lightningcss@1.32.0)(tsx@4.22.4)(yaml@2.9.0)
@@ -3774,6 +3783,11 @@ packages:
 
   markdown-table@3.0.4:
     resolution: {integrity: sha512-wiYz4+JrLyb/DqW2hkFJxP7Vd7JuTDm77fvbM8VfEQdmSMqcImWeeRbHwZjBjIFki/VaMK2BhFi7oUUZeM5bqw==}
+
+  marked@18.0.9:
+    resolution: {integrity: sha512-/Sa4qiiHZxf0/FQdBBowr9q4r10krCwMvpK48FUBdXdUXScDxiQGR9zCPrFgRVR5LU3iySOiIjy09ZQvADir1w==}
+    engines: {node: '>= 20'}
+    hasBin: true
 
   math-intrinsics@1.1.0:
     resolution: {integrity: sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==}
@@ -8902,6 +8916,8 @@ snapshots:
       source-map-js: 1.2.1
 
   markdown-table@3.0.4: {}
+
+  marked@18.0.9: {}
 
   math-intrinsics@1.1.0: {}
 
