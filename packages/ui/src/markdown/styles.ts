@@ -207,9 +207,14 @@ export const markdownStyles = css`
     padding-inline-start: var(--ark-space-4);
   }
 
+  /* Same floating-chrome pair as the inline spans above, so a fenced block and
+     an inline code word in the paragraph before it read as one material. The
+     fill comes through --ark-md-code-surface rather than the token directly:
+     Shiki paints its own background from that variable, and a block whose
+     stylesheet and highlighter disagree ends up two colours. */
   :is(.ark-md, ark-markdown) :is(pre, .ark-md-code) {
-    background: var(--ark-color-surface-soft);
-    border: 1px solid var(--ark-color-border);
+    background: var(--ark-md-code-surface);
+    border: 1px solid var(--ark-color-border-floating);
     border-radius: var(--ark-radius-sm);
     line-height: var(--ark-leading-normal);
     overflow-x: auto;
@@ -427,11 +432,7 @@ export const markdownStyles = css`
      design tokens so code follows the site theme instead of a fixed scheme. */
 
   :is(.ark-md, ark-markdown) {
-    --ark-md-code-surface: color-mix(
-      in srgb,
-      var(--ark-color-surface-soft) 92%,
-      var(--ark-color-neutral-900) 8%
-    );
+    --ark-md-code-surface: var(--ark-color-surface-floating);
 
     --astro-code-foreground: var(--ark-color-text);
     --astro-code-background: var(--ark-md-code-surface);
