@@ -4,7 +4,7 @@
 //
 // Outputs (all git-ignored — regenerate with `pnpm --filter @arkaes/tokens generate`):
 //   src/styles/tokens.generated.css  color + spacing custom properties (:root)
-//   src/generated/tokens.json        flat { path: { value, type, description } }
+//   src/generated/tokens.json        flat { path: { value, type, tier, reference?, description? } }
 //   src/generated/tokens.ts          typed `as const` map for programmatic use
 import StyleDictionary from "style-dictionary";
 
@@ -18,18 +18,54 @@ function meta(token) {
   };
 }
 
+// A token's tier is the directory it was authored in (`tokens/<tier>/<file>.json`).
+// All three tier files nest under the same top-level `"color"` key, so Style
+// Dictionary collapses them into one `color.*` namespace and the source path is
+// the only thing left that still knows where a token came from. Matched on the
+// path tail so it works whether `filePath` is repo-relative or absolute.
+const TIER_FROM_FILE_PATH = /(?:^|[\\/])tokens[\\/]([^\\/]+)[\\/][^\\/]+$/;
+
+/** Which tier directory a token was authored in, e.g. `semantic`. */
+function tierOf(token) {
+  const filePath = token.filePath ?? "";
+  const match = TIER_FROM_FILE_PATH.exec(filePath);
+  if (match === null) {
+    // Loud failure rather than a silent "unknown" tier: consumers group by this.
+    throw new Error(
+      `build-tokens: cannot derive a tier for "${token.path.join(".")}" from filePath ` +
+        `"${filePath}". Token sources must live in tokens/<tier>/<file>.json.`,
+    );
+  }
+  return match[1];
+}
+
+// The value exactly as authored, kept only while it still contains an `{alias}`.
+// `value` below is fully dereferenced, so this is the only place the alias chain
+// survives into the JSON. Covers a bare alias (`{color.neutral-0}`) as well as
+// one inside an expression (`color-mix(in srgb, {color.neutral-700}, ...)`).
+function referenceOf(token) {
+  const authored = token.original?.$value ?? token.original?.value;
+  return typeof authored === "string" && authored.includes("{") ? authored : undefined;
+}
+
 // Flat JSON keyed by dot-path — the shape an MCP server can read directly.
 // `value` is fully resolved (references dereferenced) so consumers get the
 // computed value; `type` and `description` come straight from the DTCG source.
+// `tier` and `reference` let a consumer regroup tokens by authoring tier and
+// show the alias chain that `value` flattens away — see the Foundations/Color
+// story in apps/storybook.
 StyleDictionary.registerFormat({
   name: "json/flat-dtcg",
   format({ dictionary }) {
     const out = {};
     for (const token of dictionary.allTokens) {
       const { type, description } = meta(token);
+      const reference = referenceOf(token);
       out[token.path.join(".")] = {
         value: token.$value,
         type,
+        tier: tierOf(token),
+        ...(reference ? { reference } : {}),
         ...(description ? { description } : {}),
       };
     }

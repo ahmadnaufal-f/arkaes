@@ -51,11 +51,20 @@ Outputs (all git-ignored — regenerate rather than hand-edit):
 | Output | Path | Consumer |
 | --- | --- | --- |
 | CSS custom properties | `src/styles/tokens.generated.css` | imported by `tokens.css` → `@arkaes/tokens/css` |
-| Flat JSON | `src/generated/tokens.json` → `@arkaes/tokens/tokens.json` | machine-readable (path, value, type, description) |
+| Flat JSON | `src/generated/tokens.json` → `@arkaes/tokens/tokens.json` | machine-readable (path, value, type, tier, reference, description) |
 | Typed TS | `src/generated/tokens.ts` → `@arkaes/tokens/generated` | programmatic token access |
 
 `outputReferences` is enabled, so the tier structure survives into the CSS as
 `var()` chains and all tiers land in a single `:root` block.
+
+In the flat JSON, `value` is fully dereferenced. Two fields preserve what that
+flattening loses: `tier` is the source directory (`primitive` / `semantic` /
+`component`), and `reference` is the value as authored, kept only while it still
+contains an `{alias}` — so `color.surface` carries `value: "#fafaf9"` alongside
+`reference: "{color.neutral-0}"`.
+
+Every color token is listed visually in Storybook under **Foundations → Color**,
+rendered from this JSON rather than a hand-maintained list.
 
 > Typography, radius, shadow, and motion tokens are still hand-authored in
 > `src/styles/tokens.css` — a later migration will move them into this pipeline.

@@ -30,6 +30,14 @@ const preview: Preview = {
       toc: true,
     },
     layout: "centered",
+    options: {
+      // Sidebar order runs from the raw material outwards: tokens, then the
+      // elements built from them, then compositions of those. Sections not
+      // listed here fall to the end alphabetically.
+      storySort: {
+        order: ["Overview", "Foundations", "Primitives", "Components", "Patterns"],
+      },
+    },
   },
   tags: ["autodocs"],
 };
