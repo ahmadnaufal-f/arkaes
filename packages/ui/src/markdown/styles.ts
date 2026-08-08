@@ -439,7 +439,12 @@ export const markdownStyles = css`
     --astro-code-token-constant: var(--ark-color-blush-deep);
     --astro-code-token-string: var(--ark-color-sage);
     --astro-code-token-comment: var(--ark-color-text-subtle);
-    --astro-code-token-keyword: var(--ark-color-blush);
+    /* Accent, not the blush-300 this used to be. The scheme wants two clay
+       tones — a lighter one for keywords under the deeper one the identifiers
+       take — but blush-300 is the same colour the block's border is drawn in
+       and lands at 1.8:1 on the fill, so keywords read as decoration rather
+       than code. Accent is the lighter clay that survives the tint, at 4.9:1. */
+    --astro-code-token-keyword: var(--ark-color-accent);
     --astro-code-token-parameter: var(--ark-color-text-soft);
     --astro-code-token-function: var(--ark-color-accent-strong);
     --astro-code-token-string-expression: var(--ark-color-sage);
