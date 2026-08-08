@@ -1,5 +1,64 @@
 # @arkaes/ui
 
+## 1.3.0
+
+### Minor Changes
+
+- 2170581: Add `ark-markdown`, one markdown renderer for the whole workspace.
+
+  `@arkaes/ui/markdown` exports `renderMarkdown()` / `renderMarkdownAsync()` — a
+  framework-agnostic renderer built on `marked` that runs in Node and the browser —
+  and `<ark-markdown>` renders into the **light DOM**, so a server-rendered body
+  keeps shipping its text in the HTML with no client JavaScript.
+
+  `heading-style` selects the treatment: `article` (real `h1`–`h6` with slug ids,
+  display face, stepped sizes), `section` (every level shifted down one, sans at
+  body size) and `flat` (every level pinned to one tag). Opt-in syntaxes cover the
+  portfolio's own vocabulary — proof cards, figure blocks, glyph bullets and
+  citation badges.
+
+  `trust` defaults to `untrusted`: raw HTML is escaped to literal text and every
+  href and src goes through an allowlist.
+
+  Prose styles ship as `@arkaes/ui/markdown.css` for the light-DOM path and as the
+  `markdownStyles` `CSSResult` for components that render into a shadow root.
+
+- 8f887a2: Make `ark-project-header` travel with `ark-navigation`'s immersive header instead of holding a gap where it used to be. The hero reserves `--ark-project-header-chrome-clearance` at its top for the fixed chrome that floats over it, but once the pills tuck away mid-scroll that band is room held for something no longer there — a dead strip above a pinned title, on every case study, for as long as the reader keeps scrolling. The pinned hero now rides up by that clearance while the pills are away and settles back with them, so the reader gets the band back while the page is moving and the title returns to its place when it stops. It stops short by the hero's own end padding, which leaves the title in a band matching the one under it — a travelled header that reads as evenly padded rather than as a title shoved against the top edge.
+
+  The two are joined by `--ark-nav-chrome-away`, published on `:root` by `ark-navigation-root` as `1` while its pills are hidden and `0` otherwise, with the same owner-token guard `--ark-project-header-pinned-bottom` uses so a ClientRouter navigation's outgoing header cannot clear the value its replacement just wrote. The header multiplies the flag into its travel rather than branching on it, since a custom property cannot be tested in a selector, and a page with no immersive header never writes the flag — the `0` fallback leaves consumers exactly where they were. Only the pinned hero travels: unpinned it is the top of the page rather than chrome over the article, so there is no clearance to reclaim.
+
+  `--ark-project-header-pinned-bottom` still reports the edge the header comes to rest at, with the travel taken back out of it. The travel ends on the nav's settle timer, with no scroll event behind it to publish again, so an edge sampled mid-travel would stand uncorrected and a consumer offsetting against it would park content under the header once it settled back.
+
+- 5066243: Add an immersive mode to `ark-navigation` and a matching bottom-edge dock, so a page's fixed chrome gets out of the reader's way while they scroll and settles back when they stop — the One UI idea, applied to both edges of the screen.
+
+  Once the page has scrolled past the resting height of the bar, `ark-navigation-root` drops its own background and lets its children float as separate pills over a scrim layer as tall as the pills plus their block margins. That layer is unfilled by default — a gradient there read badly over real pages — so set `--ark-nav-immersive-scrim` to paint one. This runs at every viewport width: on a desktop the links ride in a pill of their own between the brand and the CTA, and below the links' existing 900px breakpoint they are already `display: none` and the hamburger pill takes their place, so which pills exist stays a decision of the children rather than a second breakpoint in the root. The scroll threshold is the resting bar height, measured only in that state so the condensed and floating heights cannot drag it down behind the scroll position and make the header flap at the boundary, and re-measured on resize because the bar's height moves with the viewport. Opening the mobile menu suspends the whole treatment: the drawer hangs off a solid bar, which also has to catch pointer events again. Tune it with `--ark-nav-immersive-margin-block`, `--ark-nav-immersive-pill-size`, `--ark-nav-immersive-pill-bg`, `--ark-nav-immersive-pill-radius`, `--ark-nav-immersive-links-gap`, `--ark-nav-immersive-scrim` and `--ark-nav-immersive-hidden-shift`; the scrim is exposed as the `scrim` part.
+
+  `ark-navigation-root` also no longer paints a background at rest. The gradient that used to sit there read badly over real pages, and the 2px backdrop blur went with it — the gradient was what hid the blur's hard bottom edge, so on its own the blur was the same banding one step fainter. The condensed `scrolled` state still paints as before.
+
+  Add `ark-floating-action-container`, the same idea at the bottom of the page: a fixed, centred row of floating actions over a scrim layer that runs the other way, likewise unfilled by default (`--ark-floating-action-scrim`). It follows the header's scroll rule, and a scrim given a fill appears only once the page has scrolled, so a page sitting at its top is left clean. An action carrying `open` takes the dock — hiding is suspended and its neighbours step aside — so an expanded panel neither fades out from under the reader nor competes with a button beside it. That state is mirrored onto the host as `has-open-action`, because `:host(:has([open]))` is evaluated against the shadow tree, where the light-DOM actions are not visible, and so never matches.
+
+  Add `ark-scroll-top`, a round back-to-top button that collapses out of the row while the page is already at the top. It animates its own width rather than fading, and subtracts half of `--ark-floating-action-gap` from each inline margin while collapsed, so the gap goes with it and the remaining actions slide back to true centre instead of sitting off by half a gap — the reason a plain `display: none` or an opacity fade does not do this job. The subtraction is order-independent, so it works wherever the button sits in a row, and outside a dock the variable resolves to `0px` and the margins are simply absent.
+
+  Both docks make the same exception for the keyboard: tabbing scrolls the page, and hiding the control the focus ring is on would leave the user with nothing to look at. The test is `:focus-visible` on the deepest focused node rather than `:focus-within` on the host, because a pointer tap leaves focus sitting on the button it hit and would otherwise latch the chrome open for the rest of the session.
+
+  `ark-project-header` now pins flush with the top of the viewport instead of at a 60px stick offset, and holds room for the fixed nav as start padding instead — `--ark-project-header-chrome-clearance`, default `76px`. Parking it below the nav left a band of article text scrolling through the gap between the two, which the see-through immersive header made plain. Its collapse now engages on a scroll distance of its own rather than on the sentinel reaching the viewport top, which at a zero stick offset would fire immediately and render the header already collapsed. While pinned, the title is clamped to `--ark-project-header-title-lines` (default `2`) and ellipsised past that, so a long one cannot grow the header into the reading area; unpinned it runs to as many lines as it needs. The text is untouched in the DOM either way, so the page's `h1` and its accessible name stay whole.
+
+  Both new elements ship with React wrappers, Storybook pages, usage docs and `@arkaes/ui/register/*` entry points.
+
+### Patch Changes
+
+- 8f887a2: Add `--ark-shadow-float`, the elevation for chrome that floats free over the page, and put the dock's actions on it — `ark-scroll-top` and the `ark-chatbot` launcher. `ark-navigation`'s immersive pills stay on `--ark-shadow-md`: they share the top of the screen with `ark-project-header`, itself elevated while pinned, and two float-height shadows stacked in that corner is more depth than it can carry. It sits a step above `--ark-shadow-md` and is built from four layers rather than one: a single wide blur falls off in one ramp and reads as a grey smudge under a small round control, where stacked layers — tight and near-opaque up close, wide and faint further out — approximate how light actually falls off and stay smooth at any size.
+
+  Fix `ark-scroll-top` cutting its own drop shadow off square. The host carried `overflow: hidden` so the fixed-width button could not spill out of the box as it narrowed to nothing, but that clip took the shadow with it, leaving a hard grey ledge under a round button. The collapse now scales the button instead, which takes it out of the layout question entirely: nothing spills, so there is nothing to clip.
+
+  `ark-navigation`'s CTA is now a pill in immersive mode rather than keeping its resting `--ark-radius-xs`. The radius reaches the inner button through `--ark-nav-cta-radius`, since a square border inside a rounded backdrop is worse than either shape on its own, and the button stretches to its host so the two outlines stay concentric. Its hover underline is suppressed there via `--ark-nav-cta-underline-opacity`: a straight 2px bar across the foot of a pill is clipped by the curve into a stub, and the background and border-colour change carry the hover without it.
+
+  The MCP `tokens` resource collapses whitespace inside a value, so a token authored across several lines — as a layered shadow has to be — is reported as one readable string.
+
+- Updated dependencies [8f887a2]
+- Updated dependencies [1511ee5]
+  - @arkaes/tokens@1.1.0
+
 ## 1.2.1
 
 ### Patch Changes
