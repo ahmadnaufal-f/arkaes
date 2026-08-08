@@ -514,6 +514,58 @@ describe("ArkNavigationRoot child sync", () => {
 });
 
 // ---------------------------------------------------------------------------
+// ArkNavigationMobileMenu — staggered item entrance
+// ---------------------------------------------------------------------------
+
+describe("ArkNavigationMobileMenu item stagger", () => {
+  const INDEX_PROP = "--ark-nav-menu-item-index";
+
+  /** `slotchange` is queued rather than dispatched inline, so let it land. */
+  const flushSlotChange = () => new Promise((resolve) => setTimeout(resolve, 0));
+
+  async function mountMenu(itemCount: number) {
+    const w = mount();
+    const menu =
+      document.createElement("ark-navigation-mobile-menu") as ArkNavigationMobileMenu;
+    for (let i = 0; i < itemCount; i += 1) {
+      const link = document.createElement("ark-nav-link") as ArkNavLink;
+      link.textContent = `Item ${i}`;
+      menu.appendChild(link);
+    }
+    w.appendChild(menu);
+    await menu.updateComplete;
+    await flushSlotChange();
+    return menu;
+  }
+
+  const indices = (menu: ArkNavigationMobileMenu) =>
+    Array.from(menu.children).map((el) =>
+      (el as HTMLElement).style.getPropertyValue(INDEX_PROP),
+    );
+
+  it("numbers each slotted item by its position in the list", async () => {
+    const menu = await mountMenu(4);
+
+    expect(indices(menu)).toEqual(["0", "1", "2", "3"]);
+  });
+
+  it("renumbers the items when the menu is repopulated", async () => {
+    const menu = await mountMenu(2);
+    expect(indices(menu)).toEqual(["0", "1"]);
+
+    // An Astro ClientRouter navigation swaps the menu contents out from under
+    // the element, so the indices have to be reassigned rather than stamped
+    // once at first render.
+    menu.replaceChildren();
+    const link = document.createElement("ark-nav-link") as ArkNavLink;
+    menu.appendChild(link);
+    await flushSlotChange();
+
+    expect(indices(menu)).toEqual(["0"]);
+  });
+});
+
+// ---------------------------------------------------------------------------
 // ArkNavLink — auto-active
 // ---------------------------------------------------------------------------
 

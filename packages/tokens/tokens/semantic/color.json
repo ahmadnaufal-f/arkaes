@@ -3,6 +3,11 @@
     "bg": { "$type": "color", "$value": "#fbf8f3", "$description": "Page background." },
     "surface": { "$type": "color", "$value": "{color.neutral-0}", "$description": "Raised surface background." },
     "surface-soft": { "$type": "color", "$value": "#f6f0ea", "$description": "Recessed / soft surface background." },
+    "surface-floating": {
+      "$type": "color",
+      "$value": "{color.sage-100}",
+      "$description": "Background for chrome that floats free over the page (the immersive navigation pills). A sage tint so it separates from the warm page background instead of dissolving into it."
+    },
     "text": { "$type": "color", "$value": "#17130f", "$description": "Primary body text." },
     "text-soft": { "$type": "color", "$value": "#332b25", "$description": "Slightly softened body text." },
     "text-muted": { "$type": "color", "$value": "#5f534a", "$description": "Muted / secondary text." },

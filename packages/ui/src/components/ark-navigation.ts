@@ -11,6 +11,13 @@ import { hasKeyboardFocusWithin } from "../utils/keyboard-focus";
 
 let mobileMenuId = 0;
 
+/**
+ * Custom property written onto each item slotted into the mobile menu, holding
+ * its zero-based position in the list. It is what the drawer's stagger
+ * multiplies its per-item delay by — see `ArkNavigationMobileMenu`.
+ */
+const MENU_ITEM_INDEX_PROP = "--ark-nav-menu-item-index";
+
 /** Scroll depth (px) past which the bar takes on its condensed look. */
 const SCROLLED_THRESHOLD_PX = 40;
 
@@ -65,7 +72,9 @@ const DEFAULT_NAV_HEIGHT_PX = 80;
  *   these margins.
  * @cssprop [--ark-nav-immersive-pill-size=44px] - Minimum pill height (and the
  *   width of the square hamburger pill).
- * @cssprop [--ark-nav-immersive-pill-bg] - Pill background.
+ * @cssprop [--ark-nav-immersive-pill-bg] - Pill background. Derived from
+ *   `--ark-navigation-pill-bg` (falling back to `--ark-color-surface-floating`)
+ *   at 92% opacity; override either one to retint the pills.
  * @cssprop [--ark-nav-immersive-pill-radius=var(--ark-radius-full)] - Pill radius.
  * @cssprop [--ark-nav-immersive-links-gap=var(--ark-space-6)] - Gap between the
  *   desktop links while they are boxed into their pill.
@@ -185,9 +194,14 @@ export class ArkNavigationRoot extends LitElement {
       /* Immersive mode knobs — see the class doc comment. */
       --ark-nav-immersive-margin-block: var(--ark-space-3);
       --ark-nav-immersive-pill-size: 44px;
+      /* A sage tint rather than the page background: the pills float over
+         arbitrary content and have to read as chrome, and a fill mixed from
+         --ark-color-bg made them the same colour as whatever they were
+         covering. Kept only slightly translucent — at the old 82% the tint
+         washed out into the page behind it. */
       --ark-nav-immersive-pill-bg: color-mix(
         in srgb,
-        var(--ark-navigation-bg, var(--ark-color-bg)) 82%,
+        var(--ark-navigation-pill-bg, var(--ark-color-surface-floating)) 92%,
         transparent
       );
       --ark-nav-immersive-pill-radius: var(--ark-radius-full);
@@ -280,9 +294,13 @@ export class ArkNavigationRoot extends LitElement {
       }
 
       /* Custom properties inherit through the shadow boundary, so this is how
-         the links pill tightens the gap its own stylesheet draws. */
+         the links pill tightens the gap its own stylesheet draws. The link
+         colour steps up one notch for the same reason: the tinted pill is
+         darker than the page, and the resting ghost grey drops under 4.5:1
+         against it. */
       & ::slotted(ark-navigation-links) {
         --ark-nav-links-gap: var(--ark-nav-immersive-links-gap);
+        --ark-nav-link-color: var(--ark-color-text-muted);
       }
 
       & ::slotted(ark-navigation-mobile-toggle) {
@@ -569,6 +587,10 @@ export class ArkNavigationLinks extends LitElement {
 
 /**
  * ArkNavLink is an individual navigation link.
+ *
+ * @cssprop [--ark-nav-link-color=var(--ark-color-text-ghost)] - Resting link
+ *   colour. Darkened by ark-navigation-root on the immersive links pill, whose
+ *   tinted background the ghost grey is too light for.
  */
 export class ArkNavLink extends LitElement {
   static override properties = {
@@ -589,7 +611,9 @@ export class ArkNavLink extends LitElement {
     }
 
     .nav-link {
-      color: var(--ark-color-text-ghost);
+      /* Set by ark-navigation-root on the links pill, where the tinted
+         background needs a darker ink to stay readable. */
+      color: var(--ark-nav-link-color, var(--ark-color-text-ghost));
       cursor: var(--ark-cursor-interactive, pointer);
       display: inline-flex;
       align-items: center;
@@ -643,7 +667,7 @@ export class ArkNavLink extends LitElement {
     }
 
     :host([navigating]) .nav-link:hover {
-      color: var(--ark-color-text-ghost);
+      color: var(--ark-nav-link-color, var(--ark-color-text-ghost));
     }
 
     :host([navigating]) .nav-link:hover .underline {
@@ -927,6 +951,29 @@ export class ArkNavigationMobileToggle extends LitElement {
 
 /**
  * ArkNavigationMobileMenu is the sliding drawer for mobile links.
+ *
+ * The panel slides and fades as one, and the items inside it come in behind it
+ * on a stagger — each one a fixed step later than the one above, so the list
+ * reads top to bottom rather than arriving as a single block. The step is
+ * driven by {@link MENU_ITEM_INDEX_PROP}, written onto each slotted child as it
+ * is assigned rather than matched with `:nth-child()`, so a menu of any length
+ * staggers without the stylesheet having to know how many items there are.
+ *
+ * Closing is deliberately quicker than opening and drops the stagger: on the
+ * way out the drawer is in the way of whatever the tap was aiming at, and a
+ * reversed cascade only holds it there longer.
+ *
+ * @summary Sliding mobile navigation drawer.
+ * @cssprop [--ark-nav-menu-duration=460ms] - Slide/fade duration on open.
+ * @cssprop [--ark-nav-menu-exit-duration=240ms] - Slide/fade duration on close.
+ * @cssprop [--ark-nav-menu-ease=var(--ark-ease-expo-out)] - Easing for the
+ *   panel and its items.
+ * @cssprop [--ark-nav-menu-shift=-16px] - How far the panel travels.
+ * @cssprop [--ark-nav-menu-item-duration=380ms] - Per-item fade/slide duration.
+ * @cssprop [--ark-nav-menu-item-shift=-10px] - How far each item travels.
+ * @cssprop [--ark-nav-menu-item-delay=90ms] - Delay before the first item
+ *   starts, measured from the moment the panel starts moving.
+ * @cssprop [--ark-nav-menu-stagger=60ms] - Extra delay per item after the first.
  */
 export class ArkNavigationMobileMenu extends LitElement {
   static override properties = {
@@ -955,23 +1002,40 @@ export class ArkNavigationMobileMenu extends LitElement {
       overflow: hidden;
       position: fixed;
       top: var(--ark-nav-header-height, 60px);
-      transform: translateY(-8px);
-      transition:
-        opacity var(--ark-duration-normal) var(--ark-ease-standard),
-        transform var(--ark-duration-normal) var(--ark-ease-standard),
-        visibility var(--ark-duration-normal) step-end;
-      opacity: 0;
-      visibility: hidden;
       z-index: 99;
+
+      /* Drawer motion knobs — see the class doc comment. Spelled out in ms
+         rather than taken from --ark-duration-*: the panel is a large surface
+         travelling a long way and wants a slower ramp than the shared
+         normal/slow steps, which are tuned for small state changes. The
+         reduced-motion block at the bottom collapses all of them. */
+      --ark-nav-menu-duration: 460ms;
+      --ark-nav-menu-exit-duration: 240ms;
+      --ark-nav-menu-ease: var(--ark-ease-expo-out);
+      --ark-nav-menu-shift: -16px;
+      --ark-nav-menu-item-duration: 380ms;
+      --ark-nav-menu-item-shift: -10px;
+      --ark-nav-menu-item-delay: 90ms;
+      --ark-nav-menu-stagger: 60ms;
+
+      opacity: 0;
+      transform: translateY(var(--ark-nav-menu-shift));
+      visibility: hidden;
+      /* Declared on the closed state, so this is the transition that runs on
+         the way out; the open state below carries the slower entry. */
+      transition:
+        opacity var(--ark-nav-menu-exit-duration) var(--ark-nav-menu-ease),
+        transform var(--ark-nav-menu-exit-duration) var(--ark-nav-menu-ease),
+        visibility var(--ark-nav-menu-exit-duration) step-end;
     }
 
     :host([menu-open]) {
       opacity: 1;
       transform: translateY(0);
       transition:
-        opacity var(--ark-duration-normal) var(--ark-ease-standard),
-        transform var(--ark-duration-normal) var(--ark-ease-standard),
-        visibility var(--ark-duration-normal) step-start;
+        opacity var(--ark-nav-menu-duration) var(--ark-nav-menu-ease),
+        transform var(--ark-nav-menu-duration) var(--ark-nav-menu-ease),
+        visibility var(--ark-nav-menu-duration) step-start;
       visibility: visible;
     }
 
@@ -994,12 +1058,71 @@ export class ArkNavigationMobileMenu extends LitElement {
       display: block;
       padding-block: 18px;
     }
+
+    /* Every item, not just ark-nav-link: a drawer may hold a CTA or a divider
+       and a row left out of the cascade is the one thing the eye catches. */
+    ::slotted(*) {
+      opacity: 0;
+      transform: translateY(var(--ark-nav-menu-item-shift));
+      transition:
+        opacity var(--ark-nav-menu-exit-duration) var(--ark-nav-menu-ease),
+        transform var(--ark-nav-menu-exit-duration) var(--ark-nav-menu-ease);
+    }
+
+    :host([menu-open]) ::slotted(*) {
+      opacity: 1;
+      transform: translateY(0);
+      transition:
+        opacity var(--ark-nav-menu-item-duration) var(--ark-nav-menu-ease),
+        transform var(--ark-nav-menu-item-duration) var(--ark-nav-menu-ease);
+      /* The index is unitless, so this multiplies out to a time. Items with no
+         index yet (first paint, before slotchange) fall back to 0 and simply
+         arrive with the first one. */
+      transition-delay: calc(
+        var(--ark-nav-menu-item-delay) + var(--ark-nav-menu-item-index, 0) *
+          var(--ark-nav-menu-stagger)
+      );
+    }
+
+    /* The shared --ark-duration-* overrides in theme.css can't reach in here,
+       and its blanket \`*\` rule doesn't cross the shadow boundary either, so
+       the knobs above have to be collapsed by hand. */
+    @media (prefers-reduced-motion: reduce) {
+      :host {
+        --ark-nav-menu-duration: 1ms;
+        --ark-nav-menu-exit-duration: 1ms;
+        --ark-nav-menu-shift: 0px;
+        --ark-nav-menu-item-duration: 1ms;
+        --ark-nav-menu-item-shift: 0px;
+        --ark-nav-menu-item-delay: 0ms;
+        --ark-nav-menu-stagger: 0ms;
+      }
+    }
   `;
+
+  /**
+   * Numbers the slotted items so each one can offset its own transition.
+   *
+   * Driven from `slotchange` — which covers the menu being re-populated across
+   * an Astro ClientRouter navigation — and once from `firstUpdated`, because
+   * the items are already in the light DOM before the slot that will hold them
+   * exists and not every environment replays that first assignment as an event.
+   */
+  private _indexItems = () => {
+    const slot = this.renderRoot.querySelector("slot");
+    slot?.assignedElements().forEach((el, i) => {
+      (el as HTMLElement).style.setProperty(MENU_ITEM_INDEX_PROP, String(i));
+    });
+  };
+
+  override firstUpdated() {
+    this._indexItems();
+  }
 
   override render() {
     return html`
       <nav class="mobile-menu" aria-label=${this.label}>
-        <slot></slot>
+        <slot @slotchange=${this._indexItems}></slot>
       </nav>
     `;
   }
