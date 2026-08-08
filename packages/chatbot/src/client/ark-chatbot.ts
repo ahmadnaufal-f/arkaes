@@ -625,12 +625,19 @@ export class ArkChatbot extends LitElement {
     .bubble--rich {
       white-space: normal;
 
-      /* markdownStyles caps a body at the reading measure and sets the article
-         type scale; inside a bubble the bubble is the measure. */
+      /* markdownStyles caps a body at the reading measure and sets an article
+         type scale; inside a bubble the bubble is the measure, and .bubble
+         above already sets the type.
+
+         Restating the size here rather than reaching for "inherit": .bubble and
+         .bubble--rich are the same element, so "inherit" resolves against the
+         row *outside* the bubble and throws away .bubble's own font-size —
+         which is what made assistant replies render a step larger than the
+         user's. */
       &.ark-md {
         color: inherit;
-        font-size: inherit;
-        line-height: inherit;
+        font-size: var(--ark-text-sm);
+        line-height: var(--ark-leading-normal);
         max-width: none;
       }
 
