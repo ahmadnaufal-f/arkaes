@@ -2,7 +2,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { repeat } from "lit/directives/repeat.js";
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import { defineElement } from "../define-element";
-import { renderMarkdown } from "./markdown";
+import { markdownStyles, renderMarkdown } from "@arkaes/ui/markdown";
 import { splitReply } from "./sources";
 import type { ChatMessage, SourceCitation } from "../shared/types";
 
@@ -217,7 +217,10 @@ export class ArkChatbot extends LitElement {
   /** Animations owned by the morph currently in flight, if any. */
   private _morphAnimations: Animation[] = [];
 
-  static override styles = css`
+  // markdownStyles first: a shadow root cannot see the app's global
+  // stylesheet, so the shared prose rules are adopted here and the bubble's
+  // own block below tightens them for chat.
+  static override styles = [markdownStyles, css`
     :host {
       --chatbot-width: min(380px, calc(100vw - var(--ark-space-6)));
       --chatbot-height: min(560px, calc(100vh - var(--ark-space-10)));
@@ -613,9 +616,21 @@ export class ArkChatbot extends LitElement {
       }
     }
 
-    /* ── Rendered Markdown (assistant replies) ─────────────────────────── */
+    /* ── Rendered Markdown (assistant replies) ─────────────────────────────
+       The shared prose rules come from markdownStyles (adopted above). A reply
+       is a bubble, not an article, so this block resets the long-form container
+       defaults and tightens the block rhythm. */
     .bubble--rich {
       white-space: normal;
+
+      /* markdownStyles caps a body at the reading measure and sets the article
+         type scale; inside a bubble the bubble is the measure. */
+      &.ark-md {
+        color: inherit;
+        font-size: inherit;
+        line-height: inherit;
+        max-width: none;
+      }
 
       & > :first-child {
         margin-top: 0;
@@ -630,7 +645,16 @@ export class ArkChatbot extends LitElement {
       blockquote {
         margin: 0 0 var(--ark-space-2);
       }
-      .md-h {
+      /* Flow spacing here is per-element margin, not the shared owl rule. */
+      & > * + * {
+        margin-block-start: 0;
+      }
+      p,
+      li {
+        color: inherit;
+        line-height: inherit;
+      }
+      .ark-md-heading {
         font-weight: var(--ark-weight-semibold);
         margin-bottom: var(--ark-space-1);
       }
@@ -661,13 +685,13 @@ export class ArkChatbot extends LitElement {
       }
       /* Inline citation markers ([3] / [3, 5]) render as circular badges whose
          numbers match the "Sources" footer below the reply. */
-      .md-cites {
+      .ark-md-cites {
         display: inline-flex;
         gap: 0.25em;
         margin-left: 0.2em;
         vertical-align: 0.12em;
       }
-      .md-cite {
+      .ark-md-cite {
         align-items: center;
         background: var(--ark-color-accent-soft);
         border: 1px solid color-mix(in srgb, var(--ark-color-accent), transparent 65%);
@@ -962,7 +986,7 @@ export class ArkChatbot extends LitElement {
         outline-offset: 2px;
       }
     }
-  `;
+  `];
 
   override connectedCallback() {
     super.connectedCallback();
@@ -1324,14 +1348,20 @@ export class ArkChatbot extends LitElement {
         const rich = message.role === "assistant" && !thinking;
         const bubbleClass = `bubble bubble--${message.role}${
           message.pending && !thinking ? " bubble--pending" : ""
-        }${rich ? " bubble--rich" : ""}`;
+        }${rich ? " bubble--rich ark-md ark-md-headings-flat" : ""}`;
         // Rich replies may carry an appended sources payload; split it off so
         // the answer renders as Markdown and the sources render as a footer.
         const split = rich ? splitReply(message.content) : null;
         const body = thinking
           ? typingDots
           : split
-            ? html`${unsafeHTML(renderMarkdown(split.body))}${this._renderSources(
+            ? html`${unsafeHTML(
+              renderMarkdown(split.body, {
+                features: ["citations"],
+                headings: "flat",
+                softBreaks: true,
+              }),
+            )}${this._renderSources(
               split.sources,
             )}`
             : message.content;

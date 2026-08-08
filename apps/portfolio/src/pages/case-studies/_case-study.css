@@ -26,16 +26,15 @@
   text-transform: uppercase;
 }
 
-.cs-overview-body p {
-  color: var(--ark-color-text-soft);
+ark-markdown.cs-overview-body {
   font-size: var(--ark-text-lg);
   font-weight: var(--ark-weight-thin);
   line-height: var(--ark-leading-relaxed);
-  margin: 0 0 1.2em;
 }
 
-.cs-overview-body p:last-child {
-  margin-bottom: 0;
+ark-markdown.cs-overview-body p {
+  color: var(--ark-color-text-soft);
+  line-height: var(--ark-leading-relaxed);
 }
 
 /* ── Accordion ────────────────────────────────────────────── */
@@ -49,111 +48,22 @@
   max-width: 920px;
 }
 
-/* Slotted content styles inside ark-accordion-item */
+/* Body copy inside ark-accordion-item.
 
-.cs-section-content p {
-  color: var(--ark-color-text-muted);
+   The prose itself — subheadings, lists, figures, proof cards, code — is styled
+   by @arkaes/ui/markdown.css. What stays here is this page's own lead-paragraph
+   voice: a size up from the design-system default, at the thin weight. The
+   element in the selector keeps these ahead of the component's own rules. */
+
+ark-markdown.cs-section-content {
   font-size: var(--ark-text-lg);
   font-weight: var(--ark-weight-thin);
   line-height: var(--ark-leading-relaxed);
-  margin: 0 0 1em;
-  max-width: 72ch;
 }
 
-.cs-section-content p:last-child {
-  margin-bottom: 0;
-}
-
-.cs-section-content .cs-list {
+ark-markdown.cs-section-content :is(p, li) {
   color: var(--ark-color-text-muted);
-  font-size: var(--ark-text-md);
-  font-weight: var(--ark-weight-thin);
   line-height: var(--ark-leading-relaxed);
-  list-style: none;
-  margin: 0 0 1em;
-  padding: 0;
-}
-
-.cs-section-content .cs-list li {
-  max-width: 68ch;
-  padding: 5px 0 5px 20px;
-  position: relative;
-}
-
-.cs-section-content .cs-list li::before {
-  color: var(--ark-color-accent);
-  content: "•";
-  left: 0;
-  position: absolute;
-}
-
-.cs-section-content .cs-subheading {
-  color: var(--ark-color-text-soft);
-  font-family: var(--ark-font-sans);
-  font-size: var(--ark-text-md);
-  font-weight: var(--ark-weight-medium);
-  letter-spacing: 0.01em;
-  margin: 1.6em 0 0.5em;
-}
-
-.cs-section-content .cs-figure {
-  margin: 1.8em 0;
-}
-
-.cs-section-content .cs-figure svg,
-.cs-section-content .cs-diagram {
-  display: block;
-  height: auto;
-  max-width: 100%;
-  width: 100%;
-}
-
-/* Phone screenshots — constrained, framed, displayed in a centered row */
-
-.cs-section-content .cs-shots {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  justify-content: center;
-  margin: 1.8em 0;
-}
-
-.cs-section-content .cs-shot {
-  flex: 0 1 200px;
-  margin: 0;
-  max-width: 220px;
-}
-
-.cs-section-content .cs-screenshot {
-  border: 1px solid color-mix(in srgb, var(--ark-color-accent) 24%, transparent);
-  border-radius: 20px;
-  box-shadow: 0 16px 36px rgba(78, 52, 120, 0.16);
-  display: block;
-  height: auto;
-  width: 100%;
-}
-
-.cs-section-content .cs-shot figcaption {
-  color: var(--ark-color-text-subtle);
-  font-family: var(--ark-font-mono);
-  font-size: 0.62rem;
-  letter-spacing: 0.04em;
-  line-height: 1.5;
-  margin-top: 12px;
-  text-align: center;
-}
-
-.cs-section-content .cs-code {
-  background: var(--ark-color-neutral-900);
-  border-radius: var(--ark-radius-xs);
-  color: var(--ark-color-neutral-100);
-  font-family: var(--ark-font-mono);
-  font-size: 0.8rem;
-  line-height: 1.7;
-  margin: 1.2em 0;
-  overflow-x: auto;
-  padding: 20px 24px;
-  white-space: pre;
 }
 
 /* ── Back link ────────────────────────────────────────────── */

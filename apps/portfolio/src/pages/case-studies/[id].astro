@@ -93,7 +93,8 @@ const jsonLd = [
         <section class="cs-overview-section">
           <div class="cs-overview-inner">
             <div class="cs-overview-label">Overview</div>
-            <div
+            <ark-markdown
+              heading-style="section"
               class="cs-overview-body"
               set:html={renderSectionHtml(overviewSection.content, diagrams)}
             />
@@ -108,7 +109,8 @@ const jsonLd = [
           {
             accordionSections.map((section) => (
               <ark-accordion-item heading={section.heading}>
-                <div
+                <ark-markdown
+                  heading-style="section"
                   class="cs-section-content"
                   set:html={renderSectionHtml(section.content, diagrams)}
                 />

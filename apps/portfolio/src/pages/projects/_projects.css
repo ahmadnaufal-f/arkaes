@@ -16,14 +16,17 @@
   margin: 0;
 }
 
-/* Body: the project narrative, in the centered content column. */
-.proj-body p {
-  color: var(--ark-color-text-muted);
+/* Body: the project narrative, in the centered content column. The prose
+   itself is styled by @arkaes/ui/markdown.css; this is the page's own voice. */
+.proj-body ark-markdown {
   font-size: var(--ark-text-lg);
   font-weight: var(--ark-weight-thin);
   line-height: var(--ark-leading-relaxed);
-  margin: 0 0 1em;
-  max-width: 72ch;
+}
+
+.proj-body ark-markdown :is(p, li) {
+  color: var(--ark-color-text-muted);
+  line-height: var(--ark-leading-relaxed);
 }
 
 /* Screenshots gallery (side projects). Framed like case study shots. */

@@ -1,6 +1,9 @@
 import "@arkaes/tokens/css";
 import "@arkaes/tokens/fonts.css";
 import "@arkaes/ui/register";
+// ark-markdown renders into the light DOM, so its prose styles are an ordinary
+// stylesheet the app loads once rather than shadow-encapsulated CSS.
+import "@arkaes/ui/markdown.css";
 import { inject } from "@vercel/analytics";
 
 import type { Preview } from "@storybook/web-components-vite";

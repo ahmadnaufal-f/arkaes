@@ -19,7 +19,7 @@
   },
   "type": "module",
   "scripts": {
-    "postinstall": "pnpm --filter @arkaes/tokens run generate",
+    "postinstall": "pnpm --filter @arkaes/tokens run generate && pnpm --filter @arkaes/ui run emit-css",
     "build": "turbo build",
     "check": "turbo check",
     "dev": "turbo dev",

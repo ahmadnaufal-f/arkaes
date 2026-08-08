@@ -21,6 +21,7 @@ export * from "./ark-cursor";
 export * from "./ark-dialog";
 export * from "./ark-floating-action-container";
 export * from "./ark-hero";
+export * from "./ark-markdown";
 export * from "./ark-navigation";
 export * from "./ark-scroll-top";
 export * from "./ark-toast";

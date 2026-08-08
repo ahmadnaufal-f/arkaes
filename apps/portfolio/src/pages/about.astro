@@ -69,7 +69,8 @@ const jsonLd = [
                 transition:name="about-me"
               />
             )}
-            <div
+            <ark-markdown
+              heading-style="section"
               class="about-body"
               set:html={renderSectionHtml(content, diagrams)}
             />
