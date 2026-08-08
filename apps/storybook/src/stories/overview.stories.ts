@@ -1,20 +1,25 @@
 import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import { html } from "lit";
-import * as components from "@arkaes/ui/components";
-import * as patterns from "@arkaes/ui/patterns";
-import * as primitives from "@arkaes/ui/primitives";
 import { tokensOfType, type TokenRow } from "./foundations/tokens-data";
 
 /**
- * Custom-element classes exported by a layer barrel. The barrels also export
- * enums, `defineArkX()` helpers and namespace objects, so count only what is
- * actually an element — derived rather than written down, so these numbers
- * cannot go stale.
+ * One source file per component is the unit that matters here. Counting
+ * exported element classes instead would triple-count the multi-part
+ * components — `ark-card` alone exports seven elements, `ark-dialog` eight —
+ * and report thirty-two components where there are eleven.
+ *
+ * `import.meta.glob` is resolved by Vite at build time, so these stay correct
+ * when a component is added or removed. The `ark-*` pattern excludes helpers
+ * that are not elements, such as `components/toast-store.ts`.
  */
-const countElements = (namespace: Record<string, unknown>): number =>
-  Object.values(namespace).filter(
-    (value) => typeof value === "function" && value.prototype instanceof HTMLElement,
-  ).length;
+const LAYER_FILES = {
+  primitives: import.meta.glob("../../../../packages/ui/src/primitives/ark-*.ts"),
+  components: import.meta.glob("../../../../packages/ui/src/components/ark-*.ts"),
+  patterns: import.meta.glob("../../../../packages/ui/src/patterns/ark-*.ts"),
+};
+
+const countFiles = (layer: keyof typeof LAYER_FILES): number =>
+  Object.keys(LAYER_FILES[layer]).length;
 
 const COLOR_TOKENS = tokensOfType("color");
 const SPACING_TOKENS = tokensOfType("dimension");
@@ -41,7 +46,7 @@ const RAMPS = (() => {
 const LAYERS = [
   {
     name: "Tokens",
-    count: `${COLOR_TOKENS.length + SPACING_TOKENS.length} generated`,
+    count: String(COLOR_TOKENS.length + SPACING_TOKENS.length),
     entry: "@arkaes/tokens",
     body: `Colour and spacing are generated from DTCG sources with Style Dictionary;
       typography, radius, shadow and motion are still hand-authored CSS. Everything
@@ -49,7 +54,7 @@ const LAYERS = [
   },
   {
     name: "Primitives",
-    count: `${countElements(primitives)} elements`,
+    count: String(countFiles("primitives")),
     entry: "@arkaes/ui/primitives",
     body: `Single-purpose Lit elements — button, chip, badge, input, toggle. Styles are
       inlined in the shadow root and driven entirely by tokens, so a primitive never
@@ -57,14 +62,14 @@ const LAYERS = [
   },
   {
     name: "Components",
-    count: `${countElements(components)} elements`,
+    count: String(countFiles("components")),
     entry: "@arkaes/ui/components",
     body: `Compositions with behaviour — card, dialog, accordion, navigation, toast.
       Multi-part components ship as a set of elements plus a namespace object.`,
   },
   {
     name: "Patterns",
-    count: `${countElements(patterns)} elements`,
+    count: String(countFiles("patterns")),
     entry: "@arkaes/ui/patterns",
     body: `Page-level furniture assembled from the layers below it — media card, page
       header, project header.`,
