@@ -101,7 +101,7 @@ export const markdownStyles = css`
      sit close to body copy rather than competing with it. */
   :is(.ark-md-headings-section, ark-markdown[heading-style="section"])
     .ark-md-heading {
-    color: var(--ark-color-text);
+    color: var(--ark-color-text-soft);
     font-family: var(--ark-font-sans);
     font-size: var(--ark-text-md);
     font-weight: var(--ark-weight-medium);
@@ -287,7 +287,10 @@ export const markdownStyles = css`
     border: 1px solid
       color-mix(in srgb, var(--ark-color-accent) 24%, transparent);
     border-radius: var(--ark-radius-lg);
-    box-shadow: var(--ark-shadow-lg);
+    /* Legacy value carried over verbatim to preserve the look. The violet has
+       no counterpart in the clay/sage palette — worth tokenising, but that is a
+       design change rather than a move. */
+    box-shadow: 0 16px 36px rgba(78, 52, 120, 0.16);
     display: block;
     height: auto;
     width: 100%;
@@ -296,20 +299,27 @@ export const markdownStyles = css`
   :is(.ark-md, ark-markdown) .ark-md-shot figcaption {
     color: var(--ark-color-text-subtle);
     font-family: var(--ark-font-mono);
-    font-size: var(--ark-text-xs);
-    letter-spacing: var(--ark-tracking-wide);
-    line-height: var(--ark-leading-snug);
+    /* Below --ark-text-xs on purpose: a caption under a phone frame reads as
+       an annotation, not as copy. */
+    font-size: 0.62rem;
+    letter-spacing: 0.04em;
+    line-height: 1.5;
     margin-block-start: var(--ark-space-3);
     text-align: center;
   }
 
-  /* ── Proof cards ───────────────────────────────────────── */
+  /* ── Proof cards ─────────────────────────────────────────────
+     Evidence blocks rendered from "→ metric | [work](/href) | detail" lines.
+     Each card cites the work a claim came from, so the prose above it can stay
+     short. A left rule rather than a box: the card is already the link target
+     and a full frame would compete with the surrounding prose. */
 
   :is(.ark-md, ark-markdown) .ark-md-proofs {
     display: grid;
     gap: var(--ark-space-3);
     list-style: none;
-    padding-inline-start: 0;
+    margin: var(--ark-space-6) 0;
+    padding: 0;
   }
 
   :is(.ark-md, ark-markdown) .ark-md-proof {
@@ -317,58 +327,73 @@ export const markdownStyles = css`
   }
 
   :is(.ark-md, ark-markdown) :is(.ark-md-proof, .ark-md-proof-link) {
-    border: 1px solid var(--ark-color-border);
-    border-radius: var(--ark-radius-sm);
+    border-inline-start: 2px solid var(--ark-color-border);
     display: grid;
     gap: var(--ark-space-1);
-    padding: var(--ark-space-4);
+    padding: var(--ark-space-2) 0 var(--ark-space-2) var(--ark-space-4);
+    transition:
+      border-color var(--ark-duration-fast) var(--ark-ease-standard),
+      padding-inline-start var(--ark-duration-fast) var(--ark-ease-standard);
   }
 
-  /* The border belongs to the anchor when there is one, so the whole card is
-     the hit target rather than only its text. */
+  /* When the card is a link the <li> is just a wrapper, so the rule above
+     applies to the anchor instead — reset the double treatment. */
   :is(.ark-md, ark-markdown) .ark-md-proof:has(.ark-md-proof-link) {
-    border: 0;
+    border-inline-start: 0;
+    display: block;
     padding: 0;
   }
 
   :is(.ark-md, ark-markdown) .ark-md-proof-link {
     color: inherit;
-    font-weight: inherit;
     text-decoration: none;
-    transition: border-color var(--ark-duration-normal) var(--ark-ease-standard);
   }
 
   :is(.ark-md, ark-markdown) .ark-md-proof-link:hover {
-    border-color: var(--ark-color-border-strong);
+    border-inline-start-color: var(--ark-color-accent);
+    padding-inline-start: var(--ark-space-5);
   }
 
+  /* Mono, so numbers read as measurements rather than emphasis. */
   :is(.ark-md, ark-markdown) .ark-md-proof-metric {
     color: var(--ark-color-accent-strong);
-    font-family: var(--ark-font-display);
-    font-size: var(--ark-text-xl);
-    font-weight: var(--ark-weight-thin);
-    line-height: var(--ark-leading-tight);
+    font-family: var(--ark-font-mono);
+    font-size: var(--ark-text-xs);
+    letter-spacing: var(--ark-tracking-label);
+    line-height: var(--ark-leading-snug);
+    text-transform: uppercase;
   }
 
   :is(.ark-md, ark-markdown) .ark-md-proof-title {
     color: var(--ark-color-text);
-    font-size: var(--ark-text-sm);
+    font-size: var(--ark-text-md);
     font-weight: var(--ark-weight-medium);
+    line-height: var(--ark-leading-snug);
   }
 
   :is(.ark-md, ark-markdown) .ark-md-proof-link .ark-md-proof-title::after {
-    content: " →";
-    opacity: 0;
-    transition: opacity var(--ark-duration-normal) var(--ark-ease-standard);
+    content: "\\2192";
+    display: inline-block;
+    margin-inline-start: 0.4em;
+    transition: transform var(--ark-duration-fast) var(--ark-ease-standard);
   }
 
   :is(.ark-md, ark-markdown) .ark-md-proof-link:hover .ark-md-proof-title::after {
-    opacity: 1;
+    transform: translateX(3px);
   }
 
   :is(.ark-md, ark-markdown) .ark-md-proof-desc {
     color: var(--ark-color-text-muted);
     font-size: var(--ark-text-sm);
+    line-height: var(--ark-leading-relaxed);
+  }
+
+  /* Descriptions may carry inline links; they inherit the card's colour rather
+     than the accent-underline prose treatment, which would compete with it. */
+  :is(.ark-md, ark-markdown) .ark-md-proof-desc a {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-thickness: 0.06em;
   }
 
   /* ── Citation badges ───────────────────────────────────── */
@@ -420,9 +445,19 @@ export const markdownStyles = css`
   }
 
   @media (prefers-reduced-motion: reduce) {
-    :is(.ark-md, ark-markdown) :is(a, .ark-md-proof-link,
-      .ark-md-proof-title::after) {
+    :is(.ark-md, ark-markdown) a,
+    :is(.ark-md, ark-markdown) .ark-md-proof-link,
+    :is(.ark-md, ark-markdown) .ark-md-proof-link .ark-md-proof-title::after {
       transition: none;
+    }
+
+    /* Pin the hover affordances that would otherwise move. */
+    :is(.ark-md, ark-markdown) .ark-md-proof-link:hover {
+      padding-inline-start: var(--ark-space-4);
+    }
+
+    :is(.ark-md, ark-markdown) .ark-md-proof-link:hover .ark-md-proof-title::after {
+      transform: none;
     }
   }
 `;
