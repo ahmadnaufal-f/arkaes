@@ -17,7 +17,10 @@ import { isStoryPreview } from "../utils/story-preview";
  *   requested, for consumers that want to track the interaction.
  * @csspart button - The button element.
  * @cssprop [--ark-scroll-top-size=3.25rem] - Diameter of the button.
- * @cssprop [--ark-scroll-top-bg=var(--ark-color-surface)] - Button background.
+ * @cssprop [--ark-scroll-top-bg=var(--ark-color-surface-floating)] - Button
+ *   background.
+ * @cssprop [--ark-scroll-top-border=var(--ark-color-border-floating)] - Button
+ *   outline colour.
  * @cssprop [--ark-scroll-top-color=var(--ark-color-text)] - Icon colour.
  */
 export class ArkScrollTop extends LitElement {
@@ -90,8 +93,10 @@ export class ArkScrollTop extends LitElement {
     .button {
       align-items: center;
       aspect-ratio: 1;
-      background: var(--ark-scroll-top-bg, var(--ark-color-surface));
-      border: 1px solid var(--ark-color-border);
+      /* The floating-chrome pair, so the dock reads as one family with the
+         navigation pills at the other edge of the screen. */
+      background: var(--ark-scroll-top-bg, var(--ark-color-surface-floating));
+      border: 1px solid var(--ark-scroll-top-border, var(--ark-color-border-floating));
       border-radius: var(--ark-radius-full);
       box-shadow: var(--ark-shadow-float);
       color: var(--ark-scroll-top-color, var(--ark-color-text));

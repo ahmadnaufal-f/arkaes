@@ -148,8 +148,13 @@ export const markdownStyles = css`
     text-decoration-thickness: 0.14em;
   }
 
+  /* The floating-chrome pair the navigation pills and the bottom dock use. An
+     inline span is small and sits inside a line of prose, so the neutral
+     surface tint alone was not enough to mark where the code starts and stops;
+     the deeper outline is what gives it an edge. */
   :is(.ark-md, ark-markdown) code {
-    background: var(--ark-color-surface-soft);
+    background: var(--ark-color-surface-floating);
+    border: 1px solid var(--ark-color-border-floating);
     border-radius: var(--ark-radius-xs);
     font-family: var(--ark-font-mono);
     font-size: 0.92em;
@@ -214,6 +219,7 @@ export const markdownStyles = css`
   /* Inside a block, the inline-code chrome would double up on the pre's own. */
   :is(.ark-md, ark-markdown) pre code {
     background: none;
+    border: 0;
     border-radius: 0;
     font-size: var(--ark-text-sm);
     padding: 0;

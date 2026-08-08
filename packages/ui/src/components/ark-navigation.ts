@@ -194,11 +194,13 @@ export class ArkNavigationRoot extends LitElement {
       /* Immersive mode knobs — see the class doc comment. */
       --ark-nav-immersive-margin-block: var(--ark-space-3);
       --ark-nav-immersive-pill-size: 44px;
-      /* A sage tint rather than the page background: the pills float over
-         arbitrary content and have to read as chrome, and a fill mixed from
-         --ark-color-bg made them the same colour as whatever they were
+      /* A light blush tint rather than the page background: the pills float
+         over arbitrary content and have to read as chrome, and a fill mixed
+         from --ark-color-bg made them the same colour as whatever they were
          covering. Kept only slightly translucent — at the old 82% the tint
-         washed out into the page behind it. */
+         washed out into the page behind it. The fill stays light, so the
+         deeper --ark-color-border-floating outline below is what actually
+         draws the pill's edge. */
       --ark-nav-immersive-pill-bg: color-mix(
         in srgb,
         var(--ark-navigation-pill-bg, var(--ark-color-surface-floating)) 92%,
@@ -284,7 +286,7 @@ export class ArkNavigationRoot extends LitElement {
       & ::slotted(ark-navigation-brand),
       & ::slotted(ark-navigation-links),
       & ::slotted(ark-navigation-mobile-toggle) {
-        border: 1px solid var(--ark-color-border);
+        border: 1px solid var(--ark-color-border-floating);
         border-radius: var(--ark-nav-immersive-pill-radius);
       }
 
@@ -320,6 +322,7 @@ export class ArkNavigationRoot extends LitElement {
         align-items: stretch;
         border-radius: var(--ark-nav-immersive-pill-radius);
         --ark-nav-cta-radius: var(--ark-nav-immersive-pill-radius);
+        --ark-nav-cta-border-color: var(--ark-color-border-floating);
         --ark-nav-cta-underline-opacity: 0;
       }
     }
@@ -742,6 +745,9 @@ export class ArkNavLink extends LitElement {
  *
  * @cssprop [--ark-nav-cta-radius=var(--ark-radius-xs)] - Button radius. Set to
  *   the pill radius by ark-navigation-root while the header is immersive.
+ * @cssprop [--ark-nav-cta-border-color=var(--ark-color-border)] - Outline
+ *   colour. Set to the floating-chrome border by ark-navigation-root while the
+ *   button is a pill, so it matches the pills beside it.
  * @cssprop [--ark-nav-cta-underline-opacity=1] - Opacity of the hover
  *   underline. Zeroed by ark-navigation-root while the button is a pill, where
  *   the curve would clip a straight bar into a stub.
@@ -762,7 +768,9 @@ export class ArkNavigationCta extends LitElement {
 
     .cta {
       align-items: center;
-      border: 1px solid var(--ark-color-border);
+      /* Set by ark-navigation-root in immersive mode, so the CTA's own outline
+         matches the one the sibling pills are drawn with. */
+      border: 1px solid var(--ark-nav-cta-border-color, var(--ark-color-border));
       /* Set by ark-navigation-root in immersive mode, where the button floats
          as a pill of its own rather than sitting on a solid bar. */
       border-radius: var(--ark-nav-cta-radius, var(--ark-radius-xs));
@@ -832,7 +840,7 @@ export class ArkNavigationCta extends LitElement {
 
     :host([navigating]) .cta:hover {
       background: transparent;
-      border-color: var(--ark-color-border);
+      border-color: var(--ark-nav-cta-border-color, var(--ark-color-border));
       color: var(--ark-color-text);
       transform: none;
     }
@@ -877,6 +885,8 @@ export class ArkNavigationMobileToggle extends LitElement {
   static override styles = css`
     :host {
       display: none;
+      /* One half of the hamburger⇄close morph; the whole thing takes two. */
+      --ark-nav-toggle-phase: 170ms;
     }
 
     @media (max-width: 900px) {
@@ -906,6 +916,91 @@ export class ArkNavigationMobileToggle extends LitElement {
       outline: 2px solid var(--ark-color-focus);
       outline-offset: 4px;
     }
+
+    /* ── Hamburger ⇄ close ─────────────────────────────────────────────
+       One set of three bars that rearranges itself, rather than two icons
+       swapped at the instant of the click. It runs in two phases so the eye can
+       follow the change: the outer bars slide together over the middle one,
+       which collapses out from under them, and only then do they rotate into
+       the cross. Closing plays the same two phases in the other order.
+
+       Each bar is a <g> carrying the rotation around a <line> carrying the
+       slide, because the two have to compose in that order — the bar must reach
+       the centre before it turns, or it pivots around a point it has not got to
+       yet and swings wide. A single element cannot express that: its rotation
+       always applies to the already-translated geometry, whichever order the
+       transform list is written in. Splitting them across parent and child puts
+       the rotation outside the translation and also lets each phase carry its
+       own delay.
+
+       Transforms resolve against the 20×20 viewBox (transform-box: view-box),
+       so the origin below is the icon's centre. */
+    .icon-bar,
+    .icon-bar line,
+    .icon-bar-middle {
+      transform-box: view-box;
+      transform-origin: 10px 10px;
+    }
+
+    /* Declared on the closed state, so these are the delays that run on the way
+       out: the cross unfolds first, then the bars travel back apart and the
+       middle one returns behind them. */
+    .icon-bar {
+      transition: transform var(--ark-nav-toggle-phase) var(--ark-ease-standard);
+    }
+
+    .icon-bar line,
+    .icon-bar-middle {
+      transition:
+        opacity var(--ark-nav-toggle-phase) var(--ark-ease-standard)
+          var(--ark-nav-toggle-phase),
+        transform var(--ark-nav-toggle-phase) var(--ark-ease-standard)
+          var(--ark-nav-toggle-phase);
+    }
+
+    :host([menu-open]) {
+      /* Phase two on the way in — the turn waits for the slide to land. */
+      & .icon-bar {
+        transition-delay: var(--ark-nav-toggle-phase);
+      }
+
+      & .icon-bar--top {
+        transform: rotate(45deg);
+      }
+
+      & .icon-bar--bottom {
+        transform: rotate(-45deg);
+      }
+
+      /* Phase one: slide to the centre, and the middle bar collapses into it
+         rather than merely fading, so it reads as being absorbed by the pair
+         closing over it instead of blinking out behind them. */
+      & .icon-bar line,
+      & .icon-bar-middle {
+        transition-delay: 0s;
+      }
+
+      & .icon-bar--top line {
+        transform: translateY(4px);
+      }
+
+      & .icon-bar--bottom line {
+        transform: translateY(-4px);
+      }
+
+      & .icon-bar-middle {
+        opacity: 0;
+        transform: scaleX(0);
+      }
+    }
+
+    /* --ark-duration-* would have collapsed on its own, but the phase is a
+       plain value and theme.css cannot reach into a shadow root to zero it. */
+    @media (prefers-reduced-motion: reduce) {
+      :host {
+        --ark-nav-toggle-phase: 1ms;
+      }
+    }
   `;
 
   private _handleClick = () => {
@@ -927,23 +1022,14 @@ export class ArkNavigationMobileToggle extends LitElement {
         aria-expanded=${this.menuOpen ? "true" : "false"}
         aria-controls=${this.menuControls || nothing}
       >
-        ${when(
-          this.menuOpen,
-          () => html`
-            <!-- Close icon (X) -->
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
-              <path d="M4 4L16 16M4 16L16 4"/>
-            </svg>
-          `,
-          () => html`
-            <!-- Hamburger icon (three lines) -->
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
-              <line x1="3" y1="6" x2="17" y2="6"/>
-              <line x1="3" y1="10" x2="17" y2="10"/>
-              <line x1="3" y1="14" x2="17" y2="14"/>
-            </svg>
-          `,
-        )}
+        <!-- Three bars that morph into the close cross — see .icon-bar. The
+             outer two are wrapped so the slide and the turn can compose in
+             that order and be timed apart. -->
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+          <g class="icon-bar icon-bar--top"><line x1="3" y1="6" x2="17" y2="6"/></g>
+          <line class="icon-bar-middle" x1="3" y1="10" x2="17" y2="10"/>
+          <g class="icon-bar icon-bar--bottom"><line x1="3" y1="14" x2="17" y2="14"/></g>
+        </svg>
       </button>
     `;
   }

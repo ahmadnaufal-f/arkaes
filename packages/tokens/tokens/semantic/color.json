@@ -5,8 +5,13 @@
     "surface-soft": { "$type": "color", "$value": "#f6f0ea", "$description": "Recessed / soft surface background." },
     "surface-floating": {
       "$type": "color",
-      "$value": "{color.sage-100}",
-      "$description": "Background for chrome that floats free over the page (the immersive navigation pills). A sage tint so it separates from the warm page background instead of dissolving into it."
+      "$value": "{color.blush-100}",
+      "$description": "Background for chrome that floats free over the page — the navigation pills and the bottom dock's actions. A light blush tint; it separates from the warm page background without carrying the weight of a full accent fill."
+    },
+    "border-floating": {
+      "$type": "color",
+      "$value": "{color.blush-300}",
+      "$description": "Outline for chrome filled with surface-floating. Deeper than the default hairline border on purpose: the fill is light, so the edge is what makes a floating control read as a distinct object."
     },
     "text": { "$type": "color", "$value": "#17130f", "$description": "Primary body text." },
     "text-soft": { "$type": "color", "$value": "#332b25", "$description": "Slightly softened body text." },

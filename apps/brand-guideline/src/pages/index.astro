@@ -124,9 +124,9 @@ import BrandGuidelineLayout from "../layouts/BrandGuidelineLayout.astro";
         <div class="swatch-name">Surface Soft</div>
         <div class="swatch-meta"><div class="swatch-hex">#f6f0ea</div><div class="swatch-role">--ark-color-surface-soft</div></div>
       </div>
-      <div class="swatch swatch--border" style="background:#e8eadf">
+      <div class="swatch" style="background:#f7e8e3;border:1px solid #d7a79b">
         <div class="swatch-name">Surface Floating</div>
-        <div class="swatch-meta"><div class="swatch-hex">#e8eadf</div><div class="swatch-role">--ark-color-surface-floating</div></div>
+        <div class="swatch-meta"><div class="swatch-hex">#f7e8e3</div><div class="swatch-role">--ark-color-surface-floating</div></div>
       </div>
       <div class="swatch" style="background:#17130f" data-dark>
         <div class="swatch-name">Text</div>
@@ -177,7 +177,7 @@ import BrandGuidelineLayout from "../layouts/BrandGuidelineLayout.astro";
     </div>
     <div class="color-rule">
       <div class="cr-label"><div class="cr-dot" style="background:var(--ark-color-bg);outline:1px solid var(--ark-color-border)"></div>Surfaces</div>
-      <p class="cr-body">Use <code>--ark-color-bg</code> for page backgrounds, <code>--ark-color-surface</code> for raised surfaces, and <code>--ark-color-surface-soft</code> for quiet section contrast. Chrome that floats free over the page — the navigation pills — uses <code>--ark-color-surface-floating</code>, a sage tint that keeps it legible over whatever it happens to be covering.</p>
+      <p class="cr-body">Use <code>--ark-color-bg</code> for page backgrounds, <code>--ark-color-surface</code> for raised surfaces, and <code>--ark-color-surface-soft</code> for quiet section contrast. Chrome that floats free over the page — the navigation pills, the bottom dock's actions, inline code — uses <code>--ark-color-surface-floating</code> over a <code>--ark-color-border-floating</code> outline. The fill is a light blush tint; the outline is deeper than the default hairline on purpose, because on a fill that light the edge is what makes the control read as a distinct object.</p>
     </div>
   </div>
 </section>
