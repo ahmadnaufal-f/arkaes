@@ -1,0 +1,91 @@
+name: Bug report
+description: Something in the workspace behaves incorrectly.
+title: "fix: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for filing. Please fill in enough detail that the bug can be reproduced
+        from a clean `pnpm install` without follow-up questions.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Which workspace package or app is affected?
+      options:
+        - apps/portfolio
+        - apps/brand-guideline
+        - apps/storybook
+        - "@arkaes/ui"
+        - "@arkaes/tokens"
+        - "@arkaes/chatbot"
+        - Tooling (Turborepo, pnpm, ESLint, CI)
+        - Not sure
+    validations:
+      required: true
+
+  - type: input
+    id: element
+    attributes:
+      label: Element or entrypoint
+      description: >-
+        If this is a custom element or a package export, name it — e.g. `ark-navigation`,
+        `@arkaes/ui/register/ark-chip`, `@arkaes/tokens/theme.css`.
+      placeholder: ark-accordion
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happens
+      description: Describe the incorrect behaviour, and what you expected instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Include the command you ran and the page or story you landed on.
+      value: |
+        1. `pnpm install`
+        2. `pnpm --filter @arkaes/portfolio dev`
+        3. Open …
+        4. …
+    validations:
+      required: true
+
+  - type: textarea
+    id: markup
+    attributes:
+      label: Minimal markup or code
+      description: >-
+        The smallest snippet that shows the problem. Include the registration import if a
+        custom element is involved — an element that never upgrades is usually a missing
+        `@arkaes/ui/register/ark-*` import.
+      render: html
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      value: |
+        - OS:
+        - Browser and version:
+        - Node version:
+        - pnpm version:
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I ran `pnpm install` and reproduced this on the latest `main`.
+          required: true
+        - label: I searched existing issues for a duplicate.
+          required: true
+        - label: This is a runtime or build bug, not a design or feature request.
+          required: true

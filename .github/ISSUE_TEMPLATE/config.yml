@@ -1,0 +1,10 @@
+# Blank issues stay enabled as the escape hatch for anything the forms below
+# don't fit — Discussions are not turned on for this repository.
+blank_issues_enabled: true
+contact_links:
+  - name: Component and token reference
+    url: https://github.com/ahmadnaufal-f/arkaes#packages
+    about: Check the README for the current @arkaes/ui elements and @arkaes/tokens entrypoints before filing.
+  - name: Live site
+    url: https://arkaes.dev
+    about: The deployed portfolio, useful for confirming whether a bug reproduces in production.

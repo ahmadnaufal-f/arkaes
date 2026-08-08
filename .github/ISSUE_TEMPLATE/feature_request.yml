@@ -1,0 +1,80 @@
+name: Feature request
+description: Propose a change to an app, package, or the workspace tooling.
+title: "feat: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The design system is intentionally small and grows only as the portfolio and brand
+        surfaces need it. Proposals that name the surface driving the need move fastest.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - apps/portfolio
+        - apps/brand-guideline
+        - apps/storybook
+        - "@arkaes/ui"
+        - "@arkaes/tokens"
+        - "@arkaes/chatbot"
+        - Tooling (Turborepo, pnpm, ESLint, CI)
+        - Docs
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What can't be done today, and where did you hit it?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: >-
+        Describe the change. For a new custom element, sketch the tag name, properties, and
+        slots. For tokens, list the token names and which existing values they relate to.
+    validations:
+      required: true
+
+  - type: textarea
+    id: usage
+    attributes:
+      label: Example usage
+      description: How this would be used once it exists.
+      render: html
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: >-
+        Existing elements, tokens, or plain CSS that nearly solve this, and why they fall short.
+
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope
+      description: Check anything this proposal would touch.
+      options:
+        - label: New custom element in `packages/ui`
+        - label: New or changed design token in `packages/tokens`
+        - label: Breaking change to an existing public API
+        - label: Needs a Storybook story
+        - label: Needs a changeset for release
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched existing issues for a duplicate.
+          required: true
+        - label: I checked the README's component and token lists to confirm this doesn't already exist.
+          required: true
