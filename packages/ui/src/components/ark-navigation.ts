@@ -92,12 +92,15 @@ const DEFAULT_NAV_HEIGHT_PX = 80;
  *   for the width of the square hamburger pill. The insets below are what
  *   actually size them.
  * @cssprop [--ark-nav-immersive-pill-inset-block=5px] - How far a pill reaches
- *   above and below its contents.
- * @cssprop [--ark-nav-immersive-pill-inset-inline=var(--ark-space-3)] - How far
- *   the brand and links pills reach either side of their contents. The
- *   hamburger pill uses the block inset on both axes so it stays square.
+ *   above and below its contents. Tuned to land the pills on the CTA's own
+ *   height.
+ * @cssprop [--ark-nav-immersive-pill-inset-inline=var(--ark-space-2)] - How far
+ *   every pill reaches either side of its contents. Shared deliberately: since
+ *   the contents stay pinned, this is also each pill's distance past the
+ *   content gutter, so a pill with its own value would sit closer to the screen
+ *   edge than its neighbours.
  * @cssprop [--ark-nav-immersive-pill-border-width=1px] - Pill outline width.
- *   Counted into the negative margins, so it has to be set here rather than by
+ *   Counted into the reach below, so it has to be set here rather than by
  *   restyling the border.
  * @cssprop [--ark-nav-immersive-pill-bg] - Pill background. Derived from
  *   `--ark-navigation-pill-bg` (falling back to `--ark-color-surface-floating`)
@@ -229,10 +232,32 @@ export class ArkNavigationRoot extends LitElement {
       --ark-nav-immersive-pill-size: 44px;
       /* How far a pill's chrome reaches past the glyph it wraps. Every bit of
          it is handed straight back as negative margin, so the pill is the only
-         thing that changes size — what is inside does not move. */
+         thing that changes size — what is inside does not move.
+
+         The inline inset is shared by every pill, including the CTA, and that
+         is not a stylistic choice. The glyphs stay pinned to the content
+         gutter, so a pill's outward reach *is* its inline inset: give two pills
+         different insets and the leftmost and rightmost end up different
+         distances from the screen edge. It also means the hamburger pill is a
+         lozenge rather than a circle — the block inset is pinned at 5px, which
+         is what lands the pills on the CTA's own height, and matching that
+         inline would leave the wordmark with 5px of breathing room. Even edges
+         are worth more than a round hamburger. */
       --ark-nav-immersive-pill-inset-block: 5px;
-      --ark-nav-immersive-pill-inset-inline: var(--ark-space-3);
+      --ark-nav-immersive-pill-inset-inline: var(--ark-space-2);
       --ark-nav-immersive-pill-border-width: 1px;
+      /* Total outward reach: what a pill adds on one side, and so exactly what
+         it has to give back as negative margin. Derived once because it is the
+         number the edges line up on, and a pill that computes it differently is
+         a pill that sits closer to the screen edge than its neighbour. */
+      --ark-nav-immersive-pill-reach-block: calc(
+        var(--ark-nav-immersive-pill-inset-block) +
+          var(--ark-nav-immersive-pill-border-width)
+      );
+      --ark-nav-immersive-pill-reach-inline: calc(
+        var(--ark-nav-immersive-pill-inset-inline) +
+          var(--ark-nav-immersive-pill-border-width)
+      );
       /* A light blush tint rather than the page background: the pills float
          over arbitrary content and have to read as chrome, and a fill mixed
          from --ark-color-bg made them the same colour as whatever they were
@@ -359,24 +384,24 @@ export class ArkNavigationRoot extends LitElement {
         border: var(--ark-nav-immersive-pill-border-width) solid
           var(--ark-color-border-floating);
         border-radius: var(--ark-nav-immersive-pill-radius);
-        margin-block: calc(
-          (
-              var(--ark-nav-immersive-pill-inset-block) +
-                var(--ark-nav-immersive-pill-border-width)
-            ) * -1
-        );
         padding-block: var(--ark-nav-immersive-pill-inset-block);
+        padding-inline: var(--ark-nav-immersive-pill-inset-inline);
+      }
+
+      /* Every pill gives back exactly its reach, the CTA included — which is
+         what leaves the leftmost and rightmost of them the same distance from
+         the screen edge at every width. */
+      & ::slotted(ark-navigation-brand),
+      & ::slotted(ark-navigation-links),
+      & ::slotted(ark-navigation-mobile-toggle),
+      & ::slotted(ark-navigation-cta) {
+        margin-inline: calc(var(--ark-nav-immersive-pill-reach-inline) * -1);
       }
 
       & ::slotted(ark-navigation-brand),
-      & ::slotted(ark-navigation-links) {
-        margin-inline: calc(
-          (
-              var(--ark-nav-immersive-pill-inset-inline) +
-                var(--ark-nav-immersive-pill-border-width)
-            ) * -1
-        );
-        padding-inline: var(--ark-nav-immersive-pill-inset-inline);
+      & ::slotted(ark-navigation-links),
+      & ::slotted(ark-navigation-mobile-toggle) {
+        margin-block: calc(var(--ark-nav-immersive-pill-reach-block) * -1);
       }
 
       /* Custom properties inherit through the shadow boundary, so this is how
@@ -389,18 +414,9 @@ export class ArkNavigationRoot extends LitElement {
         --ark-nav-link-color: var(--ark-color-text-muted);
       }
 
-      /* The hamburger pill takes the block inset on both axes, which is what
-         makes it square: the icon's box is square to begin with. */
       & ::slotted(ark-navigation-mobile-toggle) {
         justify-content: center;
-        margin-inline: calc(
-          (
-              var(--ark-nav-immersive-pill-inset-block) +
-                var(--ark-nav-immersive-pill-border-width)
-            ) * -1
-        );
         min-width: var(--ark-nav-immersive-pill-size);
-        padding-inline: var(--ark-nav-immersive-pill-inset-block);
       }
 
       /* The CTA draws its own border, so the host only supplies the float; the
@@ -411,11 +427,23 @@ export class ArkNavigationRoot extends LitElement {
          the ends. The hover underline goes: a straight 2px bar across the foot
          of a pill is clipped by the curve into a stub. Hover still reads
          through the background and border-colour change. */
+      /* The CTA reaches out by the same inset as the pills, so the rightmost
+         thing on a desktop bar clears the screen edge by exactly as much as the
+         brand does on the left. It has to grow from the inside, though: its
+         outline lives on the inner anchor while the pill fill is painted on the
+         host, and the two only coincide because the anchor stretches to fill
+         it. Padding on the host would pull them apart into a double pill, so
+         the anchor takes the padding (via --ark-nav-cta-inset-inline) and the
+         host takes the negative margin. It grows by the pills' whole reach
+         rather than their inset: the border in that figure is one the CTA was
+         already wearing on the solid bar, so padding is all it has left to
+         cover the same distance with. */
       & ::slotted(ark-navigation-cta) {
         align-items: stretch;
         border-radius: var(--ark-nav-immersive-pill-radius);
         --ark-nav-cta-radius: var(--ark-nav-immersive-pill-radius);
         --ark-nav-cta-border-color: var(--ark-color-border-floating);
+        --ark-nav-cta-inset-inline: var(--ark-nav-immersive-pill-reach-inline);
         --ark-nav-cta-underline-opacity: 0;
       }
     }
@@ -946,7 +974,10 @@ export class ArkNavigationCta extends LitElement {
       gap: 0.5rem;
       letter-spacing: var(--ark-letter-spacing-mono);
       overflow: hidden;
-      padding: 10px 22px;
+      /* The inline half grows in immersive mode — ark-navigation-root sets the
+         inset and cancels it with a negative margin on the host, so the label
+         holds still while the button reaches out to the pills' edge. */
+      padding: 10px calc(22px + var(--ark-nav-cta-inset-inline, 0px));
       position: relative;
       text-decoration: none;
       text-transform: uppercase;
