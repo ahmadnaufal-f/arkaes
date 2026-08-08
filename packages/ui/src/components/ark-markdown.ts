@@ -1,4 +1,4 @@
-import { html, LitElement, nothing } from "lit";
+import { html, LitElement } from "lit";
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import { when } from "lit/directives/when.js";
 import { defineElement } from "../define-element";
@@ -110,19 +110,15 @@ export class ArkMarkdown extends LitElement {
   }
 
   override render() {
-    return when(
-      !this._serverRendered && Boolean(this.source),
-      () =>
-        html`${unsafeHTML(
-          renderMarkdown(this.source ?? "", {
-            features: this.features,
-            headings: this.headingStyle,
-            softBreaks: this.softBreaks,
-            trust: this.trust,
-          }),
-        )}`,
-      () => nothing,
-    );
+    return when(!this._serverRendered && Boolean(this.source), () =>
+      html`${unsafeHTML(
+        renderMarkdown(this.source ?? "", {
+          features: this.features,
+          headings: this.headingStyle,
+          softBreaks: this.softBreaks,
+          trust: this.trust,
+        }),
+      )}`);
   }
 }
 
