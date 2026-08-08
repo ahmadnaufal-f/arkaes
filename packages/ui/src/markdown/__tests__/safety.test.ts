@@ -50,7 +50,7 @@ const UNTRUSTED_PAYLOADS: [string, string][] = [
   ["a javascript: link with leading space", "[x]( javascript:alert(1))"],
   ["a tab inside the scheme", "[x](java\tscript:alert(1))"],
   ["a newline inside the scheme", "[x](java\nscript:alert(1))"],
-  ["an entity-encoded scheme", "[x](&#106;avascript:alert(1))"],
+  ["an entity-encoded scheme", "[x](&#106;avascript:alert(1))"], // token-lint-disable-line: HTML entity for "j", not a hex color
   ["an entity-encoded colon", "[x](javascript&colon;alert(1))"],
   ["a vbscript: link", "[x](vbscript:msgbox(1))"],
   ["a data:text/html link", "[x](data:text/html;base64,PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg==)"],
