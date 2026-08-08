@@ -407,6 +407,89 @@ describe("ArkNavigationRoot menu toggle", () => {
 });
 
 // ---------------------------------------------------------------------------
+// ArkNavigationRoot — menu dismissal
+// ---------------------------------------------------------------------------
+
+describe("ArkNavigationRoot menu dismissal", () => {
+  function setViewportWidth(width: number) {
+    Object.defineProperty(window, "innerWidth", {
+      value: width,
+      configurable: true,
+      writable: true,
+    });
+  }
+
+  // The width is global state; put it back so a resize test cannot decide what
+  // a later one sees.
+  const originalWidth = window.innerWidth;
+  afterEach(() => setViewportWidth(originalWidth));
+
+  async function mountOpen() {
+    const w = mount();
+    const root = document.createElement("ark-navigation-root") as ArkNavigationRoot;
+    w.appendChild(root);
+    root.menuOpen = true;
+    await root.updateComplete;
+    return root;
+  }
+
+  it("closes the menu when the scrim behind it is clicked", async () => {
+    const root = await mountOpen();
+
+    root.shadowRoot!.querySelector<HTMLElement>(".menu-scrim")!.click();
+
+    expect(root.menuOpen).toBe(false);
+  });
+
+  it("closes the menu on Escape", async () => {
+    const root = await mountOpen();
+
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+
+    expect(root.menuOpen).toBe(false);
+  });
+
+  it("leaves other keys alone", async () => {
+    const root = await mountOpen();
+
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "a" }));
+
+    expect(root.menuOpen).toBe(true);
+  });
+
+  it("stops listening for Escape once disconnected", async () => {
+    const root = await mountOpen();
+
+    wrapper?.remove();
+    wrapper = null;
+    root.menuOpen = true;
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+
+    expect(root.menuOpen).toBe(true);
+  });
+
+  it("closes the menu when a resize takes the viewport past the drawer's breakpoint", async () => {
+    const root = await mountOpen();
+
+    // Above 900px the drawer is display:none and the hamburger is gone, so an
+    // open menu would leave the page scroll-locked with nothing to close it.
+    setViewportWidth(1200);
+    window.dispatchEvent(new Event("resize"));
+
+    expect(root.menuOpen).toBe(false);
+  });
+
+  it("leaves the menu open on a resize that stays within the breakpoint", async () => {
+    const root = await mountOpen();
+
+    setViewportWidth(700);
+    window.dispatchEvent(new Event("resize"));
+
+    expect(root.menuOpen).toBe(true);
+  });
+});
+
+// ---------------------------------------------------------------------------
 // ArkNavigationRoot — body scroll lock
 // ---------------------------------------------------------------------------
 

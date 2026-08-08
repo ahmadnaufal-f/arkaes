@@ -22,6 +22,13 @@ const MENU_ITEM_INDEX_PROP = "--ark-nav-menu-item-index";
 const SCROLLED_THRESHOLD_PX = 40;
 
 /**
+ * Viewport width (px) above which the desktop links are shown and the
+ * hamburger and its drawer are not. Kept in step with the `max-width: 900px`
+ * queries in ark-navigation-links, -mobile-toggle and -mobile-menu.
+ */
+const MOBILE_BREAKPOINT_PX = 900;
+
+/**
  * Custom property published on `:root` carrying `1` while the immersive pills
  * are tucked away mid-scroll and `0` the rest of the time. It is what lets other
  * fixed chrome move with the header instead of holding room for pills that have
@@ -56,8 +63,15 @@ const DEFAULT_NAV_HEIGHT_PX = 80;
  * between the brand and the CTA; below the links' own 900px breakpoint they are
  * already gone and the hamburger pill takes their place.
  *
+ * Docking moves nothing. The pills grow outward from their contents — the
+ * padding and border each one gains is handed straight back as negative margin,
+ * and the immersive block margin is the condensed bar's own padding — so the
+ * brand wordmark and the hamburger stay on exactly the pixel they occupied on
+ * the solid bar. Only the fill, outline, shadow and radius arrive.
+ *
  * The scrim behind the pills is unfilled by default — see
- * `--ark-nav-immersive-scrim`.
+ * `--ark-nav-immersive-scrim`. The separate scrim behind the open mobile drawer
+ * is filled, and a tap on it (or Escape) closes the menu.
  *
  * While the pills are tucked away it publishes `--ark-nav-chrome-away: 1` on
  * `:root` (`0` otherwise), so other fixed chrome can travel with them rather
@@ -67,11 +81,24 @@ const DEFAULT_NAV_HEIGHT_PX = 80;
  * @summary Fixed site header with condensed and immersive scroll states.
  * @csspart scrim - The layer painted behind the floating pills. Unfilled by
  *   default.
- * @cssprop [--ark-nav-immersive-margin-block=var(--ark-space-3)] - Space above
- *   and below the floating row; the scrim is exactly the pill height plus
- *   these margins.
- * @cssprop [--ark-nav-immersive-pill-size=44px] - Minimum pill height (and the
- *   width of the square hamburger pill).
+ * @csspart menu-scrim - The layer over the page behind the open mobile drawer.
+ *   Clicking it closes the menu.
+ * @cssprop [--ark-nav-menu-scrim] - Fill of that layer.
+ * @cssprop [--ark-nav-immersive-margin-block=var(--ark-nav-condensed-padding-block)] -
+ *   Space above and below the floating row. Defaults to the condensed bar's own
+ *   padding, which is what keeps the pills' contents from stepping as they
+ *   dock; overriding it reintroduces the step.
+ * @cssprop [--ark-nav-immersive-pill-size=44px] - Floor for the pill height and
+ *   for the width of the square hamburger pill. The insets below are what
+ *   actually size them.
+ * @cssprop [--ark-nav-immersive-pill-inset-block=5px] - How far a pill reaches
+ *   above and below its contents.
+ * @cssprop [--ark-nav-immersive-pill-inset-inline=var(--ark-space-3)] - How far
+ *   the brand and links pills reach either side of their contents. The
+ *   hamburger pill uses the block inset on both axes so it stays square.
+ * @cssprop [--ark-nav-immersive-pill-border-width=1px] - Pill outline width.
+ *   Counted into the negative margins, so it has to be set here rather than by
+ *   restyling the border.
  * @cssprop [--ark-nav-immersive-pill-bg] - Pill background. Derived from
  *   `--ark-navigation-pill-bg` (falling back to `--ark-color-surface-floating`)
  *   at 92% opacity; override either one to retint the pills.
@@ -190,10 +217,22 @@ export class ArkNavigationRoot extends LitElement {
         padding var(--ark-duration-normal) var(--ark-ease-standard);
       z-index: 100;
       --ark-nav-header-height: 80px;
+      --ark-nav-condensed-padding-block: var(--ark-space-4);
 
       /* Immersive mode knobs — see the class doc comment. */
-      --ark-nav-immersive-margin-block: var(--ark-space-3);
+      /* Deliberately the condensed bar's own padding. The pills grow outward
+         from their contents (see the inset knobs below), so matching the
+         padding here is the other half of what keeps the brand and the
+         hamburger on the pixel they already occupied when the bar dissolves.
+         Override it and the glyphs will step as the pills appear. */
+      --ark-nav-immersive-margin-block: var(--ark-nav-condensed-padding-block);
       --ark-nav-immersive-pill-size: 44px;
+      /* How far a pill's chrome reaches past the glyph it wraps. Every bit of
+         it is handed straight back as negative margin, so the pill is the only
+         thing that changes size — what is inside does not move. */
+      --ark-nav-immersive-pill-inset-block: 5px;
+      --ark-nav-immersive-pill-inset-inline: var(--ark-space-3);
+      --ark-nav-immersive-pill-border-width: 1px;
       /* A light blush tint rather than the page background: the pills float
          over arbitrary content and have to read as chrome, and a fill mixed
          from --ark-color-bg made them the same colour as whatever they were
@@ -215,6 +254,15 @@ export class ArkNavigationRoot extends LitElement {
          this property (or styling the scrim part) puts a fill back. */
       --ark-nav-immersive-scrim: none;
       --ark-nav-immersive-hidden-shift: -8px;
+
+      /* Wash over the page behind the open mobile drawer. Unlike the immersive
+         scrim this one is filled by default — it is the affordance that says
+         the page underneath is out of play and a tap there dismisses. */
+      --ark-nav-menu-scrim: color-mix(
+        in srgb,
+        var(--ark-color-neutral-900) 32%,
+        transparent
+      );
     }
 
     :host([scrolled]) {
@@ -225,8 +273,24 @@ export class ArkNavigationRoot extends LitElement {
         transparent
       );
       box-shadow: var(--ark-shadow-sm);
-      padding-block: 16px;
+      padding-block: var(--ark-nav-condensed-padding-block);
       --ark-nav-header-height: 60px;
+    }
+
+    /* backdrop-filter makes an element a containing block for its
+       fixed-position descendants, which would trap the menu scrim inside the
+       bar instead of letting it cover the page. The bar is 97% opaque here, so
+       the blur it gives up is close to invisible anyway.
+
+       The lift is for the scrim too. It lives inside this element's stacking
+       context, so it can only reach as high as the context does, and the bottom
+       dock is fixed chrome at the same z-index further down the document —
+       which left the chat launcher lit up and tappable over a dimmed page. One
+       step above the dock puts the whole drawer, scrim included, over it, and
+       stays well under ark-dialog at 1000. */
+    :host([menu-open]) {
+      backdrop-filter: none;
+      z-index: 150;
     }
 
     /* ── Immersive mode ────────────────────────────────────────────────
@@ -283,16 +347,36 @@ export class ArkNavigationRoot extends LitElement {
           transform var(--ark-duration-normal) var(--ark-ease-standard);
       }
 
+      /* The pills grow purely outward. Every pixel of padding and border they
+         gain is taken straight back off as negative margin, so their margin
+         box is exactly the box the bare element occupied on the condensed bar:
+         the flex line does not move, and the glyph inside each pill stays on
+         the pixel it was already on. Only the chrome around it — fill, outline,
+         shadow, radius — appears. */
       & ::slotted(ark-navigation-brand),
       & ::slotted(ark-navigation-links),
       & ::slotted(ark-navigation-mobile-toggle) {
-        border: 1px solid var(--ark-color-border-floating);
+        border: var(--ark-nav-immersive-pill-border-width) solid
+          var(--ark-color-border-floating);
         border-radius: var(--ark-nav-immersive-pill-radius);
+        margin-block: calc(
+          (
+              var(--ark-nav-immersive-pill-inset-block) +
+                var(--ark-nav-immersive-pill-border-width)
+            ) * -1
+        );
+        padding-block: var(--ark-nav-immersive-pill-inset-block);
       }
 
       & ::slotted(ark-navigation-brand),
       & ::slotted(ark-navigation-links) {
-        padding-inline: 18px;
+        margin-inline: calc(
+          (
+              var(--ark-nav-immersive-pill-inset-inline) +
+                var(--ark-nav-immersive-pill-border-width)
+            ) * -1
+        );
+        padding-inline: var(--ark-nav-immersive-pill-inset-inline);
       }
 
       /* Custom properties inherit through the shadow boundary, so this is how
@@ -305,9 +389,18 @@ export class ArkNavigationRoot extends LitElement {
         --ark-nav-link-color: var(--ark-color-text-muted);
       }
 
+      /* The hamburger pill takes the block inset on both axes, which is what
+         makes it square: the icon's box is square to begin with. */
       & ::slotted(ark-navigation-mobile-toggle) {
         justify-content: center;
+        margin-inline: calc(
+          (
+              var(--ark-nav-immersive-pill-inset-block) +
+                var(--ark-nav-immersive-pill-border-width)
+            ) * -1
+        );
         min-width: var(--ark-nav-immersive-pill-size);
+        padding-inline: var(--ark-nav-immersive-pill-inset-block);
       }
 
       /* The CTA draws its own border, so the host only supplies the float; the
@@ -324,6 +417,49 @@ export class ArkNavigationRoot extends LitElement {
         --ark-nav-cta-radius: var(--ark-nav-immersive-pill-radius);
         --ark-nav-cta-border-color: var(--ark-color-border-floating);
         --ark-nav-cta-underline-opacity: 0;
+      }
+    }
+
+    /* ── Mobile menu scrim ─────────────────────────────────────────────
+       Rendered here rather than inside ark-navigation-mobile-menu because the
+       menu carries a transform, which would make it the containing block for
+       anything fixed inside it and clip the scrim to the drawer's own box.
+
+       It starts at the drawer's own top edge, so it never washes over the bar,
+       and sits on a negative z-index — above the host's background but below
+       every child, which is what keeps the brand and the close button clickable
+       through it while the drawer (z-index 99) stays above. */
+    .menu-scrim {
+      background: var(--ark-nav-menu-scrim);
+      bottom: 0;
+      inset-inline: 0;
+      opacity: 0;
+      pointer-events: none;
+      position: fixed;
+      top: var(--ark-nav-header-height, 60px);
+      transition:
+        opacity var(--ark-duration-normal) var(--ark-ease-standard),
+        visibility var(--ark-duration-normal) step-end;
+      visibility: hidden;
+      z-index: -1;
+    }
+
+    :host([menu-open]) .menu-scrim {
+      opacity: 1;
+      pointer-events: auto;
+      transition:
+        opacity var(--ark-duration-normal) var(--ark-ease-standard),
+        visibility var(--ark-duration-normal) step-start;
+      visibility: visible;
+    }
+
+    /* Above the drawer's own breakpoint there is no drawer and no hamburger to
+       reopen one with, so a scrim left behind by a resize would be a dead layer
+       over the page. _handleResize closes the menu outright; this is the belt
+       to that pair of braces. */
+    @media (min-width: 901px) {
+      .menu-scrim {
+        display: none;
       }
     }
 
@@ -351,6 +487,7 @@ export class ArkNavigationRoot extends LitElement {
     this.addEventListener("ark-nav:menu-toggle", this._handleMenuToggle);
     this.addEventListener("focusin", this._handleFocusIn);
     window.addEventListener("resize", this._handleResize, { passive: true });
+    document.addEventListener("keydown", this._handleKeyDown);
     // Seed the baseline so a page restored mid-document doesn't read as a scroll.
     this._lastScrollY = window.scrollY;
     this._handleScroll();
@@ -361,6 +498,7 @@ export class ArkNavigationRoot extends LitElement {
     this.removeEventListener("ark-nav:menu-toggle", this._handleMenuToggle);
     this.removeEventListener("focusin", this._handleFocusIn);
     window.removeEventListener("resize", this._handleResize);
+    document.removeEventListener("keydown", this._handleKeyDown);
     this._clearSettleTimer();
     this._handleScrollLock(false);
     if (chromeAwayOwner === this._ownerToken) {
@@ -409,6 +547,12 @@ export class ArkNavigationRoot extends LitElement {
    * immersive threshold, so it has to be re-read rather than kept from mount.
    */
   private _handleResize = () => {
+    // Past the drawer's breakpoint the drawer is display:none and the hamburger
+    // that would close it is gone, so an open menu becomes a locked page with
+    // no way out. Widening the window is the dismissal.
+    if (this.menuOpen && window.innerWidth > MOBILE_BREAKPOINT_PX) {
+      this.menuOpen = false;
+    }
     this._measureNavHeight();
     this._handleScroll();
   };
@@ -479,6 +623,20 @@ export class ArkNavigationRoot extends LitElement {
     this.menuOpen = !this.menuOpen;
   };
 
+  /** A tap on the page behind the open drawer dismisses it. */
+  private _handleScrimClick = () => {
+    this.menuOpen = false;
+  };
+
+  /**
+   * Escape is the keyboard's version of the scrim tap. Bound on the document
+   * because the drawer takes over the screen without moving focus into itself,
+   * so the key may well be pressed while focus is still on the page behind it.
+   */
+  private _handleKeyDown = (e: KeyboardEvent) => {
+    if (e.key === "Escape" && this.menuOpen) this.menuOpen = false;
+  };
+
   private _syncChildren() {
     const mobileMenu = this.querySelector<ArkNavigationMobileMenu>(
       "ark-navigation-mobile-menu",
@@ -512,6 +670,12 @@ export class ArkNavigationRoot extends LitElement {
   override render() {
     return html`
       <div class="scrim" part="scrim" aria-hidden="true"></div>
+      <div
+        class="menu-scrim"
+        part="menu-scrim"
+        aria-hidden="true"
+        @click=${this._handleScrimClick}
+      ></div>
       <slot></slot>
     `;
   }
