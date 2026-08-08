@@ -148,8 +148,13 @@ export const markdownStyles = css`
     text-decoration-thickness: 0.14em;
   }
 
+  /* The floating-chrome pair the navigation pills and the bottom dock use. An
+     inline span is small and sits inside a line of prose, so the neutral
+     surface tint alone was not enough to mark where the code starts and stops;
+     the deeper outline is what gives it an edge. */
   :is(.ark-md, ark-markdown) code {
-    background: var(--ark-color-surface-soft);
+    background: var(--ark-color-surface-floating);
+    border: 1px solid var(--ark-color-border-floating);
     border-radius: var(--ark-radius-xs);
     font-family: var(--ark-font-mono);
     font-size: 0.92em;
@@ -202,9 +207,14 @@ export const markdownStyles = css`
     padding-inline-start: var(--ark-space-4);
   }
 
+  /* Same floating-chrome pair as the inline spans above, so a fenced block and
+     an inline code word in the paragraph before it read as one material. The
+     fill comes through --ark-md-code-surface rather than the token directly:
+     Shiki paints its own background from that variable, and a block whose
+     stylesheet and highlighter disagree ends up two colours. */
   :is(.ark-md, ark-markdown) :is(pre, .ark-md-code) {
-    background: var(--ark-color-surface-soft);
-    border: 1px solid var(--ark-color-border);
+    background: var(--ark-md-code-surface);
+    border: 1px solid var(--ark-color-border-floating);
     border-radius: var(--ark-radius-sm);
     line-height: var(--ark-leading-normal);
     overflow-x: auto;
@@ -214,6 +224,7 @@ export const markdownStyles = css`
   /* Inside a block, the inline-code chrome would double up on the pre's own. */
   :is(.ark-md, ark-markdown) pre code {
     background: none;
+    border: 0;
     border-radius: 0;
     font-size: var(--ark-text-sm);
     padding: 0;
@@ -421,18 +432,19 @@ export const markdownStyles = css`
      design tokens so code follows the site theme instead of a fixed scheme. */
 
   :is(.ark-md, ark-markdown) {
-    --ark-md-code-surface: color-mix(
-      in srgb,
-      var(--ark-color-surface-soft) 92%,
-      var(--ark-color-neutral-900) 8%
-    );
+    --ark-md-code-surface: var(--ark-color-surface-floating);
 
     --astro-code-foreground: var(--ark-color-text);
     --astro-code-background: var(--ark-md-code-surface);
     --astro-code-token-constant: var(--ark-color-blush-deep);
     --astro-code-token-string: var(--ark-color-sage);
     --astro-code-token-comment: var(--ark-color-text-subtle);
-    --astro-code-token-keyword: var(--ark-color-blush);
+    /* Accent, not the blush-300 this used to be. The scheme wants two clay
+       tones — a lighter one for keywords under the deeper one the identifiers
+       take — but blush-300 is the same colour the block's border is drawn in
+       and lands at 1.8:1 on the fill, so keywords read as decoration rather
+       than code. Accent is the lighter clay that survives the tint, at 4.9:1. */
+    --astro-code-token-keyword: var(--ark-color-accent);
     --astro-code-token-parameter: var(--ark-color-text-soft);
     --astro-code-token-function: var(--ark-color-accent-strong);
     --astro-code-token-string-expression: var(--ark-color-sage);

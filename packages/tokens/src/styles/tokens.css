@@ -76,6 +76,11 @@
   --ark-ease-emphasized: cubic-bezier(0.2, 0, 0, 1.2);
   --ark-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --ark-ease-quad-out: cubic-bezier(0.5, 1, 0.89, 1);
+  /* Long, heavily decelerated ramp: nearly all of the distance is covered in
+     the first third, then it eases out for the rest. Reads as a surface
+     settling into place rather than a box being moved, which is what a panel
+     travelling a long way over a longer duration needs. */
+  --ark-ease-expo-out: cubic-bezier(0.16, 1, 0.3, 1);
 
   /* Cursor: components reference this for interactive (clickable) elements so
      the native pointer can be hidden site-wide when a custom cursor is active.

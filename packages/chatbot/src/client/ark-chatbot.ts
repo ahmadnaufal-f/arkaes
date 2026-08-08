@@ -309,14 +309,16 @@ export class ArkChatbot extends LitElement {
     }
 
     /* ── Launcher ──────────────────────────────────────────────────────────
-       A raised surface chip rather than a solid accent pill, so it reads as one
-       family with the other floating controls it sits beside in a dock
-       (ark-scroll-top). Both custom properties below are the way back to a
-       louder treatment for a site that wants one. */
+       A tinted chip rather than a solid accent pill, on the floating-chrome
+       pair (--ark-color-surface-floating over --ark-color-border-floating) that
+       ark-scroll-top beside it and ark-navigation's pills at the other edge of
+       the screen are also drawn with. The custom properties below are the way
+       back to a louder treatment for a site that wants one. */
     .launcher {
       align-items: center;
-      background: var(--ark-chatbot-launcher-bg, var(--ark-color-surface));
-      border: 1px solid var(--ark-color-border);
+      background: var(--ark-chatbot-launcher-bg, var(--ark-color-surface-floating));
+      border: 1px solid
+        var(--ark-chatbot-launcher-border, var(--ark-color-border-floating));
       border-radius: var(--ark-radius-full);
       bottom: 0;
       box-shadow: var(--ark-shadow-float);
