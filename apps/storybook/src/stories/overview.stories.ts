@@ -102,6 +102,10 @@ const IMPORTS = [
   { code: 'import "@arkaes/ui/register";', note: "Registers every element." },
   { code: 'import "@arkaes/ui/register/ark-chip";', note: "Registers exactly one." },
   { code: 'import { ChipVariant } from "@arkaes/ui";', note: "Types and enums. No side effects." },
+  {
+    code: 'import { ArkButton } from "@arkaes/ui/react";',
+    note: "Typed React wrapper. Self-registers, so no register import.",
+  },
 ];
 
 const renderRamp = (family: string, rows: TokenRow[]) => html`
@@ -327,14 +331,15 @@ const renderOverview = () => html`
       <p class="ark-overview-lede">
         A readability-first system for a personal portfolio: a warm, deliberately
         light-only palette, a small set of Lit custom elements, and one set of design
-        tokens that every surface reads from.
+        tokens that every surface reads from. The package also bundles an MCP server, so
+        a coding agent can read the component API and the real token values offline.
       </p>
       <!-- A list, not a <p>: reset.css caps every paragraph at the reading
            measure, which is right for prose and wrong for a metadata row. -->
       <ul class="ark-overview-facts">
         <li>${COLOR_TOKENS.length} colour tokens</li>
         <li>Light-only by design</li>
-        <li>Shadow DOM, no framework</li>
+        <li>Web components + React bindings</li>
       </ul>
     </section>
 

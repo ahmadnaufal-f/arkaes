@@ -1,0 +1,151 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Guides/Using with React" />
+
+# Using with React
+
+Every Arkaes element is a framework-agnostic custom element built with Lit. The `@arkaes/ui/react`
+entrypoint ships a typed React wrapper for each one, built with
+[`@lit/react`](https://www.npmjs.com/package/@lit/react). Reactive properties arrive as typed props
+and custom events arrive as `on*` props, so the elements read as ordinary React components.
+
+## Install
+
+```sh
+npm install @arkaes/ui
+```
+
+`@arkaes/tokens` comes with it as a dependency. React 18 or newer is an optional peer dependency.
+
+Import the token CSS once, at your app entry point. The components read every colour, space and type
+value from `--ark-*` custom properties. Without this import those properties are undefined and the
+elements render unstyled.
+
+```js
+// app entry point, once
+import "@arkaes/tokens/css";
+```
+
+## A form
+
+```tsx
+import { ArkButton, ArkCheckbox, ArkInput } from "@arkaes/ui/react";
+
+export function SignupForm() {
+  return (
+    <form>
+      <ArkInput
+        label="Email"
+        name="email"
+        type="email"
+        placeholder="you@studio.com"
+        required
+        onChange={(e) => {
+          const { value } = (e as CustomEvent<{ value: string }>).detail;
+          console.log(value);
+        }}
+      />
+      <ArkCheckbox
+        label="Email me occasional updates"
+        name="updates"
+        onChange={(e) => {
+          const { checked } = (e as CustomEvent<{ checked: boolean }>).detail;
+          console.log(checked);
+        }}
+      />
+      <ArkButton variant="primary">Sign up</ArkButton>
+    </form>
+  );
+}
+```
+
+The elements dispatch `CustomEvent`, so the payload lives on `event.detail`. `@lit/react` types these
+handlers as plain `Event`, which is why the example narrows the type at the call site. `ark-input`
+sends `{ value }`. `ark-checkbox` sends `{ checked, value }`. Each element's own page lists its
+event payload.
+
+## Registration is automatic
+
+Each wrapper calls its element's define function on import. You do not need any
+`@arkaes/ui/register/*` import in a React app. Importing the wrapper is enough.
+
+## Events
+
+Custom events map to `on*` props. This table is the full set.
+
+| Component | Event prop and DOM event |
+| --- | --- |
+| `ArkInput`, `ArkCheckbox`, `ArkToggle`, `ArkRadioGroup` | `onInput` for `input`, `onChange` for `change` |
+| `ArkRadio` | `onInput`, `onChange`, and `onSelect` for `ark-radio-select` |
+| `ArkDropdown` | `onChange` for `change` |
+| `ArkAccordionItem` | `onToggle` for `ark-accordion:toggle` |
+| `ArkCarousel` | `onChange` for `ark-carousel:change` |
+| `ArkDialogRoot` | `onOpen` for `ark-dialog:open`, `onClose` for `ark-dialog:close` |
+| `ArkNavigationMobileToggle` | `onMenuToggle` for `ark-nav:menu-toggle` |
+| `ArkScrollTop` | `onActivate` for `ark-scroll-top:activate` |
+| `ArkToast` | `onDismiss` for `ark-toast:dismiss` |
+
+Wrappers not listed here expose no custom events. Use ordinary DOM events on them.
+
+## Slots
+
+Named slots work as they do in HTML. Children project into the element's light DOM, so you target a
+slot with the standard `slot` attribute on a child.
+
+```tsx
+import { ArkButton, ArkHero } from "@arkaes/ui/react";
+
+<ArkHero>
+  <span slot="eyebrow">Featured</span>
+  <h1 slot="title">Architecture meets aesthetics</h1>
+  <p slot="subtitle">Frontend engineering for polished interfaces.</p>
+  <ArkButton slot="actions" variant="primary">Get in touch</ArkButton>
+  <img slot="visual" src="/hero.png" alt="" />
+</ArkHero>
+```
+
+Put `slot` on a real element. A React fragment cannot carry the attribute, and neither can a bare
+text string. Wrap loose text in a `<span slot="...">`.
+
+The `slot` prop forwards through nested wrappers, so `<ArkButton slot="actions">` lands in the right
+place.
+
+| Component | Named slots |
+| --- | --- |
+| `ArkHero` | `eyebrow`, `title`, `subtitle`, `actions`, `visual` |
+| `ArkPageHeader` | `eyebrow`, `title`, `lead` |
+| `ArkProjectHeader` | `visual`, `title`, `tag` |
+| `ArkMediaCard` | `media`, `tag` |
+| `ArkAccordionItem` | `trigger`, with default children as the panel body |
+
+Unslotted children fall into the default slot.
+
+### One remount caveat
+
+`ArkPageHeader` and `ArkProjectHeader` read their slotted content once, on mount. Toggling a slotted
+`title` or `lead` in place does not update them. Remount with a `key` instead.
+
+```tsx
+<ArkPageHeader key={pageId}>
+  <h1 slot="title">{title}</h1>
+</ArkPageHeader>
+```
+
+`ArkMediaCard` listens for `slotchange`, so its `media` slot does update in place.
+
+## Server components
+
+The published wrappers carry the `"use client"` directive. They work inside React Server Component
+setups such as the Next.js app router. Import them from a client component, or rely on the directive
+already present in the package.
+
+## Single-family subpaths
+
+Import one family instead of the barrel when you want a smaller module graph.
+
+```tsx
+import { ArkDialogRoot, ArkDialogContent } from "@arkaes/ui/react/ark-dialog";
+```
+
+Every file under `@arkaes/ui/react/` is reachable this way. The name matches the element family, so
+`ark-dialog` covers the whole dialog set.

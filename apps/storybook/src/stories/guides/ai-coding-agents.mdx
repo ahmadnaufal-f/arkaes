@@ -1,0 +1,161 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Guides/AI coding agents" />
+
+# AI coding agents
+
+`@arkaes/ui` ships a [Model Context Protocol](https://modelcontextprotocol.io) server. It lets a
+coding agent read the real component API and the real token values instead of guessing at them.
+
+The server runs locally. It speaks JSON-RPC over stdio, makes no network calls, and has no hosted
+endpoint. Everything it answers comes from two files already inside the installed package.
+
+## What it reads
+
+At startup the server loads the generated Custom Elements Manifest, `custom-elements.json`, which is
+produced from the component source by `cem analyze`. Token queries resolve `@arkaes/tokens` through
+Node, reading the generated `tokens.json` for colour and spacing and the hand-authored `tokens.css`
+for the rest. Both results are cached for the life of the process.
+
+Because the manifest is generated from source, the answers track the installed version of the
+package. There is nothing to keep in sync by hand.
+
+## Configuration
+
+Point an MCP client at the packaged binary.
+
+```json
+{
+  "mcpServers": {
+    "arkaes": {
+      "command": "npx",
+      "args": ["--package", "@arkaes/ui", "arkaes-mcp"]
+    }
+  }
+}
+```
+
+The server writes its startup line to stderr. Stdout carries the JSON-RPC stream and nothing else.
+
+## The three tools
+
+Call them in this order. Each one narrows the question the next one answers.
+
+### 1. `list_components`
+
+Takes no arguments. Returns a compact index of every element so an agent can see what exists without
+pulling full API detail. One row per element:
+
+```json
+{
+  "tag": "ark-button",
+  "layer": "primitive",
+  "summary": "Button / link action.",
+  "variants": ["primary", "secondary", "outline", "ghost", "link"],
+  "slots": ["(default)", "prefix", "suffix"]
+}
+```
+
+The response wraps these in `{ "count": 48, "components": [...] }`.
+
+### 2. `get_component_api`
+
+Takes `names`, an array of tag names, and an optional `includeUsage` flag that defaults to true. Pass
+every element you plan to use in one call. Returns props, events, slots, CSS custom properties, CSS
+parts, and an authored usage snippet.
+
+A prop looks like this:
+
+```json
+{
+  "name": "fullWidth",
+  "attribute": "full-width",
+  "type": "boolean",
+  "options": [],
+  "default": "false",
+  "required": false,
+  "reflects": true,
+  "description": null
+}
+```
+
+An event carries its name and the documented description:
+
+```json
+{
+  "name": "ark-dialog:open",
+  "type": null,
+  "description": "Bubbles, composed. Request to open the dialog."
+}
+```
+
+An unknown tag comes back as an error listing every valid name, so a wrong guess is self-correcting.
+
+### 3. `get_tokens`
+
+Takes an optional `category` and an optional `prefix`. With no arguments it returns the category
+index rather than dumping every token:
+
+```json
+{
+  "categories": [
+    { "category": "color", "count": 63 },
+    { "category": "spacing", "count": 13 },
+    { "category": "radius", "count": 7 },
+    { "category": "typography", "count": 52 },
+    { "category": "shadow", "count": 4 },
+    { "category": "motion", "count": 9 },
+    { "category": "layout", "count": 8 }
+  ]
+}
+```
+
+Filtering returns the tokens themselves. Each one carries both the authored value and a resolved
+value, so an agent never has to follow a `var()` chain itself:
+
+```json
+{
+  "name": "color-accent",
+  "cssProperty": "--ark-color-accent",
+  "value": "#8f554d",
+  "resolvedValue": "#8f554d",
+  "category": "color",
+  "type": "color",
+  "description": "Primary accent (clay)."
+}
+```
+
+`type` and `description` come from the DTCG source, so they are present for colour and spacing and
+null for the hand-authored categories.
+
+## A worked example
+
+Take a prompt an engineer would actually give:
+
+> Build a newsletter signup card using the Arkaes design system. Accent border, an email field, and
+> a submit button.
+
+An agent without the server guesses tag names and invents hex values. With the server it works in
+three calls.
+
+**First, `list_components` with no arguments.** The agent learns that `ark-card`, `ark-input` and
+`ark-button` exist, that `ark-card` is a component with subparts, and that `ark-button` has a
+`primary` variant. It now knows the tags are real and roughly how they compose.
+
+**Second, `get_component_api` with `names: ["ark-card", "ark-input", "ark-button"]`.** One call, all
+three elements. The agent learns that `ark-input` takes `label`, `hint` and `error` as attributes
+rather than slots, that it fires `change` with a `{ value }` detail, and that `ark-button` takes
+`variant` and `full-width`. The usage snippet shows the idiomatic markup for each.
+
+**Third, `get_tokens` with `category: "color"` and `prefix: "color-accent"`.** The agent gets
+`--ark-color-accent`, `--ark-color-accent-soft` and `--ark-color-accent-strong` with their real
+values, and writes `border: 1px solid var(--ark-color-accent)` instead of a hex it made up.
+
+The result compiles against the version installed in the project, and it survives
+`pnpm lint:tokens`, which fails the build on a hardcoded hex. See **Guides, then Token
+architecture** for that check.
+
+## Using it without an agent
+
+The tools are ordinary JSON-RPC methods. Any MCP client can call them, and the output is plain JSON.
+It works as a quick API lookup during review as well as inside an editor.
