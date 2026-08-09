@@ -91,6 +91,13 @@ const styles = html`
       font-family: var(--ark-font-mono);
       font-size: var(--ark-text-xs);
     }
+    /* Inline code inside prose sizes against the text around it. The flat
+       --ark-text-xs above stays for the standalone snippets in the trace, where
+       the code is the content rather than an aside within a sentence. */
+    .ark-tokenarch p code,
+    .ark-tokenarch li code {
+      font-size: 0.9em;
+    }
     .ark-tokenarch-tier {
       align-items: baseline;
       border-bottom: 1px solid var(--ark-color-border);

@@ -153,6 +153,13 @@ const styles = html`
       font-family: var(--ark-font-mono);
       font-size: var(--ark-text-xs);
     }
+    /* Inline code inside running prose sizes against the text around it. The
+       flat --ark-text-xs above is right for the metadata rows, where the
+       neighbouring label is already xs, but in a paragraph it lands a third
+       below the body size and reads as a different register. */
+    .ark-overview p code {
+      font-size: 0.9em;
+    }
     .ark-overview-masthead h1 {
       font-family: var(--ark-font-display);
       font-size: var(--ark-text-4xl);
