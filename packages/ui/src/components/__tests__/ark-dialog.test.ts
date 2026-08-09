@@ -395,3 +395,238 @@ describe("ArkDialogContent", () => {
     expect(content.open).toBe(true);
   });
 });
+
+// ---------------------------------------------------------------------------
+// ArkDialogContent — focus management
+// ---------------------------------------------------------------------------
+
+/**
+ * Initial focus is scheduled a frame after the update that opened the dialog.
+ * The component registers its frame one microtask later than a test can, so two
+ * frames is what it takes for that callback to have run here.
+ */
+const settleFocus = async (content: ArkDialogContent) => {
+  await content.updateComplete;
+  await new Promise((r) => requestAnimationFrame(() => r(null)));
+  await new Promise((r) => requestAnimationFrame(() => r(null)));
+};
+
+/** A dialog holding `html`, opened through its root. */
+async function openDialog(html: string) {
+  const w = mount();
+  const root = document.createElement("ark-dialog-root") as ArkDialogRoot;
+  const content = document.createElement("ark-dialog-content") as ArkDialogContent;
+  content.innerHTML = html;
+  root.appendChild(content);
+  w.appendChild(root);
+  root.open = true;
+  await settleFocus(content);
+  return { root, content, w };
+}
+
+const tabKey = (shiftKey = false) =>
+  window.dispatchEvent(
+    new KeyboardEvent("keydown", { key: "Tab", shiftKey, bubbles: true, cancelable: true }),
+  );
+
+describe("ArkDialogContent focus management", () => {
+  it("moves focus to the first focusable element on open", async () => {
+    const { content } = await openDialog("<button>first</button><button>second</button>");
+
+    expect(document.activeElement).toBe(content.querySelector("button"));
+  });
+
+  it("focuses the panel itself when it holds nothing focusable", async () => {
+    const { content } = await openDialog("<p>read only</p>");
+
+    expect(document.activeElement).toBe(content);
+    expect(content.getAttribute("tabindex")).toBe("-1");
+  });
+
+  it("wraps Tab from the last focusable back to the first", async () => {
+    const { content } = await openDialog("<button>first</button><button>last</button>");
+    const buttons = Array.from(content.querySelectorAll("button"));
+    buttons[1]!.focus();
+
+    tabKey();
+
+    expect(document.activeElement).toBe(buttons[0]);
+  });
+
+  it("wraps Shift+Tab from the first focusable back to the last", async () => {
+    const { content } = await openDialog("<button>first</button><button>last</button>");
+    const buttons = Array.from(content.querySelectorAll("button"));
+    buttons[0]!.focus();
+
+    tabKey(true);
+
+    expect(document.activeElement).toBe(buttons[1]);
+  });
+
+  it("pulls focus back into the panel when it has escaped", async () => {
+    const stray = document.createElement("button");
+    document.body.appendChild(stray);
+    const { content } = await openDialog("<button>inside</button>");
+    stray.focus();
+
+    tabKey();
+
+    expect(document.activeElement).toBe(content.querySelector("button"));
+    stray.remove();
+  });
+
+  it("does not trap Tab while closed", async () => {
+    const { root, content } = await openDialog("<button>only</button>");
+    root.open = false;
+    await content.updateComplete;
+
+    const event = new KeyboardEvent("keydown", {
+      key: "Tab",
+      bubbles: true,
+      cancelable: true,
+    });
+    window.dispatchEvent(event);
+
+    expect(event.defaultPrevented).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// ArkDialogContent — background inert
+// ---------------------------------------------------------------------------
+
+describe("ArkDialogContent background inert", () => {
+  it("marks the rest of the page inert while open", async () => {
+    const background = document.createElement("div");
+    background.innerHTML = "<button>behind</button>";
+    document.body.appendChild(background);
+
+    await openDialog("<button>inside</button>");
+
+    expect(background.hasAttribute("inert")).toBe(true);
+    expect(background.getAttribute("aria-hidden")).toBe("true");
+    background.remove();
+  });
+
+  it("restores the page when the dialog closes", async () => {
+    const background = document.createElement("div");
+    document.body.appendChild(background);
+
+    const { root, content } = await openDialog("<button>inside</button>");
+    root.open = false;
+    await content.updateComplete;
+
+    expect(background.hasAttribute("inert")).toBe(false);
+    expect(background.hasAttribute("aria-hidden")).toBe(false);
+    background.remove();
+  });
+
+  it("restores the page when an open dialog is disconnected", async () => {
+    const background = document.createElement("div");
+    document.body.appendChild(background);
+
+    const { w } = await openDialog("<button>inside</button>");
+    expect(background.hasAttribute("inert")).toBe(true);
+
+    w.remove();
+    wrapper = null;
+
+    expect(background.hasAttribute("inert")).toBe(false);
+    background.remove();
+  });
+
+  it("does not hide the subtree the dialog lives in", async () => {
+    const { w } = await openDialog("<button>inside</button>");
+
+    expect(w.hasAttribute("inert")).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// ArkDialogRoot — focus restoration
+// ---------------------------------------------------------------------------
+
+describe("ArkDialogRoot focus restoration", () => {
+  it("returns focus to the element that was focused before opening", async () => {
+    const opener = document.createElement("button");
+    document.body.appendChild(opener);
+    opener.focus();
+
+    const w = mount();
+    const root = document.createElement("ark-dialog-root") as ArkDialogRoot;
+    const content = document.createElement("ark-dialog-content") as ArkDialogContent;
+    content.innerHTML = "<button>inside</button>";
+    root.appendChild(content);
+    w.appendChild(root);
+
+    root.open = true;
+    await settleFocus(content);
+    expect(document.activeElement).not.toBe(opener);
+
+    root.open = false;
+
+    expect(document.activeElement).toBe(opener);
+    opener.remove();
+  });
+
+  it("skips restoration when the previous element has left the document", async () => {
+    const opener = document.createElement("button");
+    document.body.appendChild(opener);
+    opener.focus();
+
+    const w = mount();
+    const root = document.createElement("ark-dialog-root") as ArkDialogRoot;
+    const content = document.createElement("ark-dialog-content") as ArkDialogContent;
+    content.innerHTML = "<button>inside</button>";
+    root.appendChild(content);
+    w.appendChild(root);
+
+    root.open = true;
+    await settleFocus(content);
+    opener.remove();
+
+    expect(() => {
+      root.open = false;
+    }).not.toThrow();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// ArkDialogTrigger — keyboard
+// ---------------------------------------------------------------------------
+
+describe("ArkDialogTrigger keyboard", () => {
+  it.each(["Enter", " "])("opens the dialog on %s", (key) => {
+    const w = mount();
+    const root = document.createElement("ark-dialog-root") as ArkDialogRoot;
+    const trigger = document.createElement("ark-dialog-trigger") as ArkDialogTrigger;
+    const control = document.createElement("span");
+    control.tabIndex = 0;
+    trigger.appendChild(control);
+    root.appendChild(trigger);
+    w.appendChild(root);
+
+    control.dispatchEvent(
+      new KeyboardEvent("keydown", { key, bubbles: true, composed: true, cancelable: true }),
+    );
+
+    expect(root.open).toBe(true);
+  });
+
+  it("ignores other keys", () => {
+    const w = mount();
+    const root = document.createElement("ark-dialog-root") as ArkDialogRoot;
+    const trigger = document.createElement("ark-dialog-trigger") as ArkDialogTrigger;
+    const control = document.createElement("span");
+    control.tabIndex = 0;
+    trigger.appendChild(control);
+    root.appendChild(trigger);
+    w.appendChild(root);
+
+    control.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "a", bubbles: true, composed: true, cancelable: true }),
+    );
+
+    expect(root.open).toBe(false);
+  });
+});

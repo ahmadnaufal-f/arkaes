@@ -266,8 +266,9 @@ ark-button {
 
 ## Accessibility
 
-This section describes what the components do today. The repo has no accessibility audit and no
-automated accessibility tests, so treat it as a description of behaviour, not a conformance claim.
+This section describes what the components do today. Each behaviour below is covered by unit
+tests. There is no third-party accessibility audit in the repo, so treat this as a description of
+behaviour, not a conformance claim.
 
 ### Keyboard and ARIA
 
@@ -282,8 +283,8 @@ Interactive elements either render a native control or declare a role and handle
 | `ark-radio-group` / `ark-radio` | `radiogroup` with `aria-orientation` / `radio` | arrows move and select with wrapping, <kbd>Home</kbd> and <kbd>End</kbd> jump to the ends. Roving tabindex keeps one stop per group |
 | `ark-dropdown` | `combobox` with `aria-haspopup="listbox"`, `aria-expanded`, `aria-controls`, `aria-activedescendant`, over `role="option"` items | arrows, <kbd>Home</kbd>, <kbd>End</kbd> move the active option, <kbd>Enter</kbd> and <kbd>Space</kbd> select, <kbd>Escape</kbd> closes. Selecting or escaping returns focus to the trigger |
 | `ark-accordion-item` | native `<button>` trigger with `aria-expanded` and `aria-controls`, panel is `role="region"` `aria-labelledby` | native |
-| `ark-navigation` | `<nav>` landmarks with `aria-label`, current link marked `aria-current="page"`, mobile toggle carries `aria-expanded` and `aria-controls` | <kbd>Escape</kbd> closes the mobile menu |
-| `ark-carousel` | `aria-roledescription="carousel"`, labelled prev/next buttons, `aria-live="polite"` counter | scrollable track is a tab stop |
+| `ark-navigation` | `<nav>` landmarks with `aria-label`, current link marked `aria-current="page"`, mobile toggle carries `aria-expanded` and `aria-controls` | <kbd>Escape</kbd> closes the mobile menu, <kbd>Tab</kbd> stays inside the open drawer |
+| `ark-carousel` | `role="group"` `aria-roledescription="carousel"`, each slide a `role="group"` `aria-roledescription="slide"` named "3 of 7", labelled prev/next buttons, `aria-live="polite"` counter | track is a tab stop. <kbd>&larr;</kbd> and <kbd>&rarr;</kbd> move one slide, <kbd>Home</kbd> and <kbd>End</kbd> jump to the ends |
 | `ark-toast`, `ark-empty` | `role="status"` `aria-live="polite"` | dismiss button is labelled |
 | `ark-spinner` | `role="status"` with `aria-label`, or `aria-hidden` when `decorative` | none |
 
@@ -305,6 +306,23 @@ The scan that finds focusable elements walks nested shadow roots and skips anyth
 `ark-dialog-root` records the deeply active element when the dialog opens and returns focus to it
 on close, and body scroll stays locked while the dialog is open.
 
+While the dialog is open every body-level sibling that does not contain the panel is marked
+`inert` and `aria-hidden="true"`, so a screen reader's virtual cursor cannot reach the page behind
+it. The originals are restored on close, including any `inert` or `aria-hidden` the author had set.
+`aria-modal="true"` alone would not do this, because it is only a hint and assistive technology is
+free to ignore it.
+
+`ark-dialog-trigger` opens on click, and on <kbd>Enter</kbd> or <kbd>Space</kbd> for a slotted
+control that does not turn those keys into a click itself. The control still has to be focusable:
+slot a button or a link, not a bare `<span>`.
+
+### Focus management in ark-navigation
+
+Opening the mobile drawer moves focus to its first link. <kbd>Tab</kbd> and
+<kbd>Shift</kbd>+<kbd>Tab</kbd> cycle through the drawer and the toggle, which doubles as the close
+button, so tabbing never walks the hidden page behind. Closing returns focus to the toggle, unless
+something outside the nav has taken focus in the meantime, in which case that wins.
+
 ### Contrast
 
 Components hold no color values of their own, so every text and surface pairing is decided once in
@@ -315,18 +333,15 @@ readable as the values you supply.
 
 ### Not covered yet
 
-- Content behind an open dialog is not marked `inert` or `aria-hidden`. `aria-modal="true"` is set,
-  but assistive technology that ignores it can still reach the page underneath.
-- The mobile navigation menu closes on <kbd>Escape</kbd> and hides itself from the accessibility
-  tree when closed, but it does not trap focus, move focus into the menu on open, or return focus
-  to the toggle on close.
-- `ark-carousel` exposes its track as a tab stop and relies on native scrolling. There is no arrow
-  key handler on the track, and the slides are not exposed as a group with position information.
-- `ark-dialog-trigger` listens for `click` on a wrapper. Keyboard activation depends on the control
-  you slot into it being a real button or link.
-- Unit tests cover `role="dialog"`, `aria-modal`, and <kbd>Escape</kbd>. The focus trap and focus
-  restoration are not covered by tests.
-- There is no contrast check, no axe run, and no WCAG audit in CI.
+- There is no contrast check, no axe run, and no WCAG audit in CI. Nothing verifies that a retheme
+  keeps text readable.
+- A dialog rendered inline rather than through `ark-dialog-portal` can only inert its body-level
+  siblings, never its own ancestors. Use the portal when the dialog has to be modal.
+- `ark-dialog-trigger` cannot make a non-focusable slotted element reachable. A bare `<span>` stays
+  mouse-only.
+- The carousel names its slides by position. It does not implement the fuller APG carousel pattern:
+  no rotation control, and no `aria-live` toggling between manual and automatic modes.
+- The components are tested against a DOM shim, not a real browser or a screen reader.
 
 ## Entrypoints
 

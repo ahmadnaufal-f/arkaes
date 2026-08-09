@@ -7,7 +7,15 @@ import {
   lockBodyScroll,
   unlockBodyScroll,
 } from "../utils/body-scroll-lock";
-import { hasKeyboardFocusWithin } from "../utils/keyboard-focus";
+import {
+  deepContains,
+  focusFirstWithin,
+  trapTabKey,
+} from "../utils/focus-trap";
+import {
+  deepActiveElement,
+  hasKeyboardFocusWithin,
+} from "../utils/keyboard-focus";
 
 let mobileMenuId = 0;
 
@@ -129,6 +137,8 @@ export class ArkNavigationRoot extends LitElement {
   private _menuOpen = false;
   private _immersive = false;
   private _immersiveHidden = false;
+  /** Where focus sat before the drawer opened, restored if the toggle is gone. */
+  private _previouslyFocused: HTMLElement | null = null;
 
   /**
    * Resting (unscrolled) bar height — the depth the page has to scroll past
@@ -170,6 +180,7 @@ export class ArkNavigationRoot extends LitElement {
       if (val) this.immersiveHidden = false;
       this._syncChildren();
       this._handleScrollLock(val);
+      this._handleMenuFocus(val);
     }
   }
 
@@ -657,13 +668,80 @@ export class ArkNavigationRoot extends LitElement {
   };
 
   /**
-   * Escape is the keyboard's version of the scrim tap. Bound on the document
-   * because the drawer takes over the screen without moving focus into itself,
-   * so the key may well be pressed while focus is still on the page behind it.
+   * Escape is the keyboard's version of the scrim tap, and Tab is kept inside
+   * the drawer while it is open. Bound on the document so the keys still land
+   * if focus has slipped out to the page behind the drawer.
    */
   private _handleKeyDown = (e: KeyboardEvent) => {
-    if (e.key === "Escape" && this.menuOpen) this.menuOpen = false;
+    if (!this.menuOpen) return;
+
+    if (e.key === "Escape") {
+      this.menuOpen = false;
+      return;
+    }
+
+    if (e.key === "Tab") {
+      // The toggle joins the trap because it doubles as the drawer's close
+      // button, so tabbing off the last link has to reach it rather than the
+      // page underneath.
+      trapTabKey(e, this._menuTrapRoots());
+    }
   };
+
+  /** The drawer plus the toggle that opened it, in tab order. */
+  private _menuTrapRoots(): HTMLElement[] {
+    const roots: HTMLElement[] = [];
+    const toggle = this.querySelector<ArkNavigationMobileToggle>(
+      "ark-navigation-mobile-toggle",
+    );
+    const menu = this.querySelector<ArkNavigationMobileMenu>(
+      "ark-navigation-mobile-menu",
+    );
+    if (toggle) roots.push(toggle);
+    if (menu) roots.push(menu);
+    return roots;
+  }
+
+  /**
+   * Moves focus into the drawer on open and hands it back to the toggle on
+   * close. Without this the drawer covers the screen while focus stays on
+   * whatever was behind it, so the first Tab walks the hidden page.
+   */
+  private _handleMenuFocus(open: boolean) {
+    if (open) {
+      const active = deepActiveElement();
+      this._previouslyFocused = active instanceof HTMLElement ? active : null;
+      // The drawer is `visibility: hidden` until its open styles apply, and a
+      // hidden element refuses focus, so this waits a frame for style to flush.
+      void this.updateComplete.then(() => {
+        requestAnimationFrame(() => {
+          if (!this.menuOpen) return;
+          const menu = this.querySelector<ArkNavigationMobileMenu>(
+            "ark-navigation-mobile-menu",
+          );
+          if (menu) focusFirstWithin([menu]);
+        });
+      });
+      return;
+    }
+
+    // Closing: the toggle is where the user is looking, and it is the control
+    // that reopens the drawer. Only pull focus back if it is still inside the
+    // nav, so a link that closed the drawer by navigating keeps its own focus.
+    const active = deepActiveElement();
+    const loose = active === null || active === document.body;
+    if (!loose && !deepContains(this, active)) return;
+
+    const toggle = this.querySelector<ArkNavigationMobileToggle>(
+      "ark-navigation-mobile-toggle",
+    );
+    if (toggle) {
+      toggle.focusControl();
+    } else if (this._previouslyFocused?.isConnected) {
+      this._previouslyFocused.focus();
+    }
+    this._previouslyFocused = null;
+  }
 
   private _syncChildren() {
     const mobileMenu = this.querySelector<ArkNavigationMobileMenu>(
@@ -1206,6 +1284,15 @@ export class ArkNavigationMobileToggle extends LitElement {
       }),
     );
   };
+
+  /**
+   * Focuses the underlying control. The button lives in this element's shadow
+   * root, so `toggle.focus()` alone would land on the host and leave the real
+   * control unfocused.
+   */
+  focusControl() {
+    this.renderRoot.querySelector<HTMLButtonElement>(".toggle")?.focus();
+  }
 
   override render() {
     return html`

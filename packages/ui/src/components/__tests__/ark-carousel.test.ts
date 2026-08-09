@@ -327,3 +327,199 @@ describe("ArkCarousel slides", () => {
     expect(track.hasAttribute("tabindex")).toBe(false);
   });
 });
+
+// ---------------------------------------------------------------------------
+// Keyboard navigation
+// ---------------------------------------------------------------------------
+
+/** Sends a keydown to the focusable scroll track. */
+function pressOnTrack(el: ArkCarousel, key: string, init: KeyboardEventInit = {}) {
+  const track = el.shadowRoot!.querySelector<HTMLElement>("[part~='track']")!;
+  const event = new KeyboardEvent("keydown", {
+    key,
+    bubbles: true,
+    cancelable: true,
+    ...init,
+  });
+  track.dispatchEvent(event);
+  return event;
+}
+
+describe("keyboard navigation", () => {
+  it("advances one slide on ArrowRight", async () => {
+    const el = await mountCarousel(3);
+
+    const event = pressOnTrack(el, "ArrowRight");
+
+    expect(el.index).toBe(1);
+    expect(event.defaultPrevented).toBe(true);
+  });
+
+  it("goes back one slide on ArrowLeft", async () => {
+    const el = await mountCarousel(3);
+    el.goTo(2);
+
+    pressOnTrack(el, "ArrowLeft");
+
+    expect(el.index).toBe(1);
+  });
+
+  it("jumps to the first slide on Home and the last on End", async () => {
+    const el = await mountCarousel(4);
+
+    pressOnTrack(el, "End");
+    expect(el.index).toBe(3);
+
+    pressOnTrack(el, "Home");
+    expect(el.index).toBe(0);
+  });
+
+  it("stops at the ends rather than wrapping", async () => {
+    const el = await mountCarousel(2);
+
+    pressOnTrack(el, "ArrowLeft");
+    expect(el.index).toBe(0);
+
+    pressOnTrack(el, "ArrowRight");
+    pressOnTrack(el, "ArrowRight");
+    expect(el.index).toBe(1);
+  });
+
+  it("emits ark-carousel:change for a keyboard move", async () => {
+    const el = await mountCarousel(3);
+    const seen = vi.fn();
+    el.addEventListener("ark-carousel:change", seen);
+
+    pressOnTrack(el, "ArrowRight");
+
+    expect(seen).toHaveBeenCalledTimes(1);
+  });
+
+  it("ignores keys it does not handle", async () => {
+    const el = await mountCarousel(3);
+
+    const event = pressOnTrack(el, "ArrowDown");
+
+    expect(el.index).toBe(0);
+    expect(event.defaultPrevented).toBe(false);
+  });
+
+  it("leaves modified arrow presses to the browser", async () => {
+    const el = await mountCarousel(3);
+
+    const event = pressOnTrack(el, "ArrowRight", { metaKey: true });
+
+    expect(el.index).toBe(0);
+    expect(event.defaultPrevented).toBe(false);
+  });
+
+  it("does nothing while the carousel is inactive", async () => {
+    const queries = stubMatchMedia(false);
+    const el = await mountCarousel(3, { breakpoint: "600" });
+    expect(el.active).toBe(false);
+
+    // The track still renders in grid mode, it just is not a carousel.
+    pressOnTrack(el, "ArrowRight");
+
+    expect(el.index).toBe(0);
+    expect(viewportQuery(queries).matches).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Slide semantics
+// ---------------------------------------------------------------------------
+
+describe("slide semantics", () => {
+  const slides = (el: ArkCarousel) => Array.from(el.children) as HTMLElement[];
+
+  it("names each slide with its position while active", async () => {
+    const el = await mountCarousel(3);
+
+    expect(slides(el).map((s) => s.getAttribute("aria-label"))).toEqual([
+      "1 of 3",
+      "2 of 3",
+      "3 of 3",
+    ]);
+  });
+
+  it("marks each slide as a slide", async () => {
+    const el = await mountCarousel(2);
+
+    for (const slide of slides(el)) {
+      expect(slide.getAttribute("role")).toBe("group");
+      expect(slide.getAttribute("aria-roledescription")).toBe("slide");
+    }
+  });
+
+  it("renumbers when the slide count changes", async () => {
+    const el = await mountCarousel(2);
+    const extra = document.createElement("div");
+    extra.textContent = "slide 3";
+    el.appendChild(extra);
+    await announceSlotChange(el);
+
+    expect(slides(el).map((s) => s.getAttribute("aria-label"))).toEqual([
+      "1 of 3",
+      "2 of 3",
+      "3 of 3",
+    ]);
+  });
+
+  it("keeps an author's own aria-label", async () => {
+    const w = mount();
+    const el = document.createElement("ark-carousel") as ArkCarousel;
+    const named = document.createElement("div");
+    named.setAttribute("aria-label", "Featured project");
+    const plain = document.createElement("div");
+    el.append(named, plain);
+    w.appendChild(el);
+    await el.updateComplete;
+    await el.updateComplete;
+
+    expect(named.getAttribute("aria-label")).toBe("Featured project");
+    expect(plain.getAttribute("aria-label")).toBe("2 of 2");
+  });
+
+  it("keeps an author's own aria-labelledby", async () => {
+    const w = mount();
+    const el = document.createElement("ark-carousel") as ArkCarousel;
+    const named = document.createElement("div");
+    named.setAttribute("aria-labelledby", "heading-1");
+    el.append(named, document.createElement("div"));
+    w.appendChild(el);
+    await el.updateComplete;
+    await el.updateComplete;
+
+    expect(named.hasAttribute("aria-label")).toBe(false);
+    expect(named.getAttribute("aria-labelledby")).toBe("heading-1");
+  });
+
+  it("strips the semantics it added when the carousel goes inactive", async () => {
+    const queries = stubMatchMedia(true);
+    const el = await mountCarousel(2, { breakpoint: "600" });
+    expect(slides(el)[0]!.getAttribute("role")).toBe("group");
+
+    viewportQuery(queries).setMatches(false);
+    await el.updateComplete;
+
+    for (const slide of slides(el)) {
+      expect(slide.hasAttribute("role")).toBe(false);
+      expect(slide.hasAttribute("aria-roledescription")).toBe(false);
+      expect(slide.hasAttribute("aria-label")).toBe(false);
+    }
+  });
+
+  it("strips the semantics it added when disconnected", async () => {
+    const el = await mountCarousel(2);
+    const kept = slides(el);
+    expect(kept[0]!.hasAttribute("role")).toBe(true);
+
+    el.remove();
+
+    for (const slide of kept) {
+      expect(slide.hasAttribute("role")).toBe(false);
+      expect(slide.hasAttribute("aria-label")).toBe(false);
+    }
+  });
+});
