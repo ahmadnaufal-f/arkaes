@@ -6,6 +6,15 @@ const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
 /** How long the track has to sit still before its scroll position is read back. */
 const SCROLL_SETTLE_MS = 80;
 
+/**
+ * Marks a slide whose semantics this element added, so teardown removes exactly
+ * what it set and never strips an attribute the author wrote.
+ */
+const SLIDE_MANAGED_ATTR = "data-ark-carousel-slide";
+
+/** Marks a slide whose `aria-label` is the generated "3 of 7" position name. */
+const SLIDE_LABEL_ATTR = "data-ark-carousel-slide-label";
+
 const arrow = (d: string) => html`
   <svg
     width="16"
@@ -106,6 +115,8 @@ export class ArkCarousel extends LitElement {
   private _viewportMedia: string | null | undefined;
   private _motionQuery: MediaQueryList | null = null;
   private _scrollTimer?: ReturnType<typeof setTimeout>;
+  /** Set when the slide list changes, so the next update renames the slides. */
+  private _slidesNeedAria = false;
 
   /**
    * True while the element behaves as a carousel. Derived from `breakpoint`;
@@ -280,6 +291,9 @@ export class ArkCarousel extends LitElement {
     this._teardownViewportQuery();
     this._motionQuery = null;
     clearTimeout(this._scrollTimer);
+    // The slides are light DOM and outlive this element, so the semantics it
+    // wrote onto them have to come off with it.
+    this._clearSlideAria();
     super.disconnectedCallback();
   }
 
@@ -289,7 +303,10 @@ export class ArkCarousel extends LitElement {
 
   protected override updated(changed: Map<PropertyKey, unknown>) {
     if (changed.has("breakpoint")) this._syncViewportQuery();
-    if (changed.has("active") || changed.has("label")) this._syncAria();
+    if (changed.has("active") || changed.has("label") || this._slidesNeedAria) {
+      this._slidesNeedAria = false;
+      this._syncAria();
+    }
   }
 
   /** Scroll to `index`, clamped to the available slides. */
@@ -359,12 +376,83 @@ export class ArkCarousel extends LitElement {
       this.setAttribute("aria-roledescription", "carousel");
       if (this.label) this.setAttribute("aria-label", this.label);
       else this.removeAttribute("aria-label");
+      this._syncSlideAria();
       return;
     }
     this.removeAttribute("role");
     this.removeAttribute("aria-roledescription");
     this.removeAttribute("aria-label");
+    this._clearSlideAria();
   }
+
+  /**
+   * Names each slide as "3 of 7". Without it the strip announces as one
+   * undifferentiated group and a screen reader user has no way to tell how many
+   * slides there are or which one they are on.
+   *
+   * An author's own `aria-label` or `aria-labelledby` wins — only the slides
+   * that have neither get the generated name, and `_clearSlideAria` removes
+   * exactly what was added.
+   */
+  private _syncSlideAria() {
+    const total = this._items.length;
+    this._items.forEach((item, i) => {
+      item.setAttribute("role", "group");
+      item.setAttribute("aria-roledescription", "slide");
+      item.setAttribute(SLIDE_MANAGED_ATTR, "");
+
+      if (item.hasAttribute("aria-labelledby")) return;
+      if (item.hasAttribute("aria-label") && !item.hasAttribute(SLIDE_LABEL_ATTR)) {
+        return;
+      }
+      item.setAttribute("aria-label", `${i + 1} of ${total}`);
+      item.setAttribute(SLIDE_LABEL_ATTR, "");
+    });
+  }
+
+  private _clearSlideAria() {
+    for (const item of this._items) {
+      if (!item.hasAttribute(SLIDE_MANAGED_ATTR)) continue;
+      item.removeAttribute("role");
+      item.removeAttribute("aria-roledescription");
+      item.removeAttribute(SLIDE_MANAGED_ATTR);
+      if (item.hasAttribute(SLIDE_LABEL_ATTR)) {
+        item.removeAttribute("aria-label");
+        item.removeAttribute(SLIDE_LABEL_ATTR);
+      }
+    }
+  }
+
+  /**
+   * The track is a focusable scroll container, so a browser already scrolls it
+   * with the arrow keys — by a pixel step that fights the mandatory snap. These
+   * move whole slides instead, matching what the arrow buttons do.
+   */
+  private _handleKeyDown = (e: KeyboardEvent) => {
+    if (!this._active || this._items.length === 0) return;
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+
+    switch (e.key) {
+      case "ArrowRight":
+        e.preventDefault();
+        this.next();
+        break;
+      case "ArrowLeft":
+        e.preventDefault();
+        this.prev();
+        break;
+      case "Home":
+        e.preventDefault();
+        this.goTo(0);
+        break;
+      case "End":
+        e.preventDefault();
+        this.goTo(this._items.length - 1);
+        break;
+      default:
+        break;
+    }
+  };
 
   private _handleSlotChange = () => {
     // The slide list is recomputed in willUpdate, so a re-render is all this
@@ -393,7 +481,11 @@ export class ArkCarousel extends LitElement {
       return;
     }
 
+    // Strip the old list first: a slide that just left the carousel must not
+    // keep announcing itself as "2 of 5".
+    this._clearSlideAria();
     this._items = items;
+    this._slidesNeedAria = true;
     if (this._index > items.length - 1) {
       this._setIndex(Math.max(0, items.length - 1));
     }
@@ -529,6 +621,7 @@ export class ArkCarousel extends LitElement {
         part="track"
         tabindex=${this._active && total > 0 ? "0" : nothing}
         @scroll=${this._handleScroll}
+        @keydown=${this._handleKeyDown}
       >
         <slot @slotchange=${this._handleSlotChange}></slot>
       </div>

@@ -1,15 +1,18 @@
 import { css, html, LitElement } from "lit";
 import { defineElement } from "../define-element";
 import {
+  hideBackgroundFrom,
+  restoreBackground,
+} from "../utils/background-inert";
+import {
   lockBodyScroll,
   unlockBodyScroll,
 } from "../utils/body-scroll-lock";
+import { focusFirstWithin, trapTabKey } from "../utils/focus-trap";
+import { deepActiveElement } from "../utils/keyboard-focus";
 
 const getDeepActiveElement = (): HTMLElement | null => {
-  let element = document.activeElement;
-  while (element?.shadowRoot?.activeElement) {
-    element = element.shadowRoot.activeElement;
-  }
+  const element = deepActiveElement();
   return element instanceof HTMLElement ? element : null;
 };
 
@@ -45,6 +48,9 @@ export class ArkDialogRoot extends LitElement {
       this.requestUpdate("open", oldVal);
       this._updateChildren();
       this._handleScrollLock(val);
+      // Before focus restoration: the element focus returns to is usually out
+      // in the page, and an inert element cannot take focus.
+      this._handleBackgroundInert(val);
       this._handleFocusRestoration(val);
     }
   }
@@ -65,6 +71,7 @@ export class ArkDialogRoot extends LitElement {
     this.removeEventListener("ark-dialog:open", this._handleOpenEvent);
     this.removeEventListener("ark-dialog:close", this._handleCloseEvent);
     this._handleScrollLock(false);
+    this._handleBackgroundInert(false);
     super.disconnectedCallback();
   }
 
@@ -120,6 +127,22 @@ export class ArkDialogRoot extends LitElement {
     }
   }
 
+  /**
+   * Takes the page out of the accessibility tree and the tab order while the
+   * dialog is up. Driven from here rather than from the content element so it
+   * stays in step with scroll lock and focus restoration, which are synchronous.
+   *
+   * Both this root and any portal container are kept: the panel lives in one or
+   * the other depending on whether the composition uses ark-dialog-portal.
+   */
+  private _handleBackgroundInert(hide: boolean) {
+    if (hide) {
+      hideBackgroundFrom(this, [this, ...this._portalContainers]);
+    } else {
+      restoreBackground(this);
+    }
+  }
+
   private _handleFocusRestoration(lock: boolean) {
     if (lock) {
       this._previouslyFocusedElement = getDeepActiveElement();
@@ -138,6 +161,13 @@ export class ArkDialogRoot extends LitElement {
 
 /**
  * ArkDialogTrigger opens the dialog on click.
+ *
+ * Slot a control that can hold focus — an `ark-button`, a `<button>`, a link.
+ * A native button already turns Enter and Space into a click, and the keydown
+ * handler below covers focusable controls that do not, such as an element that
+ * only carries `role="button"` and `tabindex`. Nothing here can make a
+ * non-focusable element reachable, so a bare `<span>` stays mouse-only.
+ *
  * @slot - The control that opens the dialog (e.g. an ark-button).
  */
 export class ArkDialogTrigger extends LitElement {
@@ -150,13 +180,40 @@ export class ArkDialogTrigger extends LitElement {
     }
   `;
 
-  private _handleClick() {
+  private _requestOpen() {
     this.dispatchEvent(
       new CustomEvent("ark-dialog:open", {
         bubbles: true,
         composed: true,
       }),
     );
+  }
+
+  private _handleClick = () => {
+    this._requestOpen();
+  };
+
+  private _handleKeyDown = (e: KeyboardEvent) => {
+    if (e.key !== "Enter" && e.key !== " ") return;
+    // Space would scroll the page, and a native button's own click lands on
+    // keyup, so this has to claim the key either way. When the slotted control
+    // does synthesise a click the dialog is already open by then and opening
+    // again is a no-op.
+    e.preventDefault();
+    this._requestOpen();
+  };
+
+  constructor() {
+    super();
+    // Bound on the host, not the shadow wrapper: the control is a light-DOM
+    // child, so its keydown reaches this element by plain bubbling and does not
+    // depend on the event crossing into the shadow tree.
+    this.addEventListener("keydown", this._handleKeyDown);
+  }
+
+  override disconnectedCallback() {
+    this.removeEventListener("keydown", this._handleKeyDown);
+    super.disconnectedCallback();
   }
 
   override render() {
@@ -366,7 +423,7 @@ export class ArkDialogContent extends LitElement {
 
   private _titleId = `ark-dialog-title-${Math.random().toString(36).substring(2, 9)}`;
   private _descId = `ark-dialog-desc-${Math.random().toString(36).substring(2, 9)}`;
-  private _focusTimer: ReturnType<typeof setTimeout> | null = null;
+  private _focusFrame: number | null = null;
 
   static override styles = css`
     :host {
@@ -422,7 +479,7 @@ export class ArkDialogContent extends LitElement {
 
   override disconnectedCallback() {
     window.removeEventListener("keydown", this._handleKeyDown);
-    this._clearFocusTimer();
+    this._cancelPendingFocus();
     super.disconnectedCallback();
   }
 
@@ -449,87 +506,42 @@ export class ArkDialogContent extends LitElement {
   };
 
   override updated(changedProperties: Map<PropertyKey, unknown>) {
-    if (changedProperties.has("open")) {
-      if (this.open) {
-        this._clearFocusTimer();
-        this._focusTimer = setTimeout(() => {
-          this._focusTimer = null;
-          if (!this.open) return;
+    if (!changedProperties.has("open")) return;
 
-          const focusables = this._getFocusableElements();
-          if (focusables.length > 0) {
-            focusables[0]?.focus();
-          } else {
-            this.focus();
-          }
-        }, 50);
-      } else {
-        this._clearFocusTimer();
-      }
+    // An update can land after the element was torn down, because Lit batches
+    // and `open` is often set in the same tick as a removal.
+    if (!this.open || !this.isConnected) {
+      this._cancelPendingFocus();
+      return;
     }
+
+    this._focusInitial();
   }
 
-  private _clearFocusTimer() {
-    if (this._focusTimer !== null) {
-      clearTimeout(this._focusTimer);
-      this._focusTimer = null;
-    }
+  /**
+   * Focus lands one frame after the render that opened the dialog. The panel is
+   * `visibility: hidden` until the `[open]` styles apply, and a hidden element
+   * refuses focus, so this waits for the browser to have flushed style and
+   * layout rather than guessing at a delay.
+   */
+  private _focusInitial() {
+    this._cancelPendingFocus();
+    void this.updateComplete.then(() => {
+      this._focusFrame = requestAnimationFrame(() => {
+        this._focusFrame = null;
+        if (!this.open) return;
+        // No tabbable content: the panel itself holds focus via tabindex="-1",
+        // which is what keeps Tab inside the trap and Escape on target.
+        focusFirstWithin([this], this);
+      });
+    });
   }
 
-  private _deepContains(child: Node | null): boolean {
-    if (!child) return false;
-    let node: Node | null = child;
-    while (node) {
-      if (node === this) return true;
-      const parent = node.parentNode as Node | null;
-      node = parent instanceof ShadowRoot ? parent.host : parent;
+  private _cancelPendingFocus() {
+    if (this._focusFrame !== null) {
+      cancelAnimationFrame(this._focusFrame);
+      this._focusFrame = null;
     }
-    return false;
-  }
-
-  private _getFocusableElements(): HTMLElement[] {
-    const selector = [
-      "button",
-      "[href]",
-      "input",
-      "select",
-      "textarea",
-      "[contenteditable]",
-      "[tabindex]",
-    ].join(",");
-    const results: HTMLElement[] = [];
-
-    const isUnavailable = (element: HTMLElement) => {
-      if (
-        element.hidden ||
-        element.closest("[hidden], [inert], [aria-hidden='true']")
-      ) {
-        return true;
-      }
-
-      const disabled = "disabled" in element && Boolean(element.disabled);
-      const tabIndex = element.getAttribute("tabindex");
-      if (disabled || (tabIndex !== null && Number(tabIndex) < 0)) {
-        return true;
-      }
-
-      const styles = getComputedStyle(element);
-      return styles.display === "none" || styles.visibility === "hidden";
-    };
-
-    const collect = (root: Element | ShadowRoot) => {
-      for (const el of Array.from(root.querySelectorAll("*")) as HTMLElement[]) {
-        if (el.matches(selector) && !isUnavailable(el)) {
-          results.push(el);
-        }
-        if (el.shadowRoot) {
-          collect(el.shadowRoot);
-        }
-      }
-    };
-
-    collect(this);
-    return results;
   }
 
   private _handleKeyDown = (e: KeyboardEvent) => {
@@ -547,27 +559,7 @@ export class ArkDialogContent extends LitElement {
     }
 
     if (e.key === "Tab") {
-      const focusables = this._getFocusableElements();
-      if (focusables.length === 0) {
-        e.preventDefault();
-        return;
-      }
-
-      const first = focusables[0];
-      const last = focusables[focusables.length - 1];
-      const active = getDeepActiveElement();
-
-      if (e.shiftKey) {
-        if (active === first || !this._deepContains(active as Node)) {
-          last?.focus();
-          e.preventDefault();
-        }
-      } else {
-        if (active === last || !this._deepContains(active as Node)) {
-          first?.focus();
-          e.preventDefault();
-        }
-      }
+      trapTabKey(e, [this]);
     }
   };
 

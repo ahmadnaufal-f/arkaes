@@ -7,6 +7,7 @@ import {
   ArkNavigationMobileToggle,
   ArkNavigationRoot,
 } from "../ark-navigation";
+import { deepActiveElement } from "../../utils/keyboard-focus";
 
 let wrapper: HTMLDivElement | null = null;
 
@@ -723,5 +724,140 @@ describe("ArkNavLink auto-active", () => {
     expect(removeEventListener).toHaveBeenCalledWith("hashchange", expect.any(Function));
     expect(removeEventListener).toHaveBeenCalledWith("popstate", expect.any(Function));
     removeEventListener.mockRestore();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// ArkNavigationRoot — mobile menu focus management
+// ---------------------------------------------------------------------------
+
+describe("ArkNavigationRoot mobile menu focus", () => {
+  /** A nav with a toggle and a drawer holding two links. */
+  async function mountNav() {
+    const w = mount();
+    const root = document.createElement("ark-navigation-root") as ArkNavigationRoot;
+    const toggle =
+      document.createElement("ark-navigation-mobile-toggle") as ArkNavigationMobileToggle;
+    const menu =
+      document.createElement("ark-navigation-mobile-menu") as ArkNavigationMobileMenu;
+    menu.id = "mobile-menu";
+    menu.innerHTML = "<a href=\"/one\">one</a><a href=\"/two\">two</a>";
+    root.append(toggle, menu);
+    w.appendChild(root);
+    await root.updateComplete;
+    await toggle.updateComplete;
+    await menu.updateComplete;
+    return { root, toggle, menu };
+  }
+
+  /** Focus lands a frame after the update that opened the drawer. */
+  const settleFocus = async (root: ArkNavigationRoot) => {
+    await root.updateComplete;
+    await new Promise((r) => requestAnimationFrame(() => r(null)));
+    await new Promise((r) => requestAnimationFrame(() => r(null)));
+  };
+
+  const toggleButton = (toggle: ArkNavigationMobileToggle) =>
+    toggle.shadowRoot!.querySelector<HTMLButtonElement>(".toggle")!;
+
+  it("moves focus into the drawer when it opens", async () => {
+    const { root, menu } = await mountNav();
+
+    root.menuOpen = true;
+    await settleFocus(root);
+
+    expect(deepActiveElement()).toBe(menu.querySelector("a"));
+  });
+
+  it("returns focus to the toggle when the drawer closes", async () => {
+    const { root, toggle } = await mountNav();
+
+    root.menuOpen = true;
+    await settleFocus(root);
+    root.menuOpen = false;
+
+    expect(deepActiveElement()).toBe(toggleButton(toggle));
+  });
+
+  it("returns focus to the toggle after closing on Escape", async () => {
+    const { root, toggle } = await mountNav();
+
+    root.menuOpen = true;
+    await settleFocus(root);
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+
+    expect(root.menuOpen).toBe(false);
+    expect(deepActiveElement()).toBe(toggleButton(toggle));
+  });
+
+  it("wraps Tab from the last link back to the toggle", async () => {
+    const { root, toggle, menu } = await mountNav();
+
+    root.menuOpen = true;
+    await settleFocus(root);
+    const links = Array.from(menu.querySelectorAll("a"));
+    links[links.length - 1]!.focus();
+
+    document.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "Tab", cancelable: true }),
+    );
+
+    expect(deepActiveElement()).toBe(toggleButton(toggle));
+  });
+
+  it("wraps Shift+Tab from the toggle to the last link", async () => {
+    const { root, toggle, menu } = await mountNav();
+
+    root.menuOpen = true;
+    await settleFocus(root);
+    toggleButton(toggle).focus();
+
+    document.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "Tab", shiftKey: true, cancelable: true }),
+    );
+
+    const links = Array.from(menu.querySelectorAll("a"));
+    expect(deepActiveElement()).toBe(links[links.length - 1]);
+  });
+
+  it("pulls focus back in when it has escaped to the page behind", async () => {
+    const stray = document.createElement("button");
+    document.body.appendChild(stray);
+    const { root, toggle } = await mountNav();
+
+    root.menuOpen = true;
+    await settleFocus(root);
+    stray.focus();
+
+    document.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "Tab", cancelable: true }),
+    );
+
+    expect(deepActiveElement()).toBe(toggleButton(toggle));
+    stray.remove();
+  });
+
+  it("does not trap Tab while the drawer is closed", async () => {
+    await mountNav();
+
+    const event = new KeyboardEvent("keydown", { key: "Tab", cancelable: true });
+    document.dispatchEvent(event);
+
+    expect(event.defaultPrevented).toBe(false);
+  });
+
+  it("leaves focus alone when a link outside the nav took it", async () => {
+    const elsewhere = document.createElement("button");
+    document.body.appendChild(elsewhere);
+    const { root } = await mountNav();
+
+    root.menuOpen = true;
+    await settleFocus(root);
+    // A drawer link that navigates moves focus out of the nav before the close.
+    elsewhere.focus();
+    root.menuOpen = false;
+
+    expect(deepActiveElement()).toBe(elsewhere);
+    elsewhere.remove();
   });
 });
