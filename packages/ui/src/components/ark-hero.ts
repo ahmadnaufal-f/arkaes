@@ -191,10 +191,15 @@ export class ArkHero extends LitElement {
     ::slotted([slot="title"]) {
       color: var(--ark-color-text);
       font-family: var(--ark-font-display);
-      /* Sized so each line still fits its column unbroken at every width the
-         two-column layout is used at; the single-column rule below takes over
-         under 900px, where the measure comes from the viewport instead. */
-      font-size: clamp(1.75rem, 6.2vw, 2.75rem);
+      /* This is the single-column scale; the two-column rule further down
+         takes over from 901px, where the measure becomes the left column
+         rather than the viewport. Each line is nowrap, so the floor of the
+         viewport range sets the ceiling of the scale: the longest line renders
+         at roughly 8.2x the font size in Fraunces, which at 320px (a 272px
+         measure) leaves the headline filling about 88%. Measured across
+         320-900px rather than derived — see the ratio holding steady in the
+         two-column rule too. */
+      font-size: clamp(1.8rem, 10.75vw - 5.2px, 3.75rem);
       font-weight: var(--ark-weight-medium);
       letter-spacing: -0.018em;
       line-height: 1.14;
@@ -578,11 +583,14 @@ export class ArkHero extends LitElement {
     /* ── Responsive: two-column ─────────────────────────────────────── */
     /* From here the measure is the left column, not the viewport, so the
        headline scales against the column's own growth curve and tops out at
-       50px — the size the two lines were drawn at. */
+       60px. The column stops growing at 1400px — content caps at 80rem and
+       every extra pixel becomes gutter — which is where the cap lands. Kept
+       well short of the column's actual capacity (~68% filled at 1280px): the
+       point of this headline is that it is smaller than the one it replaced. */
     @media (min-width: 901px) {
       .hero-title,
       ::slotted([slot="title"]) {
-        font-size: clamp(2.5rem, 2.8vw + 0.6rem, 3.125rem);
+        font-size: clamp(2.75rem, 3.6vw + 0.5rem, 3.75rem);
       }
     }
 
