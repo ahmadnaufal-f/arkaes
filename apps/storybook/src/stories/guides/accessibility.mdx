@@ -1,0 +1,138 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Guides/Accessibility" />
+
+# Accessibility
+
+This page records what the components do today, read from the source. It is a description of
+behaviour. It is not a conformance claim, and no third-party audit has been run against this
+library.
+
+## Keyboard and ARIA
+
+Every interactive element either renders a native control or declares a role and handles that role's
+keys.
+
+| Element | Role | Keys |
+| --- | --- | --- |
+| `ark-button` | Native `button`, or `a` when `href` is set | Native. `inactive` sets `aria-disabled` and `tabindex="-1"`. Loading sets `aria-busy` |
+| `ark-input` | Native `input` with a real `label for` | Native. Sets `aria-invalid`, `aria-required` and `aria-describedby`. The error message is `role="alert"` with `aria-live="polite"` |
+| `ark-checkbox` | `checkbox` | Space toggles. Mirrors `aria-checked` and `aria-disabled` |
+| `ark-toggle` | `switch` | Space and Enter toggle |
+| `ark-radio-group`, `ark-radio` | `radiogroup` with `aria-orientation`, and `radio` | Arrow keys move and select, wrapping at both ends. Home and End jump to the ends |
+| `ark-dropdown` | `combobox` with `aria-haspopup`, `aria-expanded`, `aria-controls` and `aria-activedescendant`, over `option` items | Arrows, Home and End move the active option. Enter and Space select. Escape closes |
+| `ark-accordion-item` | Native `button` trigger with `aria-expanded` and `aria-controls`. Panel is `role="region"` with `aria-labelledby` | Native |
+| `ark-navigation` | `nav` landmarks with `aria-label`. Current link carries `aria-current="page"`. Mobile toggle carries `aria-expanded` and `aria-controls` | Escape closes the drawer. Tab stays inside the open drawer |
+| `ark-carousel` | `role="group"` with `aria-roledescription="carousel"`. Each slide is a `group` with `aria-roledescription="slide"` | Left and right arrows move one slide. Home and End jump to the ends |
+| `ark-toast` | `role="status"` with `aria-live="polite"` | Dismiss button is labelled |
+| `ark-empty` | `role="status"` with `aria-live="polite"` | None |
+| `ark-spinner` | `role="status"` with `aria-label`, or `aria-hidden` when `decorative` | None |
+
+### Roving tabindex
+
+`ark-radio-group` uses a roving tabindex. Exactly one radio is tabbable at a time. That is the
+checked radio, or the first enabled radio when nothing is checked. Tab therefore enters and leaves
+the group as a single stop, and the arrow keys move within it.
+
+`ark-carousel` does not use a roving tabindex. Its scroll track is one tab stop, and the arrow keys
+move slides from there. The slides themselves are not focus targets.
+
+### Slide names
+
+The carousel names each slide by position, as "3 of 7". An author's own `aria-label` or
+`aria-labelledby` wins. The generated names are removed again when the carousel drops out of
+carousel mode or leaves the page, so the slides do not keep stale positions.
+
+## Focus management
+
+### ark-dialog
+
+`ark-dialog-content` sets `role="dialog"` and `aria-modal="true"`, and takes `tabindex="-1"`. It
+finds a slotted `ark-dialog-title` and `ark-dialog-description`, assigns them ids, and points
+`aria-labelledby` and `aria-describedby` at them. That runs again on `slotchange`.
+
+Opening moves focus to the first focusable descendant, or to the panel itself when there is none.
+Tab and Shift and Tab wrap at the ends of the panel. The scan that finds focusable elements walks
+nested shadow roots, and skips anything hidden, inert, `aria-hidden`, disabled, or holding a negative
+tabindex.
+
+While the dialog is open, every body-level sibling that does not contain the panel is marked `inert`
+and `aria-hidden="true"`. A virtual cursor cannot reach the page behind the dialog. The original
+values are restored on close, including any `inert` or `aria-hidden` the author had set. Body scroll
+stays locked for the same period.
+
+Escape closes. `ark-dialog-root` records the deeply active element on open and returns focus to it on
+close.
+
+`ark-dialog-trigger` opens on click, and on Enter or Space for a slotted control that does not turn
+those keys into a click itself.
+
+### ark-navigation
+
+Opening the mobile drawer moves focus to its first link. Tab and Shift and Tab cycle through the
+drawer and the toggle, which doubles as the close button. Closing returns focus to the toggle. If
+something outside the nav has taken focus in the meantime, that wins and the nav leaves it alone.
+
+### Focus rings
+
+Focus rings use `:focus-visible` and `--ark-color-focus`. They appear for keyboard users and stay off
+for pointer clicks. Fourteen source files carry a `:focus-visible` rule.
+
+## Contrast
+
+Components hold no colour values of their own. Every text and surface pairing is decided once in the
+token sources, so a retheme moves contrast everywhere at once.
+
+These ratios are computed from the token values in the repository.
+
+| Text token | On `--ark-color-bg` | On `--ark-color-surface` |
+| --- | --- | --- |
+| `--ark-color-text` | 17.44 | 17.69 |
+| `--ark-color-text-soft` | 13.10 | 13.29 |
+| `--ark-color-text-muted` | 7.02 | 7.12 |
+| `--ark-color-text-subtle` | 5.01 | 5.08 |
+| `--ark-color-accent` | 5.55 | 5.63 |
+| `--ark-color-accent-strong` | 8.97 | 9.10 |
+| `--ark-color-secondary` | 5.14 | 5.22 |
+| `--ark-color-focus` | 6.07 | 6.15 |
+
+Every text token clears 4.5 to 1 against both the page background and the raised surface. One
+pairing falls short elsewhere. `--ark-color-text-subtle` on `--ark-color-surface-floating`, the
+blush tint behind the navigation pills, measures 4.45 to 1. Avoid that combination for body text.
+
+Nothing in the repository measures these ratios. They hold for the shipped palette only. An override
+is as readable as the values you supply.
+
+## Reduced motion
+
+Ten source files check `prefers-reduced-motion` and collapse their animation: the accordion,
+carousel, cursor, hero, navigation, scroll-to-top, toast, spinner, project header, and the markdown
+prose styles. The navigation collapses its own duration and shift custom properties by hand, because
+a blanket rule cannot cross a shadow boundary.
+
+## Testing
+
+The component test suite covers accessibility behaviour directly. It asserts the dialog's roles, its
+focus trap in both directions, focus restoration, and the background inert state. It asserts the
+navigation drawer's focus movement and trapping. It asserts the carousel's keyboard handling and its
+slide names.
+
+These are behavioural unit tests running against a DOM shim. There is no automated rule-based
+accessibility scan such as axe, and no test runs in a real browser.
+
+## Not covered yet
+
+- No contrast check, no axe run, and no external audit runs in CI. Nothing verifies that a retheme
+  keeps text readable.
+- A dialog rendered inline, rather than through `ark-dialog-portal`, can only mark its body-level
+  siblings inert. It cannot mark its own ancestors. Use the portal when the dialog must be modal.
+- `ark-dialog-trigger` cannot make a non-focusable slotted element reachable. A bare `span` stays
+  mouse-only. Slot a button or a link.
+- `ark-toast` carries its live region on each toast rather than on the `ark-toaster` container. A
+  live region inserted at the same moment as its content is announced less reliably than one that
+  was already present.
+- Toasts dismiss themselves after four seconds by default. Set `duration` to zero for content a
+  reader needs time to reach.
+- The carousel does not implement the fuller carousel pattern. There is no rotation control, and no
+  switch between manual and automatic announcement.
+- No component has been tested with a screen reader as part of this suite.

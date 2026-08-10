@@ -48,50 +48,50 @@ const LAYERS = [
     name: "Tokens",
     count: String(COLOR_TOKENS.length + SPACING_TOKENS.length),
     entry: "@arkaes/tokens",
-    body: `Colour and spacing are generated from DTCG sources with Style Dictionary;
-      typography, radius, shadow and motion are still hand-authored CSS. Everything
-      downstream reads them as ‑‑ark‑* custom properties.`,
+    body: `Style Dictionary generates colour and spacing from DTCG sources. Typography,
+      radius, shadow and motion stay hand-authored CSS. Everything downstream reads them
+      as ‑‑ark‑* custom properties.`,
   },
   {
     name: "Primitives",
     count: String(countFiles("primitives")),
     entry: "@arkaes/ui/primitives",
-    body: `Single-purpose Lit elements — button, chip, badge, input, toggle. Styles are
-      inlined in the shadow root and driven entirely by tokens, so a primitive never
-      hardcodes a colour or a spacing value.`,
+    body: `Single-purpose Lit elements. Button, chip, badge, input, toggle. Each one
+      inlines its styles in the shadow root and reads every value from a token. A
+      primitive never hardcodes a colour or a spacing value.`,
   },
   {
     name: "Components",
     count: String(countFiles("components")),
     entry: "@arkaes/ui/components",
-    body: `Compositions with behaviour — card, dialog, accordion, navigation, toast.
-      Multi-part components ship as a set of elements plus a namespace object.`,
+    body: `Compositions with behaviour. Card, dialog, accordion, navigation, toast. A
+      multi-part component ships as a set of elements plus a namespace object.`,
   },
   {
     name: "Patterns",
     count: String(countFiles("patterns")),
     entry: "@arkaes/ui/patterns",
-    body: `Page-level furniture assembled from the layers below it — media card, page
-      header, project header.`,
+    body: `Page-level furniture assembled from the layers below. Media card, page header,
+      project header.`,
   },
 ];
 
 const TYPE_FACES = [
   {
     token: "--ark-font-display",
-    role: "Display — headings and titles",
+    role: "Display, for headings and titles",
     sample: "Considered, quiet interfaces",
     className: "ark-overview-face--display",
   },
   {
     token: "--ark-font-sans",
-    role: "Body — running text and UI",
-    sample: "Readability first: long measures, generous leading, few weights.",
+    role: "Body, for running text and UI",
+    sample: "Readability first. Long measures, generous leading, few weights.",
     className: "ark-overview-face--sans",
   },
   {
     token: "--ark-font-mono",
-    role: "Mono — labels, code, metadata",
+    role: "Mono, for labels, code and metadata",
     sample: "--ark-color-accent",
     className: "ark-overview-face--mono",
   },
@@ -102,6 +102,10 @@ const IMPORTS = [
   { code: 'import "@arkaes/ui/register";', note: "Registers every element." },
   { code: 'import "@arkaes/ui/register/ark-chip";', note: "Registers exactly one." },
   { code: 'import { ChipVariant } from "@arkaes/ui";', note: "Types and enums. No side effects." },
+  {
+    code: 'import { ArkButton } from "@arkaes/ui/react";',
+    note: "Typed React wrapper. Self-registers, so no register import.",
+  },
 ];
 
 const renderRamp = (family: string, rows: TokenRow[]) => html`
@@ -113,7 +117,7 @@ const renderRamp = (family: string, rows: TokenRow[]) => html`
           <span
             class="ark-overview-ramp__step"
             style="background: var(${row.cssProperty});"
-            title=${`${row.cssProperty} — ${row.value}`}
+            title=${`${row.cssProperty}: ${row.value}`}
           ></span>
         `,
       )}
@@ -149,6 +153,13 @@ const styles = html`
       font-family: var(--ark-font-mono);
       font-size: var(--ark-text-xs);
     }
+    /* Inline code inside running prose sizes against the text around it. The
+       flat --ark-text-xs above is right for the metadata rows, where the
+       neighbouring label is already xs, but in a paragraph it lands a third
+       below the body size and reads as a different register. */
+    .ark-overview p code {
+      font-size: 0.9em;
+    }
     .ark-overview-masthead h1 {
       font-family: var(--ark-font-display);
       font-size: var(--ark-text-4xl);
@@ -162,6 +173,15 @@ const styles = html`
       font-size: var(--ark-text-lg);
       line-height: var(--ark-leading-normal);
       margin: var(--ark-space-6) 0 0;
+      max-width: var(--ark-measure-sm);
+    }
+    /* Sits below the lede and above the metadata row, one step down in size, so
+       the provenance reads as a note on the lede rather than a second lede. */
+    .ark-overview-brand {
+      color: var(--ark-color-text-muted);
+      font-size: var(--ark-text-sm);
+      line-height: var(--ark-leading-normal);
+      margin: var(--ark-space-4) 0 0;
       max-width: var(--ark-measure-sm);
     }
     .ark-overview-facts {
@@ -325,16 +345,23 @@ const renderOverview = () => html`
       <ark-badge variant="eyebrow">Design system</ark-badge>
       <h1>Arkaes</h1>
       <p class="ark-overview-lede">
-        A readability-first system for a personal portfolio: a warm, deliberately
-        light-only palette, a small set of Lit custom elements, and one set of design
-        tokens that every surface reads from.
+        A readability-first system for a personal portfolio. The palette is warm and
+        light-only by design. A small set of Lit custom elements reads from one set of
+        design tokens. The package also bundles an MCP server, so a coding agent can read
+        the component API and the real token values offline.
+      </p>
+      <p class="ark-overview-brand">
+        This system implements the Arkaes brand guideline. That document sets the palette,
+        the type stack and the light-only rule, and this library follows it rather than
+        restating it. Read it at
+        <a href="https://brand.arkaes.dev" target="_blank" rel="noreferrer">brand.arkaes.dev</a>.
       </p>
       <!-- A list, not a <p>: reset.css caps every paragraph at the reading
            measure, which is right for prose and wrong for a metadata row. -->
       <ul class="ark-overview-facts">
         <li>${COLOR_TOKENS.length} colour tokens</li>
         <li>Light-only by design</li>
-        <li>Shadow DOM, no framework</li>
+        <li>Web components + React bindings</li>
       </ul>
     </section>
 
@@ -361,8 +388,8 @@ const renderOverview = () => html`
       ${RAMPS.map((ramp) => renderRamp(ramp.family, ramp.rows))}
       <p class="ark-overview-lede">
         Three ramps carry the whole palette. Semantic tokens name an intent on top of
-        them — <code>--ark-color-accent</code>, <code>--ark-color-border</code> — and are
-        what components should actually consume. See <strong>Foundations → Color</strong>
+        them, such as <code>--ark-color-accent</code> and <code>--ark-color-border</code>.
+        Components consume those, not the ramps. See <strong>Foundations → Color</strong>
         for every token.
       </p>
     </section>
@@ -401,8 +428,8 @@ const renderOverview = () => html`
           <ark-chip variant="accent">Case study</ark-chip>
           <h3>Surface container</h3>
           <p>
-            Every element here is a real custom element reading the same tokens as the
-            swatches above — nothing on this page is a mockup.
+            Every element here is a real custom element. Each one reads the same tokens as
+            the swatches above. Nothing on this page is a mockup.
           </p>
           <div class="ark-overview-demo__actions">
             <ark-button>View project</ark-button>
@@ -419,9 +446,11 @@ const meta = {
     docs: {
       description: {
         component: `
-An introduction to the Arkaes design system — what it is made of and how to consume it, rather than a catalogue of every component. Browse the sidebar for those.
+An introduction to the Arkaes design system. It covers what the system is made of and how to consume it, rather than cataloguing every component. Browse the sidebar for those.
 
-Counts on this page are derived at runtime: colour tokens from the generated DTCG artifact, element counts from the layer barrels. Nothing here is a number someone has to remember to update.
+The system implements the [Arkaes brand guideline](https://brand.arkaes.dev), which sets the palette, the type stack and the light-only rule.
+
+Counts on this page are derived at runtime. Colour tokens come from the generated DTCG artifact, and element counts come from the layer barrels. Nothing here is a number someone has to remember to update.
         `,
       },
     },

@@ -34,8 +34,21 @@ const preview: Preview = {
       // Sidebar order runs from the raw material outwards: tokens, then the
       // elements built from them, then compositions of those. Sections not
       // listed here fall to the end alphabetically.
+      //
+      // Guides sit directly under Overview because they are prose, not a
+      // catalogue. Their nested array pins their internal order too: left
+      // alphabetical, "Accessibility" would lead and "Using with React" would
+      // trail, which reverses the order a newcomer needs them in.
       storySort: {
-        order: ["Overview", "Foundations", "Primitives", "Components", "Patterns"],
+        order: [
+          "Overview",
+          "Guides",
+          ["Using with React", "Token architecture", "AI coding agents", "Accessibility"],
+          "Foundations",
+          "Primitives",
+          "Components",
+          "Patterns",
+        ],
       },
     },
   },
