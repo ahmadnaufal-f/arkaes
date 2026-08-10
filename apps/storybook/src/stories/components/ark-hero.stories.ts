@@ -10,7 +10,11 @@ const meta = {
         component: `
 \`ark-hero\` is a full-viewport landing section with responsive layout and smooth animations.
 
-Accepts content via slots: \`eyebrow\` for a leading badge, \`title\` and \`subtitle\` for messaging (including emphasis), \`actions\` for button groups, and \`visual\` for imagery or graphics. CSS custom properties control height, padding, and motion behavior for complete layout control.
+Accepts content via slots: \`eyebrow\` for a chip row, \`title\` and \`subtitle\` for messaging (including emphasis), \`actions\` for button groups, and \`visual\` for imagery or graphics. CSS custom properties control height, padding, and motion behavior for complete layout control.
+
+The headline holds each line unbroken and renders \`<em>\` as a filled band. Below 1400px that band bleeds out to the hero's own inline edge; above it, where the page gutter becomes open margin, it stays self-contained.
+
+For simple cases the \`chips\` attribute takes a JSON string array and renders every entry as a \`primary\` \`ark-chip\`. Mixing variants needs the \`eyebrow\` slot.
         `,
       },
     },
@@ -23,7 +27,9 @@ Accepts content via slots: \`eyebrow\` for a leading badge, \`title\` and \`subt
         --ark-hero-padding-top: 0;
       "
     >
-      <ark-badge slot="eyebrow" variant="eyebrow">Slot-driven hero</ark-badge>
+      <ark-chip slot="eyebrow" variant="primary">Frontend Engineer</ark-chip>
+      <ark-chip slot="eyebrow" variant="primary">UI Systems Architect</ark-chip>
+      <ark-chip slot="eyebrow" variant="emerging">Applied AI Interfaces</ark-chip>
       <h1 slot="title">Compose the message your product needs.</h1>
       <p slot="subtitle">
         Each content region accepts application-owned markup while the hero
@@ -64,7 +70,7 @@ export const Slotted = {} satisfies Story;
 export const AttributeFallbacks = {
   render: () => html`
     <ark-hero
-      eyebrow="Frontend Engineer & UI Systems Architect"
+      chips='["Frontend Engineer", "UI Systems Architect"]'
       title="Frontend engineering"
       title-emphasis="with clarity."
       subtitle="The original attribute API remains available as default slot content."

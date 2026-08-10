@@ -899,25 +899,51 @@
   }
 }
 
-/* Hero headline emphasis. The headline itself is light-DOM slot content (see
-   index.astro) so it is present in the served HTML; ark-hero styles the slotted
-   <h1> through `::slotted([slot="title"])`, but ::slotted() matches only the
-   slotted node itself — never its descendants — so the emphasis run and its
-   line break have to be styled from here. Values mirror ark-hero's own
-   `.hero-title em` / `.title-line2`, via the same tokens. */
-.hero-headline em {
-  color: var(--ark-color-accent-strong);
-  font-style: italic;
-  font-weight: var(--ark-weight-thin);
+/* Hero headline lines and emphasis. The headline itself is light-DOM slot
+   content (see index.astro) so it is present in the served HTML; ark-hero
+   styles the slotted <h1> through `::slotted([slot="title"])`, but ::slotted()
+   matches only the slotted node itself — never its descendants — so the lines
+   and the emphasis band have to be styled from here. Values mirror ark-hero's
+   own `.title-line` / `.hero-title em`, via the same tokens. Any change to
+   either side has to be made on both. */
+.hero-headline .hero-headline-line {
+  display: block;
+  white-space: nowrap;
 }
 
-.hero-headline .hero-headline-break {
-  display: block;
-  padding-left: 80px;
+/* Raised above the band rather than the band being sent to z-index: -1, which
+   would drop it behind the nearest stacking context's background. */
+.hero-headline .hero-headline-line--lead {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-headline em {
+  background: var(--ark-color-accent);
+  color: var(--ark-color-bg);
+  display: inline-block;
+  font-style: normal;
+  font-weight: inherit;
+  margin-left: -0.5em;
+  padding: 0.1em 0.5em 0.18em;
+  position: relative;
+  z-index: 0;
+}
+
+/* Bleed to the hero's own inline edge only while the page gutter is capped —
+   past 1400px the gutter becomes open margin. Mirrors ark-hero's own query;
+   --hero-pad is set on .hero inside the shadow root, so the value is repeated
+   here from the same tokens rather than inherited. */
+@media (max-width: 1399.98px) {
+  .hero-headline em {
+    margin-left: calc(-1 * var(--site-content-padding, 60px));
+    padding-left: var(--site-content-padding, 60px);
+  }
 }
 
 @media (max-width: 900px) {
-  .hero-headline .hero-headline-break {
-    padding-left: 0;
+  .hero-headline em {
+    margin-left: -24px;
+    padding-left: 24px;
   }
 }

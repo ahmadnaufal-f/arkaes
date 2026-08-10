@@ -88,14 +88,23 @@ const jsonLd = [
       them identically; the emphasis markup is styled from _index.css, since
       ::slotted() can't reach descendants of the slotted node. */}
   <ark-hero
-    eyebrow="Frontend Engineer & UI Systems Architect"
     primary-href="#contact"
     primary-label="Contact me"
     comp-label="Ahmad Naufal - mmxxvi"
     scroll-label="Explore the work"
   >
+    {/* Slotted rather than passed as the `chips` attribute for the same reason
+        as the headline below — attribute-driven chips are rendered into the
+        shadow root and never appear in the served HTML — and because the
+        attribute renders one variant for the whole row, while the AI practice
+        is deliberately marked `emerging` against the two `primary` roles. */}
+    <ark-chip slot="eyebrow" variant="primary">Frontend Engineer</ark-chip>
+    <ark-chip slot="eyebrow" variant="primary">UI Systems Architect</ark-chip>
+    <ark-chip slot="eyebrow" variant="emerging">Applied AI Interfaces</ark-chip>
+
     <h1 slot="title" class="hero-headline">
-      Frontend engineering <em><span class="hero-headline-break">with clarity.</span></em>
+      <span class="hero-headline-line hero-headline-line--lead">Frontend engineering</span>
+      <span class="hero-headline-line"><em>with clarity.</em></span>
     </h1>
     <p slot="subtitle">
       Building scalable interfaces, design systems, and cross-platform products
