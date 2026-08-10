@@ -193,13 +193,14 @@ export class ArkHero extends LitElement {
       font-family: var(--ark-font-display);
       /* This is the single-column scale; the two-column rule further down
          takes over from 901px, where the measure becomes the left column
-         rather than the viewport. Each line is nowrap, so the floor of the
-         viewport range sets the ceiling of the scale: the longest line renders
-         at roughly 8.2x the font size in Fraunces, which at 320px (a 272px
-         measure) leaves the headline filling about 88%. Measured across
-         320-900px rather than derived — see the ratio holding steady in the
-         two-column rule too. */
-      font-size: clamp(1.8rem, 10.75vw - 5.2px, 3.75rem);
+         rather than the viewport. Each line is nowrap, so the scale is bounded
+         by the measure: the longest line renders at roughly 8.2x the font size
+         in Fraunces (a ratio that holds steady across the range, measured, not
+         derived). Held to ~79% of the measure rather than the ~88% it can
+         technically reach — at 88% the headline runs so close to the gutter
+         that the whole block reads as wider than the screen, which on a phone
+         is the difference between confident and broken. */
+      font-size: clamp(1.7rem, 9.6vw - 4.4px, 3.5rem);
       font-weight: var(--ark-weight-medium);
       letter-spacing: -0.018em;
       line-height: 1.14;
@@ -611,7 +612,12 @@ export class ArkHero extends LitElement {
         padding: 72px 24px 56px;
       }
 
-      /* max-width belongs to the wrapper (see .hero-subtitle-slot). */
+      /* max-width belongs to the wrapper (see .hero-subtitle-slot). Left
+         unconstrained on purpose: a ch-based measure narrow enough to pull the
+         subtitle off the gutter on a phone also strands it in the middle of a
+         768px column, and it buys ~10% of width at the cost of an extra line.
+         The headline scale above is what the crowding was actually coming
+         from. */
       .hero-subtitle-slot {
         max-width: none;
       }
