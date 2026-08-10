@@ -1,10 +1,11 @@
 import { css, html, LitElement } from "lit";
 import { choose } from "lit/directives/choose.js";
+import { map } from "lit/directives/map.js";
 import { when } from "lit/directives/when.js";
 import { defineElement } from "../define-element";
-import { defineArkBadge } from "../primitives/ark-badge";
 import { defineArkBrandLogo } from "../primitives/ark-brand-logo";
 import { defineArkButton } from "../primitives/ark-button";
+import { defineArkChip } from "../primitives/ark-chip";
 
 export enum HeroTitleVariant {
   Text = "text",
@@ -16,11 +17,17 @@ export enum HeroTitleVariant {
  * actions, and visual content. The existing attributes render default slot
  * content for simple use cases and backwards compatibility.
  *
+ * The headline sets each line unbroken (`white-space: nowrap`) and the
+ * emphasis renders as a filled band rather than an italic accent run. Below
+ * 1400px that band bleeds out to the hero's own inline edge; above it — where
+ * the page gutter stops being a gutter and starts being open margin — it stays
+ * self-contained. See `.hero-title em` for the reasoning.
+ *
  * The default visual includes pointer parallax. Custom visuals inherit the
  * same local parallax wrapper, which is disabled for reduced-motion users.
  *
  * @summary Two-column page hero.
- * @slot eyebrow - Small kicker line above the title.
+ * @slot eyebrow - Chip row above the title; overrides the `chips` attribute.
  * @slot title - The hero headline.
  * @slot subtitle - Supporting sentence beneath the title.
  * @slot actions - Call-to-action controls (e.g. ark-button).
@@ -28,7 +35,7 @@ export enum HeroTitleVariant {
  */
 export class ArkHero extends LitElement {
   static override properties = {
-    eyebrow: { type: String },
+    chips: { type: Array },
     heading: { type: String, attribute: "title" },
     titleEmphasis: { type: String, attribute: "title-emphasis" },
     titleVariant: { type: String, attribute: "title-variant", reflect: true },
@@ -41,7 +48,13 @@ export class ArkHero extends LitElement {
     scrollLabel: { type: String, attribute: "scroll-label" },
   };
 
-  eyebrow = "";
+  /**
+   * Labels for the chip row above the headline. Every entry renders as an
+   * `ark-chip` with the same variant; mixing variants (e.g. marking one
+   * practice area as `emerging`) needs the `eyebrow` slot, which also puts the
+   * chips in the server-rendered HTML the way the portfolio's headline is.
+   */
+  chips: string[] = [];
   heading = "";
   titleEmphasis = "";
   titleVariant: HeroTitleVariant | string = HeroTitleVariant.Text;
@@ -123,9 +136,19 @@ export class ArkHero extends LitElement {
 
     /* ── Layout ─────────────────────────────────────────────────────── */
     .hero {
+      /* The hero's own resolved inline padding, re-exposed as a variable so
+         the emphasis band can bleed by exactly that much (see .hero-title em)
+         instead of hard-coding a length that would drift from the layout. */
+      --hero-pad: var(
+        --ark-hero-content-padding,
+        var(--site-content-padding, 60px)
+      );
+
       column-gap: 60px;
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      /* Not 1fr 1fr: the headline holds each line unbroken, and "Frontend
+         engineering" does not fit a half-width column at this size. */
+      grid-template-columns: 1.45fr 1fr;
       min-height: var(
         --ark-hero-min-height,
         calc(max(100vh, 960px) - var(--ark-nav-header-height, 80px))
@@ -134,10 +157,7 @@ export class ArkHero extends LitElement {
          Scroll-Driven Animations spec), which would intercept view-timeline
          lookups and prevent the mobile scatter from reaching the root viewport. */
       overflow: clip;
-      padding-inline: var(
-        --ark-hero-content-padding,
-        var(--site-content-padding, 60px)
-      );
+      padding-inline: var(--hero-pad);
       padding-top: var(--ark-hero-padding-top, 100px);
       position: relative;
     }
@@ -163,7 +183,7 @@ export class ArkHero extends LitElement {
        slot. Same reasoning for .hero-subtitle-slot below. */
     .hero-title-slot {
       animation: fadeSlideUp 1000ms var(--ark-ease-out) forwards 400ms;
-      margin-top: 36px;
+      margin-top: 48px;
       opacity: 0;
     }
 
@@ -171,30 +191,65 @@ export class ArkHero extends LitElement {
     ::slotted([slot="title"]) {
       color: var(--ark-color-text);
       font-family: var(--ark-font-display);
-      font-size: 4rem;
-      font-weight: var(--ark-weight-thin);
-      letter-spacing: 0;
-      line-height: var(--ark-line-height-tight);
+      /* Sized so each line still fits its column unbroken at every width the
+         two-column layout is used at; the single-column rule below takes over
+         under 900px, where the measure comes from the viewport instead. */
+      font-size: clamp(1.75rem, 6.2vw, 2.75rem);
+      font-weight: var(--ark-weight-medium);
+      letter-spacing: -0.018em;
+      line-height: 1.14;
       margin: 0;
     }
 
-    .hero-title em {
-      color: var(--ark-color-accent-strong);
-      font-style: italic;
-      font-weight: var(--ark-weight-thin);
+    /* Each line is held on one line by design — the emphasis band reads as a
+       band only if the phrase it fills cannot rewrap out from under it. */
+    .title-line {
+      display: block;
+      white-space: nowrap;
     }
 
-    .title-line2 {
-      display: block;
-      padding-left: 80px;
+    /* The lead line is raised above the band rather than the band being pushed
+       to a negative z-index: a negative index would sit behind the nearest
+       stacking context's background, so any consumer that gives .hero or a
+       wrapper its own background would silently lose the fill. */
+    .title-line--lead {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-title em {
+      background: var(--ark-color-accent);
+      color: var(--ark-color-bg);
+      /* inline-block, not inline: vertical padding on an inline box does not
+         grow the line box, so the fill would overlap the subtitle below. */
+      display: inline-block;
+      font-style: normal;
+      font-weight: inherit;
+      /* Overhangs left by exactly its own padding, so the emphasised line's
+         glyphs stay flush with the lead line above it. */
+      margin-left: -0.5em;
+      padding: 0.1em 0.5em 0.18em;
+      position: relative;
+      z-index: 0;
+    }
+
+    /* Below the layout's max width the page gutter is capped at 60px, so
+       running the band out to the hero's edge reads as the headline breaking
+       its own margin. Past that point the gutter grows without limit (310px at
+       1900, 640px at 2560) and the same rule would drag a slab of colour across
+       open margin, so the bleed is scoped to the range where it means
+       something. 1400px is where clamp(24px, 5vw, 60px) and the centring maths
+       for an 80rem max width cross. */
+    @media (max-width: 1399.98px) {
+      .hero-title em {
+        margin-left: calc(-1 * var(--hero-pad));
+        padding-left: var(--hero-pad);
+      }
     }
 
     /* ── Brand-variant title ────────────────────────────────────────── */
-    .hero-title--brand,
-    ::slotted([slot="title"][data-variant="brand"]) {
-      font-size: 4rem;
-    }
-
+    /* No size override for the brand variant: it follows the same scale as
+       the text variant so its emphasis line stays inside the column unbroken. */
     .hero-title--brand ark-brand-logo {
       font-size: inherit;
       line-height: inherit;
@@ -204,7 +259,7 @@ export class ArkHero extends LitElement {
     .hero-subtitle-slot {
       animation: fadeSlideUp 900ms var(--ark-ease-out) forwards 650ms;
       margin-block: 40px 56px;
-      max-width: 380px;
+      max-width: 460px;
       opacity: 0;
     }
 
@@ -228,6 +283,9 @@ export class ArkHero extends LitElement {
 
     .hero-eyebrow {
       animation: fadeSlideUp 900ms var(--ark-ease-out) forwards 200ms;
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--ark-space-2);
       opacity: 0;
     }
 
@@ -517,17 +575,24 @@ export class ArkHero extends LitElement {
       }
     }
 
-    /* ── Responsive: wide ───────────────────────────────────────────── */
-    @media (min-width: 1120px) {
+    /* ── Responsive: two-column ─────────────────────────────────────── */
+    /* From here the measure is the left column, not the viewport, so the
+       headline scales against the column's own growth curve and tops out at
+       50px — the size the two lines were drawn at. */
+    @media (min-width: 901px) {
       .hero-title,
       ::slotted([slot="title"]) {
-        font-size: 6.5rem;
+        font-size: clamp(2.5rem, 2.8vw + 0.6rem, 3.125rem);
       }
     }
 
     /* ── Responsive: tablet / mobile ────────────────────────────────── */
     @media (max-width: 900px) {
       .hero {
+        /* .hero-left carries the inline padding in this layout, so the band's
+           bleed has to track that value rather than the site gutter. */
+        --hero-pad: 24px;
+
         grid-template-columns: 1fr;
         min-height: auto;
         padding-inline: 0;
@@ -536,15 +601,6 @@ export class ArkHero extends LitElement {
 
       .hero-left {
         padding: 72px 24px 56px;
-      }
-
-      .hero-title,
-      ::slotted([slot="title"]) {
-        font-size: 4rem;
-      }
-
-      .title-line2 {
-        padding-left: 0;
       }
 
       /* max-width belongs to the wrapper (see .hero-subtitle-slot). */
@@ -597,14 +653,12 @@ export class ArkHero extends LitElement {
     }
 
     /* ── Responsive: small mobile ────────────────────────────────────── */
+    /* No headline override here: the base clamp already lands at 28-32px
+       across this range, which is what keeps each line unbroken on a 360px
+       screen. Re-introducing a fixed size would overflow the nowrap lines. */
     @media (max-width: 520px) {
       ark-button {
         width: 100%;
-      }
-
-      .hero-title,
-      ::slotted([slot="title"]) {
-        font-size: 3rem;
       }
     }
 
@@ -617,6 +671,25 @@ export class ArkHero extends LitElement {
   `;
 
   // ── Render helpers ──────────────────────────────────────────────────────
+  /**
+   * `?? []` guards the attribute path: Lit's Array converter yields `null`
+   * when the attribute is not valid JSON, and `map()` cannot iterate that.
+   */
+  private _renderChips() {
+    return map(
+      this.chips ?? [],
+      (label) => html`<ark-chip variant="primary">${label}</ark-chip>`,
+    );
+  }
+
+  /** The emphasis is its own line so the fill spans the phrase, not the run. */
+  private _renderEmphasis() {
+    return when(
+      this.titleEmphasis,
+      () => html`<span class="title-line"><em>${this.titleEmphasis}</em></span>`,
+    );
+  }
+
   private _renderTitle() {
     return choose(
       this.titleVariant,
@@ -625,16 +698,10 @@ export class ArkHero extends LitElement {
           HeroTitleVariant.Brand,
           () => html`
             <h1 class="hero-title hero-title--brand">
-              <ark-brand-logo size="display"></ark-brand-logo>
-              ${when(
-                this.titleEmphasis,
-                () =>
-                  html`<em
-                    ><span class="title-line2"
-                      >${this.titleEmphasis}</span
-                    ></em
-                  >`,
-              )}
+              <span class="title-line title-line--lead">
+                <ark-brand-logo size="display"></ark-brand-logo>
+              </span>
+              ${this._renderEmphasis()}
             </h1>
           `,
         ],
@@ -642,14 +709,8 @@ export class ArkHero extends LitElement {
       // default: "text"
       () => html`
         <h1 class="hero-title">
-          ${this.heading}
-          ${when(
-            this.titleEmphasis,
-            () =>
-              html`<em
-                ><span class="title-line2">${this.titleEmphasis}</span></em
-              >`,
-          )}
+          <span class="title-line title-line--lead">${this.heading}</span>
+          ${this._renderEmphasis()}
         </h1>
       `,
     );
@@ -662,13 +723,7 @@ export class ArkHero extends LitElement {
         <div class="hero-left">
           <div class="hero-eyebrow">
             <slot name="eyebrow">
-              ${when(
-                this.eyebrow,
-                () =>
-                  html`<ark-badge variant="eyebrow"
-                    >${this.eyebrow}</ark-badge
-                  >`,
-              )}
+              ${this._renderChips()}
             </slot>
           </div>
           <div class="hero-title-slot">
@@ -736,9 +791,9 @@ export const Hero = {
 };
 
 export const defineArkHero = () => {
-  defineArkBadge();
   defineArkBrandLogo();
   defineArkButton();
+  defineArkChip();
   defineElement("ark-hero", ArkHero);
 };
 

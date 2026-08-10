@@ -129,10 +129,10 @@ you target a slot with the standard `slot="…"` attribute on a child. The `slot
 forwarded even to nested wrappers (e.g. `<ArkButton slot="actions">`).
 
 ```tsx
-import { ArkHero, ArkButton } from "@arkaes/ui/react";
+import { ArkHero, ArkButton, ArkChip } from "@arkaes/ui/react";
 
 <ArkHero>
-  <span slot="eyebrow">Featured</span>
+  <ArkChip slot="eyebrow" variant="primary">Frontend Engineer</ArkChip>
   <h1 slot="title">Architecture meets aesthetics</h1>
   <p slot="subtitle">Frontend engineering for polished interfaces.</p>
   <ArkButton slot="actions" variant="primary">Get in touch</ArkButton>

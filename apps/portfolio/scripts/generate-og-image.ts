@@ -43,12 +43,18 @@ const COLOR = {
   accentSoft: "#f2ddd7",
   accentStrong: "#653a35",
   sage: "#aeb997",
+  // ark-chip's per-variant pairs: primary (blush) and emerging (sage).
+  blush50: "#fff8f6",
+  blush300: "#d7a79b",
+  sage50: "#f7f8f3",
+  secondary: "#5f6f48",
 };
 
 const GOOGLE_FONTS_CSS =
   "https://fonts.googleapis.com/css2" +
   "?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..600" +
-  "&family=Plus+Jakarta+Sans:wght@400;500;600";
+  "&family=Plus+Jakarta+Sans:wght@400;500;600" +
+  "&family=DM+Mono:wght@400";
 
 // Google Fonts serves a different @font-face set per User-Agent; a modern
 // browser UA is what gets us woff2 rather than ttf.
@@ -134,12 +140,28 @@ const buildHtml = (fontFaces: string): string => `<!doctype html>
         width: ${WIDTH}px;
       }
 
-      .eyebrow {
-        color: ${COLOR.accent};
-        font-size: 21px;
-        font-weight: 600;
-        letter-spacing: 0.22em;
+      /* Mirrors ark-hero's chip row (ark-chip: mono, uppercase, pill). */
+      .chips {
+        display: flex;
+        gap: 10px;
+      }
+
+      .chips span {
+        border: 1px solid ${COLOR.blush300};
+        border-radius: 999px;
+        background: ${COLOR.blush50};
+        color: ${COLOR.accentStrong};
+        font-family: "DM Mono", monospace;
+        font-size: 20px;
+        letter-spacing: 0.06em;
+        padding: 7px 18px;
         text-transform: uppercase;
+      }
+
+      .chips span:last-child {
+        background: ${COLOR.sage50};
+        border-color: ${COLOR.sage};
+        color: ${COLOR.secondary};
       }
 
       .name {
@@ -161,11 +183,15 @@ const buildHtml = (fontFaces: string): string => `<!doctype html>
         text-wrap: balance;
       }
 
+      /* Mirrors ark-hero's emphasis: the same face as its own line, filled,
+         rather than an italic accent run. */
       .tagline em {
-        color: ${COLOR.accentStrong};
-        font-family: Fraunces, Georgia, serif;
-        font-style: italic;
-        font-weight: 500;
+        background: ${COLOR.accent};
+        color: ${COLOR.bg};
+        display: inline-block;
+        font-style: normal;
+        font-weight: inherit;
+        padding: 0.1em 0.5em 0.18em;
       }
 
       .footer {
@@ -207,7 +233,11 @@ const buildHtml = (fontFaces: string): string => `<!doctype html>
   </head>
   <body>
     <div>
-      <p class="eyebrow">Frontend Engineer &middot; UI Systems</p>
+      <p class="chips">
+        <span>Frontend Engineer</span>
+        <span>UI Systems Architect</span>
+        <span>Applied AI Interfaces</span>
+      </p>
       <h1 class="name">Ahmad Naufal</h1>
       <p class="tagline">Frontend engineering <em>with clarity.</em></p>
     </div>
