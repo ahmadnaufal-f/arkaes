@@ -168,12 +168,14 @@ const jsonLd = [
   </script>
 
   <section class="work-section" id="case-studies">
+    {/* Flat children, not an eyebrow+title wrapper: .section-header is a grid
+        whose first row is the rule (eyebrow, rule, count) and whose second row
+        is the heading, so the count has to be a direct child to sit on the
+        rule rather than below it. */}
     <div class="section-header reveal">
-      <div>
-        <div class="section-eyebrow">Selected Case Studies</div>
-        <h2 class="section-title">Systems I have <em>shaped</em></h2>
-      </div>
+      <div class="section-eyebrow">Selected Case Studies</div>
       <div class="section-count">{String(featuredStudies.length).padStart(2, "0")} / Selected</div>
+      <h2 class="section-title">Systems I have <em>shaped</em></h2>
     </div>
 
     {/* Grid on desktop, carousel under 900px — see MOBILE_CAROUSEL_BREAKPOINT.
@@ -219,10 +221,8 @@ const jsonLd = [
 
   <section class="services-section" id="expertise">
     <div class="section-header reveal">
-      <div>
-        <div class="section-eyebrow">Core Expertise</div>
-        <h2 class="section-title">Engineering <em>focus</em></h2>
-      </div>
+      <div class="section-eyebrow">Core Expertise</div>
+      <h2 class="section-title">Engineering <em>focus</em></h2>
     </div>
 
     <ark-accordion class="services-list" type="single" auto-scroll-when-expanded>
@@ -260,14 +260,12 @@ const jsonLd = [
 
   <section class="techstack-section" id="techstack">
     <div class="section-header reveal">
-      <div>
-        <div class="section-eyebrow">Tech Stacks & Tools</div>
-        <h2 class="section-title">What I <em>build with</em></h2>
-      </div>
+      <div class="section-eyebrow">Tech Stacks & Tools</div>
       <div class="techstack-meta">
         {domainCount} Domains<br />
         {techCount}+ Technologies
       </div>
+      <h2 class="section-title">What I <em>build with</em></h2>
     </div>
 
     <ul class="techstack-index">
@@ -331,11 +329,9 @@ const jsonLd = [
   {latestPosts.length > 0 && (
     <section class="writing-section" id="writing">
       <div class="section-header reveal">
-        <div>
-          <div class="section-eyebrow">Latest Writing</div>
-          <h2 class="section-title">Notes on <em>craft</em></h2>
-        </div>
+        <div class="section-eyebrow">Latest Writing</div>
         <div class="section-count">{String(latestPosts.length).padStart(2, "0")} / Recent</div>
+        <h2 class="section-title">Notes on <em>craft</em></h2>
       </div>
 
       <ark-carousel

@@ -237,13 +237,26 @@ export class ArkProjectHeader extends LitElement {
       opacity: 0;
     }
 
+    /* Label then a rule running to the end of the row — the same treatment as
+       ark-badge's eyebrow variant and the homepage section headers. */
     .eyebrow {
+      align-items: center;
       color: var(--ark-color-accent-strong);
+      display: flex;
       font-family: var(--ark-font-mono);
       font-size: 0.6rem;
+      gap: 20px;
       letter-spacing: 0.16em;
       margin-bottom: 20px;
       text-transform: uppercase;
+    }
+
+    .eyebrow::after {
+      background: currentColor;
+      content: "";
+      flex: 1;
+      height: 1px;
+      opacity: 0.38;
     }
 
     .tags {
@@ -258,7 +271,7 @@ export class ArkProjectHeader extends LitElement {
       color: var(--ark-color-text);
       font-family: var(--ark-font-display);
       font-size: clamp(1.8rem, 3vw, 2.8rem);
-      font-weight: var(--ark-weight-thin);
+      font-weight: var(--ark-weight-medium);
       line-height: 1.12;
       margin: 0;
     }

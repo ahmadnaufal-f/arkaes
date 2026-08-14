@@ -42,24 +42,34 @@ export class ArkPageHeader extends LitElement {
       gap: var(--ark-space-6);
     }
 
+    /* .header aligns children to flex-start, which shrink-wraps the eyebrow to
+       its label — leaving ark-badge's trailing rule nothing to run into. */
+    .eyebrow {
+      align-self: stretch;
+    }
+
     /* ── Title ──────────────────────────────────────────────────────── */
+    /* Sized and weighted to match the rest of the type system: ark-hero tops
+       out at 60px and owns the largest type, so a page header sits below it. */
     .title,
     ::slotted([slot="title"]) {
       color: var(--ark-color-text);
       font-family: var(--ark-font-display);
-      font-size: 4rem;
-      font-weight: var(--ark-weight-thin);
-      letter-spacing: 0;
-      line-height: var(--ark-line-height-tight);
+      font-size: 3rem;
+      font-weight: var(--ark-weight-medium);
+      letter-spacing: -0.015em;
+      line-height: 1.12;
       margin: 0;
       text-wrap: balance;
     }
 
+    /* Accent colour without the italic — the italic accent run reads as the
+       generated-portfolio pattern the hero redesign removed. */
     .title em,
     ::slotted([slot="title"]) em {
       color: var(--ark-color-accent-strong);
-      font-style: italic;
-      font-weight: var(--ark-weight-thin);
+      font-style: normal;
+      font-weight: inherit;
     }
 
     /* ── Lead ───────────────────────────────────────────────────────── */
