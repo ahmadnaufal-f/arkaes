@@ -191,9 +191,9 @@ import BrandGuidelineLayout from "../layouts/BrandGuidelineLayout.astro";
   <div class="reveal d3">
     <div class="type-block">
       <div class="type-role">Display / Headlines</div>
-      <div class="type-name">Fraunces <span>Display stack · thin / 300</span></div>
+      <div class="type-name">Fraunces <span>Display stack · medium / 500</span></div>
       <div class="type-sample-display">Craft meets <em>architecture.</em></div>
-      <div class="type-usage">Hero titles · Section headers · Project names · Logotype · Pull quotes<br>Use <code>--ark-font-display</code> with <code>--ark-weight-thin</code>. Italic is reserved for concise emphasis and the Æ.</div>
+      <div class="type-usage">Hero titles · Section headers · Project names · Logotype · Pull quotes<br>Use <code>--ark-font-display</code> with <code>--ark-weight-medium</code>. Emphasis is carried by <code>--ark-color-accent-strong</code>, not by italic. Italic is reserved for the Æ, pull quotes, and decorative numerals; the wordmark keeps <code>--ark-weight-thin</code>.</div>
     </div>
 
     <div class="type-block">
@@ -207,7 +207,7 @@ import BrandGuidelineLayout from "../layouts/BrandGuidelineLayout.astro";
       <div class="type-role">Labels / UI / Metadata</div>
       <div class="type-name">JetBrains Mono stack <span>Bold uppercase labels</span></div>
       <div class="type-sample-mono">Frontend Engineer · arkaes.dev · 2026 · v1.0</div>
-      <div class="type-usage">Eyebrows · Nav links · Tags · Dates · Metadata · Code snippets<br>Use <code>--ark-font-mono</code>, <code>--ark-weight-bold</code>, uppercase text, and token letter-spacing.</div>
+      <div class="type-usage">Eyebrows · Nav links · Tags · Dates · Metadata · Code snippets<br>Use <code>--ark-font-mono</code>, <code>--ark-weight-bold</code>, uppercase text, and token letter-spacing. An eyebrow is followed by a rule running to the end of its row — see the marker above each section.</div>
     </div>
   </div>
 
@@ -372,7 +372,7 @@ import BrandGuidelineLayout from "../layouts/BrandGuidelineLayout.astro";
   </div>
 
   <div class="construction-list reveal d4">
-    <div class="cn-item"><div class="cn-label">Typeface</div><p class="cn-value">Fraunces through <code>--ark-font-display</code>. Use <code>--ark-weight-thin</code> for the wordmark and display headings. Never condense or stretch.</p></div>
+    <div class="cn-item"><div class="cn-label">Typeface</div><p class="cn-value">Fraunces through <code>--ark-font-display</code>. The wordmark keeps <code>--ark-weight-thin</code>; display headings use <code>--ark-weight-medium</code>. Never condense or stretch.</p></div>
     <div class="cn-item"><div class="cn-label">The Æ</div><p class="cn-value">The ae ligature is the defining mark. Use <code>--ark-color-accent-strong</code> on light surfaces and the active dark-theme accent token on dark surfaces. Always italic. Never replaced with "AE".</p></div>
     <div class="cn-item"><div class="cn-label">Letter-spacing</div><p class="cn-value">Use token tracking for labels and restrained custom tracking for the wordmark only. Avoid negative letter-spacing.</p></div>
     <div class="cn-item"><div class="cn-label">Minimum size</div><p class="cn-value">Keep the Æ legible at the rendered size. In tight contexts, use the mono variant instead of shrinking the display wordmark past readability.</p></div>
@@ -384,7 +384,7 @@ import BrandGuidelineLayout from "../layouts/BrandGuidelineLayout.astro";
       <div class="dnd-heading">Do</div>
       <ul class="dnd-list">
         <li>Use the Æ ligature — never "AE" or "Ae"</li>
-        <li>Use <code>--ark-font-display</code> and <code>--ark-weight-thin</code></li>
+        <li>Use <code>--ark-font-display</code> and <code>--ark-weight-thin</code> for the wordmark</li>
         <li>Use semantic accent tokens for the Æ</li>
         <li>Respect minimum clear space on all sides</li>
         <li>Use the mono variant when Fraunces is unavailable</li>
