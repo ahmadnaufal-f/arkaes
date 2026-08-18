@@ -245,7 +245,7 @@ export class ArkProjectHeader extends LitElement {
       display: flex;
       font-family: var(--ark-font-mono);
       font-size: 0.6rem;
-      gap: 20px;
+      gap: var(--ark-space-5);
       letter-spacing: 0.16em;
       margin-bottom: 20px;
       text-transform: uppercase;
