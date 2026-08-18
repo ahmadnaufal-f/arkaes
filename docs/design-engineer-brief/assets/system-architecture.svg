@@ -1,0 +1,121 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 470" width="100%" preserveAspectRatio="xMidYMid meet">
+
+  <!-- Extends /about/arkaes-layers.svg: same grammar (dashed boundary, #ddd7cf
+       hairlines, 0.75 strokes, DM Mono 7.5px labels, blush-tinted foundation),
+       with the token pipeline below the foundation and the MCP rail beside it. -->
+
+  <!-- Outer boundary -->
+  <rect x="20" y="14" width="740" height="442" rx="8" fill="none" stroke="#d4cec8" stroke-width="1" stroke-dasharray="5,4"/>
+  <text x="40" y="38" font-family="'DM Mono','Courier New',monospace" font-size="9" fill="#9d9185" letter-spacing="0.18em">ARKAES · FROM TOKEN SOURCE TO APPLICATION</text>
+
+  <!-- ── Consumers ─────────────────────────────────────────────────────── -->
+  <rect x="40" y="52" width="169" height="54" rx="4" fill="#faf9f7" stroke="#ddd7cf" stroke-width="1"/>
+  <text x="124.5" y="76" text-anchor="middle" font-family="'DM Mono','Courier New',monospace" font-size="7.5" fill="#76695f" letter-spacing="0.12em">PORTFOLIO</text>
+  <text x="124.5" y="92" text-anchor="middle" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="9" font-weight="300" fill="#9d9185">Astro site</text>
+
+  <rect x="217" y="52" width="169" height="54" rx="4" fill="#faf9f7" stroke="#ddd7cf" stroke-width="1"/>
+  <text x="301.5" y="76" text-anchor="middle" font-family="'DM Mono','Courier New',monospace" font-size="7.5" fill="#76695f" letter-spacing="0.12em">BRAND GUIDELINE</text>
+  <text x="301.5" y="92" text-anchor="middle" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="9" font-weight="300" fill="#9d9185">Astro site</text>
+
+  <rect x="394" y="52" width="169" height="54" rx="4" fill="#faf9f7" stroke="#ddd7cf" stroke-width="1"/>
+  <text x="478.5" y="76" text-anchor="middle" font-family="'DM Mono','Courier New',monospace" font-size="7.5" fill="#76695f" letter-spacing="0.12em">STORYBOOK</text>
+  <text x="478.5" y="92" text-anchor="middle" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="9" font-weight="300" fill="#9d9185">23 story files</text>
+
+  <rect x="571" y="52" width="169" height="54" rx="4" fill="#f7f8f3" stroke="#cdd3bc" stroke-width="1"/>
+  <text x="655.5" y="76" text-anchor="middle" font-family="'DM Mono','Courier New',monospace" font-size="7.5" fill="#5f6f48" letter-spacing="0.12em">AI TOOLS</text>
+  <text x="655.5" y="92" text-anchor="middle" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="9" font-weight="300" fill="#8e9d75">read the live API</text>
+
+  <!-- Connector tree: the three sites into the component library -->
+  <line x1="124.5" y1="106" x2="124.5" y2="120" stroke="#c8c2ba" stroke-width="0.75"/>
+  <line x1="301.5" y1="106" x2="301.5" y2="120" stroke="#c8c2ba" stroke-width="0.75"/>
+  <line x1="478.5" y1="106" x2="478.5" y2="120" stroke="#c8c2ba" stroke-width="0.75"/>
+  <line x1="124.5" y1="120" x2="478.5" y2="120" stroke="#c8c2ba" stroke-width="0.75"/>
+  <line x1="301.5" y1="120" x2="301.5" y2="136" stroke="#c8c2ba" stroke-width="0.75"/>
+
+  <!-- AI tools drop into the MCP rail -->
+  <line x1="655.5" y1="106" x2="655.5" y2="136" stroke="#aeb997" stroke-width="0.75"/>
+
+  <!-- ── Component library ─────────────────────────────────────────────── -->
+  <rect x="40" y="136" width="530" height="156" rx="6" fill="#fff8f6" stroke="#e9c8be" stroke-width="1"/>
+  <rect x="40" y="136" width="530" height="34" rx="6" fill="#f7e8e3" stroke="none"/>
+  <rect x="40" y="154" width="530" height="16" fill="#f7e8e3" stroke="none"/>
+  <text x="60" y="159" font-family="'Fraunces',Georgia,serif" font-size="14" font-style="italic" fill="#653a35">Component library</text>
+  <text x="550" y="159" text-anchor="end" font-family="'DM Mono','Courier New',monospace" font-size="8" fill="#8f554d" letter-spacing="0.1em">@ARKAES/UI</text>
+
+  <rect x="60" y="186" width="156" height="54" rx="4" fill="rgba(255,255,255,0.6)" stroke="#e9c8be" stroke-width="0.75"/>
+  <text x="138" y="206" text-anchor="middle" font-family="'DM Mono','Courier New',monospace" font-size="7.5" fill="#8f554d" letter-spacing="0.12em">PRIMITIVES</text>
+  <text x="138" y="222" text-anchor="middle" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="8.5" font-weight="300" fill="#5f534a">ark-button · ark-input</text>
+  <text x="138" y="234" text-anchor="middle" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="8.5" font-weight="300" fill="#5f534a">ark-chip · ark-badge</text>
+
+  <rect x="227" y="186" width="156" height="54" rx="4" fill="rgba(255,255,255,0.6)" stroke="#e9c8be" stroke-width="0.75"/>
+  <text x="305" y="206" text-anchor="middle" font-family="'DM Mono','Courier New',monospace" font-size="7.5" fill="#8f554d" letter-spacing="0.12em">COMPONENTS</text>
+  <text x="305" y="222" text-anchor="middle" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="8.5" font-weight="300" fill="#5f534a">ark-card · ark-dialog</text>
+  <text x="305" y="234" text-anchor="middle" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="8.5" font-weight="300" fill="#5f534a">ark-hero · ark-accordion</text>
+
+  <rect x="394" y="186" width="156" height="54" rx="4" fill="rgba(255,255,255,0.6)" stroke="#e9c8be" stroke-width="0.75"/>
+  <text x="472" y="206" text-anchor="middle" font-family="'DM Mono','Courier New',monospace" font-size="7.5" fill="#8f554d" letter-spacing="0.12em">PATTERNS</text>
+  <text x="472" y="222" text-anchor="middle" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="8.5" font-weight="300" fill="#5f534a">ark-media-card</text>
+  <text x="472" y="234" text-anchor="middle" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="8.5" font-weight="300" fill="#5f534a">ark-page-header</text>
+
+  <text x="305" y="262" text-anchor="middle" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="9" font-weight="300" fill="#9d9185">Lit custom elements · self registering · framework agnostic</text>
+  <text x="305" y="278" text-anchor="middle" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="9" font-weight="300" fill="#bd8276">keyboard, focus, and reduced-motion behavior owned by the component</text>
+
+  <line x1="305" y1="292" x2="305" y2="306" stroke="#c8c2ba" stroke-width="0.75"/>
+
+  <!-- ── Token foundation ──────────────────────────────────────────────── -->
+  <rect x="40" y="306" width="530" height="50" rx="4" fill="#f7e8e3" stroke="#e9c8be" stroke-width="1"/>
+  <text x="60" y="327" font-family="'DM Mono','Courier New',monospace" font-size="7.5" fill="#8f554d" letter-spacing="0.12em">@ARKAES/TOKENS</text>
+  <text x="60" y="344" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="9" font-weight="300" fill="#5f534a">--ark-* custom properties · color · typography · spacing · radius · motion</text>
+  <text x="550" y="327" text-anchor="end" font-family="'DM Mono','Courier New',monospace" font-size="8" fill="#d7a79b" letter-spacing="0.1em">FOUNDATION</text>
+
+  <!-- ── DTCG source ───────────────────────────────────────────────────── -->
+  <rect x="40" y="372" width="530" height="58" rx="4" fill="#faf9f7" stroke="#ddd7cf" stroke-width="1"/>
+
+  <!-- Generation arrow: the source below produces the foundation above -->
+  <line x1="268" y1="380" x2="268" y2="356" stroke="#c8c2ba" stroke-width="0.75"/>
+  <path d="M 263 361 L 268 355 L 273 361" fill="none" stroke="#c8c2ba" stroke-width="0.75"/>
+  <rect x="282" y="364" width="76" height="14" fill="#fbf8f3"/>
+  <text x="286" y="374" font-family="'DM Mono','Courier New',monospace" font-size="7" fill="#8f554d" letter-spacing="0.14em">GENERATES</text>
+
+  <text x="60" y="393" font-family="'DM Mono','Courier New',monospace" font-size="7.5" fill="#76695f" letter-spacing="0.12em">DTCG SOURCE</text>
+  <text x="60" y="410" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="9" font-weight="300" fill="#9d9185">tokens/*.json · primitive · semantic · component</text>
+  <text x="60" y="423" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="9" font-weight="300" fill="#9d9185">structured JSON, not a pile of CSS variables</text>
+
+  <line x1="330" y1="386" x2="330" y2="418" stroke="#e0d6ce" stroke-width="0.75"/>
+
+  <text x="350" y="393" font-family="'DM Mono','Courier New',monospace" font-size="7.5" fill="#76695f" letter-spacing="0.12em">STYLE DICTIONARY</text>
+  <text x="350" y="410" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="9" font-weight="300" fill="#9d9185">CSS custom properties · typed exports</text>
+  <text x="350" y="423" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="9" font-weight="300" fill="#5f6f48">CI blocks raw hex from coming back</text>
+
+  <!-- ── MCP rail ──────────────────────────────────────────────────────── -->
+  <rect x="590" y="136" width="150" height="294" rx="4" fill="#faf9f7" stroke="#ddd7cf" stroke-width="1"/>
+  <text x="610" y="159" font-family="'DM Mono','Courier New',monospace" font-size="7.5" fill="#8f554d" letter-spacing="0.12em">MCP SERVER</text>
+  <text x="610" y="175" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="8.5" font-weight="300" fill="#9d9185">stdio · offline</text>
+
+  <line x1="610" y1="188" x2="720" y2="188" stroke="#e0d6ce" stroke-width="0.75"/>
+
+  <rect x="610" y="203" width="5" height="5" fill="#e9c8be"/>
+  <text x="623" y="208" font-family="'DM Mono','Courier New',monospace" font-size="7.5" fill="#5e554d">list_components</text>
+  <rect x="610" y="223" width="5" height="5" fill="#e9c8be"/>
+  <text x="623" y="228" font-family="'DM Mono','Courier New',monospace" font-size="7.5" fill="#5e554d">get_component_api</text>
+  <rect x="610" y="243" width="5" height="5" fill="#e9c8be"/>
+  <text x="623" y="248" font-family="'DM Mono','Courier New',monospace" font-size="7.5" fill="#5e554d">get_tokens</text>
+
+  <line x1="610" y1="266" x2="720" y2="266" stroke="#e0d6ce" stroke-width="0.75"/>
+  <text x="610" y="284" font-family="'DM Mono','Courier New',monospace" font-size="7" fill="#9d9185" letter-spacing="0.12em">READS</text>
+  <text x="610" y="301" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="8.5" font-weight="300" fill="#5f534a">Custom Elements</text>
+  <text x="610" y="313" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="8.5" font-weight="300" fill="#5f534a">Manifest</text>
+  <text x="610" y="333" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="8.5" font-weight="300" fill="#5f534a">Token source</text>
+  <text x="610" y="345" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="8.5" font-weight="300" fill="#5f534a">of truth</text>
+
+  <line x1="610" y1="366" x2="720" y2="366" stroke="#e0d6ce" stroke-width="0.75"/>
+  <text x="610" y="390" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="9" font-weight="300" font-style="italic" fill="#8f554d">the current API,</text>
+  <text x="610" y="404" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="9" font-weight="300" font-style="italic" fill="#8f554d">never a snapshot</text>
+
+  <!-- Rail reads across into the library and the token foundation -->
+  <line x1="588" y1="214" x2="572" y2="214" stroke="#c8c2ba" stroke-width="0.75"/>
+  <path d="M 577 209 L 571 214 L 577 219" fill="none" stroke="#c8c2ba" stroke-width="0.75"/>
+  <line x1="588" y1="331" x2="572" y2="331" stroke="#c8c2ba" stroke-width="0.75"/>
+  <path d="M 577 326 L 571 331 L 577 336" fill="none" stroke="#c8c2ba" stroke-width="0.75"/>
+
+</svg>

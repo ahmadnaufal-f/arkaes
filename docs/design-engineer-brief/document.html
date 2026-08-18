@@ -1,0 +1,931 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ahmad Naufal — Architecture &amp; Aesthetics</title>
+<style>
+{{FONTS}}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   TOKENS — values read from packages/tokens/tokens/*.json (DTCG source of
+   truth) and packages/tokens/src/styles/tokens.css. Nothing is eyeballed.
+══════════════════════════════════════════════════════════════════════════ */
+:root {
+  --ark-color-bg:             #fbf8f3;
+  --ark-color-surface:        #fafaf9;
+  --ark-color-surface-soft:   #f6f0ea;
+  --ark-color-text:           #17130f;
+  --ark-color-text-soft:      #332b25;
+  --ark-color-text-muted:     #5f534a;
+  --ark-color-text-subtle:    #76695f;
+  --ark-color-border:         #ddd7cf;
+  --ark-color-border-soft:    #ece7e0;
+  --ark-color-accent:         #8f554d;
+  --ark-color-accent-soft:    #f2ddd7;
+  --ark-color-accent-strong:  #653a35;
+  --ark-color-accent-light:   #d7a79b;
+  --ark-color-secondary:      #5f6f48;
+  --ark-color-secondary-soft: #e2e7d6;
+
+  --ark-font-display: "Fraunces", Georgia, serif;
+  --ark-font-sans:    "Plus Jakarta Sans", system-ui, sans-serif;
+  --ark-font-mono:    "DM Mono", "Courier New", monospace;
+
+  --ark-weight-thin: 300;
+  --ark-weight-regular: 400;
+  --ark-weight-medium: 500;
+
+  /* Print type scale. A4 at 96dpi = 794 × 1123px, so 12.5px ≈ 9.4pt body. */
+  --fs-body:    12.5px;
+  --fs-small:   11px;
+  --fs-tiny:    9.5px;
+  --fs-label:   8.5px;
+  --fs-lead:    14px;
+  --fs-title:   40px;
+
+  --tracking-label: 0.22em;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   PAGE FRAME
+══════════════════════════════════════════════════════════════════════════ */
+@page { size: A4; margin: 0; }
+
+*, *::before, *::after { box-sizing: border-box; }
+body, h1, h2, h3, p, ul, li, figure { margin: 0; padding: 0; }
+
+html { font-size: 16px; }
+
+body {
+  background: var(--ark-color-bg);
+  color: var(--ark-color-text);
+  font-family: var(--ark-font-sans);
+  font-weight: var(--ark-weight-thin);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.page {
+  position: relative;
+  width: 210mm;
+  height: 297mm;
+  padding: 48px 60px 40px;
+  background: var(--ark-color-bg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  break-after: page;
+}
+.page:last-child { break-after: auto; }
+
+/* Brand grain — the same overlay the sites carry at 0.022, nudged up slightly
+   because print flattens it. Tiled PNG rather than the sites' SVG fractal-noise
+   filter: Chromium rasterizes that filter per page when printing. */
+.page::after {
+  content: "";
+  position: absolute; inset: 0;
+  background-image: url("{{GRAIN}}");
+  background-repeat: repeat;
+  background-size: 128px 128px;
+  opacity: 0.03;
+  pointer-events: none;
+  z-index: 50;
+}
+
+.page > * { position: relative; z-index: 1; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   TYPOGRAPHIC ATOMS — ported from apps/brand-guideline/src/styles
+══════════════════════════════════════════════════════════════════════════ */
+.mono {
+  font-family: var(--ark-font-mono);
+  font-size: var(--fs-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  font-weight: var(--ark-weight-regular);
+}
+
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--ark-color-accent-strong);
+  margin-bottom: 14px;
+}
+.eyebrow::before {
+  content: "";
+  display: block;
+  width: 24px; height: 1px;
+  background: var(--ark-color-accent);
+  flex-shrink: 0;
+}
+
+.section-title {
+  font-family: var(--ark-font-display);
+  font-size: var(--fs-title);
+  font-weight: var(--ark-weight-thin);
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  margin-bottom: 10px;
+}
+.section-title em { font-style: italic; color: var(--ark-color-accent-strong); }
+
+.lead {
+  font-size: var(--fs-lead);
+  line-height: 1.6;
+  color: var(--ark-color-text-muted);
+  max-width: 56ch;
+}
+
+.body { font-size: var(--fs-body); line-height: 1.62; color: var(--ark-color-text-muted); }
+.body strong { color: var(--ark-color-text); font-weight: var(--ark-weight-medium); }
+.body em { font-style: italic; color: var(--ark-color-text-soft); }
+
+.rule { height: 1px; background: var(--ark-color-border); border: none; }
+
+/* Page footer */
+.page-foot {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--ark-color-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  color: var(--ark-color-text-subtle);
+  font-size: 8px;
+  letter-spacing: 0.18em;
+}
+.page-foot .num { color: var(--ark-color-accent); }
+
+/* Ink panel */
+.ink {
+  background: var(--ark-color-text);
+  padding: 22px 26px;
+  position: relative;
+  overflow: hidden;
+}
+.ink::before {
+  content: "";
+  position: absolute; top: 0; left: 0; bottom: 0;
+  width: 3px; background: var(--ark-color-accent);
+}
+.ink::after {
+  content: "";
+  position: absolute; top: -60px; right: -60px;
+  width: 200px; height: 200px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(215,167,155,.10) 0%, transparent 70%);
+}
+.ink > * { position: relative; z-index: 1; }
+
+/* Figures */
+figure svg { display: block; width: 100%; height: auto; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   PAGE 1 — ARCHITECTURE & AESTHETICS
+══════════════════════════════════════════════════════════════════════════ */
+.meta-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--ark-color-border);
+  color: var(--ark-color-text-subtle);
+  font-size: 8px;
+  letter-spacing: 0.18em;
+  margin-bottom: 34px;
+}
+.meta-bar .who { color: var(--ark-color-text); }
+
+.cover {
+  display: grid;
+  grid-template-columns: 1fr 208px;
+  gap: 34px;
+  align-items: start;
+  margin-bottom: 32px;
+}
+
+.wordmark {
+  font-family: var(--ark-font-display);
+  font-size: 78px;
+  font-weight: var(--ark-weight-thin);
+  letter-spacing: 0.075em;
+  line-height: 1;
+  color: var(--ark-color-text);
+  margin-bottom: 10px;
+}
+.wordmark .ae { font-style: italic; color: var(--ark-color-accent-strong); }
+
+.wordmark-sub {
+  color: var(--ark-color-text-subtle);
+  font-size: 8.5px;
+  letter-spacing: 0.34em;
+  margin-bottom: 26px;
+}
+
+.cover-headline {
+  font-family: var(--ark-font-display);
+  font-size: 33px;
+  font-weight: var(--ark-weight-thin);
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+  margin-bottom: 14px;
+}
+.cover-headline em { font-style: italic; color: var(--ark-color-accent-strong); }
+
+.cover-sub {
+  font-size: 12.5px;
+  line-height: 1.7;
+  color: var(--ark-color-text-muted);
+  max-width: 46ch;
+}
+
+.portrait-frame { border-bottom: 3px solid var(--ark-color-accent); }
+.portrait-frame img { display: block; width: 100%; height: auto; }
+.portrait-cap {
+  margin-top: 8px;
+  color: var(--ark-color-text-subtle);
+  font-size: 7.5px;
+  letter-spacing: 0.2em;
+  line-height: 1.7;
+}
+
+.why { margin-bottom: 26px; }
+.why-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  margin-top: 20px;
+}
+.why-block {
+  padding: 16px 20px 14px;
+  border-left: 2px solid var(--ark-color-border);
+  background: var(--ark-color-surface-soft);
+}
+.why-block:first-child { border-left-color: var(--ark-color-accent); }
+.why-label {
+  color: var(--ark-color-accent-strong);
+  font-size: 7.5px;
+  letter-spacing: 0.2em;
+  margin-bottom: 8px;
+}
+.why-block p { font-size: 11px; line-height: 1.65; color: var(--ark-color-text-muted); }
+
+/* Evidence panel */
+.evidence-label {
+  color: var(--ark-color-secondary-soft);
+  font-size: 8.5px;
+  letter-spacing: 0.22em;
+  margin-bottom: 16px;
+}
+.evidence-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.ev-num {
+  font-family: var(--ark-font-display);
+  font-size: 25px;
+  font-weight: var(--ark-weight-thin);
+  color: #ffd4cb;
+  line-height: 1;
+  margin-bottom: 7px;
+}
+.ev-name {
+  color: #fff8f1;
+  font-size: 10.5px;
+  font-weight: var(--ark-weight-medium);
+  margin-bottom: 5px;
+}
+.ev-desc { font-size: 9.5px; line-height: 1.6; color: #c9bbae; }
+
+.ink-sign {
+  margin-top: 20px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255,255,255,.09);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.ink-sign .quote {
+  font-family: var(--ark-font-display);
+  font-size: 16px;
+  font-style: italic;
+  font-weight: var(--ark-weight-thin);
+  color: #ffd4cb;
+}
+.ink-sign .sage-rule { height: 1px; flex: 1; background: var(--ark-color-secondary); opacity: .8; }
+.ink-sign .src { color: #a99b8e; font-size: 7.5px; letter-spacing: 0.2em; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   PAGE 2 — HOW I THINK
+══════════════════════════════════════════════════════════════════════════ */
+.spine { margin: 20px 0 22px; }
+
+.steps { display: flex; flex-direction: column; }
+
+.step {
+  display: grid;
+  grid-template-columns: 128px 1fr;
+  gap: 22px;
+  padding: 15px 0;
+  border-bottom: 1px solid var(--ark-color-border);
+}
+.step:first-child { border-top: 1px solid var(--ark-color-border); }
+
+.step-num {
+  font-family: var(--ark-font-display);
+  font-size: 13px;
+  font-style: italic;
+  font-weight: var(--ark-weight-thin);
+  color: var(--ark-color-accent-light);
+  margin-bottom: 2px;
+}
+.step-name {
+  font-family: var(--ark-font-display);
+  font-size: 19px;
+  font-weight: var(--ark-weight-thin);
+  color: var(--ark-color-text);
+  line-height: 1.1;
+  margin-bottom: 8px;
+}
+.step-project {
+  color: var(--ark-color-accent-strong);
+  font-size: 7.5px;
+  letter-spacing: 0.16em;
+  line-height: 1.6;
+}
+
+.step-body { font-size: 11.5px; line-height: 1.66; color: var(--ark-color-text-muted); }
+.step-body em { font-style: italic; color: var(--ark-color-text-soft); }
+
+.step-metric {
+  margin-top: 9px;
+  padding-left: 10px;
+  border-left: 2px solid var(--ark-color-secondary);
+  color: var(--ark-color-text-subtle);
+  font-size: 7.5px;
+  letter-spacing: 0.14em;
+  line-height: 1.75;
+}
+
+.step--craft .step-body {
+  display: grid;
+  grid-template-columns: 1fr 128px;
+  gap: 18px;
+  align-items: start;
+}
+.craft-shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--ark-color-border);
+  border-radius: 2px;
+}
+.craft-cap {
+  margin-top: 6px;
+  color: var(--ark-color-text-subtle);
+  font-size: 7px;
+  letter-spacing: 0.14em;
+  line-height: 1.6;
+}
+.craft-kicker {
+  margin-top: 8px;
+  font-family: var(--ark-font-display);
+  font-size: 13px;
+  font-style: italic;
+  font-weight: var(--ark-weight-thin);
+  color: var(--ark-color-accent-strong);
+  line-height: 1.35;
+}
+
+.closing-note {
+  margin-top: 18px;
+  padding-left: 14px;
+  border-left: 2px solid var(--ark-color-accent);
+  font-size: 11px;
+  line-height: 1.65;
+  color: var(--ark-color-text-muted);
+  max-width: 74ch;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   PAGE 3 — BUILDING SYSTEMS
+══════════════════════════════════════════════════════════════════════════ */
+.sys-lead-grid {
+  display: grid;
+  grid-template-columns: 1fr 190px;
+  gap: 26px;
+  align-items: start;
+  margin-bottom: 26px;
+}
+.sys-facts { border-top: 2px solid var(--ark-color-accent); padding-top: 12px; }
+.sys-fact {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--ark-color-border-soft);
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  color: var(--ark-color-text-subtle);
+}
+.sys-fact:last-child { border-bottom: none; }
+.sys-fact b { color: var(--ark-color-text); font-weight: var(--ark-weight-regular); }
+
+.sys-diagram {
+  width: calc(100% + 40px);
+  margin: 0 -20px 28px;
+}
+
+.sys-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  margin-bottom: 26px;
+}
+.sys-col { padding: 20px 22px 18px; background: var(--ark-color-surface-soft); border-top: 2px solid var(--ark-color-border); }
+.sys-col--a { border-top-color: var(--ark-color-accent); }
+.sys-col--b { border-top-color: var(--ark-color-secondary); }
+.sys-col h3 {
+  font-family: var(--ark-font-display);
+  font-size: 15px;
+  font-weight: var(--ark-weight-thin);
+  margin-bottom: 8px;
+  color: var(--ark-color-text);
+}
+.sys-col p { font-size: 11px; line-height: 1.65; color: var(--ark-color-text-muted); }
+
+.sys-quote {
+  padding: 22px 0 0;
+  border-top: 1px solid var(--ark-color-border);
+  display: grid;
+  grid-template-columns: 128px 1fr;
+  gap: 22px;
+}
+.sys-quote .label { color: var(--ark-color-accent-strong); font-size: 7.5px; letter-spacing: 0.2em; line-height: 1.6; }
+.sys-quote p { font-size: 11.5px; line-height: 1.68; color: var(--ark-color-text-muted); }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   PAGE 4 — LEARNING BY SHIPPING
+══════════════════════════════════════════════════════════════════════════ */
+.loop { margin: 18px 0 20px; }
+
+.projects {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  margin-bottom: 18px;
+}
+.project {
+  padding: 15px 20px 13px;
+  background: var(--ark-color-surface-soft);
+  border-top: 2px solid var(--ark-color-border);
+}
+.project:nth-child(1) { border-top-color: var(--ark-color-accent); }
+.project h3 {
+  font-family: var(--ark-font-display);
+  font-size: 16px;
+  font-weight: var(--ark-weight-thin);
+  color: var(--ark-color-text);
+  margin-bottom: 6px;
+}
+.project p { font-size: 10.5px; line-height: 1.6; color: var(--ark-color-text-muted); margin-bottom: 8px; }
+.project .stack {
+  color: var(--ark-color-text-subtle);
+  font-size: 7px;
+  letter-spacing: 0.14em;
+  line-height: 1.7;
+}
+
+.loop-note {
+  padding-left: 14px;
+  border-left: 2px solid var(--ark-color-secondary);
+  font-size: 11.5px;
+  line-height: 1.65;
+  color: var(--ark-color-text-muted);
+  margin-bottom: 18px;
+  max-width: 76ch;
+}
+
+.qr-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+.qr {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 9px;
+}
+.qr-code {
+  width: 68px; height: 68px;
+  background: #fff8f1;
+  padding: 5px;
+  border-radius: 2px;
+}
+.qr-code svg { display: block; width: 100%; height: 100%; }
+.qr-label { color: #ffd4cb; font-size: 8.5px; letter-spacing: 0.2em; }
+.qr-url { color: #c9bbae; font-size: 8px; letter-spacing: 0; margin-top: -5px; text-transform: none; white-space: nowrap; }
+
+.close-quote {
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255,255,255,.09);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+}
+.close-quote .sage-rule { width: 40px; height: 1px; background: var(--ark-color-secondary); }
+.close-quote .q {
+  font-family: var(--ark-font-display);
+  font-size: 17px;
+  font-style: italic;
+  font-weight: var(--ark-weight-thin);
+  color: #ffd4cb;
+}
+</style>
+</head>
+<body>
+
+<!-- ══ PAGE 1 · ARCHITECTURE & AESTHETICS ═══════════════════════════════ -->
+<section class="page">
+  <div class="meta-bar mono">
+    <span class="who">Ahmad Naufal &middot; Frontend Engineer</span>
+    <span>Portfolio artifact &middot; 2026</span>
+  </div>
+
+  <div class="cover">
+    <div>
+      <div class="wordmark">ARK<span class="ae">&AElig;</span>S</div>
+      <div class="wordmark-sub mono">Architecture and Aesthetics</div>
+
+      <h1 class="cover-headline">Frontend engineering <em style="white-space:nowrap">with clarity.</em></h1>
+      <p class="cover-sub">
+        Building scalable interfaces, design systems, and cross-platform products
+        where technical structure and visual refinement work as one.
+      </p>
+    </div>
+
+    <div>
+      <div class="portrait-frame"><img src="{{PORTRAIT}}" alt="Ahmad Naufal"></div>
+      <div class="portrait-cap mono">
+        Samsung Research Indonesia<br>
+        Mobile &middot; TV &middot; connected screens
+      </div>
+    </div>
+  </div>
+
+  <div class="why">
+    <div class="eyebrow mono">01 &middot; Why Arkaes exists</div>
+    <p class="lead" style="margin-bottom:12px">
+      <strong style="color:var(--ark-color-text);font-weight:400">Arkaes</strong> stands for
+      <strong style="color:var(--ark-color-text);font-weight:400">Architecture and Aesthetics</strong>,
+      the two sides of frontend work I care about most.
+    </p>
+    <p class="body" style="max-width:74ch">
+      It exists for a practical reason. My design system work at Samsung sits under a
+      strict NDA. I can describe the approach, but I cannot show a component, a token
+      file, or a line of code. So I built the public version. Arkaes is a design system
+      where I make the same kind of decisions in the open, so anyone reviewing my work
+      can read the source instead of taking my word for it.
+    </p>
+
+    <div class="why-grid">
+      <div class="why-block">
+        <div class="why-label mono">One layer below the product</div>
+        <p>
+          Most of that work sits one layer below the product. Design tokens, component
+          APIs, navigation models, architecture. I like building that layer because it
+          decides whether the hundredth screen gets the same care as the first.
+        </p>
+      </div>
+      <div class="why-block">
+        <div class="why-label mono">The gap I work in</div>
+        <p>
+          Most of the frontend work I enjoy sits in that gap between an interface that
+          is technically correct and one that fits the moment it gets used.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="ink">
+    <div class="evidence-label mono">Every claim links to the work behind it</div>
+    <div class="evidence-grid">
+      <div>
+        <div class="ev-num">&plusmn;87%</div>
+        <div class="ev-name">SmartThings Virtual Home</div>
+        <div class="ev-desc">
+          Tech lead for the monorepo rewrite that merged two product variants. Also
+          &plusmn;40% smaller app size and &plusmn;65% faster Time To Interactive.
+        </div>
+      </div>
+      <div>
+        <div class="ev-num">15+</div>
+        <div class="ev-name">OneUX Lab Design System</div>
+        <div class="ev-desc">
+          Project lead. I set the architecture, component API conventions, accessibility
+          standards, and release process for a design system used across several product teams.
+        </div>
+      </div>
+      <div>
+        <div class="ev-num">~80%</div>
+        <div class="ev-name">SmartThings Air Care</div>
+        <div class="ev-desc">
+          Project lead on a legacy modernization. Second load ~80% faster, and a full
+          JavaScript to TypeScript migration done without pausing delivery.
+        </div>
+      </div>
+    </div>
+    <div class="ink-sign">
+      <span class="quote">&ldquo;Architecture meets aesthetics.&rdquo;</span>
+      <span class="sage-rule"></span>
+      <span class="src mono">arkaes.dev</span>
+    </div>
+  </div>
+
+  <div class="page-foot mono">
+    <span>ARKAES &middot; Architecture and Aesthetics</span>
+    <span class="num">01 / 04</span>
+  </div>
+</section>
+
+<!-- ══ PAGE 2 · HOW I THINK ═════════════════════════════════════════════ -->
+<section class="page">
+  <div class="eyebrow mono">02 &middot; How I think</div>
+  <h2 class="section-title">How I <em>think.</em></h2>
+  <p class="lead">
+    Most frontend problems get easier once you describe them properly.
+    I spend time there first.
+  </p>
+
+  <figure class="spine">{{SVG_HOW_I_WORK}}</figure>
+
+  <div class="steps">
+
+    <div class="step">
+      <div>
+        <div class="step-num">01</div>
+        <div class="step-name">Understand</div>
+        <div class="step-project mono">SmartThings Air&nbsp;Care</div>
+      </div>
+      <div>
+        <p class="step-body">
+          Before I write code, I want to know what the product needs, what users are
+          doing, and what limits the team is working with. On Air Care that meant reading
+          a legacy codebase we inherited from another team and finding which parts cost us
+          the most debugging time, before I proposed any migration.
+        </p>
+        <div class="step-metric mono">
+          ~50% faster first load &middot; ~80% faster second load &middot; full JavaScript to TypeScript migration, no delivery pause
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div>
+        <div class="step-num">02</div>
+        <div class="step-name">Structure</div>
+        <div class="step-project mono">Virtual Home for&nbsp;TV</div>
+      </div>
+      <div>
+        <p class="step-body">
+          I looked for one navigation algorithm that would work on every page. There
+          wasn&rsquo;t one. The project moved once I stopped looking and sorted the pages
+          into three groups instead: structured grids, static scattered layouts, and
+          scattered layouts rendered at runtime. Each group got its own strategy.
+          <em>One problem I could not solve became three that I could.</em>
+        </p>
+        <div class="step-metric mono">
+          3 layout models &middot; index math for grids &middot; declared focus targets &middot; runtime position mapping
+        </div>
+      </div>
+    </div>
+
+    <div class="step step--craft">
+      <div>
+        <div class="step-num">03</div>
+        <div class="step-name">Craft</div>
+        <div class="step-project mono">Milk Pumping Tracker</div>
+      </div>
+      <div class="step-body">
+        <div>
+          <p>
+            I put the start and stop buttons near the top of the screen. It looked fine in
+            the design file. The person using the app is a mother who may be holding a pump
+            in one hand and the phone in the other, often tired, often in the middle of
+            something else. That was not a layout problem. That was an empathy problem.
+            I moved the controls to a floating position at the bottom, where the hand
+            already rests.
+          </p>
+          <p class="craft-kicker">
+            The architecture did not change at all. The app just stopped working against
+            the person using it.
+          </p>
+        </div>
+        <div class="craft-shot">
+          <img src="{{MILK}}" alt="The shipped tracker, with the start and stop control floating at the bottom of the screen">
+          <div class="craft-cap mono">Shipped &middot; controls in the thumb zone</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div>
+        <div class="step-num">04</div>
+        <div class="step-name">Hand off</div>
+        <div class="step-project mono">OneUX&nbsp;Lab<br>Virtual&nbsp;Home</div>
+      </div>
+      <div>
+        <p class="step-body">
+          I would rather ship something a colleague can extend than something only I
+          understand. That means explicit types, documented component APIs, and a structure
+          that answers &ldquo;where does this code go?&rdquo; without a meeting. Versioning
+          through Changesets, accessibility and keyboard reviews, and Storybook
+          documentation so an engineer from another team can understand a component
+          without asking anyone.
+        </p>
+        <div class="step-metric mono">
+          &plusmn;31% quicker onboarding &middot; &plusmn;70% faster bug resolution &middot; 15+ contributors kept aligned
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <p class="closing-note">
+    In code review, technical direction, and mentoring, I explain the tradeoff instead
+    of handing out instructions. Leading a rewrite across more than 10 engineers only
+    worked because the architecture was easy to explain. People route around a structure
+    they do not understand.
+  </p>
+
+  <div class="page-foot mono">
+    <span>Understand &middot; Structure &middot; Craft &middot; Hand off</span>
+    <span class="num">02 / 04</span>
+  </div>
+</section>
+
+<!-- ══ PAGE 3 · BUILDING SYSTEMS ════════════════════════════════════════ -->
+<section class="page">
+  <div class="eyebrow mono">03 &middot; Building systems</div>
+  <h2 class="section-title">Building <em>systems.</em></h2>
+
+  <div class="sys-lead-grid">
+    <div>
+      <p class="lead" style="margin-bottom:10px">
+        The system runs on Lit and Web Components, so it stays framework agnostic.
+        It is themed with DTCG design tokens, documented in Storybook, and served
+        through an MCP server so AI tools can read component specifications directly.
+      </p>
+      <p class="body" style="max-width:62ch">
+        This site runs on it. The accordion, buttons, and type on arkaes.dev are the
+        same components documented in the Storybook.
+      </p>
+    </div>
+    <div class="sys-facts mono">
+      <div class="sys-fact"><span>Primitives</span><b>12</b></div>
+      <div class="sys-fact"><span>Components</span><b>10</b></div>
+      <div class="sys-fact"><span>Patterns</span><b>3</b></div>
+      <div class="sys-fact"><span>Story files</span><b>23</b></div>
+      <div class="sys-fact"><span>MCP tools</span><b>3</b></div>
+      <div class="sys-fact"><span>Token tiers</span><b>3</b></div>
+    </div>
+  </div>
+
+  <figure class="sys-diagram">{{SVG_ARCHITECTURE}}</figure>
+
+  <div class="sys-cols">
+    <div class="sys-col sys-col--a">
+      <h3>Tokens as structured source</h3>
+      <p>
+        Rather than treating design tokens as a collection of CSS variables, Arkaes
+        manages them as structured JSON files following the DTCG format. That generates
+        CSS custom properties and typed exports from one source of truth, and CI now
+        blocks raw hex values from coming back.
+      </p>
+    </div>
+    <div class="sys-col sys-col--b">
+      <h3>Why I replaced RAG with MCP</h3>
+      <p>
+        Documentation in a vector database goes stale as soon as the design system
+        changes, and a design system changes all the time. I built an MCP server instead,
+        so AI tools read the current component APIs and design tokens straight from
+        the source.
+      </p>
+    </div>
+  </div>
+
+  <div class="sys-quote">
+    <div class="label mono">What the<br>system buys</div>
+    <p>
+      Working without product deadlines lets me think harder about the parts that
+      usually get rushed: what a component API should look like, how tokens should
+      cascade, how a component behaves under keyboard and reduced motion, and how much
+      flexibility is enough before a system gets too complicated.
+    </p>
+  </div>
+
+  <div class="page-foot mono">
+    <span>Tokens &middot; Primitives &middot; Components &middot; Patterns &middot; Applications</span>
+    <span class="num">03 / 04</span>
+  </div>
+</section>
+
+<!-- ══ PAGE 4 · LEARNING BY SHIPPING ════════════════════════════════════ -->
+<section class="page">
+  <div class="eyebrow mono">04 &middot; Learning by shipping</div>
+  <h2 class="section-title">Learning by <em>shipping.</em></h2>
+  <p class="lead">
+    I learn by building something and finding out where I was wrong.
+  </p>
+
+  <figure class="loop">{{SVG_LEARNING_LOOP}}</figure>
+
+  <p class="loop-note">
+    My degree is in electrical engineering, so I picked up software on my own, through
+    practice. Side projects are how I close that gap. I pick something I do not know yet
+    and ship it, because shipping shows me the parts I only thought I understood.
+  </p>
+
+  <div class="projects">
+    <div class="project">
+      <h3>Arkaes Design System</h3>
+      <p>
+        The long game. A place to keep working on component API design, tokens,
+        accessibility, and documentation without a deadline forcing a shortcut.
+      </p>
+      <div class="stack mono">Lit &middot; Web Components &middot; Storybook &middot; DTCG &middot; MCP Server &middot; Astro</div>
+    </div>
+    <div class="project">
+      <h3>Arkhe AI Assistant</h3>
+      <p>
+        Made me design a retrieval pipeline, a streaming response, and safety boundaries
+        that hold up in front of strangers.
+      </p>
+      <div class="stack mono">Astro SSR &middot; OpenAI &middot; Supabase pgvector &middot; RAG &middot; Lit</div>
+    </div>
+    <div class="project">
+      <h3>Milk Pumping Tracker</h3>
+      <p>
+        Came from a real family routine and taught me how to let AI support a product
+        without taking it over.
+      </p>
+      <div class="stack mono">React &middot; Vite &middot; Firebase &middot; OpenAI API &middot; TypeScript</div>
+    </div>
+    <div class="project">
+      <h3>Treely</h3>
+      <p>
+        A relationship data model that has to stay correct as a family grows. It also ran
+        on a React Native and NestJS stack I had never shipped before.
+      </p>
+      <div class="stack mono">React Native &middot; Expo &middot; NestJS &middot; PostgreSQL &middot; RN Skia</div>
+    </div>
+  </div>
+
+  <p class="loop-note" style="margin-bottom:0">
+    None of them are finished, which is mostly the point. They are where I test ideas
+    before I bring them to work, and sometimes the reverse.
+  </p>
+
+  <div class="ink" style="margin-top:18px">
+    <div class="evidence-label mono">Read the source instead of taking my word for it</div>
+    <div class="qr-grid">
+      <div class="qr">
+        <div class="qr-code">{{QR_PORTFOLIO}}</div>
+        <div class="qr-label mono">Portfolio</div>
+        <div class="qr-url mono">arkaes.dev</div>
+      </div>
+      <div class="qr">
+        <div class="qr-code">{{QR_STORYBOOK}}</div>
+        <div class="qr-label mono">Storybook</div>
+        <div class="qr-url mono">ds.arkaes.dev</div>
+      </div>
+      <div class="qr">
+        <div class="qr-code">{{QR_GITHUB}}</div>
+        <div class="qr-label mono">Source</div>
+        <div class="qr-url mono">github.com/ahmadnaufal-f/arkaes</div>
+      </div>
+      <div class="qr">
+        <div class="qr-code">{{QR_BLOG}}</div>
+        <div class="qr-label mono">Writing</div>
+        <div class="qr-url mono">arkaes.dev/blog</div>
+      </div>
+    </div>
+    <div class="close-quote">
+      <span class="sage-rule"></span>
+      <span class="q">&ldquo;Architecture meets aesthetics.&rdquo;</span>
+      <span class="sage-rule"></span>
+    </div>
+  </div>
+
+  <div class="page-foot mono">
+    <span>Ahmad Naufal &middot; arkaes.dev</span>
+    <span class="num">04 / 04</span>
+  </div>
+</section>
+
+</body>
+</html>

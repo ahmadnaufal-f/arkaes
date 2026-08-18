@@ -23,3 +23,14 @@ packages/tokens/src/generated/
 # Generated markdown stylesheet (emitted from packages/ui/src/markdown/styles.ts).
 # Regenerate with `pnpm --filter @arkaes/ui emit-css`.
 packages/ui/src/styles/markdown.css
+
+# Generated inputs and intermediates for the Design Engineer PDF. The PDF itself
+# and the authored sources (document.html, assets/system-architecture.svg) are
+# committed; everything below regenerates via `node docs/design-engineer-brief/build.mjs`.
+docs/design-engineer-brief/fonts/
+docs/design-engineer-brief/out/
+docs/design-engineer-brief/assets/*.png
+docs/design-engineer-brief/assets/qr-*.svg
+# Installed with npm because the folder sits outside the pnpm workspace; the
+# lockfile is not committed so it never competes with pnpm-lock.yaml.
+docs/design-engineer-brief/package-lock.json
