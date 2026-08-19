@@ -183,7 +183,7 @@ export class ArkHero extends LitElement {
        slot. Same reasoning for .hero-subtitle-slot below. */
     .hero-title-slot {
       animation: fadeSlideUp 1000ms var(--ark-ease-out) forwards 400ms;
-      margin-top: 48px;
+      margin-top: var(--ark-space-12);
       opacity: 0;
     }
 

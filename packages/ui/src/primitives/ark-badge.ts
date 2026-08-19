@@ -36,21 +36,25 @@ export class ArkBadge extends LitElement {
     :host {
       --badge-font-size: calc(var(--ark-font-size-xs) * 0.83);
       --badge-gap: var(--ark-space-4);
-      --badge-line-width: 28px;
 
       display: inline-flex;
+    }
+
+    /* The eyebrow is a row, not a pill: it fills its container so the trailing
+       rule has somewhere to run to. Soft stays inline so it can sit in text. */
+    :host(:not([variant])),
+    :host([variant="eyebrow"]) {
+      display: flex;
     }
 
     :host([size="sm"]) {
       --badge-font-size: calc(var(--ark-font-size-xs) * 0.73);
       --badge-gap: var(--ark-space-3);
-      --badge-line-width: 20px;
     }
 
     :host([size="lg"]) {
       --badge-font-size: var(--ark-font-size-xs);
       --badge-gap: var(--ark-space-5);
-      --badge-line-width: 36px;
     }
 
     .badge {
@@ -65,13 +69,28 @@ export class ArkBadge extends LitElement {
       text-transform: uppercase;
     }
 
-    :host(:not([variant])) .badge::before,
-    :host([variant="eyebrow"]) .badge::before {
+    /* The rule follows the label and runs to the end of the row, rather than
+       sitting in front of it as a fixed 28px stub. The stub — a short rule on
+       the same baseline as a mono uppercase kicker — is the single most
+       recognisable piece of generated-portfolio chrome; a long rule reads as a
+       section divider doing a job instead. */
+    :host(:not([variant])) .badge,
+    :host([variant="eyebrow"]) .badge {
+      display: flex;
+      width: 100%;
+    }
+
+    /* currentColor, not a border token: the eyebrow is used on the light page
+       ground and on the dark contact panel, and a fixed dark hairline
+       disappears on the latter. Tying the rule to the label's own colour means
+       it is legible wherever the label is. */
+    :host(:not([variant])) .badge::after,
+    :host([variant="eyebrow"]) .badge::after {
       background: currentColor;
       content: "";
-      display: block;
+      flex: 1;
       height: 1px;
-      width: var(--badge-line-width);
+      opacity: 0.38;
     }
 
     :host([variant="soft"]) .badge {

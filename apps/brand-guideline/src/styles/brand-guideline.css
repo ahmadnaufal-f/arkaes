@@ -87,10 +87,12 @@ ark-badge {
 .section-title {
   font-family: var(--ark-font-display);
   font-size: clamp(2.4rem, 4vw, 3.6rem);
-  font-weight: var(--ark-weight-thin); line-height: 1.05; letter-spacing: 0;
+  font-weight: var(--ark-weight-medium); line-height: 1.05; letter-spacing: -0.015em;
   margin-bottom: 16px;
 }
-.section-title em { font-style: italic; color: var(--blush-deep); }
+/* Accent colour without the italic — matches the portfolio, where the italic
+   accent run was the pattern the hero redesign removed. */
+.section-title em { font-style: normal; color: var(--blush-deep); }
 
 .section-lead {
   font-family: var(--ark-font-sans);
@@ -155,7 +157,7 @@ ark-button {
 
 .pillar-name {
   font-family: var(--ark-font-display);
-  font-size: 1.4rem; font-weight: var(--ark-weight-thin);
+  font-size: 1.4rem; font-weight: var(--ark-weight-medium);
   color: var(--ink); margin-bottom: 10px;
 }
 
@@ -252,7 +254,7 @@ ark-button {
 
 .swatch-name {
   font-family: var(--ark-font-display);
-  font-size: .95rem; font-weight: var(--ark-weight-thin);
+  font-size: .95rem; font-weight: var(--ark-weight-medium);
 }
 
 .swatch-meta {
@@ -349,11 +351,11 @@ ark-button {
 .type-sample-display {
   font-family: var(--ark-font-display);
   font-size: clamp(2.4rem, 4vw, 3.2rem);
-  font-weight: var(--ark-weight-thin); line-height: 1; letter-spacing: 0;
+  font-weight: var(--ark-weight-medium); line-height: 1; letter-spacing: -0.015em;
   color: var(--ink); margin-bottom: 16px;
 }
 
-.type-sample-display em { font-style: italic; color: var(--blush-deep); }
+.type-sample-display em { font-style: normal; color: var(--blush-deep); }
 
 .type-sample-body {
   font-family: var(--ark-font-sans);
@@ -400,7 +402,7 @@ ark-button {
 }
 
 .scale-preview {
-  font-family: var(--ark-font-display); font-weight: var(--ark-weight-thin);
+  font-family: var(--ark-font-display); font-weight: var(--ark-weight-medium);
   color: var(--ink); line-height: 1.2;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
@@ -530,7 +532,7 @@ ark-button {
 
 .dnd-heading {
   font-family: var(--ark-font-display);
-  font-size: 1.3rem; font-weight: var(--ark-weight-thin); margin-bottom: 20px;
+  font-size: 1.3rem; font-weight: var(--ark-weight-medium); margin-bottom: 20px;
 }
 .dnd-col--do   .dnd-heading { color: var(--sage); }
 .dnd-col--dont .dnd-heading { color: var(--blush-deep); }
@@ -577,7 +579,7 @@ ark-button {
 
 .tone-name {
   font-family: var(--ark-font-display);
-  font-size: 1.2rem; font-weight: var(--ark-weight-thin); color: var(--ink);
+  font-size: 1.2rem; font-weight: var(--ark-weight-medium); color: var(--ink);
 }
 
 .tone-desc {
@@ -628,7 +630,7 @@ ark-button {
 
 .platform-name {
   font-family: var(--ark-font-display);
-  font-size: 1.5rem; font-weight: var(--ark-weight-thin); color: var(--ink);
+  font-size: 1.5rem; font-weight: var(--ark-weight-medium); color: var(--ink);
   margin-bottom: 4px;
 }
 
@@ -701,7 +703,7 @@ ark-button {
 
 .rules-heading {
   font-family: var(--ark-font-display);
-  font-size: 1.3rem; font-weight: var(--ark-weight-thin); margin-bottom: 24px;
+  font-size: 1.3rem; font-weight: var(--ark-weight-medium); margin-bottom: 24px;
 }
 .rules-col--do   .rules-heading { color: var(--sage-light); }
 .rules-col--dont .rules-heading { color: var(--blush-light); }
@@ -806,7 +808,7 @@ body { font-family: var(--ark-font-sans); color: var(--ark-color-text); line-hei
 .example-text, .cn-text { font-style: normal; }
 .type-sample-body { max-width: var(--ark-measure-md); font-size: 1.05rem; line-height: var(--ark-leading-relaxed); }
 .type-name, .scale-preview { font-family: var(--ark-font-sans); }
-.scale-preview { font-weight: var(--ark-weight-thin); }
+.scale-preview { font-weight: var(--ark-weight-medium); }
 .scale-item:first-child .scale-preview, .scale-item:nth-child(2) .scale-preview, .scale-item:nth-child(3) .scale-preview, .scale-item:nth-child(4) .scale-preview { font-family: var(--ark-font-display); }
 .type-block:nth-child(2) .type-sample-body { font-family: var(--ark-font-sans); color: var(--ark-color-text-soft); }
 #rules .section-lead, .rules-list li, .cn-text { color: var(--ark-color-text-muted); }
@@ -817,7 +819,7 @@ body { font-family: var(--ark-font-sans); color: var(--ark-color-text); line-hei
 .ark-readable { max-width: var(--ark-measure-md); }
 .ark-readable > * + * { margin-block-start: 1em; }
 .ark-readable p, .ark-readable li { font-family: var(--ark-font-sans); line-height: var(--ark-leading-normal); color: var(--ark-color-text-soft); }
-.ark-readable h1, .ark-readable h2, .ark-readable h3 { font-family: var(--ark-font-display); color: var(--ark-color-text); font-weight: var(--ark-weight-thin); text-wrap: balance; }
+.ark-readable h1, .ark-readable h2, .ark-readable h3 { font-family: var(--ark-font-display); color: var(--ark-color-text); font-weight: var(--ark-weight-medium); text-wrap: balance; }
 .ark-readable h2 { margin-block-start: 2em; }
 .ark-readable a { color: var(--ark-color-accent-strong); font-weight: var(--ark-weight-medium); }
 ::selection { background: var(--ark-color-accent-soft); color: var(--ark-color-text); }
