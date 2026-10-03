@@ -7,6 +7,9 @@ role: "Team Lead"
 challenges: "Led the development team through a broad set of requirements on a tight schedule while shaping a maintainable map architecture for SmartThings Find on iOS."
 stack: []
 category: "professional-work"
+screenshots:
+  - "/projects/find-ios/80210.jpg"
+  - "/projects/find-ios/80211.jpg"
 ---
 
 **SmartThings Find** brings Samsung's location finding experience to iPhone users through the SmartThings app. iOS users can open it from the *Life* tab to locate supported devices and items.
