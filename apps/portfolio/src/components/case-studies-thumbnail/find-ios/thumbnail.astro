@@ -1,0 +1,196 @@
+---
+interface Props {
+  transitionName: string;
+  asSlot?: string;
+}
+const { transitionName, asSlot } = Astro.props;
+---
+
+<div
+  class="thumb-find-ios"
+  slot={asSlot}
+  style={`view-transition-name: ${transitionName};`}
+>
+  <div class="thumb-find-ios-card">
+    <svg
+      class="thumb-find-ios-svg"
+      viewBox="0 0 240 180"
+      role="img"
+      aria-label="An iPhone map with a location pin and a rounded item tracker"
+    >
+      <!-- Slender phone frame and screen -->
+      <rect class="find-phone" x="46" y="8" width="82" height="164" rx="22" />
+      <rect class="find-screen" x="51" y="13" width="72" height="154" rx="18" />
+      <rect class="find-side-button" x="127.5" y="51" width="3" height="22" rx="1.5" />
+      <rect class="find-island" x="73" y="19" width="28" height="5" rx="2.5" />
+
+      <!-- Quiet map lines keep the pin legible at thumbnail size -->
+      <g class="find-map" aria-hidden="true">
+        <path class="find-water" d="M55 132c13-11 8-24 22-34s23-19 29-45" />
+        <path class="find-road" d="M55 49c12 7 20 10 25 23s20 20 38 26" />
+        <path class="find-road find-road--secondary" d="M55 113c14-5 26 1 34-9s18-18 32-29" />
+        <path class="find-road" d="M58 145c10-8 18-13 31-14" />
+        <path class="find-block" d="M58 35h12v8H58zM106 37h12v10h-12zM58 121h13v9H58zM105 119h12v9h-12z" />
+      </g>
+
+      <!-- Locator ripple, pin, and its center point -->
+      <circle class="find-ripple" cx="88" cy="78" r="14" />
+      <path
+        class="find-pin"
+        d="M74 78c0-7.7 6.3-14 14-14s14 6.3 14 14c0 10.8-14 25-14 25S74 88.8 74 78Z"
+      />
+      <circle class="find-pin-center" cx="88" cy="78" r="4" />
+
+      <!-- Connection to a simple rounded tracker with a keyring hole -->
+      <path class="find-link" d="M103 96c15 11 29 4 42-4s17-4 19-3" />
+      <rect class="find-tracker" x="163" y="68" width="46" height="46" rx="13" />
+      <circle class="find-tracker-hole" cx="199" cy="74" r="3.5" />
+      <circle class="find-tracker-ring" cx="183" cy="94" r="8" />
+      <circle class="find-tracker-center" cx="183" cy="94" r="2.5" />
+
+      <!-- Home indicator -->
+      <rect class="find-home" x="77" y="158" width="22" height="2.5" rx="1.25" />
+    </svg>
+  </div>
+</div>
+
+<style>
+  .thumb-find-ios {
+    align-items: center;
+    background: var(--thumbnail-background, var(--ark-color-accent-soft));
+    display: flex;
+    height: var(--thumbnail-height, auto);
+    justify-content: center;
+    position: relative;
+  }
+
+  /* A compact centered card leaves space around the shadow at every size. */
+  .thumb-find-ios-card {
+    background: var(--ark-color-surface);
+    border: 1px solid var(--ark-color-border);
+    border-radius: 20px;
+    box-shadow: var(--ark-shadow-md);
+    padding: 12px;
+    width: 220px;
+  }
+
+  .thumb-find-ios-svg {
+    display: block;
+    height: auto;
+    width: 100%;
+  }
+
+  .find-phone {
+    fill: var(--ark-color-surface);
+    stroke: var(--ark-color-neutral-300);
+    stroke-width: 1.5;
+  }
+
+  .find-screen {
+    fill: var(--ark-color-neutral-50);
+  }
+
+  .find-side-button {
+    fill: var(--ark-color-neutral-300);
+  }
+
+  .find-island {
+    fill: var(--ark-color-text);
+  }
+
+  .find-home {
+    fill: var(--ark-color-neutral-300);
+  }
+
+  .find-water {
+    fill: none;
+    stroke: var(--ark-color-secondary-soft);
+    stroke-linecap: round;
+    stroke-width: 7;
+  }
+
+  .find-road {
+    fill: none;
+    stroke: var(--ark-color-neutral-200);
+    stroke-linecap: round;
+    stroke-width: 3.5;
+  }
+
+  .find-road--secondary {
+    stroke: var(--ark-color-neutral-100);
+    stroke-width: 2.5;
+  }
+
+  .find-block {
+    fill: color-mix(in srgb, var(--ark-color-accent) 10%, transparent);
+  }
+
+  .find-ripple {
+    fill: none;
+    opacity: 0.26;
+    stroke: color-mix(in srgb, var(--ark-color-accent) 58%, transparent);
+    stroke-width: 1.4;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  .find-pin {
+    fill: var(--ark-color-accent);
+    stroke: var(--ark-color-neutral-0);
+    stroke-width: 1.6;
+  }
+
+  .find-pin-center {
+    fill: var(--ark-color-neutral-0);
+  }
+
+  .find-link {
+    fill: none;
+    stroke: color-mix(in srgb, var(--ark-color-accent) 42%, transparent);
+    stroke-dasharray: 2 5;
+    stroke-linecap: round;
+    stroke-width: 1.8;
+  }
+
+  .find-tracker {
+    fill: var(--ark-color-secondary-soft);
+    stroke: var(--ark-color-secondary);
+    stroke-width: 1.5;
+  }
+
+  .find-tracker-hole {
+    fill: var(--ark-color-surface);
+    stroke: var(--ark-color-secondary);
+    stroke-width: 1.2;
+  }
+
+  .find-tracker-ring {
+    fill: none;
+    stroke: color-mix(in srgb, var(--ark-color-secondary) 56%, transparent);
+    stroke-width: 1.6;
+  }
+
+  .find-tracker-center {
+    fill: var(--ark-color-accent);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .find-ripple {
+      animation: find-locator-pulse 2.8s ease-out infinite;
+    }
+  }
+
+  @keyframes find-locator-pulse {
+    0% {
+      opacity: 0.28;
+      transform: scale(0.75);
+    }
+    55% {
+      opacity: 0.1;
+    }
+    100% {
+      opacity: 0;
+      transform: scale(1.45);
+    }
+  }
+</style>
