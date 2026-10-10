@@ -27,7 +27,7 @@
     Georgia,
     serif
   );
-  --ark-font-mono: var(--font-mono, "DM Mono", "SFMono-Regular", Consolas, monospace);
+  --ark-font-mono: var(--font-mono, "Fira Code", "SFMono-Regular", Consolas, monospace);
 }
 
 /* Hide custom elements until their definition upgrades them, so their slotted

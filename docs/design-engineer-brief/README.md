@@ -36,7 +36,7 @@ Three are reused unmodified and inlined at build time:
 
 `assets/system-architecture.svg` is the one new drawing. It extends
 `apps/portfolio/public/about/arkaes-layers.svg` in the same grammar — dashed
-boundary, `#ddd7cf` hairlines, 0.75 strokes, DM Mono 7.5px labels, blush-tinted
+boundary, `#ddd7cf` hairlines, 0.75 strokes, Fira Code 7.5px labels, blush-tinted
 foundation band — adding what the original stops short of: the DTCG source and
 Style Dictionary below the token foundation, and the MCP server reading the
 Custom Elements Manifest and token source beside it.

@@ -8,19 +8,19 @@
 
   <!-- ════════ Row 1: First load (~50% faster) ════════ -->
   <rect x="40" y="28" width="120" height="22" rx="11" fill="#e2e7d6"/>
-  <text x="100" y="43" text-anchor="middle" font-family="'DM Mono','Courier New',monospace" font-size="8" fill="#5f6f48" letter-spacing="0.12em">FIRST LOAD</text>
+  <text x="100" y="43" text-anchor="middle" font-family="'Fira Code','Courier New',monospace" font-size="8" fill="#5f6f48" letter-spacing="0.12em">FIRST LOAD</text>
 
   <!-- Before -->
   <text x="40" y="80" font-size="9" font-weight="300" fill="#9d9185">Before</text>
   <rect x="96" y="70" width="400" height="12" rx="3" fill="#ede8e2"/>
   <rect x="96" y="70" width="400" height="12" rx="3" fill="#cfc8c0"/>
-  <text x="508" y="80" font-family="'DM Mono','Courier New',monospace" font-size="8" fill="#9d9185">1.0×</text>
+  <text x="508" y="80" font-family="'Fira Code','Courier New',monospace" font-size="8" fill="#9d9185">1.0×</text>
 
   <!-- After -->
   <text x="40" y="108" font-size="9" font-weight="300" fill="#5f534a">After</text>
   <rect x="96" y="98" width="400" height="12" rx="3" fill="#ede8e2"/>
   <rect x="96" y="98" width="200" height="12" rx="3" fill="#a9b889"/>
-  <text x="508" y="108" font-family="'DM Mono','Courier New',monospace" font-size="8" fill="#5f6f48">~0.5×</text>
+  <text x="508" y="108" font-family="'Fira Code','Courier New',monospace" font-size="8" fill="#5f6f48">~0.5×</text>
 
   <!-- Headline -->
   <text x="670" y="86" text-anchor="middle" font-family="'Fraunces', Georgia, serif" font-size="42" font-weight="300" fill="#5f6f48">~50%</text>
@@ -28,19 +28,19 @@
 
   <!-- ════════ Row 2: Second load (~80% faster) ════════ -->
   <rect x="40" y="146" width="126" height="22" rx="11" fill="#eae7f0"/>
-  <text x="103" y="161" text-anchor="middle" font-family="'DM Mono','Courier New',monospace" font-size="8" fill="#5a4d7a" letter-spacing="0.12em">SECOND LOAD</text>
+  <text x="103" y="161" text-anchor="middle" font-family="'Fira Code','Courier New',monospace" font-size="8" fill="#5a4d7a" letter-spacing="0.12em">SECOND LOAD</text>
 
   <!-- Before -->
   <text x="40" y="198" font-size="9" font-weight="300" fill="#9d9185">Before</text>
   <rect x="96" y="188" width="400" height="12" rx="3" fill="#ede8e2"/>
   <rect x="96" y="188" width="400" height="12" rx="3" fill="#cfc8c0"/>
-  <text x="508" y="198" font-family="'DM Mono','Courier New',monospace" font-size="8" fill="#9d9185">1.0×</text>
+  <text x="508" y="198" font-family="'Fira Code','Courier New',monospace" font-size="8" fill="#9d9185">1.0×</text>
 
   <!-- After -->
   <text x="40" y="226" font-size="9" font-weight="300" fill="#5f534a">After</text>
   <rect x="96" y="216" width="400" height="12" rx="3" fill="#ede8e2"/>
   <rect x="96" y="216" width="80" height="12" rx="3" fill="#b3a8cf"/>
-  <text x="508" y="226" font-family="'DM Mono','Courier New',monospace" font-size="8" fill="#5a4d7a">~0.2×</text>
+  <text x="508" y="226" font-family="'Fira Code','Courier New',monospace" font-size="8" fill="#5a4d7a">~0.2×</text>
 
   <!-- Headline -->
   <text x="670" y="204" text-anchor="middle" font-family="'Fraunces', Georgia, serif" font-size="42" font-weight="300" fill="#5a4d7a">~80%</text>

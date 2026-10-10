@@ -18,45 +18,9 @@
   transform: translateY(0);
 }
 
-.marquee-section {
-  background: var(--ark-color-background);
-  border-block: 1px solid var(--ark-color-border);
-  overflow: hidden;
-  padding-block: 16px;
-}
-
-.marquee-track {
-  animation: marquee 24000ms linear infinite;
-  display: flex;
-  white-space: nowrap;
-  width: max-content;
-}
-
-.marquee-group {
-  display: flex;
-  flex: 0 0 auto;
-}
-
-.marquee-item {
-  align-items: center;
-  color: var(--ark-color-text-ghost);
-  display: flex;
-  font-family: var(--ark-font-display);
-  font-size: 0.82rem;
-  font-style: italic;
-  font-weight: var(--ark-weight-thin);
-  gap: 36px;
-  padding-inline: 36px;
-}
-
-.marquee-item::after {
-  color: var(--ark-color-accent);
-  content: "\2726";
-  font-size: 0.4rem;
-}
-
-.marquee-item:nth-child(4n)::after {
-  color: var(--ark-color-counterpoint);
+.homepage-hero {
+  --ark-hero-visual-width: 100%;
+  --ark-hero-visual-background: var(--ark-color-bg);
 }
 
 .work-section,
@@ -781,17 +745,6 @@
   }
 }
 
-@keyframes marquee {
-  from {
-    transform: translateX(0);
-  }
-
-  to {
-    transform: translateX(-50%);
-  }
-}
-
-
 /* Capped below the hero: ark-hero tops out at 60px, and the page's largest
    heading should be the hero's, not a section's. */
 @media (min-width: 1120px) {
@@ -805,6 +758,10 @@
 }
 
 @media (max-width: 900px) {
+  .homepage-hero {
+    --ark-hero-visual-min-height: clamp(360px, 74vw, 480px);
+  }
+
   .work-section,
   .techstack-section,
   .services-section,
@@ -922,10 +879,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .marquee-track {
-    animation: none;
-  }
-
   .techstack-row::before,
   .techstack-row-num,
   .techstack-row-name-roman,

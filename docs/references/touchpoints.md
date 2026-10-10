@@ -4,7 +4,7 @@
 
 **Visual system:** Full Warm Luxe — blush + sage palette, all tokens applied.
 
-**Fonts:** Fraunces display, Plus Jakarta Sans body, DM Mono labels.
+**Fonts:** Fraunces display, Plus Jakarta Sans body, Fira Code labels.
 
 **Motion:**
 - Staggered scroll reveals (IntersectionObserver, threshold 0.08)
@@ -20,12 +20,12 @@
 **Hero structure:**
 1. Status badge (sage pulse dot + "Open to senior frontend roles")
 2. Name — full name as H1, Fraunces 200
-3. Role — DM Mono uppercase, blush-deep
+3. Role — Fira Code uppercase, blush-deep
 4. Company line — Plus Jakarta Sans italic, ink-ghost
 5. Blush divider rule (40px × 1px)
 6. Bio paragraph
 7. Actions (primary + ghost CTA)
-8. Arkaes byline (bottom-left, DM Mono, parchment-d color)
+8. Arkaes byline (bottom-left, Fira Code, parchment-d color)
 
 **Work section structure:**
 - Enterprise projects → full-width list items (confidential badge)

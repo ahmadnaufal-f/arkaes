@@ -42,7 +42,7 @@ Calm authority. Never loud. Never generic. Confident without being boastful. The
 - **Numbers over words**: prefer "40+ components" over "over forty components".
 - **Em dashes (—)** preferred over colons for appositive clauses.
 - **Sentence case** for prose descriptions.
-- **ALL CAPS** only for DM Mono label elements (never in prose).
+- **ALL CAPS** only for Fira Code label elements (never in prose).
 
 ### Copy Do / Don't Examples
 
@@ -95,7 +95,7 @@ Copy these into every component's `:root` or import from the token file ([tokens
   /* --- Typography --- */
   --font-display: 'Fraunces', serif;          /* Headlines, wordmark only */
   --font-body:    'Plus Jakarta Sans', sans-serif; /* Body text */
-  --font-mono:    'DM Mono', monospace;        /* Labels, nav, tags, code */
+  --font-mono:    'Fira Code', monospace;        /* Labels, nav, tags, code */
 
   /* --- Shape --- */
   --radius-none: 0px;     /* Structural surfaces, full-bleed sections */
@@ -133,7 +133,7 @@ Copy these into every component's `:root` or import from the token file ([tokens
 ```html
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600&family=DM+Mono:wght@300;400&family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600&family=Fira+Code:wght@300;400&family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&display=swap" rel="stylesheet">
 ```
 
 ---
@@ -157,9 +157,9 @@ Copy these into every component's `:root` or import from the token file ([tokens
    - **Italic**: Subtitles, ghost CTAs, and stylistic emphasis.
    - **Line Height**: `--ark-leading-normal` (1.75) up to `--ark-leading-relaxed` (1.9) for paragraphs. 1.4–1.6 for larger display body.
    - **Max Width**: Limit containers to `--ark-measure-md` (68ch) or max `640px` for optimal line length readability.
-   - **Never Use For**: Labels, nav links, tags, metadata, or anything that should be DM Mono.
+   - **Never Use For**: Labels, nav links, tags, metadata, or anything that should be Fira Code.
 
-3. **DM Mono (Labels & UI)**
+3. **Fira Code (Labels & UI)**
    - **Weight**: 400 (regular) or 300 (light) for very small labels.
    - **Style Constraint**: **Always** uppercase, **always** letter-spaced.
    - **Letter Spacing**: `.15em` to `.28em` (wider spacing for smaller font sizes).
@@ -176,9 +176,9 @@ Copy these into every component's `:root` or import from the token file ([tokens
 | Card Title (H4) | Fraunces | 300 | 20px | default |
 | Body Large / Lead | Plus Jakarta Sans | 300 | 18px | `line-height: 1.4–1.6` |
 | Body Regular | Plus Jakarta Sans | 300 | 16px | `line-height: 1.75` |
-| Label Large | DM Mono | 400 | 12px | `letter-spacing: .15em`, UPPERCASE |
-| Label Regular / Eyebrows | DM Mono | 400 | 11px | `letter-spacing: .28em`, UPPERCASE |
-| Label Small / Tags / Meta | DM Mono | 400 | 10px | `letter-spacing: .24em`, UPPERCASE |
+| Label Large | Fira Code | 400 | 12px | `letter-spacing: .15em`, UPPERCASE |
+| Label Regular / Eyebrows | Fira Code | 400 | 11px | `letter-spacing: .28em`, UPPERCASE |
+| Label Small / Tags / Meta | Fira Code | 400 | 10px | `letter-spacing: .24em`, UPPERCASE |
 
 ### Responsive Font Sizes (clamp)
 For hero and section titles, use fluid type via `clamp()` to scale gracefully:
@@ -189,7 +189,7 @@ For hero and section titles, use fluid type via `clamp()` to scale gracefully:
 ```
 
 ### Hierarchy Enforcement
-- Never mix roles. If a label needs to be larger, increase the font-size of DM Mono, do not change the font to Fraunces.
+- Never mix roles. If a label needs to be larger, increase the font-size of Fira Code, do not change the font to Fraunces.
 - If a heading needs to be smaller, scale Fraunces down, do not switch it to Plus Jakarta Sans.
 - Pull quotes must use Fraunces italic at display sizes — Plus Jakarta Sans lacks the display personality required for quotes.
 - Never use more than these 3 typefaces in one component layout.
@@ -355,7 +355,7 @@ Sage must be budgeted carefully. Count every placement on the page:
 ```
 
 ### Eyebrow Label
-- Uppercase DM Mono, blush colored, preceded by a horizontal rule.
+- Uppercase Fira Code, blush colored, preceded by a horizontal rule.
 ```css
 .eyebrow {
   font-family: var(--font-mono);
@@ -663,7 +663,7 @@ Every public profile and platform must reflect the same quiet, considered creati
 
 ### 1. Primary Portfolio (arkaes.dev)
 - **Visual Theme**: "Full Warm Luxe" — blush + sage palette, all token values applied.
-- **Fonts**: Fraunces (display), Plus Jakarta Sans (body), DM Mono (labels).
+- **Fonts**: Fraunces (display), Plus Jakarta Sans (body), Fira Code (labels).
 - **Light Mode Only**: The portfolio has no dark mode toggle.
 - **Grain overlay**: 2.2% fixed opacity, always present.
 - **Motion Patterns**:
@@ -675,12 +675,12 @@ Every public profile and platform must reflect the same quiet, considered creati
 - **Hero Grid Structure**:
   1. Status badge (Sage pulse dot + "Open to senior frontend roles")
   2. Full name (H1 headline, Fraunces 200)
-  3. Role title (DM Mono uppercase, blush-deep)
+  3. Role title (Fira Code uppercase, blush-deep)
   4. Current company/history line (Plus Jakarta Sans italic, ink-ghost)
   5. Blush horizontal divider rule (40px × 1px)
   6. Concise bio paragraph
   7. CTAs (Primary block button + Ghost italic button)
-  8. Arkaes byline at bottom-left (DM Mono, parchment-d)
+  8. Arkaes byline at bottom-left (Fira Code, parchment-d)
 - **Work Section Layout**:
   - Enterprise/Agency projects: Labeled with a "confidential" dashed badge, taking up full-width rows.
   - Experiments / personal projects: Litled "Modern Experiments" in a 3-column grid of cards.

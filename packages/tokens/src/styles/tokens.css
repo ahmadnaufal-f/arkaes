@@ -11,7 +11,7 @@
   --ark-font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --ark-font-display: "Fraunces", "Cormorant Garamond", Georgia, serif;
   --ark-font-serif: Georgia, "Times New Roman", serif;
-  --ark-font-mono: "DM Mono", "SFMono-Regular", Consolas, monospace;
+  --ark-font-mono: "Fira Code", "SFMono-Regular", Consolas, monospace;
 
   --ark-text-xs: 0.75rem;
   --ark-text-sm: 0.875rem;

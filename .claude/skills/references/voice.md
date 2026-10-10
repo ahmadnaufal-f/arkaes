@@ -55,7 +55,7 @@ or AI-adjacent work."`
 - Numbers over words: "40+ components" not "over forty components"
 - Em dashes (—) preferred over colons for appositive clauses
 - Sentence case for prose descriptions
-- ALL CAPS only for DM Mono label elements (never in prose)
+- ALL CAPS only for Fira Code label elements (never in prose)
 
 ## Wordmark Copy Rules
 

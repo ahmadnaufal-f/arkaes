@@ -221,7 +221,7 @@ export class ArkInput extends LitElement {
     }
 
     /* ── Hint text ───────────────────────────────────────────────── */
-    /* DM Mono, uppercase + letter-spaced — mandatory (SKILL.md §3) */
+    /* Fira Code, uppercase + letter-spaced — mandatory (SKILL.md §3) */
     .hint {
       color: var(--ark-color-text-subtle);
       font-family: var(--ark-font-mono);
@@ -232,7 +232,7 @@ export class ArkInput extends LitElement {
     }
 
     /* ── Error message ───────────────────────────────────────────── */
-    /* DM Mono, uppercase + letter-spaced — mandatory (SKILL.md §3) */
+    /* Fira Code, uppercase + letter-spaced — mandatory (SKILL.md §3) */
     .error-msg {
       align-items: center;
       color: var(--ark-color-danger);

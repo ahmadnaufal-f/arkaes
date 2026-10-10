@@ -21,9 +21,9 @@
 - **Note:** As a geometric sans-serif, Plus Jakarta Sans reads more modern and
   clean than the previous serif body. Lean into this — it reinforces the
   engineering-first positioning without losing warmth at weight 300.
-- **Never use for:** Labels, nav links, tags, metadata, anything that should be DM Mono
+- **Never use for:** Labels, nav links, tags, metadata, anything that should be Fira Code
 
-### 3. DM Mono — Labels & UI
+### 3. Fira Code — Labels & UI
 - **Weight:** 400 (regular) or 300 (light) for very small labels
 - **Always:** UPPERCASE with letter-spacing
 - **Letter-spacing:** 0.15em–0.28em depending on size
@@ -41,9 +41,9 @@
 20px  / Fraunces 300          → H4 / card title
 18px  / Plus Jakarta Sans 300 → Body large / section lead
 16px  / Plus Jakarta Sans 300 → Body regular
-12px  / DM Mono 400           → Label large
-11px  / DM Mono 400           → Label regular (eyebrows, nav)
-10px  / DM Mono 400           → Label small (tags, metadata)
+12px  / Fira Code 400           → Label large
+11px  / Fira Code 400           → Label regular (eyebrows, nav)
+10px  / Fira Code 400           → Label small (tags, metadata)
 ```
 
 ## Responsive Display
@@ -58,7 +58,7 @@ font-size: clamp(4rem, 8vw, 7rem);     /* cover logotype */
 ## Google Fonts Import
 
 ```
-https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600&family=DM+Mono:wght@300;400&family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&display=swap
+https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600&family=Fira+Code:wght@300;400&family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&display=swap
 ```
 
 ## CSS Token
@@ -66,12 +66,12 @@ https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600&
 ```css
 --font-display: 'Fraunces', serif;
 --font-body:    'Plus Jakarta Sans', sans-serif;
---font-mono:    'DM Mono', monospace;
+--font-mono:    'Fira Code', monospace;
 ```
 
 ## Hierarchy Enforcement
 
-Never mix roles. If a label needs to be larger — make it larger in DM Mono,
+Never mix roles. If a label needs to be larger — make it larger in Fira Code,
 not switch it to Fraunces. If a heading needs to be smaller — scale Fraunces
 down, not switch to Plus Jakarta Sans.
 
