@@ -207,7 +207,10 @@ const { slot = "visual" } = Astro.props;
     text-transform: uppercase;
   }
 
-  .hero-plate-concept { color: var(--ark-color-accent-strong); }
+  .hero-plate-concept {
+    color: var(--ark-color-accent-strong);
+    font-size: var(--ark-font-size-sm);
+  }
 
   .hero-plate-meta {
     align-items: center;
@@ -226,7 +229,13 @@ const { slot = "visual" } = Astro.props;
   @media (max-width: 520px) {
     .hero-plate { max-width: 16rem; }
     .plate-guide-secondary { display: none; }
-    .hero-plate-caption { padding-block: var(--ark-space-3); }
+    .hero-plate-caption {
+      align-items: center;
+      padding-block: var(--ark-space-3);
+      text-align: center;
+    }
+
+    .hero-plate-meta { justify-content: center; }
   }
 
   @media (prefers-reduced-motion: reduce) {
