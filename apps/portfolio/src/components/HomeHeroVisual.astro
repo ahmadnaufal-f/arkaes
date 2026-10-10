@@ -27,15 +27,6 @@ const { slot = "visual" } = Astro.props;
       <span class="hero-plate-concept">Architecture × Aesthetics</span>
       <div class="hero-plate-meta">
         <span>Ahmad Naufal — mmxxvi</span>
-        <span class="hero-plate-controls">
-          <button class="hero-plate-control" type="button" data-motion-control hidden>
-            <svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false">
-              <path class="pause-icon" d="M3 2V10M9 2V10" />
-              <path class="play-icon" d="M3 2L10 6L3 10Z" />
-            </svg>
-            <span data-motion-label>Pause motion</span>
-          </button>
-        </span>
       </div>
     </figcaption>
   </figure>
@@ -49,7 +40,6 @@ const { slot = "visual" } = Astro.props;
     private _observer: IntersectionObserver | null = null;
     private _motion: MediaQueryList | null = null;
     private _visible = false;
-    private _paused = false;
     private _loading = false;
     private _failed = false;
     private _generation = 0;
@@ -58,7 +48,6 @@ const { slot = "visual" } = Astro.props;
       this._motion = window.matchMedia("(prefers-reduced-motion: reduce)");
       this._motion.addEventListener("change", this._syncPlayback);
       document.addEventListener("visibilitychange", this._syncPlayback);
-      this.querySelector("[data-motion-control]")?.addEventListener("click", this._togglePlayback);
       this._observer = new IntersectionObserver(([entry]) => {
         this._visible = entry?.isIntersecting ?? false;
         this._syncPlayback();
@@ -71,7 +60,6 @@ const { slot = "visual" } = Astro.props;
       this._observer?.disconnect();
       this._motion?.removeEventListener("change", this._syncPlayback);
       document.removeEventListener("visibilitychange", this._syncPlayback);
-      this.querySelector("[data-motion-control]")?.removeEventListener("click", this._togglePlayback);
       this._animation?.destroy();
       this._animation = null;
       this._loading = false;
@@ -79,20 +67,10 @@ const { slot = "visual" } = Astro.props;
       this.removeAttribute("data-ready");
     }
 
-    private _togglePlayback = () => {
-      this._paused = !this._paused;
-      this._syncPlayback();
-    };
-
     private _syncPlayback = () => {
       if (!this.isConnected) return;
       const reduce = this._motion?.matches ?? true;
-      const canPlay = this._visible && !document.hidden && !reduce && !this._paused;
-      const control = this.querySelector<HTMLButtonElement>("[data-motion-control]");
-      const label = this.querySelector("[data-motion-label]");
-      if (control) control.hidden = reduce || !this.hasAttribute("data-ready");
-      if (label) label.textContent = this._paused ? "Play motion" : "Pause motion";
-      this.toggleAttribute("data-paused", this._paused);
+      const canPlay = this._visible && !document.hidden && !reduce;
 
       if (reduce) {
         this._animation?.goToAndStop(0, true);
@@ -101,11 +79,6 @@ const { slot = "visual" } = Astro.props;
         else if (!this._loading && !this._failed) void this._loadAnimation();
       } else {
         this._animation?.pause();
-        // Reconnecting a manually paused element still needs a player so its
-        // Play control can return; loading alone never starts playback.
-        if (this._visible && !document.hidden && !this._animation && !this._loading && !this._failed) {
-          void this._loadAnimation();
-        }
       }
     };
 
@@ -245,41 +218,6 @@ const { slot = "visual" } = Astro.props;
     justify-content: space-between;
     min-height: var(--ark-space-8);
   }
-
-  .hero-plate-control {
-    align-items: center;
-    background: none;
-    border: 0;
-    color: var(--ark-color-text-muted);
-    cursor: var(--ark-cursor-interactive);
-    display: inline-flex;
-    font: inherit;
-    gap: var(--ark-space-2);
-    letter-spacing: inherit;
-    min-height: var(--ark-space-8);
-    padding: 0;
-    text-transform: uppercase;
-  }
-
-  /* Reserve the control's footprint before the optional player loads. */
-  .hero-plate-controls {
-    display: flex;
-    justify-content: flex-end;
-    min-height: var(--ark-space-8);
-    min-width: calc(var(--ark-space-24) + var(--ark-space-12));
-  }
-
-  .hero-plate-control[hidden] { display: none; }
-  .hero-plate-control:hover { color: var(--ark-color-accent-strong); }
-  .hero-plate-control:focus-visible {
-    outline: 2px solid var(--ark-color-focus);
-    outline-offset: var(--ark-space-1);
-  }
-
-  .pause-icon { fill: none; stroke: currentColor; stroke-width: 2; }
-  .play-icon { display: none; fill: currentColor; }
-  .hero-plate[data-paused] .pause-icon { display: none; }
-  .hero-plate[data-paused] .play-icon { display: block; }
 
   @media (max-width: 900px) {
     .hero-plate { max-width: clamp(16rem, 42vw, 21rem); }
