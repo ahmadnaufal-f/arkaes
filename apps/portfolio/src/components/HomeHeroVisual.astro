@@ -1,0 +1,245 @@
+---
+interface Props {
+  slot?: string;
+}
+
+const { slot = "visual" } = Astro.props;
+---
+
+<home-hero-visual class="hero-plate" slot={slot}>
+  <figure>
+    <div class="hero-plate-stage">
+      {/* Frame zero remains visible without JS, during loading, and for reduced motion. */}
+      <svg class="hero-plate-poster" viewBox="0 0 440 420" width="440" height="420" aria-hidden="true" focusable="false">
+        <path class="plate-mass" d="M88 48H272V316H88Z" />
+        <path class="plate-fin" d="M292 48H332V232H292Z" />
+        <circle class="plate-opening" cx="236" cy="232" r="76" />
+        <path class="plate-turn" d="M236 156A76 76 0 0 1 236 308Z" />
+        <path class="plate-junction" d="M260 312H284V336H260Z" />
+      </svg>
+      <div class="hero-plate-player" data-player aria-hidden="true"></div>
+      <svg class="hero-plate-guides" viewBox="0 0 440 420" width="440" height="420" aria-hidden="true" focusable="false">
+        <path d="M24 64V24H64 M356 24H396V64 M396 320V360H356 M64 360H24V320" />
+        <path class="plate-guide-secondary" d="M68 48H352 M68 344H352 M88 32V360 M332 32V360" />
+      </svg>
+    </div>
+    <figcaption class="hero-plate-caption">
+      <span class="hero-plate-concept">Architecture × Aesthetics</span>
+      <div class="hero-plate-meta">
+        <span>Ahmad Naufal — mmxxvi</span>
+      </div>
+    </figcaption>
+  </figure>
+</home-hero-visual>
+
+<script>
+  import type { AnimationItem } from "lottie-web";
+
+  class HomeHeroVisual extends HTMLElement {
+    private _animation: AnimationItem | null = null;
+    private _observer: IntersectionObserver | null = null;
+    private _motion: MediaQueryList | null = null;
+    private _visible = false;
+    private _loading = false;
+    private _failed = false;
+    private _generation = 0;
+
+    connectedCallback() {
+      this._motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+      this._motion.addEventListener("change", this._syncPlayback);
+      document.addEventListener("visibilitychange", this._syncPlayback);
+      this._observer = new IntersectionObserver(([entry]) => {
+        this._visible = entry?.isIntersecting ?? false;
+        this._syncPlayback();
+      }, { threshold: 0.05 });
+      this._observer.observe(this);
+    }
+
+    disconnectedCallback() {
+      this._generation += 1;
+      this._observer?.disconnect();
+      this._motion?.removeEventListener("change", this._syncPlayback);
+      document.removeEventListener("visibilitychange", this._syncPlayback);
+      this._animation?.destroy();
+      this._animation = null;
+      this._loading = false;
+      this._failed = false;
+      this.removeAttribute("data-ready");
+    }
+
+    private _syncPlayback = () => {
+      if (!this.isConnected) return;
+      const reduce = this._motion?.matches ?? true;
+      const canPlay = this._visible && !document.hidden && !reduce;
+
+      if (reduce) {
+        this._animation?.goToAndStop(0, true);
+      } else if (canPlay) {
+        if (this._animation) this._animation.play();
+        else if (!this._loading && !this._failed) void this._loadAnimation();
+      } else {
+        this._animation?.pause();
+      }
+    };
+
+    private async _loadAnimation() {
+      this._loading = true;
+      const generation = this._generation;
+      try {
+        // No expressions or extra renderers; reduced motion never requests this chunk.
+        const [{ default: lottie }, { default: source }] = await Promise.all([
+          import("lottie-web/build/player/lottie_light.js"),
+          import("../animations/hero-geometry.json"),
+        ]);
+        if (!this.isConnected || generation !== this._generation) return;
+        if (this._motion?.matches) return;
+        const container = this.querySelector<HTMLElement>("[data-player]");
+        if (!container) return;
+
+        const data = structuredClone(source);
+        const styles = getComputedStyle(this);
+        // Fill names are token keys, keeping the Lottie palette in sync with CSS.
+        for (const layer of data.layers) {
+          for (const group of layer.shapes) {
+            for (const shape of group.it) {
+              if (!("c" in shape) || !shape.c || !("nm" in shape) || typeof shape.nm !== "string") continue;
+              const value = styles.getPropertyValue(shape.nm).trim();
+              if (/^#[\da-f]{6}$/i.test(value)) {
+                shape.c.k = [
+                  parseInt(value.slice(1, 3), 16) / 255,
+                  parseInt(value.slice(3, 5), 16) / 255,
+                  parseInt(value.slice(5, 7), 16) / 255,
+                  1,
+                ];
+              }
+            }
+          }
+        }
+
+        const animation = lottie.loadAnimation({
+          container,
+          renderer: "svg",
+          loop: true,
+          autoplay: false,
+          animationData: data,
+          rendererSettings: { preserveAspectRatio: "xMidYMid meet", focusable: false },
+        });
+        this._animation = animation;
+        animation.addEventListener("DOMLoaded", () => {
+          if (!this.isConnected || generation !== this._generation) return;
+          this.setAttribute("data-ready", "");
+          this._syncPlayback();
+        });
+        animation.addEventListener("data_failed", () => {
+          if (generation !== this._generation) return;
+          this._failed = true;
+          this.removeAttribute("data-ready");
+          animation.destroy();
+          this._animation = null;
+          this._syncPlayback();
+        });
+      } catch {
+        // A failed optional chunk leaves the complete static artwork.
+        if (generation === this._generation) this._failed = true;
+      } finally {
+        if (generation === this._generation) this._loading = false;
+      }
+    }
+  }
+
+  if (!customElements.get("home-hero-visual")) {
+    customElements.define("home-hero-visual", HomeHeroVisual);
+  }
+</script>
+
+<style>
+  .hero-plate {
+    display: block;
+    max-width: 26rem;
+    width: calc(100% - var(--ark-space-12));
+  }
+
+  figure { margin: 0; }
+
+  .hero-plate-stage {
+    aspect-ratio: 22 / 21;
+    position: relative;
+  }
+
+  .hero-plate-poster,
+  .hero-plate-player,
+  .hero-plate-guides {
+    height: 100%;
+    inset: 0;
+    pointer-events: none;
+    position: absolute;
+    width: 100%;
+  }
+
+  .hero-plate-player { visibility: hidden; }
+  .hero-plate[data-ready] .hero-plate-player { visibility: visible; }
+  .hero-plate[data-ready] .hero-plate-poster { visibility: hidden; }
+
+  .hero-plate-guides {
+    fill: none;
+    stroke: var(--ark-color-border);
+    stroke-width: 1;
+  }
+
+  .plate-guide-secondary { opacity: 0.6; }
+  .plate-mass { fill: var(--ark-color-blush-light); }
+  .plate-fin { fill: var(--ark-color-accent-strong); }
+  .plate-opening { fill: var(--ark-color-bg); }
+  .plate-turn { fill: var(--ark-color-accent); }
+  .plate-junction { fill: var(--ark-color-counterpoint); }
+
+  .hero-plate-caption {
+    border-top: 1px solid var(--ark-color-border);
+    display: flex;
+    flex-direction: column;
+    font-family: var(--ark-font-mono);
+    font-size: var(--ark-font-size-xs);
+    font-weight: var(--ark-weight-regular);
+    gap: var(--ark-space-2);
+    letter-spacing: var(--ark-letter-spacing-mono);
+    line-height: var(--ark-line-height-normal);
+    padding-block: var(--ark-space-4);
+    text-transform: uppercase;
+  }
+
+  .hero-plate-concept {
+    color: var(--ark-color-accent-strong);
+    font-size: var(--ark-font-size-sm);
+  }
+
+  .hero-plate-meta {
+    align-items: center;
+    color: var(--ark-color-text-muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ark-space-2) var(--ark-space-4);
+    justify-content: space-between;
+    min-height: var(--ark-space-8);
+  }
+
+  @media (max-width: 900px) {
+    .hero-plate { max-width: clamp(16rem, 42vw, 21rem); }
+  }
+
+  @media (max-width: 520px) {
+    .hero-plate { max-width: 16rem; }
+    .plate-guide-secondary { display: none; }
+    .hero-plate-caption {
+      align-items: center;
+      padding-block: var(--ark-space-3);
+      text-align: center;
+    }
+
+    .hero-plate-meta { justify-content: center; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-plate[data-ready] .hero-plate-player { visibility: hidden; }
+    .hero-plate[data-ready] .hero-plate-poster { visibility: visible; }
+  }
+</style>

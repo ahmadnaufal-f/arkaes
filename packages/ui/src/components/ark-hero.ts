@@ -1,4 +1,4 @@
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, type PropertyValues } from "lit";
 import { choose } from "lit/directives/choose.js";
 import { map } from "lit/directives/map.js";
 import { when } from "lit/directives/when.js";
@@ -23,8 +23,9 @@ export enum HeroTitleVariant {
  * the page gutter stops being a gutter and starts being open margin — it stays
  * self-contained. See `.hero-title em` for the reasoning.
  *
- * The default visual includes pointer parallax. Custom visuals inherit the
- * same local parallax wrapper, which is disabled for reduced-motion users.
+ * The default visual includes pointer parallax on large fine-pointer hover
+ * devices. Custom visuals inherit the same local parallax wrapper. All hero
+ * motion is disabled for reduced-motion users.
  *
  * @summary Two-column page hero.
  * @slot eyebrow - Chip row above the title; overrides the `chips` attribute.
@@ -46,6 +47,11 @@ export class ArkHero extends LitElement {
     ghostLabel: { type: String, attribute: "ghost-label" },
     compLabel: { type: String, attribute: "comp-label" },
     scrollLabel: { type: String, attribute: "scroll-label" },
+    disableParallax: {
+      type: Boolean,
+      attribute: "disable-parallax",
+      reflect: true,
+    },
   };
 
   /**
@@ -65,11 +71,18 @@ export class ArkHero extends LitElement {
   ghostLabel = "";
   compLabel = "arkaes.dev - mmxxvi";
   scrollLabel = "Explore the work";
+  /** Disable pointer parallax for visuals that provide their own motion. */
+  disableParallax = false;
 
   private _heroElement: HTMLElement | null = null;
-  private _motionPreference: MediaQueryList | null = null;
+  private _parallaxMedia: MediaQueryList | null = null;
 
-  private _handleParallax = (e: MouseEvent) => {
+  private _handleParallax = (e: PointerEvent) => {
+    if (e.pointerType === "touch") {
+      this._resetParallax();
+      return;
+    }
+
     const visual = this.renderRoot.querySelector<HTMLElement>(".visual");
     if (!visual || !this._heroElement) return;
 
@@ -85,27 +98,42 @@ export class ArkHero extends LitElement {
   };
 
   private _syncParallaxListener = () => {
-    if (!this._heroElement || !this._motionPreference) return;
+    if (!this._heroElement || !this._parallaxMedia) return;
 
-    this._heroElement.removeEventListener("mousemove", this._handleParallax);
-    this._heroElement.removeEventListener("mouseleave", this._resetParallax);
+    this._heroElement.removeEventListener("pointermove", this._handleParallax);
+    this._heroElement.removeEventListener("pointerleave", this._resetParallax);
 
-    if (this._motionPreference.matches) {
+    if (!this._parallaxMedia.matches || this.disableParallax) {
       this._resetParallax();
       return;
     }
 
-    this._heroElement.addEventListener("mousemove", this._handleParallax);
-    this._heroElement.addEventListener("mouseleave", this._resetParallax);
+    this._heroElement.addEventListener("pointermove", this._handleParallax);
+    this._heroElement.addEventListener("pointerleave", this._resetParallax);
   };
 
   private _setupParallax() {
+    this._teardownParallax();
     this._heroElement = this.renderRoot.querySelector<HTMLElement>(".hero");
-    this._motionPreference = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
+    if (!this._heroElement || typeof window.matchMedia !== "function") return;
+
+    this._parallaxMedia = window.matchMedia(
+      "(min-width: 901px) and (any-hover: hover) and (any-pointer: fine) and (prefers-reduced-motion: no-preference)",
     );
-    this._motionPreference.addEventListener("change", this._syncParallaxListener);
+    this._parallaxMedia.addEventListener("change", this._syncParallaxListener);
     this._syncParallaxListener();
+  }
+
+  private _teardownParallax() {
+    this._heroElement?.removeEventListener("pointermove", this._handleParallax);
+    this._heroElement?.removeEventListener("pointerleave", this._resetParallax);
+    this._parallaxMedia?.removeEventListener(
+      "change",
+      this._syncParallaxListener,
+    );
+    this._resetParallax();
+    this._heroElement = null;
+    this._parallaxMedia = null;
   }
 
   override connectedCallback() {
@@ -117,15 +145,14 @@ export class ArkHero extends LitElement {
     this._setupParallax();
   }
 
+  protected override updated(changedProperties: PropertyValues) {
+    if (changedProperties.has("disableParallax")) {
+      this._syncParallaxListener();
+    }
+  }
+
   override disconnectedCallback() {
-    this._heroElement?.removeEventListener("mousemove", this._handleParallax);
-    this._heroElement?.removeEventListener("mouseleave", this._resetParallax);
-    this._motionPreference?.removeEventListener(
-      "change",
-      this._syncParallaxListener,
-    );
-    this._heroElement = null;
-    this._motionPreference = null;
+    this._teardownParallax();
     super.disconnectedCallback();
   }
 
@@ -309,7 +336,10 @@ export class ArkHero extends LitElement {
 
     .hero-image-panel {
       align-items: center;
-      background: var(--ark-color-accent-soft);
+      background: var(
+        --ark-hero-visual-background,
+        var(--ark-color-accent-soft)
+      );
       display: flex;
       inset: 0;
       justify-content: center;
@@ -322,6 +352,7 @@ export class ArkHero extends LitElement {
       display: flex;
       justify-content: center;
       transition: transform 600ms var(--ark-ease-out);
+      width: var(--ark-hero-visual-width, auto);
     }
 
     ::slotted([slot="visual"]) {
@@ -634,7 +665,7 @@ export class ArkHero extends LitElement {
       }
 
       .hero-right {
-        min-height: 420px;
+        min-height: var(--ark-hero-visual-min-height, 420px);
       }
 
       .visual {
@@ -678,8 +709,37 @@ export class ArkHero extends LitElement {
 
     /* ── Reduced motion ──────────────────────────────────────────────── */
     @media (prefers-reduced-motion: reduce) {
+      .hero-eyebrow,
+      .hero-title-slot,
+      .hero-subtitle-slot,
+      .hero-actions,
+      .hero-right,
+      .hero-scroll,
+      .comp-block-large,
+      .comp-block-accent,
+      .comp-block-sage,
+      .comp-circle,
+      .comp-sage-dot,
+      .comp-label,
+      .scroll-line::after {
+        animation: none !important;
+        opacity: 1;
+        transform: none;
+      }
+
       .visual {
         transform: none !important;
+        transition: none;
+      }
+
+      .comp-block-large,
+      .comp-block-accent,
+      .comp-block-sage,
+      .comp-circle,
+      .comp-sage-dot,
+      .comp-label {
+        scale: 1;
+        translate: none;
       }
     }
   `;

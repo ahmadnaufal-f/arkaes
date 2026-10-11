@@ -11,7 +11,7 @@
 
   <!-- ── Col 1: SHARING ── -->
   <rect x="24" y="24" width="108" height="22" rx="11" fill="#e2e7d6"/>
-  <text x="78" y="39" text-anchor="middle" font-family="'DM Mono', 'Courier New', monospace" font-size="8" fill="#5f6f48" letter-spacing="0.12em">CODE SHARING</text>
+  <text x="78" y="39" text-anchor="middle" font-family="'Fira Code', 'Courier New', monospace" font-size="8" fill="#5f6f48" letter-spacing="0.12em">CODE SHARING</text>
   <text x="78" y="112" text-anchor="middle" font-family="'Fraunces', Georgia, serif" font-size="50" font-weight="300" fill="#5f6f48">±87%</text>
   <line x1="24" y1="126" x2="132" y2="126" stroke="#c5ceb5" stroke-width="0.5"/>
   <text x="78" y="146" text-anchor="middle" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="9" font-weight="300" fill="#5f534a">UI &amp; logic shared</text>
@@ -19,7 +19,7 @@
 
   <!-- ── Col 2: APP SIZE ── -->
   <rect x="181" y="24" width="106" height="22" rx="11" fill="#e2e7d6"/>
-  <text x="234" y="39" text-anchor="middle" font-family="'DM Mono', 'Courier New', monospace" font-size="8" fill="#5f6f48" letter-spacing="0.12em">BUNDLE SIZE</text>
+  <text x="234" y="39" text-anchor="middle" font-family="'Fira Code', 'Courier New', monospace" font-size="8" fill="#5f6f48" letter-spacing="0.12em">BUNDLE SIZE</text>
   <text x="234" y="112" text-anchor="middle" font-family="'Fraunces', Georgia, serif" font-size="50" font-weight="300" fill="#5f6f48">±40%</text>
   <line x1="181" y1="126" x2="287" y2="126" stroke="#c5ceb5" stroke-width="0.5"/>
   <text x="234" y="146" text-anchor="middle" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="9" font-weight="300" fill="#5f534a">reduction in</text>
@@ -27,7 +27,7 @@
 
   <!-- ── Col 3: LOAD TIME ── -->
   <rect x="337" y="24" width="106" height="22" rx="11" fill="#e2e7d6"/>
-  <text x="390" y="39" text-anchor="middle" font-family="'DM Mono', 'Courier New', monospace" font-size="8" fill="#5f6f48" letter-spacing="0.12em">LOAD SPEED</text>
+  <text x="390" y="39" text-anchor="middle" font-family="'Fira Code', 'Courier New', monospace" font-size="8" fill="#5f6f48" letter-spacing="0.12em">LOAD SPEED</text>
   <text x="390" y="112" text-anchor="middle" font-family="'Fraunces', Georgia, serif" font-size="50" font-weight="300" fill="#5f6f48">±65%</text>
   <line x1="337" y1="126" x2="443" y2="126" stroke="#c5ceb5" stroke-width="0.5"/>
   <text x="390" y="146" text-anchor="middle" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="9" font-weight="300" fill="#5f534a">faster time</text>
@@ -35,7 +35,7 @@
 
   <!-- ── Col 4: BUG FIXES ── -->
   <rect x="493" y="24" width="106" height="22" rx="11" fill="#f2ddd7"/>
-  <text x="546" y="39" text-anchor="middle" font-family="'DM Mono', 'Courier New', monospace" font-size="8" fill="#8f554d" letter-spacing="0.12em">BUG FIXES</text>
+  <text x="546" y="39" text-anchor="middle" font-family="'Fira Code', 'Courier New', monospace" font-size="8" fill="#8f554d" letter-spacing="0.12em">BUG FIXES</text>
   <text x="546" y="112" text-anchor="middle" font-family="'Fraunces', Georgia, serif" font-size="50" font-weight="300" fill="#8f554d">±70%</text>
   <line x1="493" y1="126" x2="599" y2="126" stroke="#e9c8be" stroke-width="0.5"/>
   <text x="546" y="146" text-anchor="middle" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="9" font-weight="300" fill="#5f534a">faster bug</text>
@@ -43,7 +43,7 @@
 
   <!-- ── Col 5: ONBOARDING ── -->
   <rect x="643" y="24" width="114" height="22" rx="11" fill="#f2ddd7"/>
-  <text x="700" y="39" text-anchor="middle" font-family="'DM Mono', 'Courier New', monospace" font-size="8" fill="#8f554d" letter-spacing="0.12em">ONBOARDING</text>
+  <text x="700" y="39" text-anchor="middle" font-family="'Fira Code', 'Courier New', monospace" font-size="8" fill="#8f554d" letter-spacing="0.12em">ONBOARDING</text>
   <text x="702" y="112" text-anchor="middle" font-family="'Fraunces', Georgia, serif" font-size="50" font-weight="300" fill="#8f554d">±31%</text>
   <line x1="643" y1="126" x2="757" y2="126" stroke="#e9c8be" stroke-width="0.5"/>
   <text x="702" y="146" text-anchor="middle" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="9" font-weight="300" fill="#5f534a">quicker new</text>

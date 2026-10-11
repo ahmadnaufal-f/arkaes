@@ -54,7 +54,7 @@ const GOOGLE_FONTS_CSS =
   "https://fonts.googleapis.com/css2" +
   "?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..600" +
   "&family=Plus+Jakarta+Sans:wght@400;500;600" +
-  "&family=DM+Mono:wght@400";
+  "&family=Fira+Code:wght@400";
 
 // Google Fonts serves a different @font-face set per User-Agent; a modern
 // browser UA is what gets us woff2 rather than ttf.
@@ -151,7 +151,7 @@ const buildHtml = (fontFaces: string): string => `<!doctype html>
         border-radius: 999px;
         background: ${COLOR.blush50};
         color: ${COLOR.accentStrong};
-        font-family: "DM Mono", monospace;
+        font-family: "Fira Code", monospace;
         font-size: 20px;
         letter-spacing: 0.06em;
         padding: 7px 18px;

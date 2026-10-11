@@ -7,6 +7,7 @@ import "./_index.css";
 import { techGroups } from "../data/techstack";
 import { EXPERTISE } from "../data/expertise";
 import CaseStudyVisual from "../components/CaseStudyVisual.astro";
+import HomeHeroVisual from "../components/HomeHeroVisual.astro";
 import {
   coverSrcSet,
   coverTransitionName,
@@ -88,9 +89,11 @@ const jsonLd = [
       them identically; the emphasis markup is styled from _index.css, since
       ::slotted() can't reach descendants of the slotted node. */}
   <ark-hero
+    class="homepage-hero"
+    disable-parallax
     primary-href="#contact"
     primary-label="Contact me"
-    comp-label="Ahmad Naufal - mmxxvi"
+    comp-label="Ahmad Naufal — mmxxvi"
     scroll-label="Explore the work"
   >
     {/* Slotted rather than passed as the `chips` attribute for the same reason
@@ -110,62 +113,8 @@ const jsonLd = [
       Building scalable interfaces, design systems, and cross-platform products
       where technical structure and visual refinement work as one.
     </p>
+    <HomeHeroVisual slot="visual" />
   </ark-hero>
-
-  <div class="marquee-section" aria-hidden="true">
-    <div class="marquee-track" data-marquee-track>
-      <div class="marquee-group" data-marquee-group>
-        <div class="marquee-item">Frontend Architecture</div>
-        <div class="marquee-item">Design Systems</div>
-        <div class="marquee-item">Performance Engineering</div>
-        <div class="marquee-item">Cross-platform Apps</div>
-        <div class="marquee-item">Interaction Engineering</div>
-        <div class="marquee-item">Product Thinking</div>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    const SECONDS_PER_GROUP = 24;
-
-    function setupMarquee(track: HTMLElement) {
-      const base = track.querySelector<HTMLElement>("[data-marquee-group]");
-      if (!base) return;
-
-      track
-        .querySelectorAll("[data-marquee-group][data-clone]")
-        .forEach((node) => node.remove());
-
-      const groupWidth = base.offsetWidth;
-      if (groupWidth === 0) return;
-
-      const copiesPerHalf = Math.max(1, Math.ceil(window.innerWidth / groupWidth));
-      const totalGroups = copiesPerHalf * 2;
-
-      const fragment = document.createDocumentFragment();
-      for (let i = 1; i < totalGroups; i += 1) {
-        const clone = base.cloneNode(true) as HTMLElement;
-        clone.setAttribute("data-clone", "");
-        fragment.appendChild(clone);
-      }
-      track.appendChild(fragment);
-      track.style.animationDuration = `${copiesPerHalf * SECONDS_PER_GROUP}s`;
-    }
-
-    function initMarquees() {
-      document
-        .querySelectorAll<HTMLElement>("[data-marquee-track]")
-        .forEach(setupMarquee);
-    }
-
-    let resizeTimer: number | undefined;
-    window.addEventListener("resize", () => {
-      window.clearTimeout(resizeTimer);
-      resizeTimer = window.setTimeout(initMarquees, 150);
-    });
-
-    initMarquees();
-  </script>
 
   <section class="work-section" id="case-studies">
     {/* Flat children, not an eyebrow+title wrapper: .section-header is a grid

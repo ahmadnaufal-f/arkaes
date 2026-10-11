@@ -48,12 +48,12 @@ for (const dir of ["fonts", "assets", "out"]) {
 // ── 1 · Fonts ─────────────────────────────────────────────────────────────
 // Inlined rather than linked so the PDF renders identically anywhere and the
 // build stays offline after the first run. Weights mirror what the document
-// uses: Fraunces 300 (roman + italic), Plus Jakarta Sans 300-600, DM Mono 300/400.
+// uses: Fraunces 300 (roman + italic), Plus Jakarta Sans 300-600, Fira Code 300/400.
 const FONT_CSS = at("fonts", "fonts.inline.css");
 const GOOGLE_FONTS_URL = "https://fonts.googleapis.com/css2"
   + "?family=Fraunces:ital,opsz,wght@0,9..144,300;1,9..144,300"
   + "&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400"
-  + "&family=DM+Mono:wght@300;400&display=swap";
+  + "&family=Fira+Code:wght@300;400&display=swap";
 
 if (stale(FONT_CSS)) {
   // Google Fonts serves woff2 only to browser user agents; anything else gets

@@ -17,6 +17,36 @@ cases the attribute API (`chips`, `title`, `subtitle`, `title-emphasis`,
 `primary-label`/`primary-href`, `ghost-label`/`ghost-href`) renders default
 content without slots.
 
+## Visual sizing and motion
+
+The built-in composition remains the visual fallback when the `visual` slot is
+empty. Its pieces use the default scroll scatter. Content supplied through the
+`visual` slot does not use that scatter; it can use the available panel width:
+
+```html
+<ark-hero
+  style="
+    --ark-hero-visual-width: 100%;
+    --ark-hero-visual-min-height: 32rem;
+    --ark-hero-visual-background: var(--ark-color-accent-soft);
+  "
+>
+  <my-hero-visual slot="visual"></my-hero-visual>
+</ark-hero>
+```
+
+`--ark-hero-visual-width` defaults to `auto`. The visual panel background can
+be changed with `--ark-hero-visual-background`, which defaults to
+`--ark-color-accent-soft`. On tablet and mobile, the visual panel uses
+`--ark-hero-visual-min-height` and falls back to `420px`.
+
+Pointer parallax runs only above `900px` when the device has a fine pointer,
+supports hover, and does not request reduced motion. The hero's entrance and
+scroll animations are also disabled when reduced motion is requested.
+Set the boolean `disable-parallax` attribute when a custom visual supplies its
+own motion; it defaults to off and can be toggled through the reflected
+`disableParallax` property.
+
 ## Chips
 
 `chips` is a JSON string array and renders every entry as a `primary`

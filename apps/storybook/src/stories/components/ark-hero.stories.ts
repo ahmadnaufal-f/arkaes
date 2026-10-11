@@ -8,9 +8,11 @@ const meta = {
     docs: {
       description: {
         component: `
-\`ark-hero\` is a full-viewport landing section with responsive layout and smooth animations.
+\`ark-hero\` is a full-viewport landing section with responsive layout and motion that respects reduced-motion preferences.
 
-Accepts content via slots: \`eyebrow\` for a chip row, \`title\` and \`subtitle\` for messaging (including emphasis), \`actions\` for button groups, and \`visual\` for imagery or graphics. CSS custom properties control height, padding, and motion behavior for complete layout control.
+Accepts content via slots: \`eyebrow\` for a chip row, \`title\` and \`subtitle\` for messaging (including emphasis), \`actions\` for button groups, and \`visual\` for imagery or graphics. CSS custom properties control height, padding, visual sizing, and panel background.
+
+Pointer parallax runs only above 900px on fine-pointer hover devices when reduced motion is not requested. Set the boolean \`disable-parallax\` attribute when a custom visual supplies its own motion. The built-in visual fallback keeps its scroll scatter; custom visuals are not scattered. All hero entrance and scroll animations stop for reduced-motion users.
 
 The headline holds each line unbroken and renders \`<em>\` as a filled band. Below 1400px that band bleeds out to the hero's own inline edge; above it, where the page gutter becomes open margin, it stays self-contained.
 
@@ -21,10 +23,14 @@ For simple cases the \`chips\` attribute takes a JSON string array and renders e
   },
   render: () => html`
     <ark-hero
+      disable-parallax
       style="
         --ark-hero-content-padding: clamp(2rem, 6vw, 6rem);
         --ark-hero-min-height: 100vh;
         --ark-hero-padding-top: 0;
+        --ark-hero-visual-width: 100%;
+        --ark-hero-visual-min-height: 30rem;
+        --ark-hero-visual-background: var(--ark-color-accent-soft);
       "
     >
       <ark-chip slot="eyebrow" variant="primary">Frontend Engineer</ark-chip>
@@ -52,7 +58,7 @@ For simple cases the \`chips\` attribute takes a JSON string array and renders e
           font-size: clamp(2rem, 5vw, 5rem);
           height: min(60vh, 34rem);
           padding: clamp(2rem, 5vw, 4rem);
-          width: min(38vw, 32rem);
+          width: 100%;
         "
       >
         Custom visual
@@ -80,6 +86,7 @@ export const AttributeFallbacks = {
         --ark-hero-content-padding: clamp(2rem, 6vw, 6rem);
         --ark-hero-min-height: 100vh;
         --ark-hero-padding-top: 0;
+        --ark-hero-visual-min-height: 420px;
       "
     ></ark-hero>
   `,

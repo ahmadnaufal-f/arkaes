@@ -83,7 +83,7 @@ export default defineConfig({
     },
     {
       provider: fontProviders.google(),
-      name: "DM Mono",
+      name: "Fira Code",
       cssVariable: "--font-mono",
       weights: [300, 400],
       styles: ["normal"],
