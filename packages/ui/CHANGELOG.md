@@ -1,5 +1,12 @@
 # @arkaes/ui
 
+## 1.3.1
+
+### Patch Changes
+
+- 2dcee38: Use an explicit regular weight for Markdown body text and align section heading typography with article headings, accounting for the section renderer's heading level shift.
+- 4a9d58d: Render protocol-relative media URLs as HTTPS images in trusted Markdown, fixing SVG media inserted by Contentful in blog posts.
+
 ## 1.3.0
 
 ### Minor Changes
