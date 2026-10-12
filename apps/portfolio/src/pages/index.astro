@@ -32,13 +32,10 @@ export const prerender = false;
 // carousel-mode rules off that attribute rather than repeating the media query.
 const MOBILE_CAROUSEL_BREAKPOINT = 900;
 
-const CARD_ORDER = ["virtual-home", "virtual-home-tv", "milk-tracker", "air-care"];
-const getOrder = (id: string) => { const i = CARD_ORDER.indexOf(id); return i === -1 ? Infinity : i; };
-
 const allStudies = await getCollection("caseStudies");
 const featuredStudies = allStudies
   .filter((s) => s.data.featured)
-  .sort((a, b) => getOrder(a.id) - getOrder(b.id));
+  .sort((a, b) => a.data.order - b.data.order);
 
 const services = EXPERTISE.map((area) => ({
   name: area.label,
