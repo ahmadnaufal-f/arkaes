@@ -2,7 +2,7 @@
 title: "Designing Arkhe, a retrieval augmented AI assistant for my portfolio"
 shortDesc: "Built a framework agnostic AI assistant powered by RAG, Supabase pgvector, and streaming responses to create an interactive portfolio experience."
 projectName: "Arkhe AI Chatbot"
-order: 5
+order: 6
 featured: true
 visual: "arkhe-ai-chatbot"
 category: "side-project"

@@ -2,7 +2,7 @@
 title: "Modernizing SmartThings Air Care's legacy frontend"
 shortDesc: "Led a small frontend team to modernize a legacy air quality experience, migrating it to TypeScript, introducing Zustand, and improving first load by around 50% and second load by around 80%."
 projectName: "SmartThings Air Care"
-order: 4
+order: 5
 featured: false
 visual: "air-care"
 category: "professional-work"

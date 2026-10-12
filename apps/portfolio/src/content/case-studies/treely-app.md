@@ -2,7 +2,7 @@
 title: "Designing a family tree app for every generation"
 shortDesc: "Designed the UI for a family tree app meant to be usable by anyone, including older users, with a visual language shaped by Samsung's One UI and a set of design choices aimed at an Indonesian, Muslim-majority audience."
 projectName: "Treely"
-order: 6
+order: 7
 featured: false
 visual: "treely-app"
 category: "side-project"
