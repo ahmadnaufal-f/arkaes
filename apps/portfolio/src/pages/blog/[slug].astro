@@ -8,6 +8,7 @@ import {
 } from "../../lib/contentful";
 import { renderPostBody } from "../../lib/markdown";
 import { AUTHOR_NAME, blogPostingSchema, breadcrumbSchema } from "../../lib/seo";
+import MarkdownLinkPreviews from "../../components/MarkdownLinkPreviews.astro";
 import "./_blog.css";
 
 // On-demand + ISR, same contract as the blog index: rendered once per publish
@@ -77,7 +78,11 @@ const jsonLd = [
         )
       }
 
-      <ark-markdown heading-style="article" set:html={bodyHtml} />
+      <ark-markdown
+        heading-style="article"
+        data-internal-link-previews
+        set:html={bodyHtml}
+      />
 
       <div class="blog-footer-nav">
         <ark-button href="/blog" variant="link">
@@ -87,4 +92,5 @@ const jsonLd = [
       </div>
     </div>
   </article>
+  <MarkdownLinkPreviews />
 </BaseLayout>

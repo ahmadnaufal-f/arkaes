@@ -1,0 +1,40 @@
+---
+import InternalLinkPreview from "../../../../components/InternalLinkPreview.astro";
+import { resolveLinkPreview } from "../../../../lib/link-preview";
+import type { LinkPreviewMetadata } from "../../../../lib/link-preview";
+import {
+  isInternalContentKind,
+  isValidContentSlug,
+} from "../../../../lib/internal-content-link";
+
+export const prerender = false;
+
+const { type, slug } = Astro.params;
+const headers = Astro.response.headers;
+headers.set("Content-Type", "text/html; charset=utf-8");
+headers.set("X-Robots-Tag", "noindex");
+headers.set("Cache-Control", "no-store");
+
+let preview: LinkPreviewMetadata | null = null;
+if (!type || !isInternalContentKind(type) || !slug || !isValidContentSlug(slug)) {
+  Astro.response.status = 404;
+} else {
+  try {
+    preview = await resolveLinkPreview(type, slug);
+    if (preview) {
+      // The five-minute shared TTL bounds how long a publish, edit, or unpublish
+      // can remain stale without needing a parent-page rebuild or purge hook.
+      headers.set("Cache-Control", "public, max-age=60, s-maxage=300");
+    } else {
+      Astro.response.status = 404;
+    }
+  } catch {
+    // CMS and content lookup details stay server-side; callers get a retryable
+    // status and never receive exception text in this HTML fragment.
+    Astro.response.status = 503;
+  }
+}
+
+---
+
+{preview && <InternalLinkPreview preview={preview} />}

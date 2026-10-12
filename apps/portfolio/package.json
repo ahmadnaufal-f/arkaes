@@ -10,7 +10,8 @@
     "ingest": "tsx scripts/ingest-knowledge.ts",
     "og:image": "tsx scripts/generate-og-image.ts",
     "lint": "eslint . --max-warnings=0",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "test": "node --import tsx --test src/lib/__tests__/*.test.ts"
   },
   "dependencies": {
     "@arkaes/chatbot": "workspace:*",
