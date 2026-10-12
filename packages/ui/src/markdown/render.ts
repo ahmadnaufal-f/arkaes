@@ -75,10 +75,14 @@ const buildRenderer = (options: ResolvedMarkdownOptions): RendererObject => {
     },
 
     image({ href, title, text }: Tokens.Image) {
-      if (!isSafeUrl(href)) return escapeHtml(text);
+      // CMS media (including Contentful's insert-media action) can omit the
+      // scheme. Trusted articles render these as HTTPS; untrusted sources
+      // keep the shared URL allowlist's protocol-relative rejection.
+      const src = trusted && href.startsWith("//") ? `https:${href}` : href;
+      if (!isSafeUrl(src)) return escapeHtml(text);
       const titleAttr = title ? ` title="${escapeAttribute(title)}"` : "";
       return (
-        `<img src="${escapeAttribute(href)}" alt="${escapeHtml(text)}"` +
+        `<img src="${escapeAttribute(src)}" alt="${escapeHtml(text)}"` +
         `${titleAttr} class="ark-md-image" loading="lazy" />`
       );
     },
