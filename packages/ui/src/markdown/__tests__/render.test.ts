@@ -85,6 +85,27 @@ describe("renderMarkdown — links and safety", () => {
     expect(renderMarkdown("![x](javascript:alert(1))")).not.toContain("<img");
   });
 
+  it("renders Contentful's protocol-relative SVG media over HTTPS in trusted posts", async () => {
+    const source = "![Find Maps Simplified Diagram](//images.ctfassets.net/space/asset/diagram.svg)";
+    const options = { trust: "trusted" } as const;
+    const expected =
+      "<img src=\"https://images.ctfassets.net/space/asset/diagram.svg\" " +
+      "alt=\"Find Maps Simplified Diagram\" class=\"ark-md-image\" loading=\"lazy\" />";
+    expect(renderMarkdown(source, options)).toContain(expected);
+    expect(await renderMarkdownAsync(source, options)).toContain(expected);
+  });
+
+  it("still rejects protocol-relative media in untrusted content", () => {
+    const html = renderMarkdown("![Diagram](//images.ctfassets.net/space/asset/diagram.svg)");
+    expect(html).not.toContain("<img");
+    expect(html).toContain("Diagram");
+  });
+
+  it("still rejects unsafe image schemes in trusted posts", () => {
+    expect(renderMarkdown("![x](javascript:alert(1))", { trust: "trusted" }))
+      .not.toContain("<img");
+  });
+
   it("ignores a diagrams map when the source is untrusted", () => {
     const html = renderMarkdown("![Flow](/a/flow.svg)", {
       features: ["figures"],
