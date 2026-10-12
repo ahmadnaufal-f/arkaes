@@ -31,6 +31,8 @@ export default defineConfig({
         "/api/revalidate",
         // Streams a per-user chat response.
         "/api/chat",
+        // Preview fragments have their own short Cache-Control TTL.
+        /^\/api\/link-preview(\/|$)/,
         // Everything behind Basic Auth. This mirrors PROTECTED in
         // src/middleware.ts — the auth check lives in middleware, which only
         // runs when the function does, so a cached response would bypass it.

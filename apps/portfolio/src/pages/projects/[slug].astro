@@ -3,6 +3,7 @@ import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { categoryLabel } from "../../data/expertise";
 import CaseStudyVisual from "../../components/CaseStudyVisual.astro";
+import MarkdownLinkPreviews from "../../components/MarkdownLinkPreviews.astro";
 import { Image, getImage } from "astro:assets";
 import { renderSectionHtml } from "../../utils/sections";
 import {
@@ -128,7 +129,11 @@ const jsonLd = [
 
     <section class="cs-accordion-section">
       <div class="cs-accordion-inner proj-body">
-        <ark-markdown heading-style="section" set:html={bodyHtml} />
+        <ark-markdown
+          heading-style="section"
+          data-internal-link-previews
+          set:html={bodyHtml}
+        />
 
         {
           gallery.length > 0 && (
@@ -250,6 +255,7 @@ const jsonLd = [
       )
     }
   </article>
+  <MarkdownLinkPreviews />
 </BaseLayout>
 
 <script>

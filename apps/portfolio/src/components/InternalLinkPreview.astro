@@ -1,0 +1,60 @@
+---
+import CaseStudyVisual from "./CaseStudyVisual.astro";
+import { coverSrcSet, coverUrl } from "../lib/contentful";
+import type { LinkPreviewMetadata } from "../lib/link-preview";
+
+interface Props {
+  preview: LinkPreviewMetadata;
+}
+
+const { preview } = Astro.props;
+const isBlog = preview.kind === "blog";
+const coverIsSvg = Boolean(
+  preview.cover?.src.split(/[?#]/, 1)[0]?.toLowerCase().endsWith(".svg"),
+);
+const kindLabel =
+  preview.kind === "case-studies"
+    ? "Case study"
+    : preview.kind === "projects"
+      ? "Project"
+      : "Blog post";
+---
+
+<article class="internal-link-preview" data-internal-link-preview>
+  <a
+    class="internal-link-preview__link"
+    data-link-preview-anchor
+    href={preview.href}
+  >
+    <div class="internal-link-preview__media" aria-hidden="true">
+      {
+        isBlog && preview.cover ? (
+          <img
+            class="internal-link-preview__image"
+            src={coverIsSvg ? preview.cover.src : coverUrl(preview.cover.src, 400)}
+            srcset={
+              coverIsSvg
+                ? undefined
+                : coverSrcSet(preview.cover.src, [240, 400, 600])
+            }
+            sizes="(max-width: 600px) 100vw, 240px"
+            alt=""
+            width={preview.cover.width}
+            height={preview.cover.height}
+            loading="lazy"
+          />
+        ) : (
+          <CaseStudyVisual
+            visual={preview.visual}
+            transitionName="none"
+          />
+        )
+      }
+    </div>
+    <div class="internal-link-preview__content">
+      <span class="internal-link-preview__kind">{kindLabel}</span>
+      <span class="internal-link-preview__title">{preview.title}</span>
+      <span class="internal-link-preview__description">{preview.description}</span>
+    </div>
+  </a>
+</article>

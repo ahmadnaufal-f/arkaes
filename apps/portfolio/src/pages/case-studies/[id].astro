@@ -10,6 +10,7 @@ import {
 import "./_case-study.css";
 import "@arkaes/ui/components/ark-accordion";
 import CaseStudyVisual from "../../components/CaseStudyVisual.astro";
+import MarkdownLinkPreviews from "../../components/MarkdownLinkPreviews.astro";
 
 // Eagerly import every case study SVG as a raw string so we can inline it and
 // let the page's loaded Google Fonts apply inside the diagram markup.
@@ -96,6 +97,7 @@ const jsonLd = [
             <ark-markdown
               heading-style="section"
               class="cs-overview-body"
+              data-internal-link-previews
               set:html={renderSectionHtml(overviewSection.content, diagrams)}
             />
           </div>
@@ -112,6 +114,7 @@ const jsonLd = [
                 <ark-markdown
                   heading-style="section"
                   class="cs-section-content"
+                  data-internal-link-previews
                   set:html={renderSectionHtml(section.content, diagrams)}
                 />
               </ark-accordion-item>
@@ -128,4 +131,5 @@ const jsonLd = [
       </ark-button>
     </div>
   </article>
+  <MarkdownLinkPreviews />
 </BaseLayout>
