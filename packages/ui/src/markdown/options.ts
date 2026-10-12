@@ -10,7 +10,7 @@
 export enum MarkdownHeadingStyle {
   /** Blog bodies: real `<h1>`–`<h6>` with slug ids, display face, stepped sizes. */
   Article = "article",
-  /** Case studies, projects, about: level shifted by one, sans face at body size. */
+  /** Case studies, projects, about: level shifted by one, article typography. */
   Section = "section",
   /** Chat replies: every level renders as one flat `<h4>`. */
   Flat = "flat",

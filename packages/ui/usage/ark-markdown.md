@@ -42,7 +42,7 @@ two long-form treatments.
 | Value | Structure | Look |
 | --- | --- | --- |
 | `article` (default) | real `h1`–`h6` with slug ids | display face, stepped sizes |
-| `section` | every level shifted down one, no ids | sans, body size, medium weight |
+| `section` | every level shifted down one, no ids | display face, article sizes for the same Markdown depth, regular weight |
 | `flat` | every level pinned to `h4` | one weight, for short replies |
 
 `section` is why a case study's `###` comes out as an `<h4>`: its `##` titles are

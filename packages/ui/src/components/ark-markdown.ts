@@ -30,7 +30,7 @@ import {
  * @slot - Pre-rendered markdown HTML, when the server did the rendering.
  * @attr {article|section|flat} heading-style - Heading treatment. `article`
  *   emits real h1–h6 with slug ids in the display face; `section` shifts every
- *   level down one and renders a quiet sans subheading; `flat` pins every level
+ *   level down one with the same visual hierarchy; `flat` pins every level
  *   to a single h4. Default `article`.
  * @attr {trusted|untrusted} trust - `untrusted` (the default) escapes raw HTML
  *   to literal text and allowlists every href. Use `trusted` for your own content.

@@ -24,6 +24,7 @@ export const markdownStyles = css`
     color: var(--ark-color-text-soft);
     font-family: var(--ark-font-sans);
     font-size: var(--ark-text-md);
+    font-weight: var(--ark-weight-regular);
     line-height: var(--ark-leading-normal);
   }
 
@@ -59,10 +60,13 @@ export const markdownStyles = css`
     margin-block-start: 2em;
   }
 
-  /* Article — the blog treatment. Every level in the display face at a single
-     regular weight, so the levels are stepped by size instead of by weight. */
+  /* Article and section headings use the blog treatment: the display face at a single
+     regular weight, so the levels are stepped by size instead of by weight.
+     Section headings share the size scale, accounting for their one-level
+     HTML shift: Markdown ### is h3 in an article and h4 in a section. */
   :is(.ark-md-headings-article, ark-markdown[heading-style="article"],
-    ark-markdown:not([heading-style]))
+    ark-markdown:not([heading-style]), .ark-md-headings-section,
+    ark-markdown[heading-style="section"])
     .ark-md-heading {
     font-family: var(--ark-font-display);
     font-weight: var(--ark-weight-regular);
@@ -70,56 +74,44 @@ export const markdownStyles = css`
 
   :is(.ark-md-headings-article, ark-markdown[heading-style="article"],
     ark-markdown:not([heading-style]))
-    h1.ark-md-heading {
+    h1.ark-md-heading,
+  :is(.ark-md-headings-section, ark-markdown[heading-style="section"])
+    h2.ark-md-heading {
     font-size: var(--ark-text-3xl);
     line-height: var(--ark-leading-tight);
   }
 
   :is(.ark-md-headings-article, ark-markdown[heading-style="article"],
     ark-markdown:not([heading-style]))
-    h2.ark-md-heading {
+    h2.ark-md-heading,
+  :is(.ark-md-headings-section, ark-markdown[heading-style="section"])
+    h3.ark-md-heading {
     font-size: var(--ark-text-2xl);
     line-height: var(--ark-leading-snug);
   }
 
   :is(.ark-md-headings-article, ark-markdown[heading-style="article"],
     ark-markdown:not([heading-style]))
-    h3.ark-md-heading {
+    h3.ark-md-heading,
+  :is(.ark-md-headings-section, ark-markdown[heading-style="section"])
+    h4.ark-md-heading {
     font-size: var(--ark-text-xl);
     line-height: var(--ark-leading-snug);
   }
 
   :is(.ark-md-headings-article, ark-markdown[heading-style="article"],
     ark-markdown:not([heading-style]))
-    :is(h4, h5, h6).ark-md-heading {
+    :is(h4, h5, h6).ark-md-heading,
+  :is(.ark-md-headings-section, ark-markdown[heading-style="section"])
+    :is(h5, h6).ark-md-heading {
     font-size: var(--ark-text-lg);
     line-height: var(--ark-leading-snug);
   }
 
-  /* Section — case studies, projects, about. A quiet sans subheading: the
-     document's own H2 titles are carried by the accordion above it, so these
-     sit close to body copy rather than competing with it. */
-  :is(.ark-md-headings-section, ark-markdown[heading-style="section"])
-    .ark-md-heading {
-    color: var(--ark-color-text-soft);
-    font-family: var(--ark-font-sans);
-    font-size: var(--ark-text-md);
-    font-weight: var(--ark-weight-medium);
-    letter-spacing: var(--ark-tracking-wide);
-    line-height: var(--ark-leading-snug);
-  }
-
+  /* Section — case studies, projects, about. Only section spacing differs. */
   :is(.ark-md-headings-section, ark-markdown[heading-style="section"])
     .ark-md-heading:not(:first-child) {
     margin-block-start: 1.6em;
-  }
-
-  :is(.ark-md-headings-section, ark-markdown[heading-style="section"])
-    h2.ark-md-heading {
-    font-family: var(--ark-font-display);
-    font-size: var(--ark-text-xl);
-    font-weight: var(--ark-weight-thin);
-    letter-spacing: var(--ark-tracking-tight);
   }
 
   /* Flat — chat replies. One weight for every level; a reply is too short for a
