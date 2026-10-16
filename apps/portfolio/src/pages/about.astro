@@ -55,7 +55,7 @@ const jsonLd = [
         sections.map(({ heading, content }, index) => (
           <ark-accordion-item heading={heading} open={index === 0 ? "" : undefined}>
             {index === 0 && (
-              <AboutPortrait class="about-summary-portrait" loading="eager" />
+              <AboutPortrait class="about-summary-portrait" />
             )}
             <ark-markdown
               heading-style="section"

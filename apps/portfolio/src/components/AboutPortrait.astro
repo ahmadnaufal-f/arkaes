@@ -1,24 +1,15 @@
 ---
-import { Image } from "astro:assets";
-import portraitPoster from "../animations/about-quiet-growth-poster.webp";
+import portraitPoster from "../animations/about-quiet-growth-poster.svg?raw";
 
 interface Props {
   class?: string;
-  loading?: "eager" | "lazy";
 }
 
-const { class: className, loading = "lazy" } = Astro.props;
+const { class: className } = Astro.props;
 ---
 
 <about-portrait class={className} role="img" aria-label="Ahmad Naufal">
-  <Image
-    class="portrait-poster"
-    src={portraitPoster}
-    alt=""
-    widths={[320, 640]}
-    sizes="320px"
-    loading={loading}
-  />
+  <div class="portrait-poster" aria-hidden="true" set:html={portraitPoster}></div>
   <div class="portrait-player" data-player aria-hidden="true"></div>
 </about-portrait>
 
@@ -78,7 +69,7 @@ const { class: className, loading = "lazy" } = Astro.props;
       try {
         const [{ default: lottie }, { default: source }] = await Promise.all([
           import("lottie-web/build/player/lottie_light.js"),
-          import("../animations/about-quiet-growth"),
+          import("../animations/about-quiet-growth.json"),
         ]);
         if (!this.isConnected || generation !== this._generation || this._motion?.matches) return;
         const container = this.querySelector<HTMLElement>("[data-player]");
@@ -138,7 +129,11 @@ const { class: className, loading = "lazy" } = Astro.props;
     width: 100%;
   }
 
-  .portrait-poster { object-fit: cover; }
+  .portrait-poster :global(svg) {
+    display: block;
+    height: 100%;
+    width: 100%;
+  }
   .portrait-player { visibility: hidden; }
   about-portrait[data-ready] .portrait-player { visibility: visible; }
   about-portrait[data-ready] .portrait-poster { visibility: hidden; }
