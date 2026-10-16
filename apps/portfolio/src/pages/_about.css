@@ -13,8 +13,7 @@
   margin-top: var(--ark-space-16);
 }
 
-/* Portrait at the top of the Summary section — centered, framed, and the
-   morph target for the homepage About portrait (shared view-transition-name). */
+/* Animated portrait at the top of the Summary section, centered and framed. */
 .about-summary-portrait {
   border: 1px solid var(--ark-color-border);
   border-radius: var(--ark-radius-md);
@@ -22,7 +21,6 @@
   height: auto;
   margin: 0 auto var(--ark-space-8);
   max-width: 240px;
-  object-fit: cover;
   width: 100%;
 }
 

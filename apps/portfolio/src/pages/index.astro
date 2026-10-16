@@ -1,7 +1,6 @@
 ---
 import { getCollection } from "astro:content";
-import { Image } from "astro:assets";
-import portrait from "../assets/about-me.png";
+import AboutPortrait from "../components/AboutPortrait.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import "./_index.css";
 import { techGroups } from "../data/techstack";
@@ -328,15 +327,7 @@ const jsonLd = [
 
   <section class="about-strip" id="about">
     <div class="about-portrait reveal">
-      <Image
-        class="portrait-img"
-        src={portrait}
-        alt="Ahmad Naufal"
-        widths={[320, 640]}
-        sizes="320px"
-        loading="lazy"
-        transition:name="about-me"
-      />
+      <AboutPortrait class="portrait-img" />
       <div class="portrait-rule"></div>
     </div>
     <div class="about-content reveal reveal-delay-2">
