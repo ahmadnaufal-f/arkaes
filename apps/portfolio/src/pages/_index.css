@@ -384,19 +384,19 @@
 }
 
 .about-portrait {
-  aspect-ratio: 3 / 4;
+  aspect-ratio: 1227 / 1536;
   background: var(--ark-color-border);
   border-radius: var(--ark-radius-md);
   max-width: 320px;
   overflow: hidden;
   position: relative;
   justify-self: center;
+  width: 100%;
 }
 
 .portrait-img {
   display: block;
   height: 100%;
-  object-fit: cover;
   width: 100%;
 }
 
@@ -759,7 +759,7 @@
 
 @media (max-width: 900px) {
   .homepage-hero {
-    --ark-hero-visual-min-height: clamp(360px, 74vw, 480px);
+    --ark-hero-visual-min-height: clamp(420px, 80vw, 560px);
   }
 
   .work-section,

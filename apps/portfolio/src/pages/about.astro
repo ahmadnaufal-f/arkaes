@@ -1,7 +1,6 @@
 ---
-import { Image } from "astro:assets";
+import AboutPortrait from "../components/AboutPortrait.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import portrait from "../assets/about-me.png";
 import { parseSections, renderSectionHtml } from "../utils/sections";
 import aboutContent from "../content/about.md?raw";
 import { AUTHOR_NAME, PERSON_ID, WEBSITE_ID, breadcrumbSchema } from "../lib/seo";
@@ -55,19 +54,8 @@ const jsonLd = [
       {
         sections.map(({ heading, content }, index) => (
           <ark-accordion-item heading={heading} open={index === 0 ? "" : undefined}>
-            {/* Same widths/sizes as the homepage's portrait on purpose:
-                identical renditions mean the `about-me` shared-element
-                transition morphs one already-cached image rather than
-                cross-fading two different files. */}
             {index === 0 && (
-              <Image
-                class="about-summary-portrait"
-                src={portrait}
-                alt="Ahmad Naufal"
-                widths={[320, 640]}
-                sizes="320px"
-                transition:name="about-me"
-              />
+              <AboutPortrait class="about-summary-portrait" />
             )}
             <ark-markdown
               heading-style="section"
